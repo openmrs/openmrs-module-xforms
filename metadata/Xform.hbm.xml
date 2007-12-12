@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="@MODULE_PACKAGE@">
+
+	<class name="Xform" table="xform">
+	
+		<id name="formId" type="int" column="form_id" unsaved-value="0">
+				<generator class="assigned" />
+		</id>
+
+		<property name="xformData" type="java.lang.String" not-null="true" column="xform_data" length="2147483647" />
+
+		<many-to-one name="creator" class="org.openmrs.User" not-null="true" />
+
+		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
+
+	</class>
+</hibernate-mapping>

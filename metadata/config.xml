@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- DOCTYPE module PUBLIC "-//OpenMRS//DTD OpenMRS Config 1.0//EN" "http://resources.openmrs.org/doctype/config-1.0.dtd"> -->
+
+<module configVersion="1.0">
+	
+	<!-- Base Module Properties -->
+	<id>xforms</id>
+	<name>XForms</name>
+	<version>1.0</version>
+	<package>org.openmrs.module.@MODULE_ID@</package>
+	<author>Daniel Kayiwa</author>
+	<description>
+			Adds XForms support and related services to XForms clients, like user and patient download. You can get Forefox's XForms extension from: https://addons.mozilla.org/en-US/firefox/addon/824
+	</description>
+
+	<activator>@MODULE_PACKAGE@.XformsActivator</activator>
+	
+	<updateURL>https://dev.openmrs.org/modules/download/xforms/update.rdf</updateURL>
+	
+	
+	<require_version>1.0.53.1481</require_version>
+	
+	<!-- Required Global Properties -->
+	<globalProperty>
+		<property>@MODULE_ID@.xformSerializer</property>
+		<defaultValue>org.openmrs.module.xforms.DefaultXformSerializer</defaultValue>
+		<description>The XForms serializer</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.patientSerializer</property>
+		<defaultValue>org.openmrs.module.xforms.DefaultPatientSerializer</defaultValue>
+		<description>The patient set serializer</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.userSerializer</property>
+		<defaultValue>org.openmrs.module.xforms.DefaultUserSerializer</defaultValue>
+		<description>The user set serializer</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.xformUploadFolder</property>
+		<defaultValue></defaultValue>
+		<description>Folder from which XForms data is uploaded</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.xformDownloadFolder</property>
+		<defaultValue></defaultValue>
+		<description>Folder to which XForms are download</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.patientDownloadCohort</property>
+		<defaultValue></defaultValue>
+		<description>The cohort for patients to download</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.newPatientFormId</property>
+		<defaultValue></defaultValue>
+		<description>The id of the form for creating new patients</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.useStoredXform</property>
+		<defaultValue>true</defaultValue>
+		<description>Set to true if you want to use XForms uploaded into the database, else set to false if you want to always build an XForm on the fly from the current form definition.</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.searchNewPatientAfterFormSubmission</property>
+		<defaultValue>true</defaultValue>
+		<description>Set to true if you want to search for a new patient after submiting a form, else set to false if you want to go back to the same patient.</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.multiSelectAppearance</property>
+		<defaultValue>full</defaultValue>
+		<description>The apperance of multi select input fields. Allowed values are: {full,minimal,compact} </description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.singleSelectAppearance</property>
+		<defaultValue>minimal</defaultValue>
+		<description>The apperance of single select input fields. Allowed values are: {full,minimal,compact} </description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.singleColumnLayout</property>
+		<defaultValue>true</defaultValue>
+		<description>Set to true for fields to be layed out in a single column, else set to false for two columns. </description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.queue_dir</property>
+		<defaultValue>xforms/queue</defaultValue>
+		<description>Directory containing the xforms queue items. This will contain xforms xml model files submitted and awaiting processing to be submitted into the formentry queue. </description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.error_dir</property>
+		<defaultValue>xforms/error</defaultValue>
+		<description>Directory containing the xforms error items.  This will contain xform model xml files that have not been submitted into the formentry queue because of processing errors. </description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.archive_dir</property>
+		<defaultValue>xforms/archive/%Y/%M</defaultValue>
+		<description>Directory containing the xforms archive items.  This will contain xform model xml files that have been submitted and then submitted sucessfully into the formentry queue. </description>
+	</globalProperty>
+	<!-- /Required Global Properties -->
+
+	<!-- /Xforms Module Properties -->
+	
+	<extension>
+		<point>org.openmrs.admin.list</point>
+		<class>@MODULE_PACKAGE@.extension.html.XformsAdminExt</class>
+	</extension>
+	<extension>
+		<point>org.openmrs.admin.forms.formHeader</point>
+		<class>@MODULE_PACKAGE@.extension.html.XformsFormHeaderExt</class>
+	</extension>
+	<extension>
+		<point>org.openmrs.patientDashboardTab</point>
+		<class>@MODULE_PACKAGE@.extension.html.XformsPatientDashboardTabExt</class>
+	</extension>
+		
+	<!-- Servlets -->
+	<!-- Accessed through the url /pageContext()/moduleServlet/<moduleId>/<servlet-name> -->
+	<servlet>
+		<servlet-name>xformDownload</servlet-name>
+		<servlet-class>@MODULE_PACKAGE@.web.XformDownloadServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>userDownload</servlet-name>
+		<servlet-class>@MODULE_PACKAGE@.web.UserDownloadServlet</servlet-class>
+	</servlet>
+	
+	<!-- Internationalization -->
+	<!-- All message codes should start with moduleId.* -->
+	<messages>
+		<lang>en</lang>
+		<file>messages.properties</file>
+	</messages>
+	<messages>
+		<lang>fr</lang>
+		<file>messages_fr.properties</file>
+	</messages>
+	<messages>
+		<lang>es</lang>
+		<file>messages_es.properties</file>
+	</messages>
+	<!-- /Internationalization -->
+	
+	<mappingFiles>
+		Xform.hbm.xml
+	</mappingFiles>
+	
+</module>
+

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="web/src"/>
+	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib-common/commons-logging-1.0.4.jar"/>
+	<classpathentry kind="lib" path="lib-common/spring-2.0.jar"/>
+	<classpathentry kind="lib" path="lib-common/servlet-api.jar"/>
+	<classpathentry kind="lib" path="lib-common/hibernate3.jar"/>
+	<classpathentry kind="lib" path="lib/kxml2-2.3.0.jar"/>
+	<classpathentry kind="lib" path="lib-common/commons-io-1.1.jar"/>
+	<classpathentry kind="lib" path="lib-common/xform-interfaces.jar"/>
+	<classpathentry kind="lib" path="/FormEntryModule/lib-common/web-openmrs-api-1.0.52.1465.jar"/>
+	<classpathentry kind="lib" path="lib-common/openmrs-api-1.1.10.2560.jar"/>
+	<classpathentry kind="lib" path="lib-common/formentry-2.7.jar"/>
+	<classpathentry kind="output" path="build"/>
+</classpath>
