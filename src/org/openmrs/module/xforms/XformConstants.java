@@ -59,6 +59,9 @@ public class XformConstants {
 	/** The global property key for the xform serializer class.*/
 	public static final String GLOBAL_PROP_KEY_XFORM_SERIALIZER = "xforms.xformSerializer";
 	
+	/** The global property key for the xform select1 appearance. */
+	public static final String GLOBAL_PROP_KEY_SINGLE_SELECT_APPEARANCE = "xforms.singleSelectAppearance";
+	
 	/** The default value for the user serializer class.*/
 	public static final String DEFAULT_USER_SERIALIZER= "org.openmrs.module.xforms.DefaultUserSerializer";
 	
@@ -72,4 +75,18 @@ public class XformConstants {
 	public static final String NODE_UID = "uid";
 	public static final String NODE_DATE_ENTERED = "date_entered";
 	public static final String NODE_ENTERER = "enterer";
+	
+	/** The extension for our xforms. */
+	public static final String XFORM_FILE_EXTENSION = ".xml";
+	
+	/** The content disposition http header. */
+	public static final String HTTP_HEADER_CONTENT_DISPOSITION = "Content-Disposition";
+	
+	/** The starter xform file name. */
+	public static final String STARTER_XFORM = "starter_xform.xml";
+	
+	/** The empty string constant. */
+	public static final String EMPTY_STRING = "";
+	
+	public static final String CONTENT_DISPOSITION_VALUE = "attachment; filename=";
 }

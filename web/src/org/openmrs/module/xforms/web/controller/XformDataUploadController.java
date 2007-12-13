@@ -59,6 +59,7 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Location;
 import org.openmrs.api.PatientService;
+import org.openmrs.util.OpenmrsClassLoader;
 
 
 /**
@@ -107,6 +108,12 @@ public class XformDataUploadController extends SimpleFormController{
 		return null;
     }
 	
+	/**
+	 * Write the response after processing an submitted xform from the browser.
+	 * 
+	 * @param request - the request.
+	 * @param response - the response.
+	 */
 	private void setSingleEntryResponse(HttpServletRequest request, HttpServletResponse response){
 		
 		String searchNew = Context.getAdministrationService().getGlobalProperty("xforms.searchNewPatientAfterFormSubmission");
@@ -138,7 +145,8 @@ public class XformDataUploadController extends SimpleFormController{
 			String className = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_XFORM_SERIALIZER);
 			if(className == null || className.length() == 0)
 				className = XformConstants.DEFAULT_XFORM_SERIALIZER;
-			return (SerializableData)Class.forName(className).newInstance();
+			return (SerializableData)OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
+			//return (SerializableData)Class.forName(className).newInstance();
 		}
 		catch(Exception e){
 			log.error(e);
@@ -196,6 +204,11 @@ public class XformDataUploadController extends SimpleFormController{
 		}
 	}
 	
+	/**
+	 * Gets a map of xforms keyed by the formid
+	 * 
+	 * @return - the xforms map.
+	 */
 	private Map<Integer,String> getXforms(){
 		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
 
@@ -212,6 +225,13 @@ public class XformDataUploadController extends SimpleFormController{
 		return xformMap;
 	}
 	
+	/**
+	 * Gets the value of an element with a given name in a document.
+	 * 
+	 * @param doc - the document.
+	 * @param name - the name of the element.
+	 * @return - the value.
+	 */
 	private String getElementValue(Document doc,String name){
 		NodeList elemList = doc.getElementsByTagName(name);
 		if (!(elemList != null && elemList.getLength() > 0))
@@ -219,6 +239,15 @@ public class XformDataUploadController extends SimpleFormController{
 		return ((Element)elemList.item(0)).getTextContent();
 	}
 	
+	/** 
+	 * Creates a new patient from an xform create new patient document.
+	 * 
+	 * @param doc - the document.
+	 * @param creator - the logged on user.
+	 * @param patientids - a hashtable to store a mapping between the patientid as in the document 
+	 * 					   and that of the newly created patient.
+	 * @return - true if the patient is created successfully, else false.
+	 */
 	private boolean saveNewPatient(Document doc, User creator,HashMap<String,Integer> patientids){		
 		PatientService patientService = Context.getPatientService();
 		
@@ -263,10 +292,21 @@ public class XformDataUploadController extends SimpleFormController{
 		return false;
 	}
 		
+	/**
+	 * Gets a location object given a locaton id
+	 * 
+	 * @param locationId - the id.
+	 * @return
+	 */
 	private Location getLocation(String locationId){
 		return Context.getEncounterService().getLocation(Integer.parseInt(locationId));
 	}
 	
+	/**
+	 * Submits a single xform from an incoming http request.
+	 * 
+	 * @param request - the request object.
+	 */
 	private void submitXform(HttpServletRequest request){
 		
 		try{
@@ -280,6 +320,13 @@ public class XformDataUploadController extends SimpleFormController{
 		}
 	}
 	
+	/**
+	 * Sets the values of openmrs form header
+	 * 
+	 * @param doc
+	 * @param request
+	 * @param enterer
+	 */
 	private void setHeaderValues(Document doc, HttpServletRequest request, String enterer){
 		NodeList elemList = doc.getElementsByTagName(XformConstants.NODE_SESSION);
 		if (elemList != null && elemList.getLength() > 0) 
@@ -298,6 +345,13 @@ public class XformDataUploadController extends SimpleFormController{
 			((Element)elemList.item(0)).setTextContent(enterer);
 	}
 	
+	/**
+	 * Checks if a document is a create new patient one.
+	 * One which collected bio data about a new patient.
+	 * 
+	 * @param doc - the document.
+	 * @return - true if so, else false.
+	 */
 	private boolean isNewPatientDoc(Document doc){
 		NodeList elemList = doc.getElementsByTagName(XformBuilder.NODE_PATIENT);
 		if (!(elemList != null && elemList.getLength() > 0)) 
@@ -311,6 +365,13 @@ public class XformDataUploadController extends SimpleFormController{
 		return true;
 	}
 	
+	/**
+	 * Check if a document represents a form collected for a new patient(One who
+	 * is not yet in the openmrs server).
+	 * 
+	 * @param doc - the document.
+	 * @return - true if so, else false.
+	 */
 	private boolean isNewPatientFormDoc(Document doc){
 		NodeList elemList = doc.getElementsByTagName(XformBuilder.NODE_PATIENT_PATIENT_ID);
 		if (!(elemList != null && elemList.getLength() > 0)) 
@@ -333,6 +394,11 @@ public class XformDataUploadController extends SimpleFormController{
 		return true;
 	}
 	
+	/**
+	 * Gets a random file name.
+	 * 
+	 * @return - the file name.
+	 */
 	private String getRandomFileName(){
 		return new Date().toString().replace(':', '_');
 	}
@@ -367,14 +433,34 @@ public class XformDataUploadController extends SimpleFormController{
 		return pathName;
 	}
 	
+	/**
+	 * Saves an xform in the xforms archive.
+	 * 
+	 * @param xml - the xml of the xform.
+	 * @param queuePathName - the queue full path and file name of this xform.
+	 * @return - the archive full path and file name.
+	 */
 	private String saveFormInArchive(String xml,String queuePathName){
 		return saveForm(xml,XformsUtil.getXformsArchiveDir(new Date()),queuePathName);
 	}
 	
+	/**
+	 * Saves an xform in the errors folder.
+	 * 
+	 * @param xml - the xml of the xform.
+	 * @param queuePathName - the queue full path and file name of this xform.
+	 * @return - the error full path and file name.
+	 */
 	private String saveFormInError(String xml,String queuePathName){
 		return saveForm(xml,XformsUtil.getXformsErrorDir(),queuePathName);
 	}
 	
+	/**
+	 * Save an xform in the xform queue.
+	 * 
+	 * @param xml - the xml of the xform.
+	 * @return - the queue full path and file name.
+	 */
 	private String saveFormInQueue(String xml){
 		return saveForm(xml,XformsUtil.getXformsQueueDir(),null);
 	}
@@ -455,6 +541,12 @@ public class XformDataUploadController extends SimpleFormController{
 		}
 	}
 	
+	/**
+	 * Converts xforms multiple select answer values to the format expected by
+	 * the openmrs form model.
+	 * 
+	 * @param parentNode - the parent node of the document.
+	 */
 	private void setMultipleSelectValues(Node parentNode){
 		NodeList nodes = parentNode.getChildNodes();
 		for(int i=0; i<nodes.getLength(); i++){
@@ -467,6 +559,12 @@ public class XformDataUploadController extends SimpleFormController{
 		}
 	}
 	
+	/** 
+	 * Gets the values of a multiple select node.
+	 * 
+	 * @param parentNode- the node
+	 * @return - a sting with values separated by space.
+	 */
 	private String getMultipleSelectNodeValue(Node parentNode){
 		String value = null;
 		
@@ -486,6 +584,11 @@ public class XformDataUploadController extends SimpleFormController{
 		return value;
 	}
 	
+	/**
+	 * Sets the values of an openmrs multiple select node.
+	 * 
+	 * @param parentNode - the node.
+	 */
 	private void setMultipleSelectNodeValues(Node parentNode){
 		String values = getMultipleSelectNodeValue(parentNode);
 		if(values == null || values.length() == 0)
@@ -507,6 +610,12 @@ public class XformDataUploadController extends SimpleFormController{
 		}
 	}
 	
+	/**
+	 * Sets the value of an openmrs multiple select node.
+	 * 
+	 * @param node - the multiple select node.
+	 * @param valueArray - an array of selected values.
+	 */
 	private void setMultipleSelectNodeValue(Node node,String[] valueArray){
 		for(String value : valueArray){
 			if(!value.equalsIgnoreCase(node.getNodeName()))
@@ -518,6 +627,12 @@ public class XformDataUploadController extends SimpleFormController{
 		node.setTextContent(XformBuilder.VALUE_FALSE);
 	}
 	
+	/**
+	 * Checks if a node is multiple select.
+	 * 
+	 * @param node - the node to check.
+	 * @return - true if it is a multiple select node, else false.
+	 */
 	private boolean isMultipleSelectNode(Node node){
 		boolean multipSelect = false;
 		

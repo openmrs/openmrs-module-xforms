@@ -16,6 +16,7 @@ import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.module.xforms.SerializableData;
 import org.openmrs.module.xforms.XformsService;
 import org.openmrs.module.xforms.XformsUtil;
+import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.web.WebConstants;
 import org.openmrs.module.xforms.XformUser;
 import org.openmrs.module.xforms.XformConstants;
@@ -70,7 +71,8 @@ public class UserDownloadServlet  extends HttpServlet {
 			response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING); 
 			ServletOutputStream stream = response.getOutputStream();
 	
-			SerializableData sr = (SerializableData)Class.forName(className).newInstance();
+			//SerializableData sr = (SerializableData)Class.forName(className).newInstance();
+			SerializableData sr = (SerializableData)OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
 			sr.serialize(new DataOutputStream(stream), users);
 			stream.flush();
 		}

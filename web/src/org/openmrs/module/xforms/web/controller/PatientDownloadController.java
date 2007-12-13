@@ -10,6 +10,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.web.WebConstants;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -83,7 +84,8 @@ public class PatientDownloadController extends SimpleFormController{
 				String className = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_PATIENT_SERIALIZER);
 				if(className == null || className.length() == 0)
 					className = XformConstants.DEFAULT_PATIENT_SERIALIZER;
-				SerializableData sr = (SerializableData)Class.forName(className).newInstance();
+				//SerializableData sr = (SerializableData)Class.forName(className).newInstance();
+				SerializableData sr = (SerializableData)OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
 				
 				Cohort cohort = Context.getCohortService().getCohort(Integer.parseInt(cohortId));
 				Set<Integer> patientIds = cohort.getMemberIds();

@@ -17,6 +17,8 @@ import org.openmrs.Role;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.module.xforms.XformConstants;
 
+//TODO This class is too big. May need breaking into smaller ones.
+
 /**
  * Builds xforms from openmrs schema and template files.
  * This class also builds the XForm for creating new patients.
@@ -26,7 +28,6 @@ import org.openmrs.module.xforms.XformConstants;
  */
 public final class XformBuilder {
 	
-	public static final String CHARACTER_SET = XformConstants.DEFAULT_CHARACTER_ENCODING;
 	public static final String NAMESPACE_XFORMS = "http://www.w3.org/2002/xforms";
 	public static final String NAMESPACE_XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
 	public static final String NAMESPACE_XML_INSTANCE = "http://www.w3.org/2001/XMLSchema-instance";
@@ -38,6 +39,8 @@ public final class XformBuilder {
 	public static final String PREFIX_XML_SCHEMA2 = "xs";
 	public static final String PREFIX_XML_INSTANCES = "xsi";
 	public static final String PREFIX_OPENMRS= "openmrs";
+	
+	public static final String NAMESPACE_PREFIX_SEPARATOR= ":";
 	
 	public static final String CONTROL_INPUT = "input";
 	public static final String CONTROL_SELECT = "select";
@@ -68,6 +71,7 @@ public final class XformBuilder {
 	public static final String NODE_FORM = "form";
 	public static final String NODE_PATIENT = "patient";
 	public static final String NODE_XFORMS_VALUE= "xforms_value";
+	public static final String NODE_OBS= "obs";
 	
 	public static final String ATTRIBUTE_ID = "id";
 	public static final String ATTRIBUTE_ACTION = "action";
@@ -90,6 +94,8 @@ public final class XformBuilder {
 	public static final String ATTRIBUTE_READONLY= "readonly";
 	public static final String ATTRIBUTE_REQUIRED = "required";
 	public static final String ATTRIBUTE_DESCRIPTION_TEMPLATE = "description-template";
+	public static final String ATTRIBUTE_BASE = "base";	
+	public static final String ATTRIBUTE_XSI_NILL = "xsi:nil";
 	
 	public static final String XPATH_VALUE_TRUE = "true()";
 	public static final String VALUE_TRUE = "true";
@@ -136,6 +142,9 @@ public final class XformBuilder {
 	public static final String DATA_TYPE_TEXT = "xs:string";
 	
 	public static final String MULTIPLE_SELECT_VALUE_SEPARATOR = " ";
+	
+	/** The last five characters of an xml schema complex type name for a concept. e.g weight_kg_type where _type is appended to the concept weight_kg*/
+	public static final String COMPLEX_TYPE_NAME_POSTFIX = "_type";
 	
 	private static String xformAction;
 	
@@ -277,7 +286,7 @@ public final class XformBuilder {
 				singleColumnLayout = true;
 		
 		Document doc = new Document();
-		doc.setEncoding(CHARACTER_SET);
+		doc.setEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
 		Element htmlNode = doc.createElement(NAMESPACE_XHTML, null);
 		htmlNode.setName(NODE_HTML);
 		htmlNode.setPrefix(null, NAMESPACE_XHTML);
@@ -318,7 +327,7 @@ public final class XformBuilder {
 		modelNode.addChild(Element.ELEMENT,submitNode);
 		
 		Document xformSchemaDoc = new Document();
-		xformSchemaDoc.setEncoding(CHARACTER_SET);
+		xformSchemaDoc.setEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
 		Element xformSchemaNode = doc.createElement(NAMESPACE_XML_SCHEMA, null);
 		xformSchemaNode.setName(NODE_SCHEMA);
 		xformSchemaNode.setPrefix(PREFIX_XML_SCHEMA2, NAMESPACE_XML_SCHEMA);
@@ -360,115 +369,204 @@ public final class XformBuilder {
 	}
 	
 	/**
-	 * Builds the bindings in the model.
+	 * Parses an openmrs template and builds the bindings in the model plus
+	 * UI controls for openmrs table field questions.
 	 * 
-	 * @param modelElement
+	 * @param modelElement - the model element to add bindings to.
 	 * @param formElement
-	 * @param bindings
-	 * @param bodyNode
+	 * @param bindings - a hash table to populate with the built bindings.
+	 * @param bodyNode - the body node to add the UI control to.
 	 */
 	private static void parseTemplate(Element modelElement, Element formElement, Hashtable bindings,Element bodyNode){
 		int numOfEntries = formElement.getChildCount();
 		for (int i = 0; i < numOfEntries; i++) {
 			if (formElement.isText(i))
-				continue;
+				continue; //Ignore all text.
 			
 			Element child = formElement.getElement(i);
-			
 			if(child.getAttributeValue(null, ATTRIBUTE_OPENMRS_DATATYPE) == null && child.getAttributeValue(null, ATTRIBUTE_OPENMRS_CONCEPT) != null)
-				continue; //these could be like options for multiple select.
+				continue; //These could be like options for multiple select, which take true or false value.
 			
 			String name =  child.getName();
-			if((child.getAttributeValue(null, ATTRIBUTE_OPENMRS_CONCEPT) != null && !child.getName().equals("obs")) ||
+			
+			//If the node has an openmrs_concept attribute but is not called obs,
+			//Or has the openmrs_attribite and openmrs_table attributes. 
+			if((child.getAttributeValue(null, ATTRIBUTE_OPENMRS_CONCEPT) != null && !child.getName().equals(NODE_OBS)) ||
 			  (child.getAttributeValue(null, ATTRIBUTE_OPENMRS_ATTRIBUTE) != null && child.getAttributeValue(null, ATTRIBUTE_OPENMRS_TABLE) != null)){
-				Element element = modelElement.createElement(NAMESPACE_XFORMS, null);
-				element.setName(ATTRIBUTE_BIND);
-				element.setAttribute(null, ATTRIBUTE_ID, child.getName());
-				element.setAttribute(null, ATTRIBUTE_NODESET, getNodesetAttValue(child));
-				modelElement.addChild(Element.ELEMENT, element);
-				bindings.put(child.getName(), element);
 				
-				if(isMultSelectNode(child)){
-					Element xformsValueNode = modelElement.createElement(null, null);
-					xformsValueNode.setName(NODE_XFORMS_VALUE);
-					xformsValueNode.setAttribute(null, "xsi:nil", VALUE_TRUE);
-					child.addChild(Element.ELEMENT, xformsValueNode);
-				}
+				Element bindNode = createBindNode(modelElement,child,bindings);
+				
+				if(isMultSelectNode(child))
+					addMultipleSelectXformValueNode(child);
 					
-				//set data types for the openmrs fixed table fields.
-				if(child.getAttributeValue(null, ATTRIBUTE_OPENMRS_ATTRIBUTE) != null && child.getAttributeValue(null, ATTRIBUTE_OPENMRS_TABLE) != null){			
-					if(name.equalsIgnoreCase(NODE_ENCOUNTER_ENCOUNTER_DATETIME))
-						element.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_DATE);
-					else if(name.equalsIgnoreCase(NODE_ENCOUNTER_LOCATION_ID))
-						element.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_INT);
-					else if(name.equalsIgnoreCase(NODE_ENCOUNTER_PROVIDER_ID))
-						element.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_INT);
-					else if(name.equalsIgnoreCase(NODE_PATIENT_PATIENT_ID))
-						element.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_INT);
-					else
-						element.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_TEXT);
-				}
+				if(isTableFieldNode(child))
+					setTableFieldDataType(name,bindNode);
 			}
 			
-			//build controls for the openmrs fixed table fields
-			if(child.getAttributeValue(null, ATTRIBUTE_OPENMRS_ATTRIBUTE) != null && child.getAttributeValue(null, ATTRIBUTE_OPENMRS_TABLE) != null){
-				Element controlNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
-				if(name.equalsIgnoreCase(NODE_ENCOUNTER_LOCATION_ID) || name.equalsIgnoreCase(NODE_ENCOUNTER_PROVIDER_ID))
-					controlNode.setName(CONTROL_SELECT1);
-				else
-					controlNode.setName(CONTROL_INPUT);
-				controlNode.setAttribute(null, ATTRIBUTE_BIND, child.getName());
+			//if(child.getAttributeValue(null, ATTRIBUTE_OPENMRS_ATTRIBUTE) != null && child.getAttributeValue(null, ATTRIBUTE_OPENMRS_TABLE) != null){
+			//Build UI controls for the openmrs fixed table fields. The rest of the controls are built from
+			if(isTableFieldNode(child)){
+				Element controlNode = buildTableFieldUIControlNode(child,bodyNode);
 				
-				Element labelNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
-				labelNode.setName(NODE_LABEL);
-				labelNode.addChild(Element.TEXT, getDisplayText(child.getName())+ "     ");
-				controlNode.addChild(Element.ELEMENT, labelNode);
+				if(name.equalsIgnoreCase(NODE_ENCOUNTER_LOCATION_ID))
+					populateLocations(controlNode);
 				
-				addControl(bodyNode,controlNode);
-				
-				if(name.equalsIgnoreCase(NODE_ENCOUNTER_LOCATION_ID)){
-					List<Location> locations = Context.getEncounterService().getLocations();
-					for(Location loc : locations){
-						Element itemNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
-						itemNode.setName(NODE_ITEM);
-						
-						Element node = itemNode.createElement(NAMESPACE_XFORMS, null);
-						node.setName(NODE_LABEL);
-						node.addChild(Element.TEXT, loc.getName());
-						itemNode.addChild(Element.ELEMENT, node);
-						
-						node = itemNode.createElement(NAMESPACE_XFORMS, null);
-						node.setName(NODE_VALUE);
-						node.addChild(Element.TEXT, loc.getLocationId().toString());
-						itemNode.addChild(Element.ELEMENT, node);
-						
-						controlNode.addChild(Element.ELEMENT, itemNode);
-					}
-				}
-				
-				if(name.equalsIgnoreCase(NODE_ENCOUNTER_PROVIDER_ID)){
-					List<User> providers = Context.getUserService().getUsersByRole(new Role("Provider"));
-					for(User provider : providers){
-						Element itemNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
-						itemNode.setName(NODE_ITEM);
-						
-						Element node = itemNode.createElement(NAMESPACE_XFORMS, null);
-						node.setName(NODE_LABEL);
-						node.addChild(Element.TEXT, provider.getPersonName().toString());
-						itemNode.addChild(Element.ELEMENT, node);
-						
-						node = itemNode.createElement(NAMESPACE_XFORMS, null);
-						node.setName(NODE_VALUE);
-						node.addChild(Element.TEXT, provider.getUserId().toString());
-						itemNode.addChild(Element.ELEMENT, node);
-						
-						controlNode.addChild(Element.ELEMENT, itemNode);
-					}
-				}
+				if(name.equalsIgnoreCase(NODE_ENCOUNTER_PROVIDER_ID))
+					populateProviders(controlNode);
 			}
 			
 			parseTemplate(modelElement,child,bindings, bodyNode);
 		}
+	}
+	
+	/**
+	 * Builds a UI control node for a table field.
+	 * 
+	 * @param node - the node whose UI control to build.
+	 * @param bodyNode - the body node to add the UI control to.
+	 * @return  - the created UI control node.
+	 */
+	private static Element buildTableFieldUIControlNode(Element node,Element bodyNode){
+		
+		Element controlNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
+		String name = node.getName();
+		
+		//location and provider are not free text.
+		if(name.equalsIgnoreCase(NODE_ENCOUNTER_LOCATION_ID) || name.equalsIgnoreCase(NODE_ENCOUNTER_PROVIDER_ID))
+			controlNode.setName(CONTROL_SELECT1);
+		else
+			controlNode.setName(CONTROL_INPUT);
+		
+		controlNode.setAttribute(null, ATTRIBUTE_BIND, name);
+		
+		//create the label
+		Element labelNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
+		labelNode.setName(NODE_LABEL);
+		labelNode.addChild(Element.TEXT, getDisplayText(name)+ "     ");
+		controlNode.addChild(Element.ELEMENT, labelNode);
+		
+		addControl(bodyNode,controlNode);
+		
+		return controlNode;
+	}
+	
+	/**
+	 * Populates a UI control node with providers.
+	 * 
+	 * @param controlNode - the UI control node.
+	 */
+	private static void populateProviders(Element controlNode){
+		List<User> providers = Context.getUserService().getUsersByRole(new Role("Provider"));
+		for(User provider : providers){
+			Element itemNode = /*bodyNode*/controlNode.createElement(NAMESPACE_XFORMS, null);
+			itemNode.setName(NODE_ITEM);
+			
+			Element node = itemNode.createElement(NAMESPACE_XFORMS, null);
+			node.setName(NODE_LABEL);
+			node.addChild(Element.TEXT, provider.getPersonName().toString());
+			itemNode.addChild(Element.ELEMENT, node);
+			
+			node = itemNode.createElement(NAMESPACE_XFORMS, null);
+			node.setName(NODE_VALUE);
+			node.addChild(Element.TEXT, provider.getUserId().toString());
+			itemNode.addChild(Element.ELEMENT, node);
+			
+			controlNode.addChild(Element.ELEMENT, itemNode);
+		}
+
+	}
+	
+	/**
+	 * Populates a UI control node with locations.
+	 * 
+	 * @param controlNode - the UI control node.
+	 */
+	private static void populateLocations(Element controlNode){
+		List<Location> locations = Context.getEncounterService().getLocations();
+		for(Location loc : locations){
+			Element itemNode = /*bodyNode*/controlNode.createElement(NAMESPACE_XFORMS, null);
+			itemNode.setName(NODE_ITEM);
+			
+			Element node = itemNode.createElement(NAMESPACE_XFORMS, null);
+			node.setName(NODE_LABEL);
+			node.addChild(Element.TEXT, loc.getName());
+			itemNode.addChild(Element.ELEMENT, node);
+			
+			node = itemNode.createElement(NAMESPACE_XFORMS, null);
+			node.setName(NODE_VALUE);
+			node.addChild(Element.TEXT, loc.getLocationId().toString());
+			itemNode.addChild(Element.ELEMENT, node);
+			
+			controlNode.addChild(Element.ELEMENT, itemNode);
+		}
+	}
+	
+	/**
+	 * Creates a model binding node.
+	 * 
+	 * @param modelElement - the model node to add the binding to.
+	 * @param node - the node whose binding to create.
+	 * @param bindings - a hashtable of node bindings keyed by their names.
+	 * @return - the created binding node.
+	 */
+	private static Element createBindNode(Element modelElement,Element node, Hashtable bindings){
+		Element bindNode = modelElement.createElement(NAMESPACE_XFORMS, null);
+		bindNode.setName(ATTRIBUTE_BIND);
+		bindNode.setAttribute(null, ATTRIBUTE_ID, node.getName());
+		bindNode.setAttribute(null, ATTRIBUTE_NODESET, getNodesetAttValue(node));
+		modelElement.addChild(Element.ELEMENT, bindNode);
+		
+		//store the binding node with the key being its id attribute.
+		bindings.put(node.getName(), bindNode);
+		return bindNode;
+	}
+	
+	/**
+	 * Adds a node to hold the xforms value for a multiple select node.
+	 * The value is a space delimited list of selected answers, which will later on be used to
+	 * fill the true or false values as expected by openmrs multiple select questions.
+	 * 
+	 * @param child - the multiple select node to add the value node to.
+	 */
+	private static void addMultipleSelectXformValueNode( Element node){
+		//Element xformsValueNode = modelElement.createElement(null, null);
+		Element xformsValueNode = node.createElement(null, null);
+		xformsValueNode.setName(NODE_XFORMS_VALUE);
+		xformsValueNode.setAttribute(null, ATTRIBUTE_XSI_NILL, VALUE_TRUE);
+		node.addChild(Element.ELEMENT, xformsValueNode);
+	}
+	
+	/**
+	 * Set data types for the openmrs fixed table fields.
+	 * 
+	 * @param name - the name of the question node.
+	 * @param bindingNode - the binding node whose type attribute we are to set.
+	 */
+	private static void setTableFieldDataType(String name, Element bindNode){
+		if(name.equalsIgnoreCase(NODE_ENCOUNTER_ENCOUNTER_DATETIME))
+			bindNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_DATE);
+		else if(name.equalsIgnoreCase(NODE_ENCOUNTER_LOCATION_ID))
+			bindNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_INT);
+		else if(name.equalsIgnoreCase(NODE_ENCOUNTER_PROVIDER_ID))
+			bindNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_INT);
+		else if(name.equalsIgnoreCase(NODE_PATIENT_PATIENT_ID))
+			bindNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_INT);
+		else
+			bindNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_TEXT);
+
+	}
+	
+	/**
+	 * Check whether a node is an openmrs table field node
+	 * These are the ones with the attributes: openmrs_table and openmrs_attribute
+	 * e.g. patient_unique_number openmrs_table="PATIENT_IDENTIFIER" openmrs_attribute="IDENTIFIER"
+	 *  
+	 * @param node - the node to check.
+	 * @return - true if it is, else false.
+	 */
+	private static boolean isTableFieldNode(Element node){
+		return (node.getAttributeValue(null, ATTRIBUTE_OPENMRS_ATTRIBUTE) != null && node.getAttributeValue(null, ATTRIBUTE_OPENMRS_TABLE) != null);		
+
 	}
 	
 	/**
@@ -482,13 +580,13 @@ public final class XformBuilder {
 	}
 	
 	/**
-	 * Parses the openmrs schema document.
+	 * Parses the openmrs schema document and builds UI conrols from openmrs concepts.
 	 * 
-	 * @param rootNode
-	 * @param bodyNode
-	 * @param modelNode
-	 * @param xformSchemaNode
-	 * @param bindings
+	 * @param rootNode - the schema document root node.
+	 * @param bodyNode - the xform document body node.
+	 * @param modelNode - the xform model node.
+	 * @param xformSchemaNode - the root node of the xml schema data types.
+	 * @param bindings - a hashtable of node bindings.
 	 */
 	private static void parseSchema(Element rootNode,Element bodyNode, Element modelNode, Element xformSchemaNode, Hashtable bindings){
 		int numOfEntries = rootNode.getChildCount();
@@ -498,7 +596,7 @@ public final class XformBuilder {
 			
 			Element child = rootNode.getElement(i);
 			String name = child.getName();
-			if(name.equalsIgnoreCase(NODE_COMPLEXTYPE))
+			if(name.equalsIgnoreCase(NODE_COMPLEXTYPE) && isUserDefinedSchemaElement(child))
 				parseComplexType(child,child.getAttributeValue(null, ATTRIBUTE_NAME),bodyNode,xformSchemaNode,bindings);
 			else if(name.equalsIgnoreCase(NODE_SIMPLETYPE) && isUserDefinedSchemaElement(child))
 				xformSchemaNode.addChild(0, Element.ELEMENT, child);
@@ -511,46 +609,104 @@ public final class XformBuilder {
 	/**
 	 * Parses a complex type node in an openmrs schema document.
 	 * 
-	 * @param complexTypeNode - the complex type node
-	 * @param name
-	 * @param bodyNode
-	 * @param xformSchemaNode
-	 * @param bindings
+	 * @param complexTypeNode - the complex type node.
+	 * @param name - the name of the complex type node.
+	 * @param bodyNode - the xform body node.
+	 * @param xformSchemaNode - the top node of the xml schema data types.
+	 * @param bindings - a hashtable of node bindings.
 	 */
 	private static void parseComplexType(Element complexTypeNode,String name, Element bodyNode, Element xformSchemaNode, Hashtable bindings){
+		name = getBindNodeName(name);
 		if(name == null)
 			return;
 		
-		if(name.indexOf("_type") == -1)
-			return;
+		Element labelNode = null, bindNode = (Element)bindings.get(name);
 		
-		name = name.substring(0, name.length() - 5);
-		Element bindingNode = (Element)bindings.get(name);
-		if(bindingNode == null)
-			return;
-
-		Element labelNode = null;
 		for(int i=0; i<complexTypeNode.getChildCount(); i++){
 			if(complexTypeNode.isText(i))
-				continue;
+				continue; //ignore text.
 			
 			Element node = (Element)complexTypeNode.getChild(i);
 			if(node.getName().equalsIgnoreCase(NODE_SEQUENCE))
-				labelNode = parseSequenceNode(name,node,bodyNode,xformSchemaNode,bindingNode);
+				labelNode = parseSequenceNode(name,node,bodyNode,xformSchemaNode,bindNode);
 			
-			if(labelNode != null && node.getName().equalsIgnoreCase(NODE_ATTRIBUTE) && node.getAttributeValue(null, ATTRIBUTE_NAME) != null && node.getAttributeValue(null, ATTRIBUTE_NAME).equalsIgnoreCase(ATTRIBUTE_OPENMRS_CONCEPT))
-			{
-				labelNode.addChild(Element.TEXT , getConceptName(node.getAttributeValue(null, ATTRIBUTE_FIXED)) + CONTROL_LABEL_PADDING);
-				
-				String hint = getConceptDescription(node);
-				if(hint != null && hint.length() > 0){
-					Element hintNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
-					hintNode.setName(NODE_HINT);
-					hintNode.addChild(Element.TEXT, getConceptDescription(node));
-					labelNode.getParent().addChild(1,Element.ELEMENT, hintNode);
-				}
-			}
+			if(labelNode != null && isNodeWithConceptNameAndId(node))
+				addLabelTextAndHint(labelNode,node);
 		}
+	}
+	
+	/**
+	 * Gets the binding of a complex type node. 
+	 * An example of such a node would be: complexType name="weight_kg_type"
+	 * 
+	 * @param name - the name of the complex type node.
+	 * @param bindings - a hashtable of bingings.
+	 * @return - the binding node.
+	 */
+	private static Element getBindNode(String name, Hashtable bindings){
+		if(name == null)
+			return null;
+		
+		//We are only dealing with names ending with _type. e.g. education_level_type
+		//Openmrs appends the _type to the name when creating xml types for each concept
+		if(name.indexOf(COMPLEX_TYPE_NAME_POSTFIX) == -1)
+			return null;
+
+		//remove the _type part. e.g from above the name is education_level
+		name = name.substring(0, name.length() - COMPLEX_TYPE_NAME_POSTFIX.length());
+		Element bindNode = (Element)bindings.get(name);
+		return bindNode;
+	}
+	
+	/**
+	 * Gets the binding node name of a complex type node name. 
+	 * An example of such a node would be weight_kg for: complexType name="weight_kg_type"
+	 * 
+	 * @param name - the name of the complex type node.
+	 * @return - the binding node name.
+	 */
+	private static String getBindNodeName(String name){
+		if(name == null)
+			return null;
+		
+		//We are only dealing with names ending with _type. e.g. education_level_type
+		//Openmrs appends the _type to the name when creating xml types for each concept
+		if(name.indexOf(COMPLEX_TYPE_NAME_POSTFIX) == -1)
+			return null;
+
+		//remove the _type part. e.g from above the name is education_level
+		name = name.substring(0, name.length() - COMPLEX_TYPE_NAME_POSTFIX.length());
+		return name;
+	}
+	
+	/**
+	 * Adds text and hint to a label node.
+	 * 
+	 * @param labelNode - the label node.
+	 * @param node - the node having the concept name and id.
+	 */
+	private static void addLabelTextAndHint(Element labelNode, Element node){
+		labelNode.addChild(Element.TEXT , getConceptName(node.getAttributeValue(null, ATTRIBUTE_FIXED)) + CONTROL_LABEL_PADDING);
+		
+		String hint = getConceptDescription(node);
+		if(hint != null && hint.length() > 0){
+			Element hintNode = /*bodyNode*/labelNode.createElement(NAMESPACE_XFORMS, null);
+			hintNode.setName(NODE_HINT);
+			hintNode.addChild(Element.TEXT, getConceptDescription(node));
+			labelNode.getParent().addChild(1,Element.ELEMENT, hintNode);
+		}
+	}
+	
+	/**
+	 * Checks if this node has the concept name and id. An example of such a node would be as:
+	 *  <xs:attribute name="openmrs_concept" type="xs:string" use="required" fixed="5089^WEIGHT (KG)^99DCT" /> 
+	 *  where the concept name and id combination we are refering to is: 5089^WEIGHT (KG)^99DCT
+	 * 
+	 * @param node - the node to check.
+	 * @return true if so, else false.
+	 */
+	private static boolean isNodeWithConceptNameAndId(Element node){
+		return node.getName().equalsIgnoreCase(NODE_ATTRIBUTE) && node.getAttributeValue(null, ATTRIBUTE_NAME) != null && node.getAttributeValue(null, ATTRIBUTE_NAME).equalsIgnoreCase(ATTRIBUTE_OPENMRS_CONCEPT);
 	}
 	
 	/**
@@ -594,60 +750,108 @@ public final class XformBuilder {
 	 * @param bodyNode
 	 * @param xformSchemaNode
 	 * @param bindingNode
-	 * @return
+	 * @return the created label node.
 	 */
 	private static Element parseSequenceNode(String name,Element sequenceNode,Element bodyNode, Element xformSchemaNode, Element bindingNode ){
 		Element labelNode = null,controlNode = bodyNode.createElement(NAMESPACE_XFORMS, null);;
 		
 		for(int i=0; i<sequenceNode.getChildCount(); i++){
 			if(sequenceNode.isText(i))
-				continue;
+				continue; //ignore text.
 			
 			Element node = (Element)sequenceNode.getChild(i);
 			String itemName = node.getAttributeValue(null, ATTRIBUTE_NAME);
 		
+			//Instead of the value node, multiple select questions have one node
+			//for each possible select option.
 			if(!itemName.equalsIgnoreCase(NODE_VALUE)){
 				if(!(itemName.equalsIgnoreCase(NODE_DATE) || itemName.equalsIgnoreCase(NODE_TIME)) && node.getAttributeValue(null, ATTRIBUTE_OPENMRS_CONCEPT) == null)
 					labelNode = parseMultiSelectNode(name,itemName, node,controlNode,bodyNode, labelNode,bindingNode);
 				continue;
 			}
 			
-			//We are interested in the element whose name attribute is equal to value, for single select lists.
+			//We are interested in the element whose name attribute is equal to value, 
+			//for single select lists.
 			if(node.getAttributeValue(null, ATTRIBUTE_NILLABLE).equalsIgnoreCase("0"))
 				bindingNode.setAttribute(null, ATTRIBUTE_REQUIRED, XPATH_VALUE_TRUE);
 			
-			String type = node.getAttributeValue(null, ATTRIBUTE_TYPE);
-			if(type != null){
-				if(type.indexOf(":") == -1)
-					type = "xs:" + type;
-				bindingNode.setAttribute(null, ATTRIBUTE_TYPE, type);
+			labelNode = parseSequenceValueNode(name,node,labelNode,bodyNode,bindingNode);
+		}
+		
+		return labelNode;
+	}
+	
+	/**
+	 * Builds an xform input type control from a sequence value node.
+	 * 
+	 * @param name - the name of the complex type node we are dealing with.
+	 * @param node - the value node.
+	 * @param type - the type attribute value.
+	 * @param labelNode - the label node.
+	 * @param bindingNode - the binding node.
+	 * @param bodyNode - the body node.
+	 * @return returns the created label node.
+	 */
+	private static Element buildSequenceInputControlNode(String name,Element node,String type,Element labelNode, Element bindingNode,Element bodyNode){
+		type = getPrefixedDataType(type);
+		bindingNode.setAttribute(null, ATTRIBUTE_TYPE, type);
+		
+		Element inputNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
+		inputNode.setName(CONTROL_INPUT);
+		inputNode.setAttribute(null, ATTRIBUTE_BIND, name);
+		
+		labelNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
+		labelNode.setName(NODE_LABEL);
+		inputNode.addChild(Element.ELEMENT, labelNode);
+						
+		addControl(bodyNode,inputNode);
+		return labelNode;
+	}
+	
+	/**
+	 * Parses a sequence value node and builds the corresponding xforms UI control.
+	 * 
+	 * @param name - the name of the complex type node whose sequence we are parsing.
+	 * @param node - the sequence value node.
+	 * @param labelNode - the label node to build.
+	 * @param bodyNode - the body node.
+	 * @param bindingNode - the binding node.
+	 * @return the created label node.
+	 */
+	private static Element parseSequenceValueNode(String name,Element node, Element labelNode, Element bodyNode,Element bindingNode){
+		//return 
+		String type = node.getAttributeValue(null, ATTRIBUTE_TYPE);
+		if(type != null)
+			labelNode = buildSequenceInputControlNode(name,node,type,labelNode,bindingNode,bodyNode);
+		else{
+			for(int j=0; j<node.getChildCount(); j++){
+				if(node.isText(j))
+					continue;
 				
-				Element inputNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
-				inputNode.setName(CONTROL_INPUT);
-				inputNode.setAttribute(null, ATTRIBUTE_BIND, name);
+				Element simpleTypeNode = (Element)node.getChild(j);
+				if(!simpleTypeNode.getName().equalsIgnoreCase(NODE_SIMPLETYPE))
+					continue;
 				
-				labelNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
-				labelNode.setName(NODE_LABEL);
-				inputNode.addChild(Element.ELEMENT, labelNode);
-								
-				addControl(bodyNode,inputNode); //bodyNode.addChild(Element.ELEMENT, inputNode);
-				return labelNode;
-			}
-			else{
-				for(int j=0; j<node.getChildCount(); j++){
-					if(node.isText(j))
-						continue;
-					
-					Element simpleTypeNode = (Element)node.getChild(j);
-					if(!simpleTypeNode.getName().equalsIgnoreCase(NODE_SIMPLETYPE))
-						continue;
-					
-					return parseSimpleType(name,simpleTypeNode,bodyNode,bindingNode);
-				}
+				return parseSimpleType(name,simpleTypeNode,bodyNode,bindingNode);
 			}
 		}
 		
 		return labelNode;
+	}
+	
+	/**
+	 * Checks if the data type has a namespace prefix, if it does not, it prepends it.
+	 * 
+	 * @param type - the data type.
+	 */
+	private static String getPrefixedDataType(String type){
+		if(type == null)
+			return null;
+		
+		if(type.indexOf(NAMESPACE_PREFIX_SEPARATOR) == -1)
+			type = PREFIX_XML_SCHEMA2+NAMESPACE_PREFIX_SEPARATOR + type;
+		
+		return type;
 	}
 	
 	/**
@@ -662,27 +866,35 @@ public final class XformBuilder {
 	private static Element parseSimpleType(String name,Element simpleTypeNode,Element bodyNode,Element bindingNode){
 		for(int i=0; i<simpleTypeNode.getChildCount(); i++){
 			if(simpleTypeNode.isText(i))
-				continue;
+				continue; //ignore text.
 			
-			Element restrictionChild = (Element)simpleTypeNode.getElement(i);
-			if(restrictionChild.getName().equalsIgnoreCase(NODE_RESTRICTION))
-				return parseRestriction(name,(Element)simpleTypeNode.getParent(),restrictionChild,bodyNode,bindingNode);
+			Element child = (Element)simpleTypeNode.getElement(i);
+			if(child.getName().equalsIgnoreCase(NODE_RESTRICTION))
+				return parseRestriction(name,(Element)simpleTypeNode.getParent(),child,bodyNode,bindingNode);
 		}
 		
 		return null;
 	}
 	
-	private static Element getMultiSelectItemNode(Element node){
+	/**
+	 * Gets the node having the concept name and id combination for a multiple select item node.
+	 * Such a node would look like: 
+	 * xs:attribute name="openmrs_concept" type="xs:string" use="required" fixed="215^JAUNDICE^99DCT"
+	 * 
+	 * @param node - the multiple select item node.
+	 * @return the concept node.
+	 */
+	private static Element getMultiSelectItemConceptNode(Element node){
 		Element retNode;
 		for(int i=0; i<node.getChildCount(); i++){
 			if(node.isText(i))
-				continue;
+				continue; //ignore text.
 			
 			Element child = (Element)node.getChild(i);
 			if(child.getName().equalsIgnoreCase(NODE_ATTRIBUTE))
 				return child;
 			
-			retNode = getMultiSelectItemNode(child);
+			retNode = getMultiSelectItemConceptNode(child);
 			if(retNode != null)
 				return retNode;
 		}
@@ -692,19 +904,22 @@ public final class XformBuilder {
 	
 	/**
 	 * Parses a multi select node and builds its corresponding items.
+	 * An example of such a node would be: xs:element name="jaundice" default="false" nillable="true"
+	 * for a complex type whose name is eye_exam_findings_type
 	 * 
-	 * @param name
-	 * @param itemName
-	 * @param valueNode
-	 * @param controlNode
-	 * @param bodyNode
-	 * @param labelNode
-	 * @param bindingNode
-	 * @return
+	 * @param name - the name of the complex type node we are dealing with.
+	 * @param itemName - the name attribute of the node we are dealing with.
+	 * @param selectItemNode - the multiple select item node. 
+	 * @param controlNode - the xform UI control
+	 * @param bodyNode - the body node.
+	 * @param labelNode - the label node.
+	 * @param bindingNode - the binding node.
+	 * @return the label node we have created.
 	 */
-	private static Element parseMultiSelectNode(String name,String itemName, Element valueNode,Element controlNode,Element bodyNode, Element labelNode, Element bindingNode){		
-		//String binding = bindingNode.getAttributeValue(null, ATTRIBUTE_NODESET); //+"/"+itemName;
+	private static Element parseMultiSelectNode(String name,String itemName, Element selectItemNode,Element controlNode,Element bodyNode, Element labelNode, Element bindingNode){		
 		
+		//If this is the first time we are looping through, create the input control.
+		//Otherwise just add the items one by one as we get called for each.
 		if(controlNode.getChildCount() == 0){
 			//controlNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
 			controlNode.setName(CONTROL_SELECT);
@@ -720,27 +935,38 @@ public final class XformBuilder {
 			bindingNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_TEXT);
 		}
 		
-		Element node  = getMultiSelectItemNode(valueNode);
+		buildMultipleSelectItemNode(itemName,selectItemNode,controlNode);
+		
+		return labelNode;
+
+	}
+	
+	/**
+	 * Builds a multiple select item node.
+	 * 
+	 * @param itemName - the name attribute of the multiple select item whose item node we are building.
+	 * @param selectItemNode - the xml schema select item node.
+	 * @param controlNode - the xforms control whose item we are building.
+	 */
+	private static void buildMultipleSelectItemNode(String itemName, Element selectItemNode,Element controlNode){
+		Element node  = getMultiSelectItemConceptNode(selectItemNode);
 		String value = node.getAttributeValue(null, ATTRIBUTE_FIXED);
-		String lable = getConceptName(value);
+		String label = getConceptName(value);
 		
-		Element itemLabelNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
+		Element itemLabelNode = /*bodyNode*/controlNode.createElement(NAMESPACE_XFORMS, null);
 		itemLabelNode.setName(NODE_LABEL);	
-		itemLabelNode.addChild(Element.TEXT, lable);
+		itemLabelNode.addChild(Element.TEXT, label);
 		
-		Element itemValNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
+		Element itemValNode = /*bodyNode*/controlNode.createElement(NAMESPACE_XFORMS, null);
 		itemValNode.setName(NODE_VALUE);	
 		itemValNode.addChild(Element.TEXT, itemName /*value*/ /*binding*/);
 		
-		Element itemNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
+		Element itemNode = /*bodyNode*/controlNode.createElement(NAMESPACE_XFORMS, null);
 		itemNode.setName(NODE_ITEM);
 		itemNode.addChild(Element.ELEMENT, itemLabelNode);
 		itemNode.addChild(Element.ELEMENT, itemValNode);
 		
 		controlNode.addChild(Element.ELEMENT, itemNode);
-		
-		return labelNode;
-
 	}
 	
 	/**
@@ -793,10 +1019,22 @@ public final class XformBuilder {
 			currentRow = null;
 	}
 	
-	private static Element parseRestriction(String name, Element valueNode,Element restrictionChild,Element bodyNode, Element bindingNode){
-		String type = restrictionChild.getAttributeValue(null, "base");
-		if(type.indexOf(":") == -1)
-			type = "xs:" + type;
+	/**
+	 * Parses a restriction which has the enumeration nodes.
+	 * Such a node would look like: xs:restriction base="xs:string"
+	 * It also sets the data type which is normally the base attribute.
+	 * 
+	 * @param name - the name of the complex type question node whose restriction we are parsing.
+	 * @param valueNode - the node who name attribute is equal to value.
+	 * @param restrictionNode - the restriction node.
+	 * @param bodyNode - the xform body node.
+	 * @param bindingNode - the binding node.
+	 * @return the label node of the created control.
+	 */
+	private static Element parseRestriction(String name, Element valueNode,Element restrictionNode,Element bodyNode, Element bindingNode){
+		//the base attribute of a restriction has the data type for this question.
+		String type = restrictionNode.getAttributeValue(null, ATTRIBUTE_BASE);
+		type = getPrefixedDataType(type);
 		bindingNode.setAttribute(null, ATTRIBUTE_TYPE, type);
 		
 		String controlName = CONTROL_SELECT;
@@ -807,35 +1045,51 @@ public final class XformBuilder {
 		Element controlNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
 		controlNode.setName(controlName);
 		controlNode.setAttribute(null, ATTRIBUTE_BIND, name);
-		controlNode.setAttribute(null, ATTRIBUTE_APPEARANCE, Context.getAdministrationService().getGlobalProperty("xforms.singleSelectAppearance"));
-		addControl(bodyNode,controlNode); //bodyNode.addChild(Element.ELEMENT, controlNode);
+		controlNode.setAttribute(null, ATTRIBUTE_APPEARANCE, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_SINGLE_SELECT_APPEARANCE));
+		addControl(bodyNode,controlNode); 
 		
 		Element labelNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
 		labelNode.setName(NODE_LABEL);
 		controlNode.addChild(Element.ELEMENT, labelNode);
 	
+		addRestrictionEnumerations(restrictionNode,controlNode);
+		
+		return labelNode;
+	}
+	
+	/**
+	 * Adds enumerations items for a restriction node to an xform control.
+	 * Such a node is a select or select1 kind, and the enumerations become
+	 * the xform items.
+	 * 
+	 * @param restrictionNode - the restriction node.
+	 * @param controlNode - the control node to add the enumerations to.
+	 */
+	private static void addRestrictionEnumerations(Element restrictionNode, Element controlNode){
 		Element itemValNode = null;
 		Element itemLabelNode = null;
-		for(int i=0; i<restrictionChild.getChildCount(); i++){
-			
-			if(restrictionChild.getType(i) == Element.ELEMENT){
-				Element child = restrictionChild.getElement(i);
+		for(int i=0; i<restrictionNode.getChildCount(); i++){
+			//element nodes have the values. e.g. <xs:enumeration value="1360^RE TREATMENT^99DCT" /> 
+			if(restrictionNode.getType(i) == Element.ELEMENT){
+				Element child = restrictionNode.getElement(i);
 				if(child.getName().equalsIgnoreCase(NODE_ENUMERATION))
 				{
-					itemValNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
+					itemValNode = /*bodyNode*/controlNode.createElement(NAMESPACE_XFORMS, null);
 					itemValNode.setName(NODE_VALUE);	
 					itemValNode.addChild(Element.TEXT, child.getAttributeValue(null, NODE_VALUE));
 				}
 			}
 			
-			if(restrictionChild.getType(i) == Element.COMMENT){
-				itemLabelNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
+			//Comments have the labels. e.g. <!--  RE TREATMENT --> 
+			if(restrictionNode.getType(i) == Element.COMMENT){
+				itemLabelNode = /*bodyNode*/controlNode.createElement(NAMESPACE_XFORMS, null);
 				itemLabelNode.setName(NODE_LABEL);	
-				itemLabelNode.addChild(Element.TEXT, restrictionChild.getChild(i));
+				itemLabelNode.addChild(Element.TEXT, restrictionNode.getChild(i));
 			}
 			
+			//Check if both the labal and value are set. First loop sets value and second label.
 			if(itemLabelNode != null && itemValNode != null){
-				Element itemNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
+				Element itemNode = /*bodyNode*/controlNode.createElement(NAMESPACE_XFORMS, null);
 				itemNode.setName(NODE_ITEM);
 				controlNode.addChild(Element.ELEMENT, itemNode);
 
@@ -845,10 +1099,14 @@ public final class XformBuilder {
 				itemValNode = null;
 			}
 		}
-		
-		return labelNode;
 	}
 	
+	/**
+	 * Check if a given node as an openmrs value node.
+	 * 
+	 * @param node - the node to check.
+	 * @return - true if it has, else false.
+	 */
 	private static boolean hasValueNode(Element node){
 		for(int i=0; i<node.getChildCount(); i++){
 			if(node.isText(i))
@@ -862,6 +1120,12 @@ public final class XformBuilder {
 		return false;
 	}
 	
+	/**
+	 * Gets the value of the nodeset attribute, for a given node, used for xform bindings.
+	 * 
+	 * @param node - the node.
+	 * @return - the value of the nodeset attribite.
+	 */
 	private static String getNodesetAttValue(Element node){
 		if(hasValueNode(node))
 			return getNodePath(node) + "/value";
@@ -871,6 +1135,12 @@ public final class XformBuilder {
 			return getNodePath(node);
 	}
 	
+	/**
+	 * Gets the path of a node from the instance node.
+	 * 
+	 * @param node - the node whose path to get.
+	 * @return - the complete path from the instance node.
+	 */
 	private static String getNodePath(Element node){
 		String path = node.getName();
 		Element parent = (Element)node.getParent();
@@ -933,6 +1203,15 @@ public final class XformBuilder {
 		return doc;
 	}
 	
+	/**
+	 * Sets the values of patient table fields in an xform.
+	 * These are the ones with the attributes: openmrs_table and openmrs_attribute
+	 * e.g. <patient_unique_number openmrs_table="PATIENT_IDENTIFIER" openmrs_attribute="IDENTIFIER" /> 
+	 * 
+	 * @param parentNode - the root node of the xform.
+	 * @param patientId - the patient id.
+	 * @param xformsService - the xforms service.
+	 */
 	public static void setPatientTableFieldValues(Element parentNode, Integer patientId, XformsService xformsService){
 		int numOfEntries = parentNode.getChildCount();
 		for (int i = 0; i < numOfEntries; i++) {
@@ -952,6 +1231,15 @@ public final class XformBuilder {
 		}
 	}
 	
+	/**
+	 * Gets the value of a patient database table field.
+	 * 
+	 * @param xformsService - the xforms service.
+	 * @param patientId - the patient id
+	 * @param tableName - the name of the table.
+	 * @param columnName - the name of column in the table.
+	 * @return - the value
+	 */
 	private static Object getPatientValue(XformsService xformsService, Integer patientId, String tableName, String columnName){
 		
 		Object value = null;
@@ -966,6 +1254,12 @@ public final class XformBuilder {
 		return value;
 	}
 	
+	/**
+	 * Checks if a node is a user defined one. That is not one of the standard openmrs nodes.
+	 * 
+	 * @param name - the name of the node.
+	 * @return - true if it is a user define one, else false.
+	 */
 	private static boolean isUserDefinedNode(String name){
 		return !(name.equalsIgnoreCase(NODE_ENCOUNTER_ENCOUNTER_DATETIME)||
 				name.equalsIgnoreCase(NODE_ENCOUNTER_LOCATION_ID)||
@@ -976,6 +1270,12 @@ public final class XformBuilder {
 				name.equalsIgnoreCase(NODE_PATIENT_FAMILY_NAME));
 	}
 	
+	/**
+	 * Checks if a schema node is a user defined one.
+	 * 
+	 * @param node - the node to check.
+	 * @return - true if it is a user defined one, else false.
+	 */
 	private static boolean isUserDefinedSchemaElement(Element node){
 		
 		if(!(node.getName().equalsIgnoreCase(NODE_SIMPLETYPE) || node.getName().equalsIgnoreCase(NODE_COMPLEXTYPE)))
@@ -993,11 +1293,17 @@ public final class XformBuilder {
 				name.equalsIgnoreCase("patient_section"));
 	}
 	
+	/**
+	 * Builds an xform for creating a new patient.
+	 * 
+	 * @param xformAction - the url to post the xform data to.
+	 * @return - the xml of the new patient xform.
+	 */
 	public static String getNewPatientXform(String xformAction){
 		XformBuilder.xformAction = xformAction;
 			
 		Document doc = new Document();
-		doc.setEncoding(CHARACTER_SET);
+		doc.setEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
 		Element htmlNode = doc.createElement(NAMESPACE_XHTML, null);
 		htmlNode.setName(NODE_HTML);
 		htmlNode.setPrefix(null, NAMESPACE_XHTML);
@@ -1078,6 +1384,22 @@ public final class XformBuilder {
 		return XformBuilder.fromDoc2String(doc);
 	}
 	
+	/**
+	 * Adds a node to a new patient xform.
+	 * 
+	 * @param formNode
+	 * @param modelNode
+	 * @param bodyNode
+	 * @param name
+	 * @param type
+	 * @param label
+	 * @param hint
+	 * @param required
+	 * @param readonly
+	 * @param controlType
+	 * @param items
+	 * @param itemValues
+	 */
 	private static void addPatientNode(Element formNode,Element modelNode,Element bodyNode,String name,String type,String label, String hint,boolean required, boolean readonly, String controlType, String[] items, String[] itemValues){
 		//add the model node
 		Element element = formNode.createElement(null, null);
