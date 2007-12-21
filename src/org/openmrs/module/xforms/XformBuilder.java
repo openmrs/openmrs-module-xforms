@@ -28,18 +28,43 @@ import org.openmrs.module.xforms.XformConstants;
  */
 public final class XformBuilder {
 	
+	/** Namespace for XForms. */
 	public static final String NAMESPACE_XFORMS = "http://www.w3.org/2002/xforms";
+	
+	/** Namespace for XForm events. */
+	public static final String NAMESPACE_XFORM_EVENTS = "http://www.w3.org/2001/xml-events";
+	
+	/** Namespace for XML schema. */
 	public static final String NAMESPACE_XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
+	
+	/** Namespace for XML schema instance. */
 	public static final String NAMESPACE_XML_INSTANCE = "http://www.w3.org/2001/XMLSchema-instance";
+	
+	/** Namespace for XHTML. */
 	public static final String NAMESPACE_XHTML = "http://www.w3.org/1999/xhtml";
+	
+	/** Namespace for openmrs. */
 	public static final String NAMESPACE_OPENMRS = "http://localhost:8080/openmrs/moduleServlet/formentry/forms/schema/4-109";
 	
+	/** Namespace prefix for XForms. */
 	public static final String PREFIX_XFORMS = "xf";
+	
+	/** Namespace prefix for XForms events. */
+	public static final String PREFIX_XFORM_EVENTS = "ev";
+	
+	/** Namespace prefix for XML schema. */
 	public static final String PREFIX_XML_SCHEMA = "xsd";
+	
+	/** The second Namespace prefix for XML schema. */
 	public static final String PREFIX_XML_SCHEMA2 = "xs";
+	
+	/** Namespace prefix for XML schema instance. */
 	public static final String PREFIX_XML_INSTANCES = "xsi";
+	
+	/** Namespace prefix for openmrs. */
 	public static final String PREFIX_OPENMRS= "openmrs";
 	
+	/** The character separator for namespace prefix. */
 	public static final String NAMESPACE_PREFIX_SEPARATOR= ":";
 	
 	public static final String CONTROL_INPUT = "input";
@@ -324,6 +349,10 @@ public final class XformBuilder {
 		submitNode.setAttribute(null, ATTRIBUTE_ID, SUBMIT_ID);
 		submitNode.setAttribute(null, ATTRIBUTE_ACTION, xformAction);
 		submitNode.setAttribute(null, ATTRIBUTE_METHOD, SUBMISSION_METHOD);
+		Element hint = submitNode.createElement(NAMESPACE_XFORMS, NODE_HINT);
+		hint.setName(NODE_HINT);
+		hint.addChild(Element.TEXT, "Click to submit");
+		submitNode.addChild(Element.ELEMENT, hint);
 		modelNode.addChild(Element.ELEMENT,submitNode);
 		
 		Document xformSchemaDoc = new Document();
@@ -849,8 +878,11 @@ public final class XformBuilder {
 			return null;
 		
 		if(type.indexOf(NAMESPACE_PREFIX_SEPARATOR) == -1)
-			type = PREFIX_XML_SCHEMA2+NAMESPACE_PREFIX_SEPARATOR + type;
-		
+			type = PREFIX_OPENMRS+NAMESPACE_PREFIX_SEPARATOR + type;
+		else
+			type = PREFIX_XML_SCHEMA+NAMESPACE_PREFIX_SEPARATOR + type.substring(type.indexOf(NAMESPACE_PREFIX_SEPARATOR)+1);
+			//type = type.substring(type.indexOf(NAMESPACE_PREFIX_SEPARATOR)+1);
+			
 		return type;
 	}
 	
@@ -1141,12 +1173,15 @@ public final class XformBuilder {
 	 * @param node - the node whose path to get.
 	 * @return - the complete path from the instance node.
 	 */
-	private static String getNodePath(Element node){
+	public static String getNodePath(Element node){
 		String path = node.getName();
 		Element parent = (Element)node.getParent();
 		while(parent != null && !parent.getName().equalsIgnoreCase(NODE_INSTANCE)){
 			path = parent.getName() + NODE_SEPARATOR + path;
-			parent = (Element)parent.getParent();
+			if(parent.getParent() != null && parent.getParent() instanceof Element)
+				parent = (Element)parent.getParent();
+			else
+				parent = null;
 		}
 		return NODE_SEPARATOR + path;
 	}
@@ -1260,7 +1295,7 @@ public final class XformBuilder {
 	 * @param name - the name of the node.
 	 * @return - true if it is a user define one, else false.
 	 */
-	private static boolean isUserDefinedNode(String name){
+	public static boolean isUserDefinedNode(String name){
 		return !(name.equalsIgnoreCase(NODE_ENCOUNTER_ENCOUNTER_DATETIME)||
 				name.equalsIgnoreCase(NODE_ENCOUNTER_LOCATION_ID)||
 				name.equalsIgnoreCase(NODE_ENCOUNTER_PROVIDER_ID)||

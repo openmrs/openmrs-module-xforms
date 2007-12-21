@@ -39,7 +39,7 @@ public class DefaultXformSerializer implements SerializableData{
 	public void serialize(DataOutputStream dos,Object data){
 		try{
 			List<String> xforms = (List<String>)data; //This is always a list of strings.
-			dos.writeInt(xforms.size()); //Write the size such that the party at the other end knows how many times to loop.
+			dos.writeByte(xforms.size()); //Write the size such that the party at the other end knows how many times to loop.
 			for(String xml : xforms)
 				dos.writeUTF(xml);
 		}
@@ -54,7 +54,7 @@ public class DefaultXformSerializer implements SerializableData{
 	public Object deSerialize(DataInputStream dis,Object data){
 		List<String> forms = new ArrayList<String>();
 		try{
-			int len = dis.readInt();
+			int len = dis.readByte();
 			for(int i=0; i<len; i++)
 				forms.add(dis.readUTF());
 		}

@@ -42,4 +42,14 @@ public interface XformsDAO {
 	 * @see org.openmrs.module.xforms.XformsService#getUsers()
 	 */
 	public List<XformUser> getUsers();
+	
+	/**
+	 * @see org.openmrs.module.xforms.XformsService#getXformFormIds()
+	 */
+	public List<Integer> getXformFormIds();
+	
+	/**
+	 * @see org.openmrs.module.xforms.XformsService#hasXform(java.lang.Integer)
+	 */
+	public boolean hasXform(Integer formId);
 }

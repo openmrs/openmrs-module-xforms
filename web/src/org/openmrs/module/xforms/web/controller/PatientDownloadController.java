@@ -63,23 +63,20 @@ public class PatientDownloadController extends SimpleFormController{
 		
 		//try to authenticate users who logon inline (with the request).
 		XformsUtil.authenticateInlineUser(request);
-		
-		//check for authenticated users
-		if (!Context.isAuthenticated()) {
-			request.getSession().setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR,
-				request.getContextPath() + "/module/xforms/xformUpload.form");
-			request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
-			response.sendRedirect(request.getContextPath() + "/logout");
+				
+		//check if user is authenticated
+		if (!XformsUtil.isAuthenticated(request,response,"/module/xforms/patientDownload.form"))
 			return null;
-		}
 		
-		String cohortId = request.getParameter("cohortId");
+		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
+
+		String cohortId = request.getParameter(XformConstants.REQUEST_PARAM_COHORT_ID);
 		if(cohortId == null)
-			cohortId = Context.getAdministrationService().getGlobalProperty("xforms.patientDownloadCohort");
+			cohortId = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_PATIENT_DOWNLOAD_COHORT);
 		
 		if(cohortId != null && cohortId.length() > 0){
-			if(request.getParameter("downloadPatients") != null){
-				response.setHeader("Content-Disposition", "attachment; filename=" + getCohortName(Integer.parseInt(cohortId))+".xml");
+			if(request.getParameter(XformConstants.REQUEST_PARAM_DOWNLOAD_PATIENTS) != null){
+				response.setHeader(XformConstants.HTTP_HEADER_CONTENT_DISPOSITION, XformConstants.HTTP_HEADER_CONTENT_DISPOSITION_VALUE + getCohortName(Integer.parseInt(cohortId))+XformConstants.XML_FILE_EXTENSION);
 				
 				String className = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_PATIENT_SERIALIZER);
 				if(className == null || className.length() == 0)
@@ -87,23 +84,20 @@ public class PatientDownloadController extends SimpleFormController{
 				//SerializableData sr = (SerializableData)Class.forName(className).newInstance();
 				SerializableData sr = (SerializableData)OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
 				
-				Cohort cohort = Context.getCohortService().getCohort(Integer.parseInt(cohortId));
-				Set<Integer> patientIds = cohort.getMemberIds();
 				response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
-				sr.serialize(new DataOutputStream(response.getOutputStream()),getPantients(patientIds));
+				sr.serialize(new DataOutputStream(response.getOutputStream()),getPatientData(cohortId,xformsService));
 			}
-			else if(request.getParameter("setCohort") != null){
+			else if(request.getParameter(XformConstants.REQUEST_PARAM_SET_COHORT) != null){
 				Context.getAdministrationService().setGlobalProperty("xforms.patientDownloadCohort", cohortId);
 				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "xforms.setPatientDownloadCohortSuccess");
 				return new ModelAndView(new RedirectView(getSuccessView()));
 			}
 		}
 		
-		if(request.getParameter("uploadPatientXform") != null){//TODO This needs to be refactored with the XformUploadController
+		if(request.getParameter(XformConstants.REQUEST_PARAM_UPLOAD_PATIENT_XFORM) != null){//TODO This needs to be refactored with the XformUploadController
 			MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
-			MultipartFile xformFile = multipartRequest.getFile("patientXformFile");
+			MultipartFile xformFile = multipartRequest.getFile(XformConstants.REQUEST_PARAM_PATIENT_XFORM_FILE);
 			if (xformFile != null && !xformFile.isEmpty()) {
-				XformsService xformsService = (XformsService)Context.getService(XformsService.class);
 				String xml = IOUtils.toString(xformFile.getInputStream());
 				Xform xform = new Xform();
 				xform.setFormId(XformConstants.PATIENT_XFORM_FORM_ID);
@@ -114,14 +108,30 @@ public class PatientDownloadController extends SimpleFormController{
 			}
 			return new ModelAndView(new RedirectView(getSuccessView()));
 		}
-		else if(request.getParameter("downloadPatientXform") != null){
-			String filename = XformConstants.PATIENT_XFORM_FORM_ID+".xml";
-			response.setHeader("Content-Disposition", "attachment; filename=" + filename);
+		else if(request.getParameter(XformConstants.REQUEST_PARAM_DOWNLOAD_PATIENT_XFORM) != null){
+			String filename = XformConstants.PATIENT_XFORM_FORM_ID+XformConstants.XML_FILE_EXTENSION;
+			response.setHeader(XformConstants.HTTP_HEADER_CONTENT_DISPOSITION, XformConstants.HTTP_HEADER_CONTENT_DISPOSITION_VALUE + filename);
 			response.getOutputStream().print(XformBuilder.getNewPatientXform("testing"));
 		}
 		
 		return null;
     }
+	
+	private PatientData getPatientData(String cohortId,XformsService xformsService){
+		PatientData patientData  = new PatientData();
+		
+		Cohort cohort = Context.getCohortService().getCohort(Integer.parseInt(cohortId));
+		Set<Integer> patientIds = cohort.getMemberIds();
+		patientData.setPatients(getPantients(patientIds));
+		
+		List<PatientTableField> fields = PatientTableFieldBuilder.getPatientTableFields(xformsService);
+		if(fields != null && fields.size() > 0){
+			patientData.setFields(fields);
+			patientData.setFieldValues(PatientTableFieldBuilder.getPatientTableFieldValues(new ArrayList(patientIds), fields, xformsService));
+		}
+		
+		return patientData;
+	}
 	
 	private List<Patient> getPantients(Collection<Integer> patientIds){
 		List<Patient> patients = new ArrayList<Patient>();

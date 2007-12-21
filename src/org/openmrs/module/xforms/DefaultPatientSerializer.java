@@ -1,10 +1,13 @@
 package org.openmrs.module.xforms;
 
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.zip.GZIPOutputStream;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
@@ -76,11 +79,43 @@ public class DefaultPatientSerializer implements SerializableData{
 	 */
 	public void serialize(DataOutputStream dos,Object data){
 		try{
-			List<Patient> patients = (List<Patient>)data; //data will always be a patient list.
-			dos.writeInt(patients.size());
-			for(Patient patient : patients){
-				serialize(patient,dos);
+			if(data == null)
+				return;
+			PatientData patientData = (PatientData)data; //data will always be a patient data.
+			
+			List<Patient> patients = patientData.getPatients(); 
+			if(patients == null || patients.size() == 0)
+				return;
+			
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			DataOutputStream dosLocal = new DataOutputStream(baos);
+
+			dosLocal.writeInt(patients.size());
+			for(Patient patient : patients)
+				serialize(patient,dosLocal);
+			
+			List<PatientTableField> fields = patientData.getFields(); 
+			if(fields == null || fields.size() == 0)
+				return;
+			dosLocal.writeByte(fields.size());
+			for(PatientTableField field : fields){
+				dosLocal.writeInt(field.getId());
+				dosLocal.writeUTF(field.getName());
 			}
+			
+			List<PatientTableFieldValue> fieldVals = patientData.getFieldValues(); 
+			if(fieldVals == null || fieldVals.size() == 0)
+				return;
+			dosLocal.writeInt(fieldVals.size());
+			for(PatientTableFieldValue fieldVal : fieldVals){
+				dosLocal.writeInt(fieldVal.getFieldId());
+				dosLocal.writeInt(fieldVal.getPatientId());
+				dosLocal.writeUTF(fieldVal.getValue().toString());
+			}
+			
+			GZIPOutputStream gzip = new GZIPOutputStream(dos);
+			gzip.write(baos.toByteArray());
+			gzip.finish();
 		}catch(IOException e){
 			log.error(e);
 		}

@@ -5,6 +5,8 @@ import java.util.TreeMap;
 
 import org.openmrs.module.Extension;
 import org.openmrs.util.InsertedOrderComparator;
+import org.openmrs.api.context.Context;
+import org.openmrs.module.xforms.XformsService;
 
 /**
  * Adds XForm links to the form schema design page.
@@ -33,7 +35,8 @@ public class XformsFormHeaderExt extends Extension {
 			map.put("moduleServlet/xforms/xformDownload?target=xform&formId=" + formId, "xforms.downloadXform");
 			map.put("module/xforms/xformDesigner.form?formId=" + formId, "xforms.designXform");
 			map.put("module/xforms/xformUpload.form?formId=" + formId, "xforms.uploadXform");
-			map.put("module/xforms/xformDelete.form?formId=" + formId, "xforms.deleteXform");
+			if(((XformsService)Context.getService(XformsService.class)).hasXform(Integer.valueOf(formId)))
+				map.put("module/xforms/xformDelete.form?formId=" + formId, "xforms.deleteXform");
 		}
 		
 		return map;

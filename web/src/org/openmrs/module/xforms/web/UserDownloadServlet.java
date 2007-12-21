@@ -56,11 +56,8 @@ public class UserDownloadServlet  extends HttpServlet {
 			}
 	
 			//check for authenticated users
-			if (Context.isAuthenticated() == false) {
-				request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
-				response.sendRedirect(request.getContextPath() + "/logout");
+			if (!XformsUtil.isAuthenticated(request,response,null))
 				return;
-			}
 	
 			List<XformUser> users = ((XformsService)Context.getService(XformsService.class)).getUsers();
 			

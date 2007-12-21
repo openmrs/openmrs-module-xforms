@@ -88,17 +88,12 @@ public class XformDataUploadController extends SimpleFormController{
 		XformsUtil.authenticateInlineUser(request);
 		
 		// check if user is authenticated
-		if (!Context.isAuthenticated()) {
-			request.getSession().setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR,
-				request.getContextPath() + "/module/xforms/xformDataUpload.form");
-			request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
-			response.sendRedirect(request.getContextPath() + "/logout");
+		if (!XformsUtil.isAuthenticated(request,response,"/module/xforms/xformDataUpload.form"))
 			return null;
-		}
 		
 		request.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
 		
-		if("true".equalsIgnoreCase(request.getParameter("batchEntry")))
+		if(XformConstants.TRUE_TEXT_VALUE.equalsIgnoreCase(request.getParameter(XformConstants.REQUEST_PARAM_BATCH_ENTRY)))
 			submitXforms(request);
 		else{
 			submitXform(request);
@@ -118,8 +113,8 @@ public class XformDataUploadController extends SimpleFormController{
 		
 		String searchNew = Context.getAdministrationService().getGlobalProperty("xforms.searchNewPatientAfterFormSubmission");
 		String url = "/findPatient.htm";
-		if("false".equalsIgnoreCase(searchNew)){
-			String patientId = request.getParameter("patientId");
+		if(XformConstants.FALSE_TEXT_VALUE.equalsIgnoreCase(searchNew)){
+			String patientId = request.getParameter(XformConstants.REQUEST_PARAM_PATIENT_ID);
 			url = "/patientDashboard.form?patientId="+patientId;
 		}
 		url = request.getContextPath() + url;
@@ -128,8 +123,8 @@ public class XformDataUploadController extends SimpleFormController{
 		response.setContentType("text/html;charset=utf-8");
 		
 		try{
-			//We are using an iframe to display the xform within the page
-			//So this response just tells its parent to go to either the
+			//We are using an iframe to display the xform within the page.
+			//So this response just tells the iframe parent document to go to either the
 			//patient dashboard, or to the search patient screen, depending on the user's settings.
 			response.getOutputStream().println("<html>" + "<head>"
 					+"<script type='text/javascript'> window.onload=function() {self.parent.location.href='" + url + "';}; </script>"
@@ -155,15 +150,6 @@ public class XformDataUploadController extends SimpleFormController{
 		return null;
 	}
 	
-	private String getEnterer(){
-		String enterer = "";
-		User user = Context.getAuthenticatedUser();
-		if (user != null)
-			enterer = user.getUserId() + "^" + user.getGivenName() + " " + user.getFamilyName();
-
-		return enterer;
-	}
-	
 	private User getCreator(){
 		return Context.getAuthenticatedUser();
 	}
@@ -183,7 +169,7 @@ public class XformDataUploadController extends SimpleFormController{
 			List<String> newPatientForms = new ArrayList<String>();
 			FormEntryService formEntryService = (FormEntryService)Context.getService(FormEntryService.class);
 			
-			String enterer = getEnterer();
+			String enterer = XformsUtil.getEnterer();
 			User creator = getCreator();
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			SerializableData sr = getXformSerializer();
@@ -313,7 +299,7 @@ public class XformDataUploadController extends SimpleFormController{
 			String xml = IOUtils.toString(request.getInputStream());
 			FormEntryService formEntryService = (FormEntryService)Context.getService(FormEntryService.class);
 			DocumentBuilder db = dbf.newDocumentBuilder();
-			submitXForm(db ,xml, request, getEnterer(),getCreator(),formEntryService,null,null);
+			submitXForm(db ,xml, request, XformsUtil.getEnterer(),getCreator(),formEntryService,null,null);
 			
 		} catch (Exception e) {
 			log.error("Error parsing form data", e);
@@ -410,7 +396,7 @@ public class XformDataUploadController extends SimpleFormController{
 	 * @param errorQueue - set to true to put in error queue, else set to false
 	 */
 	private String saveForm(String xml,File folder,String queuePathName){
-		String pathName = folder.getAbsolutePath()+"\\"+getRandomFileName()+".xml";
+		String pathName = folder.getAbsolutePath()+File.separatorChar+getRandomFileName()+XformConstants.XML_FILE_EXTENSION;
 		try{
 			FileWriter writter = new FileWriter(pathName, false);
 			writter.write(xml);

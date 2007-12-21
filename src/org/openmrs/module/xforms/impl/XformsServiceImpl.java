@@ -90,4 +90,18 @@ public class XformsServiceImpl implements XformsService{
     public List<XformUser> getUsers(){
     	return getXformsDAO().getUsers();
     }
+    
+    /**
+	 * @see org.openmrs.module.xforms.XformsService#getXformFormIds()
+	 */
+    public List<Integer> getXformFormIds(){
+    	return getXformsDAO().getXformFormIds();
+    }
+    
+	/**
+	 * @see org.openmrs.module.xforms.XformsService#hasXform(java.lang.Integer)
+	 */
+	public boolean hasXform(Integer formId){
+	   	return getXformsDAO().hasXform(formId);
+	}
 }

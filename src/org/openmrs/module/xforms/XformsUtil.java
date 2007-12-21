@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -13,6 +14,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.w3c.dom.Document;
@@ -20,6 +22,7 @@ import org.w3c.dom.Document;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.module.formentry.FormEntryConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.web.WebConstants;
 import org.openmrs.module.formentry.*;
 
 /**
@@ -45,6 +48,46 @@ public class XformsUtil {
 			if(name != null & pw != null)
 				Context.authenticate(name, pw);
 		}
+	}
+	
+	/**
+	 * Checks if a user is authenticated. If not, takes them to the login page.
+	 * 
+	 * @param request  the http request.
+	 * @param response  the http response.
+	 * @param loginRedirect the part of the url appended to the Context Path, that the user is redireted to on successfully logging in.
+	 * @return true if user is authenticated, else false.
+	 * @throws Exception
+	 */
+	public static boolean isAuthenticated(HttpServletRequest request,HttpServletResponse response,String loginRedirect) {
+		try{
+			if (!Context.isAuthenticated()) {
+				if(loginRedirect != null)
+					request.getSession().setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR,request.getContextPath() + loginRedirect);
+				
+				request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
+				response.sendRedirect(request.getContextPath() + "/logout");
+				return false;
+			}
+		}catch(Exception e){
+			log.equals(e);
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * Gests the currently logged on user in a format expected by the enterer form node.
+	 * 
+	 * @return the string formated enterer.
+	 */
+	public static String getEnterer(){
+		String enterer = "";
+		User user = Context.getAuthenticatedUser();
+		if (user != null)
+			enterer = user.getUserId() + "^" + user.getGivenName() + " " + user.getFamilyName();
+
+		return enterer;
 	}
 	
 	//TODO Check to see if a method with this service already exists in the openmrs code.

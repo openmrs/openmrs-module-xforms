@@ -52,7 +52,7 @@ public class XformConstants {
 	
 	/** The global property key for the user serializer class.*/
 	public static final String GLOBAL_PROP_KEY_USER_SERIALIZER= "xforms.userSerializer";
-	
+		
 	/** The global property key for the patient serializer class.*/
 	public static final String GLOBAL_PROP_KEY_PATIENT_SERIALIZER = "xforms.patientSerializer";
 	
@@ -62,6 +62,12 @@ public class XformConstants {
 	/** The global property key for the xform select1 appearance. */
 	public static final String GLOBAL_PROP_KEY_SINGLE_SELECT_APPEARANCE = "xforms.singleSelectAppearance";
 	
+	/** The global property key for determining whether to use stored xforms or build new ones on the fly. */
+	public static final String GLOBAL_PROP_KEY_USER_STORED_XFORMS = "xforms.useStoredXform";
+	
+	/** The global property key for the patient download cohort.*/
+	public static final String GLOBAL_PROP_KEY_PATIENT_DOWNLOAD_COHORT = "xforms.patientDownloadCohort";
+
 	/** The default value for the user serializer class.*/
 	public static final String DEFAULT_USER_SERIALIZER= "org.openmrs.module.xforms.DefaultUserSerializer";
 	
@@ -71,16 +77,29 @@ public class XformConstants {
 	/** The default value for the xform serializer class.*/
 	public static final String DEFAULT_XFORM_SERIALIZER = "org.openmrs.module.xforms.DefaultXformSerializer";
 	
+	/** The session form node. */
 	public static final String NODE_SESSION = "session";
+	
+	/** The uid form node. */
 	public static final String NODE_UID = "uid";
+	
+	/** The date_entered form node. */
 	public static final String NODE_DATE_ENTERED = "date_entered";
+	
+	/** The enterer form node. */
 	public static final String NODE_ENTERER = "enterer";
 	
 	/** The extension for our xforms. */
 	public static final String XFORM_FILE_EXTENSION = ".xml";
 	
+	/** The extension for xml files. */
+	public static final String XML_FILE_EXTENSION = ".xml";
+	
 	/** The content disposition http header. */
 	public static final String HTTP_HEADER_CONTENT_DISPOSITION = "Content-Disposition";
+	
+	/** The content type http header. */
+	public static final String HTTP_HEADER_CONTENT_TYPE = "Content-Type";
 	
 	/** The starter xform file name. */
 	public static final String STARTER_XFORM = "starter_xform.xml";
@@ -88,5 +107,56 @@ public class XformConstants {
 	/** The empty string constant. */
 	public static final String EMPTY_STRING = "";
 	
-	public static final String CONTENT_DISPOSITION_VALUE = "attachment; filename=";
+	public static final String HTTP_HEADER_CONTENT_DISPOSITION_VALUE = "attachment; filename=";
+	
+	/** The application/xhtml+xml http content type. */
+	public static final String HTTP_HEADER_CONTENT_TYPE_XHTML_XML = "application/xhtml+xml; charset=utf-8";
+	
+	/** The text value for boolean true. */
+	public static final String TRUE_TEXT_VALUE = "true";
+	
+	/** The text value for boolean false. */
+	public static final String FALSE_TEXT_VALUE = "false";
+	
+	/** The patientId request parameter. */
+	public static final String REQUEST_PARAM_PATIENT_ID = "patientId";
+	
+	/** The formId request parameter. */
+	public static final String REQUEST_PARAM_FORM_ID = "formId";
+	
+	/** The batchEntry request parameter. */
+	public static final String REQUEST_PARAM_BATCH_ENTRY = "batchEntry";
+	
+	/** The phrase request parameter. */
+	public static final String REQUEST_PARAM_PATIENT_SEARCH_PHRASE = "phrase";
+	
+	/** The xforms request parameter. */
+	public static final String REQUEST_PARAM_XFORMS = "xforms";
+	
+	/** The xform request parameter. */
+	public static final String REQUEST_PARAM_XFORM = "xform";
+	
+	/** The xformentry request parameter. */
+	public static final String REQUEST_PARAM_XFORMENTRY = "xformentry";
+	
+	/** The target request parameter. */
+	public static final String REQUEST_PARAM_TARGET = "target";
+	
+	/** The cohortId request parameter. */
+	public static final String REQUEST_PARAM_COHORT_ID = "cohortId";
+	
+	/** The downloadPatients request parameter. */
+	public static final String REQUEST_PARAM_DOWNLOAD_PATIENTS = "downloadPatients";
+	
+	/** The setCohort request parameter. */
+	public static final String REQUEST_PARAM_SET_COHORT = "setCohort";
+	
+	/** The uploadPatientXform request parameter. */
+	public static final String REQUEST_PARAM_UPLOAD_PATIENT_XFORM = "uploadPatientXform";
+	
+	/** The patientXformFile request parameter. */
+	public static final String REQUEST_PARAM_PATIENT_XFORM_FILE = "patientXformFile";
+	
+	/** The downloadPatientXform request parameter. */
+	public static final String REQUEST_PARAM_DOWNLOAD_PATIENT_XFORM = "downloadPatientXform";
 }

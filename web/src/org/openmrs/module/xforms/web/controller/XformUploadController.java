@@ -54,13 +54,8 @@ public class XformUploadController extends SimpleFormController{
 		XformsUtil.authenticateInlineUser(request);
 
     	//check if user is authenticated
-		if (!Context.isAuthenticated()) {
-			request.getSession().setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR,
-				request.getContextPath() + "/module/xforms/xformUpload.form");
-			request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
-			response.sendRedirect(request.getContextPath() + "/logout");
+		if (!XformsUtil.isAuthenticated(request,response,"/module/xforms/xformUpload.form"))
 			return null;
-		}
 		
 		Integer formId = Integer.parseInt(request.getParameter("formId"));
 

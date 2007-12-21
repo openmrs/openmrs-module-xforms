@@ -11,7 +11,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.openmrs.Form;
-import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.module.formentry.*;
@@ -23,6 +22,7 @@ import org.openmrs.module.xforms.SerializableData;
 import org.openmrs.module.xforms.XformBuilder;
 import org.openmrs.module.xforms.XformsService;
 import org.openmrs.module.xforms.XformsUtil;
+import org.openmrs.module.xforms.XformConstants;
 
 import org.openmrs.module.xforms.*;
 
@@ -64,30 +64,27 @@ public class XformDownloadServlet extends HttpServlet {
 		}
 
 		//check for authenticated users
-		if (Context.isAuthenticated() == false) {
-			request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
-			response.sendRedirect(request.getContextPath() + "/logout");
+		if (!XformsUtil.isAuthenticated(request,response,null))
 			return;
-		}
 
 		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
 		FormEntryService formEntryService = (FormEntryService)Context.getService(FormEntryService.class);
-		String target = request.getParameter("target");
+		String target = request.getParameter(XformConstants.REQUEST_PARAM_TARGET);
 		
-		String useStoredXform = Context.getAdministrationService().getGlobalProperty("xforms.useStoredXform");
+		String useStoredXform = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_USER_STORED_XFORMS);
 		boolean createNew = false;
-		if("false".equalsIgnoreCase(useStoredXform))
+		if(XformConstants.FALSE_TEXT_VALUE.equalsIgnoreCase(useStoredXform))
 			createNew = true;
 		
-		if("xforms".equalsIgnoreCase(target))
+		if(XformConstants.REQUEST_PARAM_XFORMS.equalsIgnoreCase(target))
 			doXformsGet(request, response,formEntryService,xformsService,createNew);
 		else{
-			Integer formId = Integer.parseInt(request.getParameter("formId"));
+			Integer formId = Integer.parseInt(request.getParameter(XformConstants.REQUEST_PARAM_FORM_ID));
 			Form form = formEntryService.getForm(formId);
 
-			if ("xform".equalsIgnoreCase(target)) 
+			if (XformConstants.REQUEST_PARAM_XFORM.equalsIgnoreCase(target)) 
 				doXformGet(request, response, form,formEntryService,xformsService,createNew);
-			else if ("xformentry".equals(target))		
+			else if (XformConstants.REQUEST_PARAM_XFORMENTRY.equals(target))		
 				doXformEntryGet(request, response, form,formEntryService,xformsService,createNew);
 		}
 	}
@@ -116,9 +113,9 @@ public class XformDownloadServlet extends HttpServlet {
 			String xml = XformBuilder.getNewPatientXform(getActionUrl(request));
 			xmlforms.add(xml);
 			
-			String className = Context.getAdministrationService().getGlobalProperty("xforms.xformSerializer");
+			String className = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_XFORM_SERIALIZER);
 			if(className == null || className.length() == 0)
-				className = "org.openmrs.module.xforms.DefaultXformSerializer";
+				className = XformConstants.DEFAULT_XFORM_SERIALIZER;
 			
 			response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING); //setContentType("text/html;charset=utf-8");
 			ServletOutputStream stream = response.getOutputStream();
@@ -152,7 +149,7 @@ public class XformDownloadServlet extends HttpServlet {
 			filename = XformConstants.STARTER_XFORM;
 
 		response.setHeader(XformConstants.HTTP_HEADER_CONTENT_DISPOSITION, 
-				XformConstants.CONTENT_DISPOSITION_VALUE + filename);
+				XformConstants.HTTP_HEADER_CONTENT_DISPOSITION_VALUE + filename);
 		
 		String xformXml = getXform(request, response,formEntryService,xformsService,form.getFormId(),createNew);
 		response.getOutputStream().print(xformXml);
@@ -231,22 +228,16 @@ public class XformDownloadServlet extends HttpServlet {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	protected void doXformEntryGet(HttpServletRequest request, HttpServletResponse response, Form form,FormEntryService formEntryService,XformsService xformsService, boolean createNew) throws ServletException, IOException {
-		
-		User user = Context.getAuthenticatedUser();
-		String enterer = "";
-		if (user != null)
-			enterer = user.getUserId() + "^" + user.getGivenName() + " " + user.getFamilyName();
-			
+	protected void doXformEntryGet(HttpServletRequest request, HttpServletResponse response, Form form,FormEntryService formEntryService,XformsService xformsService, boolean createNew) throws ServletException, IOException {			
 		String xformXml = getXform(request, response,formEntryService,xformsService,form.getFormId(),createNew);
 		Document doc = XformBuilder.getDocument(xformXml);
 		
 		XformBuilder.setNodeValue(doc, XformConstants.NODE_SESSION, request.getSession().getId());
 		XformBuilder.setNodeValue(doc, XformConstants.NODE_UID, FormEntryUtil.generateFormUid());
 		XformBuilder.setNodeValue(doc, XformConstants.NODE_DATE_ENTERED, FormUtil.dateToString(new java.util.Date()));
-		XformBuilder.setNodeValue(doc, XformConstants.NODE_ENTERER, enterer);
+		XformBuilder.setNodeValue(doc, XformConstants.NODE_ENTERER, XformsUtil.getEnterer());
 		
-		Integer patientId = Integer.parseInt(request.getParameter("patientId"));
+		Integer patientId = Integer.parseInt(request.getParameter(XformConstants.REQUEST_PARAM_PATIENT_ID));
 		XformBuilder.setNodeValue(doc, XformBuilder.NODE_PATIENT_PATIENT_ID, patientId.toString());
 		
 		Patient patient = Context.getPatientService().getPatient(patientId);
@@ -254,16 +245,16 @@ public class XformDownloadServlet extends HttpServlet {
 		XformBuilder.setNodeValue(doc, XformBuilder.NODE_PATIENT_MIDDLE_NAME, patient.getMiddleName());
 		XformBuilder.setNodeValue(doc, XformBuilder.NODE_PATIENT_GIVEN_NAME, patient.getGivenName());
 	
-		String patientParam = "?patientId="+patientId;
-		String phrase = request.getParameter("phrase");
+		String patientParam = "?"+XformConstants.REQUEST_PARAM_PATIENT_ID+"="+patientId;
+		String phrase = request.getParameter(XformConstants.REQUEST_PARAM_PATIENT_SEARCH_PHRASE);
 		if(phrase != null)
-			patientParam += "&phrase=" + phrase;
+			patientParam += "&"+XformConstants.REQUEST_PARAM_PATIENT_SEARCH_PHRASE+"=" + phrase;
 		
-		XformBuilder.setNodeAttributeValue(doc, "submission", "action", getActionUrl(request)+patientParam);
+		XformBuilder.setNodeAttributeValue(doc, XformBuilder.NODE_SUBMISSION, XformBuilder.ATTRIBUTE_ACTION, getActionUrl(request)+patientParam);
 		
 		XformBuilder.setPatientTableFieldValues(doc.getRootElement(), patientId, xformsService);
 		
-		response.setHeader("Content-Type", "application/xhtml+xml; charset=utf-8");
+		response.setHeader(XformConstants.HTTP_HEADER_CONTENT_TYPE, XformConstants.HTTP_HEADER_CONTENT_TYPE_XHTML_XML);
 		response.getOutputStream().print(XformBuilder.fromDoc2String(doc));
 	}
 }

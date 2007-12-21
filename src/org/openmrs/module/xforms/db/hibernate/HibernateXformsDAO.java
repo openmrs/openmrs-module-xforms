@@ -99,7 +99,6 @@ public class HibernateXformsDAO implements XformsDAO{
 			PreparedStatement st = sessionFactory.getCurrentSession().connection().prepareStatement(sql);
 			ResultSet res = st.executeQuery();
 			
-			String varname;
 			while(res.next())
 				users.add(new XformUser(res.getInt("user_id"),res.getString("username"),
 						res.getString("password"),res.getString("salt")));
@@ -111,5 +110,36 @@ public class HibernateXformsDAO implements XformsDAO{
 		}
 		
 		return null;
+	}
+	
+	public List<Integer> getXformFormIds(){
+		List<Integer> formIds = new ArrayList<Integer>();
+		
+		String sql = "select form_id from xform";
+	
+		try{
+			PreparedStatement st = sessionFactory.getCurrentSession().connection().prepareStatement(sql);
+			ResultSet res = st.executeQuery();
+			
+			String varname;
+			while(res.next())
+				formIds.add(res.getInt("form_id"));
+			
+			return formIds;
+		}
+		catch(SQLException e){
+			log.error(e);
+		}
+		
+		return null;
+
+	}
+	
+	/**
+	 * @see org.openmrs.module.xforms.XformsService#hasXform(java.lang.Integer)
+	 */
+	public boolean hasXform(Integer formId){
+		String sql = "select 1 from xform where form_id="+formId;
+		return sessionFactory.getCurrentSession().createSQLQuery(sql).uniqueResult() != null;
 	}
 }

@@ -91,4 +91,20 @@ public interface XformsService {
 	@Transactional(readOnly=true)
 	public List<XformUser> getUsers();
 
+	/**
+	 * Gets a list of ids for forms having xforms.
+	 * 
+	 * @return - the formId list.
+	 */
+	@Transactional(readOnly=true)
+	public List<Integer> getXformFormIds();
+	
+	/**
+	 * Checks whether a form has an XForm stored in the database.
+	 * 
+	 * @param formId - the form id.
+	 * @return true if it has, else false.
+	 */
+	@Transactional(readOnly=true)
+	public boolean hasXform(Integer formId);
 }
