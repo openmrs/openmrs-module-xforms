@@ -1,9 +1,11 @@
 package org.openmrs.module.xforms;
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,10 +40,17 @@ public class DefaultXformSerializer implements SerializableData{
 	 */
 	public void serialize(DataOutputStream dos,Object data){
 		try{
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			DataOutputStream dosLocal = new DataOutputStream(baos);
+
 			List<String> xforms = (List<String>)data; //This is always a list of strings.
-			dos.writeByte(xforms.size()); //Write the size such that the party at the other end knows how many times to loop.
+			dosLocal.writeByte(xforms.size()); //Write the size such that the party at the other end knows how many times to loop.
 			for(String xml : xforms)
-				dos.writeUTF(xml);
+				dosLocal.writeUTF(xml);
+			
+			GZIPOutputStream gzip = new GZIPOutputStream(dos);
+			gzip.write(baos.toByteArray());
+			gzip.finish();
 		}
 		catch(Exception e){
 			log.error(e);

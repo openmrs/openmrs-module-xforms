@@ -29,6 +29,7 @@ import org.openmrs.Cohort;
 import org.openmrs.Patient;
 //import org.openmrs.Person;
 import org.openmrs.module.xforms.*;
+import org.openmrs.module.xforms.download.PatientDownloadManager;
 
 import java.io.*;
 
@@ -77,15 +78,8 @@ public class PatientDownloadController extends SimpleFormController{
 		if(cohortId != null && cohortId.length() > 0){
 			if(request.getParameter(XformConstants.REQUEST_PARAM_DOWNLOAD_PATIENTS) != null){
 				response.setHeader(XformConstants.HTTP_HEADER_CONTENT_DISPOSITION, XformConstants.HTTP_HEADER_CONTENT_DISPOSITION_VALUE + getCohortName(Integer.parseInt(cohortId))+XformConstants.XML_FILE_EXTENSION);
-				
-				String className = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_PATIENT_SERIALIZER);
-				if(className == null || className.length() == 0)
-					className = XformConstants.DEFAULT_PATIENT_SERIALIZER;
-				//SerializableData sr = (SerializableData)Class.forName(className).newInstance();
-				SerializableData sr = (SerializableData)OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
-				
 				response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
-				sr.serialize(new DataOutputStream(response.getOutputStream()),getPatientData(cohortId,xformsService));
+				PatientDownloadManager.downloadPatients(cohortId,response.getOutputStream());
 			}
 			else if(request.getParameter(XformConstants.REQUEST_PARAM_SET_COHORT) != null){
 				Context.getAdministrationService().setGlobalProperty("xforms.patientDownloadCohort", cohortId);
@@ -116,32 +110,6 @@ public class PatientDownloadController extends SimpleFormController{
 		
 		return null;
     }
-	
-	private PatientData getPatientData(String cohortId,XformsService xformsService){
-		PatientData patientData  = new PatientData();
-		
-		Cohort cohort = Context.getCohortService().getCohort(Integer.parseInt(cohortId));
-		Set<Integer> patientIds = cohort.getMemberIds();
-		patientData.setPatients(getPantients(patientIds));
-		
-		List<PatientTableField> fields = PatientTableFieldBuilder.getPatientTableFields(xformsService);
-		if(fields != null && fields.size() > 0){
-			patientData.setFields(fields);
-			patientData.setFieldValues(PatientTableFieldBuilder.getPatientTableFieldValues(new ArrayList(patientIds), fields, xformsService));
-		}
-		
-		return patientData;
-	}
-	
-	private List<Patient> getPantients(Collection<Integer> patientIds){
-		List<Patient> patients = new ArrayList<Patient>();
-		
-		PatientService patientService = Context.getPatientService();
-		for(Integer patientId : patientIds)
-			patients.add(patientService.getPatient(patientId));
-		
-		return patients;
-	}
 	
     @Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception { 

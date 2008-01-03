@@ -14,5 +14,7 @@
 	<classpathentry kind="lib" path="/FormEntryModule/lib-common/web-openmrs-api-1.0.52.1465.jar"/>
 	<classpathentry kind="lib" path="lib-common/openmrs-api-1.1.10.2560.jar"/>
 	<classpathentry kind="lib" path="lib-common/formentry-2.7.jar"/>
+	<classpathentry kind="lib" path="lib/bluetooth-server.jar"/>
+	<classpathentry kind="lib" path="lib/sms-server.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>

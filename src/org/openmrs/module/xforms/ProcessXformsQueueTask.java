@@ -6,6 +6,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
+import org.openmrs.module.xforms.bluetooth.XformsBluetoothTask;
 import org.openmrs.scheduler.TaskConfig;
 import org.openmrs.scheduler.Schedulable;
 

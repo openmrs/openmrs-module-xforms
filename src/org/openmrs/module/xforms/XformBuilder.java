@@ -46,6 +46,10 @@ public final class XformBuilder {
 	/** Namespace for openmrs. */
 	public static final String NAMESPACE_OPENMRS = "http://localhost:8080/openmrs/moduleServlet/formentry/forms/schema/4-109";
 	
+	/** Namespace for openmrs custom type. */
+	public static final String NAMESPACE_OPENMRS_TYPE = "http://localhost:8080/openmrs/moduleServlet/formentry/forms/customtypes/schema/4-109";
+
+	
 	/** Namespace prefix for XForms. */
 	public static final String PREFIX_XFORMS = "xf";
 	
@@ -64,6 +68,9 @@ public final class XformBuilder {
 	/** Namespace prefix for openmrs. */
 	public static final String PREFIX_OPENMRS= "openmrs";
 	
+	/** Namespace prefix for openmrs custom types. */
+	public static final String PREFIX_OPENMRS_TYPE= "openmrstype";
+	
 	/** The character separator for namespace prefix. */
 	public static final String NAMESPACE_PREFIX_SEPARATOR= ":";
 	
@@ -74,6 +81,7 @@ public final class XformBuilder {
 	
 	public static final String NODE_LABEL = "label";
 	public static final String NODE_HINT = "hint";
+	public static final String NODE_MESSAGE = "message";
 	public static final String NODE_VALUE= "value";
 	public static final String NODE_ITEM = "item";
 	public static final String NODE_HTML = "html";
@@ -162,9 +170,9 @@ public final class XformBuilder {
 	public static final String NODE_PROVIDER_ID = "provider_id";
 	public static final String NODE_IDENTIFIER_TYPE_ID = "patient_identifier_type_id";
 	
-	public static final String DATA_TYPE_DATE = "xs:date";
-	public static final String DATA_TYPE_INT = "xs:int";
-	public static final String DATA_TYPE_TEXT = "xs:string";
+	public static final String DATA_TYPE_DATE = "xsd:date";
+	public static final String DATA_TYPE_INT = "xsd:int";
+	public static final String DATA_TYPE_TEXT = "xsd:string";
 	
 	public static final String MULTIPLE_SELECT_VALUE_SEPARATOR = " ";
 	
@@ -294,6 +302,38 @@ public final class XformBuilder {
 		return null;
 	}
 	
+	private static String getDefaultStyle(){
+		return "@namespace xforms url(http://www.w3.org/2002/xforms/); "+
+			"/* Display a red background on all invalid form controls */ "+
+			"*:invalid { background-color: red; } "+
+			" "+
+			"/* Display a red asterisk after all required form controls */ "+
+			"*:required::after { content: '*'; color: red; } "+
+			" "+
+			"/* Do not render non-relevant form controls */ "+
+			"*:disabled { visibility: hidden; } "+
+			" "+
+			"/* The following declarations cause form controls and their labels "+
+			"to align neatly, as if a two-column table were used */ "+
+			"xforms|group { display: table; } "+
+			"xforms|input { display: table-row; } "+
+			"xforms|input > xforms|label { display: table-cell; } "+
+			"xforms|input::value { border: thin black solid; display: table-cell; } "+
+			" "+
+			"/* Display an alert message when appropriate */ "+
+			"*:valid   > xforms|alert { display: none; } "+
+			"*:invalid > xforms|alert { display: inline; } "+
+			" "+
+			"/* Display repeat-items with a dashed border */ "+
+			"*::repeat-item { border: dashed; } "+
+			" "+
+			"/* Display a teal highlight behind the current repeat item */ "+
+			"*::repeat-index { background-color: teal; } "+
+			" "+
+			"/* Display non-relevant repeat items in the system GrayText color */ "+
+			"*::repeat-item:disabled { visibility: visible; color: GrayText; }";
+	}
+	
 	/**
 	 * Builds an Xfrom from an openmrs schema and template document.
 	 * 
@@ -319,6 +359,8 @@ public final class XformBuilder {
 		htmlNode.setPrefix(PREFIX_XML_SCHEMA, NAMESPACE_XML_SCHEMA);
 		htmlNode.setPrefix(PREFIX_XML_SCHEMA2, NAMESPACE_XML_SCHEMA);
 		htmlNode.setPrefix(PREFIX_XML_INSTANCES, NAMESPACE_XML_INSTANCE);
+		htmlNode.setPrefix(PREFIX_OPENMRS_TYPE, NAMESPACE_OPENMRS_TYPE);
+		htmlNode.setPrefix(PREFIX_XFORM_EVENTS, NAMESPACE_XFORM_EVENTS);
 		doc.addChild(org.kxml2.kdom.Element.ELEMENT, htmlNode);
 		
 		Element headNode = doc.createElement(NAMESPACE_XHTML, null);
@@ -333,6 +375,12 @@ public final class XformBuilder {
 		titleNode.setName(NODE_TITLE);
 		titleNode.addChild(Element.TEXT,formNode.getAttributeValue(null, ATTRIBUTE_NAME));
 		headNode.addChild(Element.ELEMENT,titleNode);
+		
+		Element styleNode =  doc.createElement(NAMESPACE_XHTML, null);
+		styleNode.setName("style");
+		styleNode.setAttribute(null, "type", "text/css");
+		styleNode.addChild(Element.TEXT,getDefaultStyle());
+		headNode.addChild(Element.ELEMENT,styleNode);
 		
 		Element modelNode =  doc.createElement(NAMESPACE_XFORMS, null);
 		modelNode.setName(NODE_MODEL);
@@ -349,20 +397,36 @@ public final class XformBuilder {
 		submitNode.setAttribute(null, ATTRIBUTE_ID, SUBMIT_ID);
 		submitNode.setAttribute(null, ATTRIBUTE_ACTION, xformAction);
 		submitNode.setAttribute(null, ATTRIBUTE_METHOD, SUBMISSION_METHOD);
+		
 		Element hint = submitNode.createElement(NAMESPACE_XFORMS, NODE_HINT);
 		hint.setName(NODE_HINT);
 		hint.addChild(Element.TEXT, "Click to submit");
 		submitNode.addChild(Element.ELEMENT, hint);
+		
+		Element msg = submitNode.createElement(NAMESPACE_XFORMS, NODE_HINT);
+		msg.setName(NODE_MESSAGE);
+		msg.setAttribute(null, "ev:event", "xforms-submit-error");
+		msg.setAttribute(null, "level", "modal");
+		msg.addChild(Element.TEXT, "Could not submit... ");
+		submitNode.addChild(Element.ELEMENT, msg);
+		
+		msg = submitNode.createElement(NAMESPACE_XFORMS, NODE_HINT);
+		msg.setName(NODE_MESSAGE);
+		msg.setAttribute(null, "ev:event", "xforms-submit-done");
+		msg.setAttribute(null, "level", "modal");
+		msg.addChild(Element.TEXT, "Data Submitted Successfully");
+		submitNode.addChild(Element.ELEMENT, msg);
+		
 		modelNode.addChild(Element.ELEMENT,submitNode);
 		
 		Document xformSchemaDoc = new Document();
 		xformSchemaDoc.setEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
 		Element xformSchemaNode = doc.createElement(NAMESPACE_XML_SCHEMA, null);
 		xformSchemaNode.setName(NODE_SCHEMA);
-		xformSchemaNode.setPrefix(PREFIX_XML_SCHEMA2, NAMESPACE_XML_SCHEMA);
-		xformSchemaNode.setPrefix(PREFIX_OPENMRS, NAMESPACE_OPENMRS);
-		xformSchemaNode.setAttribute(null, "elementFormDefault", "qualified");
-		xformSchemaNode.setAttribute(null, "attributeFormDefault", "unqualified");
+		//xformSchemaNode.setPrefix(PREFIX_XML_SCHEMA2, NAMESPACE_XML_SCHEMA);
+		//xformSchemaNode.setPrefix(PREFIX_OPENMRS, NAMESPACE_OPENMRS);
+		xformSchemaNode.setAttribute(null, "targetNamespace", NAMESPACE_OPENMRS_TYPE);
+		//xformSchemaNode.setAttribute(null, "attributeFormDefault", "unqualified");
 		xformSchemaDoc.addChild(org.kxml2.kdom.Element.ELEMENT, xformSchemaNode);
 		
 		Hashtable bindings = new Hashtable();
@@ -428,8 +492,10 @@ public final class XformBuilder {
 				if(isMultSelectNode(child))
 					addMultipleSelectXformValueNode(child);
 					
-				if(isTableFieldNode(child))
+				if(isTableFieldNode(child)){
 					setTableFieldDataType(name,bindNode);
+					setTableFieldBindingAttributes(name,bindNode);
+				}
 			}
 			
 			//if(child.getAttributeValue(null, ATTRIBUTE_OPENMRS_ATTRIBUTE) != null && child.getAttributeValue(null, ATTRIBUTE_OPENMRS_TABLE) != null){
@@ -586,6 +652,33 @@ public final class XformBuilder {
 	}
 	
 	/**
+	 * Set required and readonly attributes for the openmrs fixed table fields.
+	 * 
+	 * @param name - the name of the question node.
+	 * @param bindingNode - the binding node whose required and readonly attributes we are to set.
+	 */
+	private static void setTableFieldBindingAttributes(String name, Element bindNode){
+		if(name.equalsIgnoreCase(NODE_ENCOUNTER_ENCOUNTER_DATETIME))
+			bindNode.setAttribute(null, ATTRIBUTE_REQUIRED, XPATH_VALUE_TRUE);
+		else if(name.equalsIgnoreCase(NODE_ENCOUNTER_LOCATION_ID))
+			bindNode.setAttribute(null, ATTRIBUTE_REQUIRED, XPATH_VALUE_TRUE);
+		else if(name.equalsIgnoreCase(NODE_ENCOUNTER_PROVIDER_ID))
+			bindNode.setAttribute(null, ATTRIBUTE_REQUIRED, XPATH_VALUE_TRUE);
+		else if(name.equalsIgnoreCase(NODE_PATIENT_PATIENT_ID)){
+			bindNode.setAttribute(null, ATTRIBUTE_REQUIRED, XPATH_VALUE_TRUE);
+			bindNode.setAttribute(null, ATTRIBUTE_READONLY, XPATH_VALUE_TRUE);
+		}
+		else if(name.equalsIgnoreCase(NODE_PATIENT_FAMILY_NAME))
+			bindNode.setAttribute(null, ATTRIBUTE_READONLY, XPATH_VALUE_TRUE);
+		else if(name.equalsIgnoreCase(NODE_PATIENT_MIDDLE_NAME))
+			bindNode.setAttribute(null, ATTRIBUTE_READONLY, XPATH_VALUE_TRUE);
+		else if(name.equalsIgnoreCase(NODE_PATIENT_GIVEN_NAME))
+			bindNode.setAttribute(null, ATTRIBUTE_READONLY, XPATH_VALUE_TRUE);
+		/*else
+			bindNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_TEXT);*/
+	}
+	
+	/**
 	 * Check whether a node is an openmrs table field node
 	 * These are the ones with the attributes: openmrs_table and openmrs_attribute
 	 * e.g. patient_unique_number openmrs_table="PATIENT_IDENTIFIER" openmrs_attribute="IDENTIFIER"
@@ -627,8 +720,11 @@ public final class XformBuilder {
 			String name = child.getName();
 			if(name.equalsIgnoreCase(NODE_COMPLEXTYPE) && isUserDefinedSchemaElement(child))
 				parseComplexType(child,child.getAttributeValue(null, ATTRIBUTE_NAME),bodyNode,xformSchemaNode,bindings);
-			else if(name.equalsIgnoreCase(NODE_SIMPLETYPE) && isUserDefinedSchemaElement(child))
-				xformSchemaNode.addChild(0, Element.ELEMENT, child);
+			else{
+				String nameAttribute = child.getAttributeValue(null, ATTRIBUTE_NAME);
+				if(name.equalsIgnoreCase(NODE_SIMPLETYPE) || (name.equalsIgnoreCase(NODE_COMPLEXTYPE) && nameAttribute != null && nameAttribute.startsWith("_") && !nameAttribute.contains("_section"))/*&& isUserDefinedSchemaElement(child)*/)
+					xformSchemaNode.addChild(0, Element.ELEMENT, child);
+			}
 		}
 		
 		if(xformSchemaNode.getChildCount() > 0)
@@ -878,7 +974,7 @@ public final class XformBuilder {
 			return null;
 		
 		if(type.indexOf(NAMESPACE_PREFIX_SEPARATOR) == -1)
-			type = PREFIX_OPENMRS+NAMESPACE_PREFIX_SEPARATOR + type;
+			type = PREFIX_OPENMRS_TYPE+NAMESPACE_PREFIX_SEPARATOR + type;
 		else
 			type = PREFIX_XML_SCHEMA+NAMESPACE_PREFIX_SEPARATOR + type.substring(type.indexOf(NAMESPACE_PREFIX_SEPARATOR)+1);
 			//type = type.substring(type.indexOf(NAMESPACE_PREFIX_SEPARATOR)+1);

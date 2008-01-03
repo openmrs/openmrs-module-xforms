@@ -23,8 +23,10 @@ import org.openmrs.module.xforms.XformBuilder;
 import org.openmrs.module.xforms.XformsService;
 import org.openmrs.module.xforms.XformsUtil;
 import org.openmrs.module.xforms.XformConstants;
+import org.openmrs.module.xforms.XformsActivator;
 
 import org.openmrs.module.xforms.*;
+import org.openmrs.module.xforms.download.XformDownloadManager;
 
 import org.kxml2.kdom.*;
 import java.util.*;
@@ -102,27 +104,9 @@ public class XformDownloadServlet extends HttpServlet {
 	 */
 	protected void doXformsGet(HttpServletRequest request, HttpServletResponse response, FormEntryService formEntryService,XformsService xformsService,boolean createNew) throws ServletException, IOException {
 		try
-		{				
-			List<Xform> xforms = xformsService.getXforms();
-			List<String> xmlforms = new ArrayList<String>();
-			for(Xform xform : xforms){
-				if(xform.getFormId() != XformConstants.PATIENT_XFORM_FORM_ID)
-					xmlforms.add(getXform(request, response,formEntryService,xformsService,xform.getFormId(),createNew));
-			}
-			
-			String xml = XformBuilder.getNewPatientXform(getActionUrl(request));
-			xmlforms.add(xml);
-			
-			String className = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_XFORM_SERIALIZER);
-			if(className == null || className.length() == 0)
-				className = XformConstants.DEFAULT_XFORM_SERIALIZER;
-			
+		{		
 			response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING); //setContentType("text/html;charset=utf-8");
-			ServletOutputStream stream = response.getOutputStream();
-
-			SerializableData sr = (SerializableData)Class.forName(className).newInstance();
-			sr.serialize(new DataOutputStream(stream), xmlforms);
-			stream.flush();
+			XformDownloadManager.downloadXforms(getActionUrl(request), response.getOutputStream());
 		}
 		catch(Exception e){
 			response.getOutputStream().print("failed with: " + e.getMessage());
@@ -151,21 +135,8 @@ public class XformDownloadServlet extends HttpServlet {
 		response.setHeader(XformConstants.HTTP_HEADER_CONTENT_DISPOSITION, 
 				XformConstants.HTTP_HEADER_CONTENT_DISPOSITION_VALUE + filename);
 		
-		String xformXml = getXform(request, response,formEntryService,xformsService,form.getFormId(),createNew);
+		String xformXml = XformDownloadManager.getXform(formEntryService,xformsService,form.getFormId(),createNew,getActionUrl(request));
 		response.getOutputStream().print(xformXml);
-	}
-	
-	/**
-	 * Creates a new xform.
-	 * 
-	 * @param request - the http request.
-	 * @param formEntryService - the formentry service.
-	 * @param formId - the form id.
-	 * @return - the created xml form.
-	 */
-	private String createNewXform(HttpServletRequest request,FormEntryService formEntryService, Integer formId){
-		Form form = formEntryService.getForm(formId);
-		return createNewXform(request,formEntryService, form);
 	}
 	
 	/**
@@ -179,47 +150,6 @@ public class XformDownloadServlet extends HttpServlet {
 	}
 	
 	/**
-	 * Creates a new xform for an given openmrs form.
-	 * 
-	 * @param request - the request object.
-	 * @param formEntryService - the formentry service.
-	 * @param form - the form object.
-	 * @return - the xml content of the xform.
-	 */
-	private String createNewXform(HttpServletRequest request,FormEntryService formEntryService, Form form){
-		String schemaXml = formEntryService.getSchema(form);
-		String templateXml = new FormXmlTemplateBuilder(form,FormEntryUtil.getFormAbsoluteUrl(form)).getXmlTemplate(false);
-		return XformBuilder.getXform4mStrings(schemaXml, templateXml,getActionUrl(request));
-	}
-	
-	/**
-	 * Gets an xform for a given form id.
-	 * 
-	 * @param request - the http request object.
-	 * @param response - the http response object.
-	 * @param formEntryService - the formentry service.
-	 * @param xformsService  the xforms service.
-	 * @param formId - the form id.
-	 * @param createNew - true if you want
-	 * @return - the xml content of the xform.
-	 */
-	private String getXform(HttpServletRequest request, HttpServletResponse response, FormEntryService formEntryService,XformsService xformsService,Integer formId,boolean createNew){
-		
-		String xformXml = null;
-		
-		if(!createNew){
-			Xform xform = xformsService.getXform(formId);
-			if(xform != null)
-				xformXml = xform.getXformData();
-		}
-		
-		if(xformXml == null)
-			xformXml = createNewXform(request,formEntryService, formId);
-		
-		return xformXml;
-	}
-	
-	/**
 	 * Serve up the xml file for filling out a form 
 	 * 
 	 * @param request - the http request.
@@ -229,7 +159,7 @@ public class XformDownloadServlet extends HttpServlet {
 	 * @throws IOException
 	 */
 	protected void doXformEntryGet(HttpServletRequest request, HttpServletResponse response, Form form,FormEntryService formEntryService,XformsService xformsService, boolean createNew) throws ServletException, IOException {			
-		String xformXml = getXform(request, response,formEntryService,xformsService,form.getFormId(),createNew);
+		String xformXml = XformDownloadManager.getXform(formEntryService,xformsService,form.getFormId(),createNew, getActionUrl(request));
 		Document doc = XformBuilder.getDocument(xformXml);
 		
 		XformBuilder.setNodeValue(doc, XformConstants.NODE_SESSION, request.getSession().getId());
