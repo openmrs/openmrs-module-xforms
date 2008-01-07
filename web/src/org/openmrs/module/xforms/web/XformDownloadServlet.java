@@ -88,6 +88,8 @@ public class XformDownloadServlet extends HttpServlet {
 				doXformGet(request, response, form,formEntryService,xformsService,createNew);
 			else if (XformConstants.REQUEST_PARAM_XFORMENTRY.equals(target))		
 				doXformEntryGet(request, response, form,formEntryService,xformsService,createNew);
+			else if (XformConstants.REQUEST_PARAM_XSLT.equals(target))		
+				doXsltGet(response, form,xformsService,createNew);
 		}
 	}
 	
@@ -136,7 +138,32 @@ public class XformDownloadServlet extends HttpServlet {
 				XformConstants.HTTP_HEADER_CONTENT_DISPOSITION_VALUE + filename);
 		
 		String xformXml = XformDownloadManager.getXform(formEntryService,xformsService,form.getFormId(),createNew,getActionUrl(request));
+		//xformXml = XformsUtil.fromXform2Xhtml(xformXml, null);
 		response.getOutputStream().print(xformXml);
+	}
+	
+	/**
+	 * Serve up the xslt for transforming an xform to an xhtml document.
+	 * 
+	 * @param request - the http request.
+	 * @param response - the http response.
+	 * @param form - the form
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	protected void doXsltGet(HttpServletResponse response, Form form,XformsService xformsService,boolean createNew) throws ServletException, IOException {
+		
+		String filename = FormEntryUtil.getFormUriWithoutExtension(form) + XformConstants.XSLT_FILE_EXTENSION;
+		
+		// generate the filename if they haven't defined a URI
+		if (filename == null || filename.equals(XformConstants.EMPTY_STRING))
+			filename = XformConstants.STARTER_XSLT;
+
+		response.setHeader(XformConstants.HTTP_HEADER_CONTENT_DISPOSITION, 
+				XformConstants.HTTP_HEADER_CONTENT_DISPOSITION_VALUE + filename);
+		
+		String xslt= XformDownloadManager.getXslt(xformsService,form.getFormId(),false);
+		response.getOutputStream().print(xslt);
 	}
 	
 	/**
@@ -150,7 +177,7 @@ public class XformDownloadServlet extends HttpServlet {
 	}
 	
 	/**
-	 * Serve up the xml file for filling out a form 
+	 * Serve up the xhtml file for filling out a form 
 	 * 
 	 * @param request - the http request.
 	 * @param response - the http response.
@@ -160,6 +187,7 @@ public class XformDownloadServlet extends HttpServlet {
 	 */
 	protected void doXformEntryGet(HttpServletRequest request, HttpServletResponse response, Form form,FormEntryService formEntryService,XformsService xformsService, boolean createNew) throws ServletException, IOException {			
 		String xformXml = XformDownloadManager.getXform(formEntryService,xformsService,form.getFormId(),createNew, getActionUrl(request));
+		xformXml = XformsUtil.fromXform2Xhtml(xformXml, xformsService.getXslt(form.getFormId()));
 		Document doc = XformBuilder.getDocument(xformXml);
 		
 		XformBuilder.setNodeValue(doc, XformConstants.NODE_SESSION, request.getSession().getId());
@@ -182,7 +210,7 @@ public class XformDownloadServlet extends HttpServlet {
 		
 		XformBuilder.setNodeAttributeValue(doc, XformBuilder.NODE_SUBMISSION, XformBuilder.ATTRIBUTE_ACTION, getActionUrl(request)+patientParam);
 		
-		XformBuilder.setPatientTableFieldValues(doc.getRootElement(), patientId, xformsService);
+		XformBuilder.setPatientTableFieldValues(form.getFormId(),doc.getRootElement(), patientId, xformsService);
 		
 		response.setHeader(XformConstants.HTTP_HEADER_CONTENT_TYPE, XformConstants.HTTP_HEADER_CONTENT_TYPE_XHTML_XML);
 		response.getOutputStream().print(XformBuilder.fromDoc2String(doc));

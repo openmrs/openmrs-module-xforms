@@ -85,6 +85,7 @@ public final class XformBuilder {
 	public static final String NODE_VALUE= "value";
 	public static final String NODE_ITEM = "item";
 	public static final String NODE_HTML = "html";
+	public static final String NODE_XFORMS = "xforms";
 	public static final String NODE_SCHEMA = "schema";
 	public static final String NODE_HEAD = "head";
 	public static final String NODE_BODY = "body";
@@ -234,7 +235,19 @@ public final class XformBuilder {
 	 * @return - true if the node with the name was found, else false.
 	 */
 	public static boolean setNodeValue(Document doc, String name, String value){
-		Element node = getElement(doc.getRootElement(),name);
+		return setNodeValue(doc.getRootElement(),name,value);
+	}
+	
+	/**
+	 * Sets the value of a child node in a parent node.
+	 * 
+	 * @param doc - the document.
+	 * @param name - the name of the node whose value to set.
+	 * @param value - the value to set.
+	 * @return - true if the node with the name was found, else false.
+	 */
+	public static boolean setNodeValue(Element parentNode, String name, String value){
+		Element node = getElement(parentNode,name);
 		if(node == null)
 			return false;
 		
@@ -302,38 +315,6 @@ public final class XformBuilder {
 		return null;
 	}
 	
-	private static String getDefaultStyle(){
-		return "@namespace xforms url(http://www.w3.org/2002/xforms/); "+
-			"/* Display a red background on all invalid form controls */ "+
-			"*:invalid { background-color: red; } "+
-			" "+
-			"/* Display a red asterisk after all required form controls */ "+
-			"*:required::after { content: '*'; color: red; } "+
-			" "+
-			"/* Do not render non-relevant form controls */ "+
-			"*:disabled { visibility: hidden; } "+
-			" "+
-			"/* The following declarations cause form controls and their labels "+
-			"to align neatly, as if a two-column table were used */ "+
-			"xforms|group { display: table; } "+
-			"xforms|input { display: table-row; } "+
-			"xforms|input > xforms|label { display: table-cell; } "+
-			"xforms|input::value { border: thin black solid; display: table-cell; } "+
-			" "+
-			"/* Display an alert message when appropriate */ "+
-			"*:valid   > xforms|alert { display: none; } "+
-			"*:invalid > xforms|alert { display: inline; } "+
-			" "+
-			"/* Display repeat-items with a dashed border */ "+
-			"*::repeat-item { border: dashed; } "+
-			" "+
-			"/* Display a teal highlight behind the current repeat item */ "+
-			"*::repeat-index { background-color: teal; } "+
-			" "+
-			"/* Display non-relevant repeat items in the system GrayText color */ "+
-			"*::repeat-item:disabled { visibility: visible; color: GrayText; }";
-	}
-	
 	/**
 	 * Builds an Xfrom from an openmrs schema and template document.
 	 * 
@@ -352,7 +333,7 @@ public final class XformBuilder {
 		
 		Document doc = new Document();
 		doc.setEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
-		Element htmlNode = doc.createElement(NAMESPACE_XHTML, null);
+		/*Element htmlNode = doc.createElement(NAMESPACE_XHTML, null);
 		htmlNode.setName(NODE_HTML);
 		htmlNode.setPrefix(null, NAMESPACE_XHTML);
 		htmlNode.setPrefix(PREFIX_XFORMS, NAMESPACE_XFORMS);
@@ -384,7 +365,25 @@ public final class XformBuilder {
 		
 		Element modelNode =  doc.createElement(NAMESPACE_XFORMS, null);
 		modelNode.setName(NODE_MODEL);
-		headNode.addChild(Element.ELEMENT,modelNode);
+		headNode.addChild(Element.ELEMENT,modelNode);*/
+		
+		//begin here
+		Element xformsNode = doc.createElement(NAMESPACE_XFORMS, null);
+		xformsNode.setName(NODE_XFORMS);
+		xformsNode.setPrefix(PREFIX_XFORMS, NAMESPACE_XFORMS);
+		xformsNode.setPrefix(PREFIX_XML_SCHEMA, NAMESPACE_XML_SCHEMA);
+		xformsNode.setPrefix(PREFIX_XML_SCHEMA2, NAMESPACE_XML_SCHEMA);
+		xformsNode.setPrefix(PREFIX_XML_INSTANCES, NAMESPACE_XML_INSTANCE);
+		xformsNode.setPrefix(PREFIX_OPENMRS_TYPE, NAMESPACE_OPENMRS_TYPE);
+		xformsNode.setPrefix(PREFIX_XFORM_EVENTS, NAMESPACE_XFORM_EVENTS);
+		doc.addChild(org.kxml2.kdom.Element.ELEMENT, xformsNode);
+		
+		Element modelNode =  doc.createElement(NAMESPACE_XFORMS, null);
+		modelNode.setName(NODE_MODEL);
+		xformsNode.addChild(Element.ELEMENT,modelNode);
+		
+		Element bodyNode = xformsNode;
+		//end here
 		
 		Element instanceNode =  doc.createElement(NAMESPACE_XFORMS, null);
 		instanceNode.setName(NODE_INSTANCE);
@@ -398,10 +397,10 @@ public final class XformBuilder {
 		submitNode.setAttribute(null, ATTRIBUTE_ACTION, xformAction);
 		submitNode.setAttribute(null, ATTRIBUTE_METHOD, SUBMISSION_METHOD);
 		
-		Element hint = submitNode.createElement(NAMESPACE_XFORMS, NODE_HINT);
+		/*Element hint = submitNode.createElement(NAMESPACE_XFORMS, NODE_HINT);
 		hint.setName(NODE_HINT);
 		hint.addChild(Element.TEXT, "Click to submit");
-		submitNode.addChild(Element.ELEMENT, hint);
+		submitNode.addChild(Element.ELEMENT, hint);*/
 		
 		Element msg = submitNode.createElement(NAMESPACE_XFORMS, NODE_HINT);
 		msg.setName(NODE_MESSAGE);
@@ -430,8 +429,25 @@ public final class XformBuilder {
 		xformSchemaDoc.addChild(org.kxml2.kdom.Element.ELEMENT, xformSchemaNode);
 		
 		Hashtable bindings = new Hashtable();
-		parseTemplate(modelNode,formNode,bindings,bodyNode);
+		parseTemplate(modelNode,formNode,formNode,bindings,bodyNode);
 		parseSchema(schemaDoc.getRootElement(),bodyNode,modelNode,xformSchemaNode,bindings);
+		
+		//new begin here
+		Element submitButton = bodyNode.createElement(NAMESPACE_XFORMS, null);
+		submitButton.setName(CONTROL_SUBMIT);
+		submitButton.setAttribute(null, ATTRIBUTE_SUBMISSION, SUBMIT_ID);
+		bodyNode.addChild(Element.ELEMENT, submitButton);
+		
+		Element labelNode = submitButton.createElement(NAMESPACE_XFORMS, null);
+		labelNode.setName(NODE_LABEL);
+		labelNode.addChild(Element.TEXT, SUBMIT_LABEL);
+		submitButton.addChild(Element.ELEMENT, labelNode);
+		
+		Element hint = submitButton.createElement(NAMESPACE_XFORMS, NODE_HINT);
+		hint.setName(NODE_HINT);
+		hint.addChild(Element.TEXT, "Click to submit");
+		submitButton.addChild(Element.ELEMENT, hint);
+		//new end here
 		
 		return fromDoc2String(doc);
 	}
@@ -470,13 +486,13 @@ public final class XformBuilder {
 	 * @param bindings - a hash table to populate with the built bindings.
 	 * @param bodyNode - the body node to add the UI control to.
 	 */
-	private static void parseTemplate(Element modelElement, Element formElement, Hashtable bindings,Element bodyNode){
-		int numOfEntries = formElement.getChildCount();
+	private static void parseTemplate(Element modelElement, Element formNode, Element formChild, Hashtable bindings,Element bodyNode){
+		int numOfEntries = formChild.getChildCount();
 		for (int i = 0; i < numOfEntries; i++) {
-			if (formElement.isText(i))
+			if (formChild.isText(i))
 				continue; //Ignore all text.
 			
-			Element child = formElement.getElement(i);
+			Element child = formChild.getElement(i);
 			if(child.getAttributeValue(null, ATTRIBUTE_OPENMRS_DATATYPE) == null && child.getAttributeValue(null, ATTRIBUTE_OPENMRS_CONCEPT) != null)
 				continue; //These could be like options for multiple select, which take true or false value.
 			
@@ -495,6 +511,7 @@ public final class XformBuilder {
 				if(isTableFieldNode(child)){
 					setTableFieldDataType(name,bindNode);
 					setTableFieldBindingAttributes(name,bindNode);
+					setTableFieldDefaultValue(name,formNode);
 				}
 			}
 			
@@ -510,7 +527,7 @@ public final class XformBuilder {
 					populateProviders(controlNode);
 			}
 			
-			parseTemplate(modelElement,child,bindings, bodyNode);
+			parseTemplate(modelElement,formNode,child,bindings, bodyNode);
 		}
 	}
 	
@@ -674,8 +691,55 @@ public final class XformBuilder {
 			bindNode.setAttribute(null, ATTRIBUTE_READONLY, XPATH_VALUE_TRUE);
 		else if(name.equalsIgnoreCase(NODE_PATIENT_GIVEN_NAME))
 			bindNode.setAttribute(null, ATTRIBUTE_READONLY, XPATH_VALUE_TRUE);
-		/*else
-			bindNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_TEXT);*/
+		else
+			//all table field are readonly on forms since they cant be populated in their tables 
+			//form encounter forms. This population only happens when creating or editing patient.
+			bindNode.setAttribute(null, ATTRIBUTE_READONLY, XPATH_VALUE_TRUE);
+	}
+	
+	private static void setTableFieldDefaultValue(String name, Element formElement){
+		Integer formId = Integer.valueOf(formElement.getAttributeValue(null, ATTRIBUTE_ID));
+		String val = getFieldDefaultValue(name,formId,true);
+		if(val != null)
+			setNodeValue(formElement, name, val);
+	}
+	
+	private static String getFieldDefaultValue(String name,Integer formId,boolean forAllPatients){
+		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
+		String val = (String)xformsService.getFieldDefaultValue(formId,name);
+		if(val == null){
+			val = (String)xformsService.getFieldDefaultValue(formId,name.replace('_', ' '));
+			if(val == null)
+				return null;
+		}
+		
+		if(val.indexOf("$!{") == -1)
+			return val;
+		else if(!forAllPatients){
+			Integer id = getDefaultValueId(val);
+			if(id != null)
+				return id.toString();
+		}
+		
+		return null;
+	}
+	
+	private static Integer getDefaultValueId(String val){
+		int pos1 = val.indexOf('(');
+		if(pos1 == -1)
+			return null;
+		int pos2 = val.indexOf(')');
+		if(pos2 == -1)
+			return null;
+		if((pos2 - pos1) < 2)
+			return null;
+		
+		String id = val.substring(pos1+1, pos2);
+		try{
+			return Integer.valueOf(id);
+		}catch(Exception e){}
+		
+		return null;
 	}
 	
 	/**
@@ -1104,12 +1168,11 @@ public final class XformBuilder {
 	 * @param controlNode - the UI control.
 	 */
 	private static void addControl(Element bodyNode, Element controlNode){
-		Element tableNode = null;
+		/*Element tableNode = null;
 		if(bodyNode.getChildCount() == 0){
 			tableNode = bodyNode.createElement(NAMESPACE_XHTML, null);
 			tableNode.setName(HTML_TAG_TABLE);
 			tableNode.setAttribute(null, HTML_ATTRIBUTE_CELLSPACING, HTML_ATTRIBUTE_CELLSPACING_VALUE);
-			//tableNode.setAttribute(null, HTML_ATTRIBUTE_CELLPADDING, HTML_ATTRIBUTE_CELLPADDING_VALUE);
 			bodyNode.addChild(Element.ELEMENT, tableNode);
 						
 			Element paragraphNode = bodyNode.createElement(NAMESPACE_XHTML, null);
@@ -1144,7 +1207,8 @@ public final class XformBuilder {
 		cell.addChild(Element.ELEMENT, controlNode);
 		
 		if(!newRowCreated)
-			currentRow = null;
+			currentRow = null;*/
+		bodyNode.addChild(Element.ELEMENT, controlNode);
 	}
 	
 	/**
@@ -1339,11 +1403,12 @@ public final class XformBuilder {
 	 * These are the ones with the attributes: openmrs_table and openmrs_attribute
 	 * e.g. <patient_unique_number openmrs_table="PATIENT_IDENTIFIER" openmrs_attribute="IDENTIFIER" /> 
 	 * 
+	 * @param formId - the id of the form.
 	 * @param parentNode - the root node of the xform.
 	 * @param patientId - the patient id.
 	 * @param xformsService - the xforms service.
 	 */
-	public static void setPatientTableFieldValues(Element parentNode, Integer patientId, XformsService xformsService){
+	public static void setPatientTableFieldValues(Integer formId,Element parentNode, Integer patientId, XformsService xformsService){
 		int numOfEntries = parentNode.getChildCount();
 		for (int i = 0; i < numOfEntries; i++) {
 			if (parentNode.getType(i) != Element.ELEMENT)
@@ -1353,12 +1418,13 @@ public final class XformBuilder {
 			String tableName = child.getAttributeValue(null, ATTRIBUTE_OPENMRS_TABLE);
 			String columnName = child.getAttributeValue(null, ATTRIBUTE_OPENMRS_ATTRIBUTE);
 			if(tableName != null && columnName != null && isUserDefinedNode(child.getName())){
-				Object value  = getPatientValue(xformsService,patientId,tableName,columnName);
+				String filterValue = getFieldDefaultValue(child.getName(), formId,false);
+				Object value  = getPatientValue(xformsService,patientId,tableName,columnName,filterValue);
 				if(value != null)
-					XformBuilder.setNodeValue(child, value.toString());
+					setNodeValue(child, value.toString());
 			}
 			
-			setPatientTableFieldValues(child, patientId, xformsService);
+			setPatientTableFieldValues(formId,child, patientId, xformsService);
 		}
 	}
 	
@@ -1371,12 +1437,12 @@ public final class XformBuilder {
 	 * @param columnName - the name of column in the table.
 	 * @return - the value
 	 */
-	private static Object getPatientValue(XformsService xformsService, Integer patientId, String tableName, String columnName){
+	private static Object getPatientValue(XformsService xformsService, Integer patientId, String tableName, String columnName, String filterValue){
 		
 		Object value = null;
 		
 		try{
-			value = xformsService.getPatientValue(patientId, tableName, columnName);
+			value = xformsService.getPatientValue(patientId, tableName, columnName,filterValue);
 		}
 		catch(Exception e){
 			System.out.println("No column called: "+columnName + " in table: " + tableName);

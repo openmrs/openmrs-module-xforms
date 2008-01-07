@@ -78,10 +78,11 @@ public interface XformsService {
 	 * @param patientId - the id of the patient.
 	 * @param tableName - the name of the database table.
 	 * @param columnName - the name of the database column.
+	 * @param filterValue - the value of the filter.
 	 * @return
 	 */
 	@Transactional(readOnly=true)
-	public Object getPatientValue(Integer patientId, String tableName, String columnName);
+	public Object getPatientValue(Integer patientId, String tableName, String columnName, String filterValue);
 	
 	/**
 	 * Gets a list of users.
@@ -107,4 +108,41 @@ public interface XformsService {
 	 */
 	@Transactional(readOnly=true)
 	public boolean hasXform(Integer formId);
+	
+	/**
+	 * Checks whether a form has an xslt stored in the database.
+	 * 
+	 * @param formId - the form id.
+	 * @return true if it has, else false.
+	 */
+	@Transactional(readOnly=true)
+	public boolean hasXslt(Integer formId);
+	
+	/**
+	 * Get the xslt for the given form's XForm.
+	 * 
+	 * @param formId id of the form that owns the XForm whose xslt to retrieve.
+	 * @return xslt of the XForm associated with the form.
+	 */
+	@Transactional(readOnly=true)
+	public String getXslt(Integer formId);
+	
+	/**
+	 * Saves an xform's xslt in the database. If it already exists, it will be overwritten,
+	 * else will create a new one.
+	 * 
+	 * @param formId - the id of the form whose xform's xslt to save.
+	 * @param xslt - the xslt to save.
+	 */
+	public void saveXslt(Integer formId, String xslt);
+	
+	/**
+	 * Gets the default value of a form field.
+	 * 
+	 * @param formId - the id of the form.
+	 * @param fieldName - the name of the field.
+	 * @return the default value of the form field.
+	 */
+	@Transactional(readOnly=true)
+	public Object getFieldDefaultValue(Integer formId, String fieldName);
 }

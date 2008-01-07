@@ -11,6 +11,7 @@
 	           <prop key="module/@MODULE_ID@/xformDesigner.form">xformDesigner</prop>
 	           <prop key="module/@MODULE_ID@/xformDataUpload.form">xformDataUpload</prop>
 	           <prop key="module/@MODULE_ID@/xformUpload.form">xformUpload</prop>
+	           <prop key="module/@MODULE_ID@/xsltUpload.form">xsltUpload</prop>
 	           <prop key="module/@MODULE_ID@/xformDelete.form">xformDelete</prop>
 	           <prop key="module/@MODULE_ID@/xformEntry.form">xformEntry</prop>
 	           <prop key="module/@MODULE_ID@/patientDownload.form">patientDownload</prop>
@@ -64,6 +65,12 @@
 	<property name="commandName"><value>xformUpload</value></property>
 	<property name="formView"><value>/module/@MODULE_ID@/xformUpload</value></property>
 	<property name="successView"><value>xformUpload.form</value></property>
+    </bean>
+    
+    <bean id="xsltUpload" class="@MODULE_PACKAGE@.web.controller.XformUploadController">
+	<property name="commandName"><value>xsltUpload</value></property>
+	<property name="formView"><value>/module/@MODULE_ID@/xsltUpload</value></property>
+	<property name="successView"><value>xsltUpload.form</value></property>
     </bean>
     
     <bean id="xformDelete" class="@MODULE_PACKAGE@.web.controller.XformDeleteController">

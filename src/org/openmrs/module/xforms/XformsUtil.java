@@ -7,11 +7,17 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
@@ -111,6 +117,92 @@ public class XformsUtil {
 		}
 		catch(Exception e){
 			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	private static String getDefaultStyle(){
+		return "@namespace xforms url(http://www.w3.org/2002/xforms/); "+
+			"/* Display a red background on all invalid form controls */ "+
+			"*:invalid { background-color: red; } "+
+			" "+
+			"/* Display a red asterisk after all required form controls */ "+
+			"*:required::after { content: '*'; color: red; } "+
+			" "+
+			"/* Do not render non-relevant form controls */ "+
+			"*:disabled { visibility: hidden; } "+
+			" "+
+			"/* Display an alert message when appropriate */ "+
+			"*:valid   > xforms|alert { display: none; } "+
+			"*:invalid > xforms|alert { display: inline; } ";
+	}
+
+	public static String getDefaultXSLT(){
+		return "<?xml version='1.0' encoding='UTF-8'?> "+
+			"<xsl:stylesheet version='2.0' "+
+			"xmlns:xsl='http://www.w3.org/1999/XSL/Transform' "+
+			"xmlns:fn='http://www.w3.org/2005/xpath-functions' "+
+			"xmlns:xf='http://www.w3.org/2002/xforms'> "+
+			"<xsl:output method='xml' version='1.0' encoding='UTF-8'/> "+
+			"<xsl:template match='/'> "+
+			" <html xmlns='http://www.w3.org/1999/xhtml' "+
+			"       xmlns:xf='http://www.w3.org/2002/xforms' "+
+			"       xmlns:xsd='http://www.w3.org/2001/XMLSchema' "+
+			"       xmlns:xs='http://www.w3.org/2001/XMLSchema' "+
+			"       xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' "+
+			"       xmlns:ev='http://www.w3.org/2001/xml-events' "+
+			"       xmlns:openmrstype='http://localhost:8080/openmrs/moduleServlet/formentry/forms/customtypes/schema/4-109' "+
+			" > " +
+			" <head> "+
+			"	<style> "+ getDefaultStyle() + " </style> "+
+			" 	<xsl:copy-of select='/xf:xforms/xf:model' /> "+
+			" </head> "+
+			" <body> "+
+			" <table cellspacing='10'> "+
+			" 	<xsl:for-each select='/xf:xforms/*'> "+
+			"   	<xsl:if test='fn:local-name() != \"model\"'> "+
+			"   	<tr> "+
+			"       <td> "+
+			" 			<xsl:copy-of select='.' /> "+
+			"       </td> "+
+			"       </tr> "+
+			"       </xsl:if> "+
+			" 	</xsl:for-each> "+
+			" </table> "+
+			" </body> "+
+			" </html> "+
+			"</xsl:template> "+
+			"</xsl:stylesheet> ";
+	}
+	
+	/**
+	 * Converts an xform to an xhtml document.
+	 * 
+	 * @param xform the xform
+	 * @param xsl the xslt
+	 * @return the xhtml representation of the xform.
+	 */
+	public static String fromXform2Xhtml(String xform, String xsl){
+		if(xsl == null) xsl = getDefaultXSLT();
+		StringWriter outWriter = new StringWriter();
+		Source source = new StreamSource(IOUtils.toInputStream(xform));
+		Source xslt = new StreamSource(IOUtils.toInputStream(xsl));
+		Result result = new StreamResult(outWriter);
+
+		System.setProperty("javax.xml.transform.TransformerFactory",
+		"net.sf.saxon.TransformerFactoryImpl");
+		
+		TransformerFactory tf = TransformerFactory.newInstance();
+
+		try {
+			Transformer t = tf.newTransformer(xslt);
+			t.transform(source, result);
+			return outWriter.toString();
+		} catch (TransformerConfigurationException e) {
+			log.error(e.getMessage(), e);
+		} catch (TransformerException e) {
+			log.error(e.getMessage(), e);
 		}
 		
 		return null;

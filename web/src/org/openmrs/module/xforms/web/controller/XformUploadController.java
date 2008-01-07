@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
+import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformsService;
 import org.openmrs.module.xforms.Xform;
 import org.openmrs.module.xforms.XformsUtil;
@@ -59,17 +60,30 @@ public class XformUploadController extends SimpleFormController{
 		
 		Integer formId = Integer.parseInt(request.getParameter("formId"));
 
+		String target = request.getParameter(XformConstants.REQUEST_PARAM_TARGET);
+		
 		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
-		MultipartFile xformFile = multipartRequest.getFile("xformFile");
-		if (xformFile != null && !xformFile.isEmpty()) {
-			XformsService xformsService = (XformsService)Context.getService(XformsService.class);
-			String xml = IOUtils.toString(xformFile.getInputStream());
-			Xform xform = new Xform();
-			xform.setFormId(formId);
-			xform.setXformData(xml);
-			xformsService.saveXform(xform);
-			
-			request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "xforms.xformUploadSuccess");
+
+		if (XformConstants.REQUEST_PARAM_XSLT.equals(target)){
+			MultipartFile xsltFile = multipartRequest.getFile("xsltFile");
+			if (xsltFile != null && !xsltFile.isEmpty()) {
+				XformsService xformsService = (XformsService)Context.getService(XformsService.class);
+				String xml = IOUtils.toString(xsltFile.getInputStream());
+				xformsService.saveXslt(formId,xml);
+				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "xforms.xsltUploadSuccess");
+			}
+		}
+		else{
+			MultipartFile xformFile = multipartRequest.getFile("xformFile");
+			if (xformFile != null && !xformFile.isEmpty()) {
+				XformsService xformsService = (XformsService)Context.getService(XformsService.class);
+				String xml = IOUtils.toString(xformFile.getInputStream());
+				Xform xform = new Xform();
+				xform.setFormId(formId);
+				xform.setXformData(xml);
+				xformsService.saveXform(xform);
+				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "xforms.xformUploadSuccess");
+			}
 		}
 		
 		return new ModelAndView(new RedirectView(request.getContextPath() + "/admin/forms/formSchemaDesign.form?formId=" + formId));

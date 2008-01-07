@@ -8,6 +8,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.formentry.FormEntryXsn;
 import org.openmrs.module.xforms.db.*;
 import org.openmrs.module.xforms.*;
+import org.springframework.transaction.annotation.Transactional;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -78,10 +79,10 @@ public class XformsServiceImpl implements XformsService{
     }
     
 	/**
-	 * @see org.openmrs.module.xforms.XformsService#getPatientValue(java.lang.Integer,java.lang.String,java.lang.String)
+	 * @see org.openmrs.module.xforms.XformsService#getPatientValue(java.lang.Integer,java.lang.String,java.lang.String,java.lang.String)
 	 */
-    public Object getPatientValue(Integer patientId, String tableName, String columnName){
-    	return getXformsDAO().getPatientValue(patientId, tableName, columnName);
+    public Object getPatientValue(Integer patientId, String tableName, String columnName, String filterValue){
+    	return getXformsDAO().getPatientValue(patientId, tableName, columnName,filterValue);
     }
     
 	/**
@@ -103,5 +104,34 @@ public class XformsServiceImpl implements XformsService{
 	 */
 	public boolean hasXform(Integer formId){
 	   	return getXformsDAO().hasXform(formId);
+	}
+	
+	/**
+	 * @see org.openmrs.module.xforms.XformsService#hasXslt(java.lang.Integer)
+	 */
+	public boolean hasXslt(Integer formId){
+		return getXformsDAO().hasXslt(formId);
+	}
+	
+	 /**
+     * @see org.openmrs.module.xforms.XformsService#getXslt(java.lang.Integer)
+     */
+	@Transactional(readOnly=true)
+	public String getXslt(Integer formId){
+		return getXformsDAO().getXslt(formId);
+	}
+	
+	 /**
+     * @see org.openmrs.module.xforms.XformsService#saveXslt(java.lang.Integer,java.lang.String)
+     */
+	public void saveXslt(Integer formId, String xslt){
+		getXformsDAO().saveXslt(formId, xslt);
+	}
+	
+	/**
+	 * @see org.openmrs.module.xforms.XformsService#getFieldDefaultValue(java.lang.Integer,java.lang.String)
+	 */
+	public Object getFieldDefaultValue(Integer formId, String fieldName){
+		return getXformsDAO().getFieldDefaultValue(formId, fieldName);
 	}
 }

@@ -72,7 +72,7 @@ public class PatientTableFieldBuilder {
 		Object val;
 		for(PatientTableField pfld : fields){
 			for(Integer patientId : patientids){
-				val = xformsService.getPatientValue(patientId, pfld.getTableName(), pfld.getColumnName());
+				val = xformsService.getPatientValue(patientId, pfld.getTableName(), pfld.getColumnName(),null);
 				if(val != null)
 					fieldValues.add(new PatientTableFieldValue(pfld.getId(),patientId,val));
 			}

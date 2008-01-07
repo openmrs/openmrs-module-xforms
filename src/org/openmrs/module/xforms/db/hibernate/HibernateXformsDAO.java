@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import org.openmrs.module.xforms.Xform;
 import org.openmrs.module.xforms.XformUser;
 import org.openmrs.module.xforms.db.*;
+import org.springframework.transaction.annotation.Transactional;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
@@ -80,10 +81,12 @@ public class HibernateXformsDAO implements XformsDAO{
 	}
 	
 	/**
-	 * @see org.openmrs.module.xforms.XformsService#getPatientValue(java.lang.Integer,java.lang.String,java.lang.String)
+	 * @see org.openmrs.module.xforms.XformsService#getPatientValue(java.lang.Integer,java.lang.String,java.lang.String,java.lang.String)
 	 */
-	public Object getPatientValue(Integer patientId, String tableName, String columnName){
+	public Object getPatientValue(Integer patientId, String tableName, String columnName, String filterValue){
 		String sql = "select " + columnName + " from " + tableName + " where " + (tableName.indexOf("person") != -1 ? "person_id" : "patient_id") + "=" + patientId;
+		if(filterValue != null && tableName.equalsIgnoreCase("PATIENT_IDENTIFIER") && columnName.equalsIgnoreCase("IDENTIFIER"))
+			sql += " and identifier_type = " + filterValue;
 		return sessionFactory.getCurrentSession().createSQLQuery(sql).uniqueResult();
 	}
 	
@@ -141,5 +144,61 @@ public class HibernateXformsDAO implements XformsDAO{
 	public boolean hasXform(Integer formId){
 		String sql = "select 1 from xform where form_id="+formId;
 		return sessionFactory.getCurrentSession().createSQLQuery(sql).uniqueResult() != null;
+	}
+	
+	/**
+	 * @see org.openmrs.module.xforms.XformsService#hasXslt(java.lang.Integer)
+	 */
+	public boolean hasXslt(Integer formId){
+		String sql = "select 1 from xform where xslt is not null and form_id="+formId;
+		return sessionFactory.getCurrentSession().createSQLQuery(sql).uniqueResult() != null;		
+	}
+	
+	 /**
+     * @see org.openmrs.module.xforms.XformsService#getXslt(java.lang.Integer)
+     */
+	public String getXslt(Integer formId){
+		String sql = "select xslt from xform where form_id="+formId;
+		try{
+			PreparedStatement st = sessionFactory.getCurrentSession().connection().prepareStatement(sql);
+			ResultSet res = st.executeQuery();
+			if(res.next())
+				return res.getString("xslt");
+		}
+		catch(SQLException e){
+			log.error(e);
+		}
+		
+		return null;
+	}
+	
+	 /**
+     * @see org.openmrs.module.xforms.XformsService#saveXslt(java.lang.Integer,java.lang.String)
+     */
+	public void saveXslt(Integer formId, String xslt){
+		Query query = sessionFactory.getCurrentSession().createSQLQuery("update xform set xslt = :xslt where form_id = :formId");
+		query.setParameter("xslt", xslt);
+		query.setParameter("formId", formId);
+    	 
+    	query.executeUpdate();
+	}
+	
+	/**
+	 * @see org.openmrs.module.xforms.XformsService#getFieldDefaultValue(java.lang.Integer,java.lang.String)
+	 */
+	public Object getFieldDefaultValue(Integer formId, String fieldName){
+		String sql = "select default_value from field f inner join form_field ff on f.field_id=ff.field_id where form_id="+formId+" and name='" + fieldName + "'";
+		
+		try{
+			PreparedStatement st = sessionFactory.getCurrentSession().connection().prepareStatement(sql);
+			ResultSet res = st.executeQuery();
+			if(res.next())
+				return res.getString("default_value");
+		}
+		catch(SQLException e){
+			log.error(e);
+		}
+		
+		return null;
 	}
 }

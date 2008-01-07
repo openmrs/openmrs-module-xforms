@@ -92,6 +92,9 @@ public class XformConstants {
 	/** The extension for our xforms. */
 	public static final String XFORM_FILE_EXTENSION = ".xml";
 	
+	/** The extension for xslt documents. */
+	public static final String XSLT_FILE_EXTENSION = ".xml";
+	
 	/** The extension for xml files. */
 	public static final String XML_FILE_EXTENSION = ".xml";
 	
@@ -103,6 +106,9 @@ public class XformConstants {
 	
 	/** The starter xform file name. */
 	public static final String STARTER_XFORM = "starter_xform.xml";
+	
+	/** The starter xform file name. */
+	public static final String STARTER_XSLT = "starter_xslt.xml";
 	
 	/** The empty string constant. */
 	public static final String EMPTY_STRING = "";
@@ -135,6 +141,9 @@ public class XformConstants {
 	
 	/** The xform request parameter. */
 	public static final String REQUEST_PARAM_XFORM = "xform";
+	
+	/** The xslt request parameter. */
+	public static final String REQUEST_PARAM_XSLT = "xslt";
 	
 	/** The xformentry request parameter. */
 	public static final String REQUEST_PARAM_XFORMENTRY = "xformentry";

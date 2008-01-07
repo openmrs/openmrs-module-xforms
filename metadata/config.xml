@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>xforms</id>
 	<name>XForms</name>
-	<version>1.0</version>
+	<version>1.1</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Daniel Kayiwa</author>
 	<description>
@@ -19,6 +19,10 @@
 	
 	
 	<require_version>1.0.53.1481</require_version>
+	<require_database_version>1.1.10</require_database_version>
+	<require_modules>
+		<require_module>org.openmrs.module.formentry</require_module>
+	</require_modules>
 	
 	<!-- Required Global Properties -->
 	<globalProperty>

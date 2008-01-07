@@ -25,6 +25,9 @@ public class Xform {
 	/** The date this XForm was submitted to the database. */
 	private Date dateCreated;
 	
+	/** The xslt to transform the xform to xhtml. */
+	private String xslt;
+	
 	/**
 	 * Default constructor
 	 */
@@ -86,4 +89,20 @@ public class Xform {
     public void setXformData(String xformData) {
     	this.xformData = xformData;
     }
+
+    /**
+     * 
+     * @return the xslt
+     */
+	public String getXslt() {
+		return xslt;
+	}
+
+	/**
+	 * 
+	 * @param xslt - the xslt to set
+	 */
+	public void setXslt(String xslt) {
+		this.xslt = xslt;
+	}
 }

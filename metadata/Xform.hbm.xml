@@ -17,5 +17,7 @@
 
 		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
 
+		<property name="xslt" type="java.lang.String" not-null="false" column="xslt" length="2147483647" />
+
 	</class>
 </hibernate-mapping>
