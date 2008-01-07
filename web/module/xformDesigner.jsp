@@ -8,27 +8,42 @@
 
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 
+<style>
+	#tabBlock {
+	
+	top: 150px;
+	
+	left: 120px;
+	
+	width: 320px;
+	
+	height: 80px;
+	
+	}
+ </style>
+ 
 <script type="text/javascript">
             dojo.require("dojo.widget.Toolbar");
             dojo.require("dojo.widget.LayoutContainer");
             dojo.require("dojo.widget.SplitContainer");
             dojo.require("dojo.widget.AccordionContainer");
+            dojo.require("dojo.widget.AccordionPane");
             dojo.require("dojo.widget.TabContainer");
             dojo.require("dojo.widget.ContentPane");
+            dojo.require("dojo.widget.FloatingPane");
+            dojo.require("dojo.widget.Editor");
             
-            dojo.hostenv.writeIncludes();
+            //dojo.hostenv.writeIncludes();
 </script>
 
-<div dojoType="dojo.widget.SplitContainer" id="rightPane"
-        orientation="vertical"  sizerWidth="5"  activeSizing="0">
-        <div id="listPane" dojoType="dojo.widget.ContentPane" sizeMin="20" sizeShare="20">
-              Message List will go here
-        </div>
-                                       
-        <div id="message" dojoType="dojo.widget.ContentPane" sizeMin="20" sizeShare="80">
-            Message will go here
-        </div>
-</div> <!--  End right hand side split container -->
+<div dojoType="TabContainer" id="mainTabContainer” >
+
+	<div dojoType="ContentPane" label="tab1" id="tab1">Contents of Tab 1 Pane</div>
+	
+	<div dojoType="ContentPane" label="tab1" id="tab1">Contents of Tab 2 Pane</div>
+
+</div>
+
 
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>
