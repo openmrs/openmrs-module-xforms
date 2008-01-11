@@ -19,16 +19,18 @@ import org.openmrs.module.xforms.SerializableData;
  *
  */
 public class UserDownloadManager {
+	
 	public static void downloadUsers(OutputStream os) throws Exception{
-		List<XformUser> users = ((XformsService)Context.getService(XformsService.class)).getUsers();
-		
+
 		String className = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_USER_SERIALIZER);
 		if(className == null || className.length() == 0)
 			className = XformConstants.DEFAULT_USER_SERIALIZER;
 	
-		//SerializableData sr = (SerializableData)Class.forName(className).newInstance();
 		SerializableData sr = (SerializableData)OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
-		sr.serialize(new DataOutputStream(os), users);
-		os.flush();
+		sr.serialize(new DataOutputStream(os), getUsers());
+	}
+	
+	public static List<XformUser> getUsers(){
+		return ((XformsService)Context.getService(XformsService.class)).getUsers();
 	}
 }

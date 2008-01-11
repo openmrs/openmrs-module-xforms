@@ -25,6 +25,8 @@ import org.openmrs.api.PatientService;
 import java.util.List;
 import java.util.Collection;
 import java.util.ArrayList;
+import java.util.zip.GZIPOutputStream;
+
 import org.openmrs.Cohort;
 import org.openmrs.Patient;
 //import org.openmrs.Person;
@@ -79,7 +81,11 @@ public class PatientDownloadController extends SimpleFormController{
 			if(request.getParameter(XformConstants.REQUEST_PARAM_DOWNLOAD_PATIENTS) != null){
 				response.setHeader(XformConstants.HTTP_HEADER_CONTENT_DISPOSITION, XformConstants.HTTP_HEADER_CONTENT_DISPOSITION_VALUE + getCohortName(Integer.parseInt(cohortId))+XformConstants.XML_FILE_EXTENSION);
 				response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
-				PatientDownloadManager.downloadPatients(cohortId,response.getOutputStream());
+				GZIPOutputStream gzip = new GZIPOutputStream(response.getOutputStream());
+				DataOutputStream dos = new DataOutputStream(gzip);
+				PatientDownloadManager.downloadPatients(cohortId,dos);
+				dos.flush();
+				gzip.finish();
 			}
 			else if(request.getParameter(XformConstants.REQUEST_PARAM_SET_COHORT) != null){
 				Context.getAdministrationService().setGlobalProperty("xforms.patientDownloadCohort", cohortId);

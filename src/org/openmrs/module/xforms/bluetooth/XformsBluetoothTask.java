@@ -30,8 +30,8 @@ public class XformsBluetoothTask implements Schedulable{
 	private static final String PROPERTY_SERVER_UUID = "ServerUUID";
 	private static final String PROPERTY_SERVER_IP = "ServerIP";
 	
-//	 Instance of bluetooth server.
-	//private BluetoothServer server = null;
+	// Instance of xforms bluetooth server.
+	private XformsBluetoothServer server = null;
 	
 	/**
 	 * Default Constructor (Uses SchedulerConstants.username and
@@ -48,7 +48,6 @@ public class XformsBluetoothTask implements Schedulable{
 	 */
 	public void run() {
 		Context.openSession();
-		log.debug("Running xforms bluetooth task... ");
 		try {
 			if (Context.isAuthenticated() == false)
 				authenticate();
@@ -74,16 +73,14 @@ public class XformsBluetoothTask implements Schedulable{
 				taskConfig.setProperty(PROPERTY_SERVER_IP, serverIP);
 				log.error("Property "+PROPERTY_SERVER_IP+" was null. Set to "+serverIP);
 			}
-			
-			System.out.println(serviceName + "  " + serverUUID + "  "  + serverIP);
 						
-			new XformsBluetoothServer(serviceName,serverUUID,serverIP);
+			server = new XformsBluetoothServer(serviceName,serverUUID,serverIP);
 			
 		} catch (APIException e) {
 			log.error("Error running xforms bluetooth task", e);
 			throw e;
 		} finally {
-			//Context.closeSession();
+			Context.closeSession();
 		}
 	}
 	
@@ -92,7 +89,9 @@ public class XformsBluetoothTask implements Schedulable{
 	 *
 	 */
 	public void shutdown() {
-		
+		System.out.println("shutdown called.");
+		server.stop();
+		System.out.println("bluetoth stopped.");
 	}
 	
 	/**
@@ -102,7 +101,6 @@ public class XformsBluetoothTask implements Schedulable{
 	 */
 	public void initialize(TaskConfig config) { 
 		this.taskConfig = config;
-		//System.out.println("called init");  
 		taskConfig.getProperty("name"); //Just to ensure we dont get exceptons on accessing this object else where.
 	}
 	

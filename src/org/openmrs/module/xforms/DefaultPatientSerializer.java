@@ -1,17 +1,14 @@
 package org.openmrs.module.xforms;
 
 
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.*;
-import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
-//import org.openmrs.Person;
 import org.openmrs.PersonName;
 
 //TODO This class may need to be refactored out of the XForms module. Am not very sure for now.
@@ -87,35 +84,29 @@ public class DefaultPatientSerializer implements SerializableData{
 			if(patients == null || patients.size() == 0)
 				return;
 			
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			DataOutputStream dosLocal = new DataOutputStream(baos);
-
-			dosLocal.writeInt(patients.size());
+			dos.writeInt(patients.size());
 			for(Patient patient : patients)
-				serialize(patient,dosLocal);
+				serialize(patient,dos);
 			
 			List<PatientTableField> fields = patientData.getFields(); 
 			if(fields == null || fields.size() == 0)
 				return;
-			dosLocal.writeByte(fields.size());
+			dos.writeByte(fields.size());
 			for(PatientTableField field : fields){
-				dosLocal.writeInt(field.getId());
-				dosLocal.writeUTF(field.getName());
+				dos.writeInt(field.getId());
+				dos.writeUTF(field.getName());
 			}
 			
 			List<PatientTableFieldValue> fieldVals = patientData.getFieldValues(); 
 			if(fieldVals == null || fieldVals.size() == 0)
 				return;
-			dosLocal.writeInt(fieldVals.size());
+			dos.writeInt(fieldVals.size());
 			for(PatientTableFieldValue fieldVal : fieldVals){
-				dosLocal.writeInt(fieldVal.getFieldId());
-				dosLocal.writeInt(fieldVal.getPatientId());
-				dosLocal.writeUTF(fieldVal.getValue().toString());
+				dos.writeInt(fieldVal.getFieldId());
+				dos.writeInt(fieldVal.getPatientId());
+				dos.writeUTF(fieldVal.getValue().toString());
 			}
 			
-			GZIPOutputStream gzip = new GZIPOutputStream(dos);
-			gzip.write(baos.toByteArray());
-			gzip.finish();
 		}catch(IOException e){
 			log.error(e);
 		}

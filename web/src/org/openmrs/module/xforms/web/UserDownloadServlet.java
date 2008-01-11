@@ -1,6 +1,9 @@
 package org.openmrs.module.xforms.web;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.zip.GZIPOutputStream;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -51,8 +54,15 @@ public class UserDownloadServlet  extends HttpServlet {
 			if (!XformsUtil.isAuthenticated(request,response,null))
 				return;
 			
-			response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING); 
-			UserDownloadManager.downloadUsers(response.getOutputStream());
+			response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
+			
+			GZIPOutputStream gzip = new GZIPOutputStream(response.getOutputStream());
+			DataOutputStream dos = new DataOutputStream(gzip);
+			
+			UserDownloadManager.downloadUsers(dos);
+			
+			dos.flush();
+			gzip.finish();
 		}
 		catch(Exception e){
 			response.getOutputStream().print("failed with: " + e.getMessage());

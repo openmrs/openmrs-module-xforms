@@ -33,17 +33,27 @@
             dojo.require("dojo.widget.FloatingPane");
             dojo.require("dojo.widget.Editor");
             
-            //dojo.hostenv.writeIncludes();
+            dojo.hostenv.writeIncludes();
 </script>
 
 <div dojoType="TabContainer" id="mainTabContainer” >
-
 	<div dojoType="ContentPane" label="tab1" id="tab1">Contents of Tab 1 Pane</div>
-	
 	<div dojoType="ContentPane" label="tab1" id="tab1">Contents of Tab 2 Pane</div>
-
 </div>
 
+dojo.hostenv.writeIncludes();
+
+/*function helloPressed() 
+{ 
+	alert('You pressed the button'); 
+} 
+function init() 
+{ 
+	var helloButton = dojo.widget.byId('helloButton');
+	dojo.event.connect(helloButton, 'onClick', 'helloPressed') 
+} 
+dojo.addOnLoad(init);*/ 
+//<button dojoType="Button" widgetId="helloButton">Hello World!</button> 
 
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

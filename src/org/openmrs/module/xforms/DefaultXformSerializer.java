@@ -40,17 +40,10 @@ public class DefaultXformSerializer implements SerializableData{
 	 */
 	public void serialize(DataOutputStream dos,Object data){
 		try{
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			DataOutputStream dosLocal = new DataOutputStream(baos);
-
 			List<String> xforms = (List<String>)data; //This is always a list of strings.
-			dosLocal.writeByte(xforms.size()); //Write the size such that the party at the other end knows how many times to loop.
+			dos.writeByte(xforms.size()); //Write the size such that the party at the other end knows how many times to loop.
 			for(String xml : xforms)
-				dosLocal.writeUTF(xml);
-			
-			GZIPOutputStream gzip = new GZIPOutputStream(dos);
-			gzip.write(baos.toByteArray());
-			gzip.finish();
+				dos.writeUTF(xml);
 		}
 		catch(Exception e){
 			log.error(e);

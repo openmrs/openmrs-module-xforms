@@ -2,6 +2,9 @@ package org.openmrs.module.xforms.web;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletException;
@@ -26,6 +29,7 @@ import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformsActivator;
 
 import org.openmrs.module.xforms.*;
+import org.openmrs.module.xforms.download.UserDownloadManager;
 import org.openmrs.module.xforms.download.XformDownloadManager;
 
 import org.kxml2.kdom.*;
@@ -78,15 +82,24 @@ public class XformDownloadServlet extends HttpServlet {
 		if(XformConstants.FALSE_TEXT_VALUE.equalsIgnoreCase(useStoredXform))
 			createNew = true;
 		
+		//This property if for those who do not want to make two separate requests for 
+		//users and xforms. This can be helpfull in say bluetooth implementations where
+		//the first connection succeeds but second fails randomly hence making it better
+		//to fetch everything in once single connection request.
+		String shouldIncludeUsers = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_INCLUDE_USERS_IN_XFORMS_DOWNLOAD);
+		boolean includeUsers = true;
+		if(XformConstants.FALSE_TEXT_VALUE.equalsIgnoreCase(shouldIncludeUsers))
+			includeUsers = false;
+		
 		if(XformConstants.REQUEST_PARAM_XFORMS.equalsIgnoreCase(target))
-			doXformsGet(request, response,formEntryService,xformsService,createNew);
+			doXformsGet(request, response,formEntryService,xformsService,createNew,includeUsers);
 		else{
 			Integer formId = Integer.parseInt(request.getParameter(XformConstants.REQUEST_PARAM_FORM_ID));
 			Form form = formEntryService.getForm(formId);
 
 			if (XformConstants.REQUEST_PARAM_XFORM.equalsIgnoreCase(target)) 
 				doXformGet(request, response, form,formEntryService,xformsService,createNew);
-			else if (XformConstants.REQUEST_PARAM_XFORMENTRY.equals(target))		
+			else if (XformConstants.REQUEST_PARAM_XFORM_ENTRY.equals(target))		
 				doXformEntryGet(request, response, form,formEntryService,xformsService,createNew);
 			else if (XformConstants.REQUEST_PARAM_XSLT.equals(target))		
 				doXsltGet(response, form,xformsService,createNew);
@@ -101,20 +114,31 @@ public class XformDownloadServlet extends HttpServlet {
 	 * @param formEntryService - the formentry service.
 	 * @param xformsService - the xforms service.
 	 * @param createNew - true to create a new xform or false to load an existing. 
+	 * @param includeUsers - true to include users else not.
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	protected void doXformsGet(HttpServletRequest request, HttpServletResponse response, FormEntryService formEntryService,XformsService xformsService,boolean createNew) throws ServletException, IOException {
+	protected void doXformsGet(HttpServletRequest request, HttpServletResponse response, FormEntryService formEntryService,XformsService xformsService,boolean createNew,boolean includeUsers) throws ServletException, IOException {
 		try
 		{		
-			response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING); //setContentType("text/html;charset=utf-8");
-			XformDownloadManager.downloadXforms(getActionUrl(request), response.getOutputStream());
+			response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
+			
+			GZIPOutputStream gzip = new GZIPOutputStream(response.getOutputStream());
+			DataOutputStream dos = new DataOutputStream(gzip);
+
+			if(includeUsers)
+				UserDownloadManager.downloadUsers(dos);
+			
+			XformDownloadManager.downloadXforms(getActionUrl(request), dos);
+			
+			dos.flush();
+			gzip.finish();	
+			System.out.println("downloaded xforms");
 		}
 		catch(Exception e){
 			response.getOutputStream().print("failed with: " + e.getMessage());
 			log.error(e);
 		}
-
 	}
 	
 	/**

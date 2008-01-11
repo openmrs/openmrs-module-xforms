@@ -5,6 +5,8 @@ import java.io.DataOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -39,7 +41,19 @@ public class XformDownloadManager {
 	 * @throws Exception
 	 */
 	public static void downloadXforms(String actionUrl, OutputStream os) throws Exception{
+		Context.openSession(); //This prevents the bluetooth server from failing with the form field lazy load exception.
 		
+		String className = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_XFORM_SERIALIZER);
+		if(className == null || className.length() == 0)
+			className = XformConstants.DEFAULT_XFORM_SERIALIZER;
+		
+		SerializableData sr = (SerializableData)OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
+		sr.serialize(new DataOutputStream(os), getXmlForms(actionUrl));
+		
+		//Context.closeSession();
+	}
+	
+	private static List<String> getXmlForms(String actionUrl){
 		String useStoredXform = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_USER_STORED_XFORMS);
 		boolean createNew = false;
 		if(XformConstants.FALSE_TEXT_VALUE.equalsIgnoreCase(useStoredXform))
@@ -51,21 +65,15 @@ public class XformDownloadManager {
 		List<Xform> xforms = xformsService.getXforms();
 		List<String> xmlforms = new ArrayList<String>();
 		for(Xform xform : xforms){
-			if(xform.getFormId() != XformConstants.PATIENT_XFORM_FORM_ID)
-				xmlforms.add(getXform(formEntryService,xformsService,xform.getFormId(),createNew,actionUrl));
+			if(xform.getFormId() != XformConstants.PATIENT_XFORM_FORM_ID){
+				String s = getXform(formEntryService,xformsService,xform.getFormId(),createNew,actionUrl);
+				xmlforms.add(s);
+			}
 		}
 		
 		String xml = XformBuilder.getNewPatientXform(actionUrl);
 		xmlforms.add(xml);
-		
-		String className = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_XFORM_SERIALIZER);
-		if(className == null || className.length() == 0)
-			className = XformConstants.DEFAULT_XFORM_SERIALIZER;
-		
-		//SerializableData sr = (SerializableData)Class.forName(className).newInstance();
-		SerializableData sr = (SerializableData)OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
-		sr.serialize(new DataOutputStream(os), xmlforms);
-		os.flush();
+		return xmlforms;
 	}
 	
 	/**
@@ -93,7 +101,9 @@ public class XformDownloadManager {
 	 */
 	private static String createNewXform(FormEntryService formEntryService, Form form,String actionUrl){
 		String schemaXml = formEntryService.getSchema(form);
+		System.out.print(schemaXml);
 		String templateXml = new FormXmlTemplateBuilder(form,FormEntryUtil.getFormAbsoluteUrl(form)).getXmlTemplate(false);
+		System.out.print(templateXml);
 		return XformBuilder.getXform4mStrings(schemaXml, templateXml,actionUrl);
 	}
 	

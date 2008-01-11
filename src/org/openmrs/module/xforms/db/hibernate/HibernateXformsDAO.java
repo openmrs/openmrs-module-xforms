@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import org.openmrs.module.xforms.Xform;
 import org.openmrs.module.xforms.XformUser;
+import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.db.*;
 import org.springframework.transaction.annotation.Transactional;
 import org.apache.commons.logging.Log;
@@ -84,10 +85,16 @@ public class HibernateXformsDAO implements XformsDAO{
 	 * @see org.openmrs.module.xforms.XformsService#getPatientValue(java.lang.Integer,java.lang.String,java.lang.String,java.lang.String)
 	 */
 	public Object getPatientValue(Integer patientId, String tableName, String columnName, String filterValue){
-		String sql = "select " + columnName + " from " + tableName + " where " + (tableName.indexOf("person") != -1 ? "person_id" : "patient_id") + "=" + patientId;
-		if(filterValue != null && tableName.equalsIgnoreCase("PATIENT_IDENTIFIER") && columnName.equalsIgnoreCase("IDENTIFIER"))
-			sql += " and identifier_type = " + filterValue;
-		return sessionFactory.getCurrentSession().createSQLQuery(sql).uniqueResult();
+		try{
+			String sql = "select " + columnName + " from " + tableName + " where " + (tableName.indexOf("person") != -1 ? "person_id" : "patient_id") + "=" + patientId;
+			if(filterValue != null && tableName.equalsIgnoreCase("PATIENT_IDENTIFIER") && columnName.equalsIgnoreCase("IDENTIFIER"))
+				sql += " and identifier_type = " + filterValue;
+			return sessionFactory.getCurrentSession().createSQLQuery(sql).uniqueResult();
+		}catch(Exception e){
+			log.error("Could not get value for field:["+columnName+"] table:["+tableName+"]");
+		}
+		
+		return null;
 	}
 	
 	/**
@@ -118,7 +125,7 @@ public class HibernateXformsDAO implements XformsDAO{
 	public List<Integer> getXformFormIds(){
 		List<Integer> formIds = new ArrayList<Integer>();
 		
-		String sql = "select form_id from xform";
+		String sql = "select form_id from xform where form_id<>"+XformConstants.PATIENT_XFORM_FORM_ID;
 	
 		try{
 			PreparedStatement st = sessionFactory.getCurrentSession().connection().prepareStatement(sql);

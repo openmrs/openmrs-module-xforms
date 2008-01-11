@@ -65,6 +65,9 @@ public class XformConstants {
 	/** The global property key for determining whether to use stored xforms or build new ones on the fly. */
 	public static final String GLOBAL_PROP_KEY_USER_STORED_XFORMS = "xforms.useStoredXform";
 	
+	/** The global property key for determining whether to include users when downloading xforms. */
+	public static final String GLOBAL_PROP_KEY_INCLUDE_USERS_IN_XFORMS_DOWNLOAD = "xforms.includeUsersInXformsDownload";
+
 	/** The global property key for the patient download cohort.*/
 	public static final String GLOBAL_PROP_KEY_PATIENT_DOWNLOAD_COHORT = "xforms.patientDownloadCohort";
 
@@ -133,6 +136,9 @@ public class XformConstants {
 	/** The batchEntry request parameter. */
 	public static final String REQUEST_PARAM_BATCH_ENTRY = "batchEntry";
 	
+	/** The xformentry request parameter. */
+	public static final String REQUEST_PARAM_XFORM_ENTRY = "xformentry";
+	
 	/** The phrase request parameter. */
 	public static final String REQUEST_PARAM_PATIENT_SEARCH_PHRASE = "phrase";
 	
@@ -144,12 +150,12 @@ public class XformConstants {
 	
 	/** The xslt request parameter. */
 	public static final String REQUEST_PARAM_XSLT = "xslt";
-	
-	/** The xformentry request parameter. */
-	public static final String REQUEST_PARAM_XFORMENTRY = "xformentry";
-	
+		
 	/** The target request parameter. */
 	public static final String REQUEST_PARAM_TARGET = "target";
+	
+	/** The cohortId request parameter. */
+	public static final String REQUEST_PARAM_INCLUDE_USERS = "includeUsers";
 	
 	/** The cohortId request parameter. */
 	public static final String REQUEST_PARAM_COHORT_ID = "cohortId";

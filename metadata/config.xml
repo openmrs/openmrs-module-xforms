@@ -100,6 +100,11 @@
 		<defaultValue>xforms/archive/%Y/%M</defaultValue>
 		<description>Directory containing the xforms archive items.  This will contain xform model xml files that have been submitted and then submitted sucessfully into the formentry queue. </description>
 	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.includeUsersInXformsDownload</property>
+		<defaultValue>true</defaultValue>
+		<description>Set to true if you want to include users when downloading xforms, else set to false if you want to always load the users list separately.</description>
+	</globalProperty>
 	<!-- /Required Global Properties -->
 
 	<!-- /Xforms Module Properties -->

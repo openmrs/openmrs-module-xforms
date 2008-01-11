@@ -2,6 +2,7 @@ package org.openmrs.module.xforms.bluetooth;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -33,16 +34,26 @@ public class XformsBluetoothServer  implements BluetoothServerListener  {
 	/** Action to download a list of patients from the server. */
 	public static final byte ACTION_DOWNLOAD_USERS = 7;
 	
+	/** Action to download a list of users and forms from the server. */
+	public static final byte ACTION_DOWNLOAD_USERS_AND_FORMS = 11;
+	
 	private Log log = LogFactory.getLog(this.getClass());
 	
 	/** The IP address of the server. */
 	private String serverIP;
 	
+	private BluetoothServer server;
 	
 	/** Constructs an xforms bluetooth server instance. */
 	public XformsBluetoothServer(String name, String serverUUID,String serverIP){
 		this.serverIP = serverIP;
-		new BluetoothServer(name,serverUUID,this);
+		server = new BluetoothServer(name,serverUUID,this);
+	}
+	
+	/** Stop this server from running. */
+	public void stop(){
+		if(server != null)
+			server.destroy();
 	}
 	
 	/**
@@ -51,7 +62,7 @@ public class XformsBluetoothServer  implements BluetoothServerListener  {
 	 * @param dis - the stream to read from.
 	 * @param dos - the stream to write to.
 	 */
-	public void processConnection(DataInputStream dis, DataOutputStream dos){
+	public void processConnection(DataInputStream dis, DataOutputStream dosParam){
 		try{		 			
 			 String name = dis.readUTF();
 			 String pw = dis.readUTF();
@@ -59,52 +70,47 @@ public class XformsBluetoothServer  implements BluetoothServerListener  {
 			 
 			 byte action = dis.readByte();
 			 
+			 GZIPOutputStream gzip = new GZIPOutputStream(dosParam);
+			 DataOutputStream dos = new DataOutputStream(gzip);
+				
 			 if(action == ACTION_DOWNLOAD_PATIENTS)
-				 downloadPatients(dis,dos);
+				 PatientDownloadManager.downloadPatients(null, dos);
 			 else if(action == ACTION_DOWNLOAD_FORMS)
-				 downloadForms(dis,dos);
+				 XformDownloadManager.downloadXforms(getActionUrl(), dos);
 			 else if(action == ACTION_UPLOAD_FORMS)
-				 uploadForms(dis,dos);
+				 XformDownloadManager.downloadXforms(getActionUrl(), dos);
 			 else if(action == ACTION_DOWNLOAD_USERS)
-				 downloadUsers(dis,dos);
+				 UserDownloadManager.downloadUsers(dos);
+			 else if(action == ACTION_DOWNLOAD_USERS_AND_FORMS)
+				 downloadUsersAndForms(dos);
+			 
+			 dos.flush();
+			 gzip.finish();
 		}
 		catch(Exception e){
 			log.error(e);
+			e.printStackTrace();
 		}
 	}
 	
+	//TODO I guess this needs to be done in a smarter way.
 	private String getActionUrl(){
 		//HttpServletRequest request = WebContextFactory.get().getHttpServletRequest();
 		//HttpSession session = WebContextFactory.get().getSession();
 		return "http://" + serverIP + ":8080/openmrs/module/xforms/xformDataUpload.form";
 	}
-	
-	private void downloadUsers(DataInputStream dis, DataOutputStream dos) throws Exception{
-		//String locationUrl = "http://localhost:8080/openmrs/moduleServlet/xforms/userDownload?uname=guyzb&pw=daniel123";
-		//this.processConnection(clientDis, clientDos, comnParam, locationUrl,"application/x-www-form-urlencoded");
+			
+	/**
+	 * Downloads a list of users and xforms.
+	 * 
+	 * @param dos - the stream to write to.
+	 * @throws Exception
+	 */
+	private void downloadUsersAndForms(DataOutputStream dos) throws Exception{
 		UserDownloadManager.downloadUsers(dos);
+		XformDownloadManager.downloadXforms(getActionUrl(), dos);
+	}
 		
-	}
-	
-	private void downloadPatients(DataInputStream dis, DataOutputStream dos) throws Exception{
-		//String locationUrl = "http://localhost:8080/openmrs/module/xforms/patientDownload.form?downloadPatients=true&uname=guyzb&pw=daniel123";
-		//this.processConnection(clientDis, clientDos, comnParam, locationUrl,"application/x-www-form-urlencoded");
-		PatientDownloadManager.downloadPatients(null, dos);
-	}
-	
-	private void downloadForms(DataInputStream dis, DataOutputStream dos) throws Exception{
-		//72.249.82.103
-		//String locationUrl = "http://localhost:8080/openmrs/moduleServlet/xforms/xformDownload?target=xforms&createNew=true&uname=guyzb&pw=daniel123";
-		//this.processConnection(clientDis, clientDos, comnParam, locationUrl,"application/x-www-form-urlencoded");
-		XformDownloadManager.downloadXforms(getActionUrl(), dos);
-	}
-	
-	private void uploadForms(DataInputStream dis, DataOutputStream dos) throws Exception{
-		//String locationUrl = "http://localhost:8080/openmrs/module/xforms/xformDataUpload.form?batchEntry=true&uname=guyzb&pw=daniel123";
-		//this.processConnection(clientDis, clientDos, comnParam, locationUrl, "application/octet-stream");
-		XformDownloadManager.downloadXforms(getActionUrl(), dos);
-	}
-	
 	/**
 	 * Called when an error occurs during processing.
 	 * 
