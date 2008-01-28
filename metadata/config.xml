@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>xforms</id>
 	<name>XForms</name>
-	<version>1.1</version>
+	<version>1.2</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Daniel Kayiwa</author>
 	<description>
@@ -104,6 +104,16 @@
 		<property>@MODULE_ID@.includeUsersInXformsDownload</property>
 		<defaultValue>true</defaultValue>
 		<description>Set to true if you want to include users when downloading xforms, else set to false if you want to always load the users list separately.</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.dateFormat</property>
+		<defaultValue>dd-mm-yyyy</defaultValue>
+		<description>The format of the dates passed in the xml of the xforms model. Please make sure this matches with the date format of your data entry applications, else you will get wrong dates on the server.</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.rejectExistingPatientCreation</property>
+		<defaultValue>true</defaultValue>
+		<description>Set to true to Reject forms for patients considered new when they already exist, by virture of patient identifier. Else set to false to allow them.</description>
 	</globalProperty>
 	<!-- /Required Global Properties -->
 

@@ -72,4 +72,36 @@
 		</sql>
 	</diff>
 	
+	<diff>
+		<version>1.2</version>
+		<author>Daniel Kayiwa</author>
+		<date>Jan 22nd 2008</date>
+		<description>
+			Adding more sms task config parameters.
+		</description>
+		<sql>
+			
+			insert into scheduler_task_config_property (name,value,task_config_id)
+			values ('MsgSrcPort','1234',(select max(task_config_id) from scheduler_task_config) );
+	
+			insert into scheduler_task_config_property (name,value,task_config_id)
+			values ('MsgDestPort','1234',(select max(task_config_id) from scheduler_task_config) );
+	
+			insert into scheduler_task_config_property (name,value,task_config_id)
+			values ('ModemBaudRate','9600',(select max(task_config_id) from scheduler_task_config) );
+	
+			insert into scheduler_task_config_property (name,value,task_config_id)
+			values ('ModemManufacturer','Nokia',(select max(task_config_id) from scheduler_task_config) );
+	
+			insert into scheduler_task_config_property (name,value,task_config_id)
+			values ('ModemModel','6020',(select max(task_config_id) from scheduler_task_config) );
+	
+			insert into scheduler_task_config_property (name,value,task_config_id)
+			values ('ModemId','OpenMRS SMS Gateway',(select max(task_config_id) from scheduler_task_config) );
+	
+			delete from scheduler_task_config_property where name='ServerPort';
+			
+		</sql>
+	</diff>
+	
 </sqldiff>

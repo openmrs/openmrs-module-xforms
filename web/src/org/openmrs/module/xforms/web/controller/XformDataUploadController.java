@@ -51,9 +51,9 @@ public class XformDataUploadController extends SimpleFormController{
 		request.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
 		
 		if(XformConstants.TRUE_TEXT_VALUE.equalsIgnoreCase(request.getParameter(XformConstants.REQUEST_PARAM_BATCH_ENTRY)))
-			XformDataUploadManager.submitXforms(request.getInputStream(),request.getSession().getId());
+			XformDataUploadManager.submitXforms(request.getInputStream(),request.getSession().getId(),XformsUtil.getActionUrl(request));
 		else{
-			XformDataUploadManager.submitXform(IOUtils.toString(request.getInputStream()),request.getSession().getId());
+			XformDataUploadManager.processXform(IOUtils.toString(request.getInputStream()),request.getSession().getId(),XformsUtil.getEnterer());
 			setSingleEntryResponse(request, response);
 		}
 		

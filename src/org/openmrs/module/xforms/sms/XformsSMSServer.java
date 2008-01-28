@@ -1,9 +1,15 @@
 package org.openmrs.module.xforms.sms;
 
 
-import dk.daimi.jones.services.sms.NMIListener;
-import dk.daimi.jones.services.sms.SMSMessage;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.fcitmuk.communication.sms.SMSServer;
+import org.fcitmuk.communication.sms.SMSServerListener;
+import org.openmrs.module.xforms.XformsServer;
 
 /**
  * Serves xforms services to SMS connections.
@@ -11,28 +17,32 @@ import org.fcitmuk.communication.sms.SMSServer;
  * @author Daniel
  *
  */
-public class XformsSMSServer  implements NMIListener{
+public class XformsSMSServer  implements SMSServerListener{
 
-	private SMSServer server;
+	private Log log = LogFactory.getLog(this.getClass());
 	
-	public XformsSMSServer(String port){
-		server = new SMSServer(port,this);
+	private SMSServer smsServer;
+	private XformsServer xformsServer;
+	 	
+	public XformsSMSServer(String id,String comPort, int msgDstPort, int msgSrcPort, int baudRate, String manufacturer, String model, String serverIP){
+		smsServer = new SMSServer(id,comPort,msgDstPort,msgSrcPort,baudRate,manufacturer,model,this);
+		xformsServer = new XformsServer(serverIP);
 	}
 	
 	public void start(){
-		server.start();
+		smsServer.start();
 	}
 	
 	public void stop(){
-		server.stop();
+		if(smsServer != null)
+			smsServer.stop();
 	}
 	
-	public void messageReceived(SMSMessage sms){
-		processMessage(sms);
+	public void processMessage(DataInputStream dis, DataOutputStream dos){
+		xformsServer.processConnection(dis, dos);
 	}
 	
-	private void processMessage(SMSMessage sms){
-		System.out.println("Received SMS from '" + sms.getAddress() + "'");
-		System.out.println("Text: '" + sms.getData() + "'");
+	public void errorOccured(String errorMessage, Exception e){
+		log.error(errorMessage, e);
 	}
 }

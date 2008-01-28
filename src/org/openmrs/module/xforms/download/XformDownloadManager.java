@@ -53,6 +53,12 @@ public class XformDownloadManager {
 		//Context.closeSession();
 	}
 	
+	/**
+	 * Gets xforms as xml text.
+	 * 
+	 * @param actionUrl
+	 * @return a list of xforms xml text.
+	 */
 	private static List<String> getXmlForms(String actionUrl){
 		String useStoredXform = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_USER_STORED_XFORMS);
 		boolean createNew = false;
@@ -84,7 +90,7 @@ public class XformDownloadManager {
 	 * @param formId - the form id.
 	 * @return - the created xml form.
 	 */
-	private static String createNewXform(FormEntryService formEntryService, Integer formId,String actionUrl){
+	public static String createNewXform(FormEntryService formEntryService, Integer formId,String actionUrl){
 		Form form = formEntryService.getForm(formId);
 		return createNewXform(formEntryService, form,actionUrl);
 	}
@@ -99,11 +105,9 @@ public class XformDownloadManager {
 	 * @param form - the form object.
 	 * @return - the xml content of the xform.
 	 */
-	private static String createNewXform(FormEntryService formEntryService, Form form,String actionUrl){
+	public static String createNewXform(FormEntryService formEntryService, Form form,String actionUrl){
 		String schemaXml = formEntryService.getSchema(form);
-		System.out.print(schemaXml);
 		String templateXml = new FormXmlTemplateBuilder(form,FormEntryUtil.getFormAbsoluteUrl(form)).getXmlTemplate(false);
-		System.out.print(templateXml);
 		return XformBuilder.getXform4mStrings(schemaXml, templateXml,actionUrl);
 	}
 	

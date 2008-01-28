@@ -50,6 +50,18 @@ public class XformConstants {
 	/** The default character encoding used when writting and reading bytes to and from streams. */
 	public static final String DEFAULT_CHARACTER_ENCODING = "UTF-8";
 	
+	/** The default date format. */
+	public static final String DEFAULT_DATE_FORMAT = "dd-mm-yyyy";
+	
+	/** The default value for rejecting forms for patients considered new when they already exist, by virture of patient identifier. */
+	public static final String DEFAULT_REJECT_EXIST_PATIENT_CREATE = "true";
+	
+	/** The global property key for rejecting forms for patients considered new when they already exist, by virture of patient identifier. */
+	public static final String GLOBAL_PROP_KEY_REJECT_EXIST_PATIENT_CREATE = "xforms.rejectExistingPatientCreation";
+	
+	/** The global property key for the date format.*/
+	public static final String GLOBAL_PROP_KEY_DATE_FORMAT = "xforms.dateFormat";
+	
 	/** The global property key for the user serializer class.*/
 	public static final String GLOBAL_PROP_KEY_USER_SERIALIZER= "xforms.userSerializer";
 		
@@ -174,4 +186,7 @@ public class XformConstants {
 	
 	/** The downloadPatientXform request parameter. */
 	public static final String REQUEST_PARAM_DOWNLOAD_PATIENT_XFORM = "downloadPatientXform";
+	
+	/** The relative url for xforms data uploads. */
+	public static final String XFORM_DATA_UPLOAD_RELATIVE_URL = "/module/xforms/xformDataUpload.form";
 }

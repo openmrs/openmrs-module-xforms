@@ -1533,7 +1533,7 @@ public final class XformBuilder {
 		
 		Element formNode =  doc.createElement(null, null);
 		formNode.setName(NODE_PATIENT);
-		formNode.setAttribute(null, ATTRIBUTE_ID, "0");
+		formNode.setAttribute(null, ATTRIBUTE_ID, String.valueOf(XformConstants.PATIENT_XFORM_FORM_ID));
 		formNode.setAttribute(null, ATTRIBUTE_DESCRIPTION_TEMPLATE,"${/patient/family_name}$ ${/patient/middle_name}$ ${/patient/given_name}$");
 		
 		instanceNode.addChild(Element.ELEMENT, formNode);
@@ -1544,6 +1544,11 @@ public final class XformBuilder {
 		submitNode.setAttribute(null, ATTRIBUTE_ACTION, xformAction);
 		submitNode.setAttribute(null, ATTRIBUTE_METHOD, SUBMISSION_METHOD);
 		modelNode.addChild(Element.ELEMENT,submitNode);
+		
+		//This will be the creator for patient record
+		Element element = formNode.createElement(null, null);
+		element.setName(XformConstants.NODE_ENTERER);
+		formNode.addChild(Element.ELEMENT, element);
 		
 		addPatientNode(formNode,modelNode,bodyNode,NODE_FAMILY_NAME,DATA_TYPE_TEXT,"Family Name","The patient family name",true,false,CONTROL_INPUT,null,null);
 		addPatientNode(formNode,modelNode,bodyNode,NODE_MIDDLE_NAME,DATA_TYPE_TEXT,"Middle Name","The patient middle name",false,false,CONTROL_INPUT,null,null);

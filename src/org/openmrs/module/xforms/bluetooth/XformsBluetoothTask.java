@@ -114,4 +114,8 @@ public class XformsBluetoothTask implements Schedulable{
 			log.error("Error authenticating user", e);
 		}
 	}
+	
+	protected void finalize(){
+		
+	}
 }

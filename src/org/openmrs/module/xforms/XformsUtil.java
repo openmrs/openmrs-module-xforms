@@ -1,8 +1,14 @@
 package org.openmrs.module.xforms;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.File;
 import java.io.StringWriter;
 import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,8 +34,8 @@ import org.w3c.dom.Document;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.module.formentry.FormEntryConstants;
 import org.openmrs.util.OpenmrsUtil;
-import org.openmrs.web.WebConstants;
 import org.openmrs.module.formentry.*;
+import org.openmrs.web.WebConstants;
 
 /**
  * Provides utilities needed when processing xforms.
@@ -259,4 +265,57 @@ public class XformsUtil {
     	
 		return xformsArchiveDir;
     }
+    
+    /**
+     * Converts a string to a date.
+     * 
+     * @param date - the date string.
+     * @return - the Date object.
+     * @throws ParseException - when passed a badly formatted date.
+     */
+    public static Date formString2Date(String date) throws ParseException {
+    	SimpleDateFormat dateFormat = new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_FORMAT,XformConstants.DEFAULT_DATE_FORMAT));
+     	return dateFormat.parse(date);
+    }
+    
+    /**
+	 * Gets a random file name.
+	 * 
+	 * @return - the file name.
+	 */
+    public static String getRandomFileName(){
+		return new Date().toString().replace(':', '_');
+	}
+    
+    /**
+     * Reads the contents of a file as a string.
+     * 
+     * @param pathName - the full path and name of the file.
+     * @return the string contents.
+     */
+    public static String readFile(String pathName) throws FileNotFoundException, IOException{
+    	StringBuffer out = new StringBuffer();
+    	File file  = new File(pathName);
+    	FileReader reader = new FileReader(file);
+    	BufferedReader input = new BufferedReader(reader);
+    	
+    	int readChar = 0;
+		while ((readChar = input.read()) != -1)
+			out.append((char)readChar);
+		
+		input.close();
+		reader.close();
+		
+		return out.toString();
+    }
+    
+    /**
+	 * Gets the url that the xform will post to after clicking the submit button.
+	 * 
+	 * @param request - the request object.
+	 * @return - the url.
+	 */
+	public static String getActionUrl(HttpServletRequest request){
+		return request.getContextPath() + XformConstants.XFORM_DATA_UPLOAD_RELATIVE_URL;
+	}
 }

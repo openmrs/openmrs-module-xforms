@@ -129,7 +129,7 @@ public class XformDownloadServlet extends HttpServlet {
 			if(includeUsers)
 				UserDownloadManager.downloadUsers(dos);
 			
-			XformDownloadManager.downloadXforms(getActionUrl(request), dos);
+			XformDownloadManager.downloadXforms(XformsUtil.getActionUrl(request), dos);
 			
 			dos.flush();
 			gzip.finish();	
@@ -161,7 +161,7 @@ public class XformDownloadServlet extends HttpServlet {
 		response.setHeader(XformConstants.HTTP_HEADER_CONTENT_DISPOSITION, 
 				XformConstants.HTTP_HEADER_CONTENT_DISPOSITION_VALUE + filename);
 		
-		String xformXml = XformDownloadManager.getXform(formEntryService,xformsService,form.getFormId(),createNew,getActionUrl(request));
+		String xformXml = XformDownloadManager.getXform(formEntryService,xformsService,form.getFormId(),createNew,XformsUtil.getActionUrl(request));
 		//xformXml = XformsUtil.fromXform2Xhtml(xformXml, null);
 		response.getOutputStream().print(xformXml);
 	}
@@ -191,16 +191,6 @@ public class XformDownloadServlet extends HttpServlet {
 	}
 	
 	/**
-	 * Gets the url that the xform will post to after clicking the submit button.
-	 * 
-	 * @param request - the request object.
-	 * @return - the url.
-	 */
-	private String getActionUrl(HttpServletRequest request){
-		return request.getContextPath() + "/module/xforms/xformDataUpload.form";
-	}
-	
-	/**
 	 * Serve up the xhtml file for filling out a form 
 	 * 
 	 * @param request - the http request.
@@ -210,7 +200,7 @@ public class XformDownloadServlet extends HttpServlet {
 	 * @throws IOException
 	 */
 	protected void doXformEntryGet(HttpServletRequest request, HttpServletResponse response, Form form,FormEntryService formEntryService,XformsService xformsService, boolean createNew) throws ServletException, IOException {			
-		String xformXml = XformDownloadManager.getXform(formEntryService,xformsService,form.getFormId(),createNew, getActionUrl(request));
+		String xformXml = XformDownloadManager.getXform(formEntryService,xformsService,form.getFormId(),createNew, XformsUtil.getActionUrl(request));
 		xformXml = XformsUtil.fromXform2Xhtml(xformXml, xformsService.getXslt(form.getFormId()));
 		Document doc = XformBuilder.getDocument(xformXml);
 		
@@ -232,7 +222,7 @@ public class XformDownloadServlet extends HttpServlet {
 		if(phrase != null)
 			patientParam += "&"+XformConstants.REQUEST_PARAM_PATIENT_SEARCH_PHRASE+"=" + phrase;
 		
-		XformBuilder.setNodeAttributeValue(doc, XformBuilder.NODE_SUBMISSION, XformBuilder.ATTRIBUTE_ACTION, getActionUrl(request)+patientParam);
+		XformBuilder.setNodeAttributeValue(doc, XformBuilder.NODE_SUBMISSION, XformBuilder.ATTRIBUTE_ACTION, XformsUtil.getActionUrl(request)+patientParam);
 		
 		XformBuilder.setPatientTableFieldValues(form.getFormId(),doc.getRootElement(), patientId, xformsService);
 		

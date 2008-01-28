@@ -14,19 +14,19 @@ import org.openmrs.scheduler.Schedulable;
 /**
  * This class implements the task which processes forms in the xforms queue.
  * 
- * @author Daniel
+ * @author Daniel Kayiwa
  * @version 1.0
  */
 public class ProcessXformsQueueTask implements Schedulable{
 
 //	 Logger
-	private static Log log = LogFactory.getLog(XformsBluetoothTask.class);
+	private static Log log = LogFactory.getLog(ProcessXformsQueueTask.class);
 
 	// Task configuration 
 	private TaskConfig taskConfig;
 	
-//	 Instance of xforms processor.
-	//private XformsQueueProcessor processor = null;
+	//Instance of xforms processor.
+	private XformsQueueProcessor processor = null;
 	
 	/**
 	 * Default Constructor (Uses SchedulerConstants.username and
@@ -34,8 +34,8 @@ public class ProcessXformsQueueTask implements Schedulable{
 	 * 
 	 */
 	public ProcessXformsQueueTask() {
-		/*if (processor == null)
-			processor = new XformsQueueProcessor();*/
+		if (processor == null)
+			processor = new XformsQueueProcessor();
 	}
 
 	/**
@@ -49,9 +49,8 @@ public class ProcessXformsQueueTask implements Schedulable{
 			if (Context.isAuthenticated() == false)
 				authenticate();
 			
-			System.out.println("Running Xforms queue processor task");
+			processor.processXformsQueue();
 			
-			//processor.processXformsQueue();
 		} catch (APIException e) {
 			log.error("Error running xforms queue task", e);
 			throw e;

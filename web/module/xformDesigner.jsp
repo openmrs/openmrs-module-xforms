@@ -7,20 +7,6 @@
 </script>
 
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
-
-<style>
-	#tabBlock {
-	
-	top: 150px;
-	
-	left: 120px;
-	
-	width: 320px;
-	
-	height: 80px;
-	
-	}
- </style>
  
 <script type="text/javascript">
             dojo.require("dojo.widget.Toolbar");
@@ -32,28 +18,106 @@
             dojo.require("dojo.widget.ContentPane");
             dojo.require("dojo.widget.FloatingPane");
             dojo.require("dojo.widget.Editor");
+            dojo.require("dojo.widget.Tree");
+            dojo.require("dojo.widget.TreeContextMenu");
+            dojo.require("dojo.event.*");
+			dojo.require("dojo.io.*");
+			dojo.require("dojo.widget.TreeNode");
+			dojo.require("dojo.widget.TreeSelector");
+			dojo.require("dojo.widget.TreeLoadingController");
             
             dojo.hostenv.writeIncludes();
 </script>
 
-<div dojoType="TabContainer" id="mainTabContainer” >
-	<div dojoType="ContentPane" label="tab1" id="tab1">Contents of Tab 1 Pane</div>
-	<div dojoType="ContentPane" label="tab1" id="tab1">Contents of Tab 2 Pane</div>
-</div>
+    <div class="dojo-Tree">
+     <div class="dojo-TreeNode" title="World"></div>
+     <div class="dojo-TreeNode" title="Business">
+       <div class="dojo-TreeNode" title="News">
+         <div class="dojo-TreeNode" title="Main"></div>
+         <div class="dojo-TreeNode" title="Company News"></div>
+         <div class="dojo-TreeNode" title="Economy"></div>
+       </div>
+       <div class="dojo-TreeNode" title="Markets"></div>
+       <div class="dojo-TreeNode" title="Technology"></div>
+       <div class="dojo-TreeNode" title="Jobs and Economy"></div>
+     </div>
+     <div class="dojo-TreeNode" title="Sports"></div>
+   </div>
 
-dojo.hostenv.writeIncludes();
+     <dl class="dojo-TreeContextMenu"  id="treeContextMenu">
+      <dt class="dojo-TreeMenuItem" id="ctxMenuAdd" caption="Add Child" >
+      <dt class="dojo-TreeMenuItem" id="ctxMenuDel" caption="Remove Item">
+   </dl>
 
-/*function helloPressed() 
-{ 
-	alert('You pressed the button'); 
-} 
-function init() 
-{ 
-	var helloButton = dojo.widget.byId('helloButton');
-	dojo.event.connect(helloButton, 'onClick', 'helloPressed') 
-} 
-dojo.addOnLoad(init);*/ 
-//<button dojoType="Button" widgetId="helloButton">Hello World!</button> 
-
+   <div class="dojo-Tree" menu="treeContextMenu"></div>
+ 
+    <script type="text/javascript">
+   var DemoTreeManager = {
+     djWdgt: null,
+     myTreeWidget: null,
+     addTreeContextMenu: function(){
+       var ctxMenu = this.djWdgt.createWidget("TreeContextMenu",{});
+       ctxMenu.addChild(this.djWdgt.createWidget(
+         "TreeMenuItem",{caption:"Add Child Menu Item",
+           widgetId:"ctxAdd"}));
+       ctxMenu.addChild(this.djWdgt.createWidget(
+         "TreeMenuItem",{caption:"Delete this Menu Item",
+           widgetId:"ctxDelete"`}));
+       document.body.appendChild(ctxMenu.domNode);
+       /* Bind the context menu to the tree */
+       ctxMenu.listenTree(this.myTreeWidget);
+     },
+     addController: function(){
+       this.djWdgt.createWidget(
+         "TreeBasicController",
+         {widgetId:"myTreeController",DNDController:"create"}
+       );
+     },
+     bindEvents: function(){
+       /* Bind the functions in the TreeActions object to the
+          context menu entries */
+       dojo.event.topic.subscribe("ctxAdd/engage",
+         function (menuItem) { TreeActions.addNewNode(menuItem.getTreeNode(),
+           "myTreeController"); }
+       );
+       dojo.event.topic.subscribe("ctxDelete/engage",
+         function (menuItem) { TreeActions.removeNode(menuItem.getTreeNode(),
+           "myTreeController"); }
+       );
+     },
+     init: function(){
+       /* Initialize this object */
+       this.djWdgt = dojo.widget;
+       this.myTreeWidget = this.djWdgt.manager.
+         getWidgetById("myTreeWidget");
+       this.addTreeContextMenu();
+       this.addController();
+       this.bindEvents();
+     }
+   };
+    
+   var TreeActions = {
+     addNewNode: function(parent,controllerId){
+       this.controller = dojo.widget.manager.getWidgetById(controllerId);
+       if (!parent.isFolder) {
+         parent.setFolder();
+       }
+       var res = this.controller.createChild(parent, 0, { title: "New node" });
+     },
+     removeNode: function(node,controllerId){
+       if (!node) {
+         alert("Nothing selected to delete",);
+         return false;
+       }
+       this.controller = dojo.widget.manager.getWidgetById(controllerId);
+       var res = this.controller.removeNode(node, dojo.lang.hitch(this));
+     }
+   };
+    
+   dojo.addOnLoad(function(){
+     DemoTreeManager.init()
+     });
+    
+   </script>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>
