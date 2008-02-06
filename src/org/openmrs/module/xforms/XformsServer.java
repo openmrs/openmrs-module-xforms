@@ -1,5 +1,6 @@
 package org.openmrs.module.xforms;
 
+import java.io.IOException;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.util.zip.GZIPOutputStream;
@@ -11,6 +12,8 @@ import org.openmrs.module.xforms.download.PatientDownloadManager;
 import org.openmrs.module.xforms.download.UserDownloadManager;
 import org.openmrs.module.xforms.download.XformDataUploadManager;
 import org.openmrs.module.xforms.download.XformDownloadManager;
+
+import org.openmrs.api.context.ContextAuthenticationException;
 
 
 /**
@@ -24,6 +27,9 @@ public class XformsServer {
 
 	/** Value representing success of an action. */
 	public static final byte STATUS_SUCCESS = 1;
+	
+	/** Value representing failure of an action. */
+	public static final byte STATUS_FAILURE = 0;
 	
 	/** Action to get a list of form definitions. */
 	public static final byte ACTION_DOWNLOAD_FORMS = 3;
@@ -52,39 +58,35 @@ public class XformsServer {
 	
 	/**
 	 * Called when a new connection has been received.
+	 * Failures are not handled in this class as different servers (BT,SMS, etc)
+	 * may want to handle them differently.
 	 * 
 	 * @param dis - the stream to read from.
 	 * @param dos - the stream to write to.
 	 */
-	public void processConnection(DataInputStream dis, DataOutputStream dosParam){
-		try{		 			
-			 String name = dis.readUTF();
-			 String pw = dis.readUTF();
-			 Context.authenticate(name, pw);
-			 
-			 byte action = dis.readByte();
-			 
-			 GZIPOutputStream gzip = new GZIPOutputStream(dosParam);
-			 DataOutputStream dos = new DataOutputStream(gzip);
-				
-			 if(action == ACTION_DOWNLOAD_PATIENTS)
-				 PatientDownloadManager.downloadPatients(null, dos);
-			 else if(action == ACTION_DOWNLOAD_FORMS)
-				 XformDownloadManager.downloadXforms(getActionUrl(), dos);
-			 else if(action == ACTION_UPLOAD_FORMS)
-				 submitXforms(dis,dos);
-			 else if(action == ACTION_DOWNLOAD_USERS)
-				 UserDownloadManager.downloadUsers(dos);
-			 else if(action == ACTION_DOWNLOAD_USERS_AND_FORMS)
-				 downloadUsersAndForms(dos);
-			 
-			 dos.flush();
-			 gzip.finish();
-		}
-		catch(Exception e){
-			log.error(e);
-			e.printStackTrace();
-		}
+	public void processConnection(DataInputStream dis, DataOutputStream dosParam) throws IOException, ContextAuthenticationException,Exception{
+		 String name = dis.readUTF();
+		 String pw = dis.readUTF();
+		 Context.authenticate(name, pw);
+		 
+		 byte action = dis.readByte();
+		 
+		 GZIPOutputStream gzip = new GZIPOutputStream(dosParam);
+		 DataOutputStream dos = new DataOutputStream(gzip);
+			
+		 if(action == ACTION_DOWNLOAD_PATIENTS)
+			 PatientDownloadManager.downloadPatients(null, dos);
+		 else if(action == ACTION_DOWNLOAD_FORMS)
+			 XformDownloadManager.downloadXforms(getActionUrl(), dos);
+		 else if(action == ACTION_UPLOAD_FORMS)
+			 submitXforms(dis,dos);
+		 else if(action == ACTION_DOWNLOAD_USERS)
+			 UserDownloadManager.downloadUsers(dos);
+		 else if(action == ACTION_DOWNLOAD_USERS_AND_FORMS)
+			 downloadUsersAndForms(dos);
+		 
+		 dos.flush();
+		 gzip.finish();
 	}
 	
 	//TODO I guess this needs to be done in a smarter way.
@@ -100,12 +102,13 @@ public class XformsServer {
 	 * @param dis - the stream to read from.
 	 * @param dos - the stream to write to.
 	 */
-	private void submitXforms(DataInputStream dis, DataOutputStream dos){
+	private void submitXforms(DataInputStream dis, DataOutputStream dos) throws Exception{
 		XformDataUploadManager.submitXforms(dis, new java.util.Date().toString(),getActionUrl());
 		try{
 			dos.writeByte(STATUS_SUCCESS);
 		}catch(Exception e){
 			log.error(e);
+			dos.writeByte(STATUS_FAILURE);
 		}
 	}
 			

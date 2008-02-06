@@ -5,12 +5,15 @@ import java.util.List;
 
 import org.openmrs.Form;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.formentry.FormEntryUtil;
 import org.openmrs.module.formentry.FormEntryXsn;
+import org.openmrs.module.formentry.FormXmlTemplateBuilder;
 import org.openmrs.module.xforms.db.*;
 import org.openmrs.module.xforms.*;
 import org.springframework.transaction.annotation.Transactional;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.module.formentry.FormEntryService;
 
 /**
  * Implements XForms services.
@@ -134,4 +137,30 @@ public class XformsServiceImpl implements XformsService{
 	public Object getFieldDefaultValue(Integer formId, String fieldName){
 		return getXformsDAO().getFieldDefaultValue(formId, fieldName);
 	}
+	
+    /**
+     * @see org.openmrs.module.xforms.XformsService#getXform(java.lang.Integer,java.lang.boolean)
+     */
+    public Xform getXform(Integer formId, boolean createNewIfNonExistant) {
+	    Xform xform = getXformsDAO().getXform(formId);
+	    
+	    if(xform == null && createNewIfNonExistant)
+	    	xform = getNewXform(formId);
+	    
+	    return xform;
+    }
+    
+    /**
+     * @see org.openmrs.module.xforms.XformsService#getNewXform(java.lang.Integer)
+     */
+    public Xform getNewXform(Integer formId) {
+    	FormEntryService formEntryService = (FormEntryService)Context.getService(FormEntryService.class);
+    	Form form = formEntryService.getForm(formId);
+		String schemaXml = formEntryService.getSchema(form);
+		String templateXml = new FormXmlTemplateBuilder(form,FormEntryUtil.getFormAbsoluteUrl(form)).getXmlTemplate(false);
+		
+		//TODO This localhost and port(8080) should not be hardcoded.
+		String actionUrl = "http://" + "localhost" + ":8080/openmrs" + XformConstants.XFORM_DATA_UPLOAD_RELATIVE_URL;
+		return new Xform(formId,XformBuilder.getXform4mStrings(schemaXml, templateXml,actionUrl));
+   }
 }

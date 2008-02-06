@@ -16,6 +16,18 @@ import org.springframework.web.servlet.view.RedirectView;
 /**
  * This controller backs and saves XForm designs.
  * 
+ * As per the current version, we deal with the following:
+ * 
+ * For the XForm:
+ * 1 - Changing question properties like display text, readonly, required, disabled, visibility etc.
+ * 2 - Order of questions.
+ * 3 - Branching or Skipping logic.
+ * 4 - 
+ * 
+ * For the XHTML as XSL transformed from the XForm:
+ * 1 - Grouping of questions into various tabs. This avoids long scrollings between questions on a form.
+ * 2 - 
+ * 
  */
 public class XformDesignerController extends SimpleFormController {
 	
@@ -23,9 +35,10 @@ public class XformDesignerController extends SimpleFormController {
     protected final Log log = LogFactory.getLog(getClass());
         	    
     @Override
-	protected Map referenceData(HttpServletRequest request, Object obj, Errors err) throws Exception {
-
-		return new HashMap<String,Object>();
+	protected Map referenceData(HttpServletRequest request, Object obj, Errors err) throws Exception {    	
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("formId", request.getParameter("formId"));
+        return map;
 	}
 
 

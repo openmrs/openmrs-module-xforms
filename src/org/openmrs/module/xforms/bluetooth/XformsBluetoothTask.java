@@ -75,6 +75,7 @@ public class XformsBluetoothTask implements Schedulable{
 			}
 						
 			server = new XformsBluetoothServer(serviceName,serverUUID,serverIP);
+			server.start();
 			
 		} catch (APIException e) {
 			log.error("Error running xforms bluetooth task", e);
@@ -115,7 +116,8 @@ public class XformsBluetoothTask implements Schedulable{
 		}
 	}
 	
+	//TODO Needs to complete implementing this.
 	protected void finalize(){
-		
+		server.stop();
 	}
 }

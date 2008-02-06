@@ -128,6 +128,11 @@ public class XformsUtil {
 		return null;
 	}
 	
+	/**
+	 * Gets the default CSS for XForms.
+	 * 
+	 * @return the CSS text
+	 */
 	private static String getDefaultStyle(){
 		return "@namespace xforms url(http://www.w3.org/2002/xforms/); "+
 			"/* Display a red background on all invalid form controls */ "+
@@ -144,6 +149,12 @@ public class XformsUtil {
 			"*:invalid > xforms|alert { display: inline; } ";
 	}
 
+	//<xsl:number value="position()" format="1" />   
+	/**
+	 * Gets the default XSLT for transforming an XForm into an XHTML document.
+	 * 
+	 * @return the XSLT text
+	 */
 	public static String getDefaultXSLT(){
 		return "<?xml version='1.0' encoding='UTF-8'?> "+
 			"<xsl:stylesheet version='2.0' "+
@@ -167,7 +178,7 @@ public class XformsUtil {
 			" <body> "+
 			" <table cellspacing='10'> "+
 			" 	<xsl:for-each select='/xf:xforms/*'> "+
-			"   	<xsl:if test='fn:local-name() != \"model\"'> "+
+			"   	<xsl:if test='local-name() != \"model\"'> "+
 			"   	<tr> "+
 			"       <td> "+
 			" 			<xsl:copy-of select='.' /> "+
@@ -189,7 +200,7 @@ public class XformsUtil {
 	 * @param xsl the xslt
 	 * @return the xhtml representation of the xform.
 	 */
-	public static String fromXform2Xhtml(String xform, String xsl){
+	public static String fromXform2Xhtml(String xform, String xsl) throws Exception{
 		if(xsl == null) xsl = getDefaultXSLT();
 		StringWriter outWriter = new StringWriter();
 		Source source = new StreamSource(IOUtils.toInputStream(xform));
@@ -201,17 +212,9 @@ public class XformsUtil {
 		
 		TransformerFactory tf = TransformerFactory.newInstance();
 
-		try {
-			Transformer t = tf.newTransformer(xslt);
-			t.transform(source, result);
-			return outWriter.toString();
-		} catch (TransformerConfigurationException e) {
-			log.error(e.getMessage(), e);
-		} catch (TransformerException e) {
-			log.error(e.getMessage(), e);
-		}
-		
-		return null;
+		Transformer t = tf.newTransformer(xslt);
+		t.transform(source, result);
+		return outWriter.toString();
 	}
 	
 	/**

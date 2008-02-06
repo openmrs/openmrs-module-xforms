@@ -4,6 +4,7 @@ package org.openmrs.module.xforms.sms;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,7 +40,17 @@ public class XformsSMSServer  implements SMSServerListener{
 	}
 	
 	public void processMessage(DataInputStream dis, DataOutputStream dos){
-		xformsServer.processConnection(dis, dos);
+		try{
+			xformsServer.processConnection(dis, dos);
+		}catch(Exception e){
+			log.error(e);
+			try{//TODO We need a smart way of sending error SMSs
+				dos.writeByte(XformsServer.STATUS_FAILURE);
+				//dos.writeUTF(e.getMessage());
+			}catch(IOException ex){
+				log.error(ex);
+			}
+		}
 	}
 	
 	public void errorOccured(String errorMessage, Exception e){

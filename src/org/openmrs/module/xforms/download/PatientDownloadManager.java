@@ -8,6 +8,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
 import org.openmrs.Patient;
 import org.openmrs.api.PatientService;
@@ -29,6 +31,9 @@ import org.openmrs.module.xforms.SerializableData;
  */
 public class PatientDownloadManager {
 
+	private static Log log = LogFactory.getLog(PatientDownloadManager.class);
+
+	
 	public static void downloadPatients(String cohortId, OutputStream os) throws Exception{
 		
 		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
@@ -44,21 +49,37 @@ public class PatientDownloadManager {
 		sr.serialize(new DataOutputStream(os),getPatientData(cohortId,xformsService));
 	}
 	
-	private static PatientData getPatientData(String cohortId,XformsService xformsService){
+	private static PatientData getPatientData(String sCohortId,XformsService xformsService){
 		Context.openSession(); //This prevents the bluetooth server from failing with the form field lazy load exception.
 		PatientData patientData  = new PatientData();
-		Cohort cohort = Context.getCohortService().getCohort(Integer.parseInt(cohortId));
-		Set<Integer> patientIds = cohort.getMemberIds();
-		if(patientIds != null && patientIds.size() > 0){
-			patientData.setPatients(getPantients(patientIds));
-			List<PatientTableField> fields = PatientTableFieldBuilder.getPatientTableFields(xformsService);
-			if(fields != null && fields.size() > 0){
-				patientData.setFields(fields);
-				patientData.setFieldValues(PatientTableFieldBuilder.getPatientTableFieldValues(new ArrayList(patientIds), fields, xformsService));
+		
+		Integer cohortId = getCohortId(sCohortId);
+		if(cohortId != null){
+			Cohort cohort = Context.getCohortService().getCohort(cohortId);
+			Set<Integer> patientIds = cohort.getMemberIds();
+			if(patientIds != null && patientIds.size() > 0){
+				patientData.setPatients(getPantients(patientIds));
+				List<PatientTableField> fields = PatientTableFieldBuilder.getPatientTableFields(xformsService);
+				if(fields != null && fields.size() > 0){
+					patientData.setFields(fields);
+					patientData.setFieldValues(PatientTableFieldBuilder.getPatientTableFieldValues(new ArrayList(patientIds), fields, xformsService));
+				}
 			}
 		}
 		
 		return patientData;
+	}
+	
+	private static Integer getCohortId(String cohortId){
+		if(cohortId == null || cohortId.trim().length() == 0)
+			return null;
+		try{
+			return Integer.parseInt(cohortId);
+		}catch(Exception e){
+			log.error(e);
+		}
+		
+		return null;
 	}
 	
 	private static List<Patient> getPantients(Collection<Integer> patientIds){

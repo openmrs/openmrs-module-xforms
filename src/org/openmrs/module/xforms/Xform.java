@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.openmrs.Form;
 import org.openmrs.User;
+import org.openmrs.api.context.Context;
 
 /**
  * This class holds the XForm of a an openmrs form.
@@ -32,6 +33,20 @@ public class Xform {
 	 * Default constructor
 	 */
 	public Xform() {
+	}
+	
+	/**
+	 * Creates an xform object form a formid and xform xml.
+	 * 
+	 * @param formId - the form id.
+	 * @param xformData - xml of the xform.
+	 */
+	public Xform(Integer formId, String xformData) {
+		setFormId(formId);
+		setXformData(xformData);
+		setDateCreated(new Date());
+		setXslt(XformsUtil.getDefaultXSLT());
+		setCreator(Context.getAuthenticatedUser());
 	}
 	
 	/**

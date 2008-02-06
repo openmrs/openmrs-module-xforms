@@ -58,7 +58,7 @@ public class XformDownloadServlet extends HttpServlet {
 	 * Sort out the multiple options for xformDownload.  This servlet does things like
 	 * the xform template with data download, the xform download.
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 		
 		//try to authenticate users who logon inline (with the request).
 		try{
@@ -201,7 +201,15 @@ public class XformDownloadServlet extends HttpServlet {
 	 */
 	protected void doXformEntryGet(HttpServletRequest request, HttpServletResponse response, Form form,FormEntryService formEntryService,XformsService xformsService, boolean createNew) throws ServletException, IOException {			
 		String xformXml = XformDownloadManager.getXform(formEntryService,xformsService,form.getFormId(),createNew, XformsUtil.getActionUrl(request));
-		xformXml = XformsUtil.fromXform2Xhtml(xformXml, xformsService.getXslt(form.getFormId()));
+		
+		try{
+			xformXml = XformsUtil.fromXform2Xhtml(xformXml, xformsService.getXslt(form.getFormId()));
+		}catch(Exception e){
+			log.error(e.getMessage(), e);
+			response.getOutputStream().print(e.getMessage()); //possibly user xslt has errors.
+			return;
+		}
+		
 		Document doc = XformBuilder.getDocument(xformXml);
 		
 		XformBuilder.setNodeValue(doc, XformConstants.NODE_SESSION, request.getSession().getId());

@@ -54,23 +54,18 @@ public class XformDataUploadManager {
     protected static final Log log = LogFactory.getLog(XformDataUploadManager.class);
 	private static final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
-	public static void submitXforms(InputStream is, String sessionId, String actionUrl){
-		
-		try{
-			String enterer = XformsUtil.getEnterer();
-			DocumentBuilder db = dbf.newDocumentBuilder();
-			SerializableData sr = getXformSerializer();
-			if(sr != null){
-				List<String> xforms = (List<String>)sr.deSerialize(new DataInputStream(is),getXforms(actionUrl));
-				for(String xml : xforms)
-					processXform(xml,sessionId,enterer);
-			}
-			else
-				log.warn("Cant create XForms serializer");
+	public static void submitXforms(InputStream is, String sessionId, String actionUrl) throws Exception{
+		String enterer = XformsUtil.getEnterer();
+		DocumentBuilder db = dbf.newDocumentBuilder();
+		SerializableData sr = getXformSerializer();
+		if(sr != null){
+			List<String> xforms = (List<String>)sr.deSerialize(new DataInputStream(is),getXforms(actionUrl));
+			for(String xml : xforms)
+				processXform(xml,sessionId,enterer);
 		}
-		catch(Exception e){
-			log.error(e);
-			e.printStackTrace();
+		else{
+			log.error("Cant create XForms serializer");
+			throw new Exception("Cant create XForms serializer");
 		}
 	}
 		
@@ -79,16 +74,11 @@ public class XformDataUploadManager {
 	 * 
 	 * @param xml - the xforms model.
 	 */
-	public static void processXform(String xml, String sessionId, String enterer){
-		try{
-			DocumentBuilder db = dbf.newDocumentBuilder();
-			Document doc = db.parse(IOUtils.toInputStream(xml));
-			setHeaderValues(doc,sessionId,enterer);
-			queueForm(XformsUtil.doc2String(doc));
-		}
-		catch(Exception e){
-			log.error(e);
-		}
+	public static void processXform(String xml, String sessionId, String enterer) throws Exception{
+		DocumentBuilder db = dbf.newDocumentBuilder();
+		Document doc = db.parse(IOUtils.toInputStream(xml));
+		setHeaderValues(doc,sessionId,enterer);
+		queueForm(XformsUtil.doc2String(doc));
 	}
 	
 	/**
@@ -96,16 +86,11 @@ public class XformDataUploadManager {
 	 * 
 	 * @param xml - the xforms model.
 	 */
-	private static void queueForm(String xml){
+	private static void queueForm(String xml) throws Exception{
 		File file = FormEntryUtil.getOutFile(XformsUtil.getXformsQueueDir(), new Date(), Context.getAuthenticatedUser());
-		try{
-			FileWriter writter = new FileWriter(file); //new FileWriter(pathName, false);
-			writter.write(xml);
-			writter.close();		
-		}
-		catch(Exception e){
-			log.error(e);
-		}
+		FileWriter writter = new FileWriter(file); //new FileWriter(pathName, false);
+		writter.write(xml);
+		writter.close();		
 	}
 	
 	/**

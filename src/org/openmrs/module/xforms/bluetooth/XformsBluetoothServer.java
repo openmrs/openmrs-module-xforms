@@ -1,5 +1,6 @@
 package org.openmrs.module.xforms.bluetooth;
 
+import java.io.IOException;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 
@@ -29,10 +30,16 @@ public class XformsBluetoothServer  implements BluetoothServerListener  {
 		xformsServer = new XformsServer(serverIP);
 	}
 	
+	/** Starts running this bluetooth server. */
+	public void start(){
+		if(btServer != null)
+			btServer.start();
+	}
+	
 	/** Stop this server from running. */
 	public void stop(){
 		if(btServer != null)
-			btServer.destroy();
+			btServer.stop();
 	}
 	
 	/**
@@ -42,7 +49,22 @@ public class XformsBluetoothServer  implements BluetoothServerListener  {
 	 * @param dos - the stream to write to.
 	 */
 	public void processConnection(DataInputStream dis, DataOutputStream dos){
-		xformsServer.processConnection(dis, dos);
+		//It is important that any exceptions which happen in this call are propagated
+		//back. If not done, the client will assume success which can be disatrous.
+		//For instance if the client was uploading data and this reports success,
+		//the client may delete data on the device which was not uploaded successfully
+		//to the server.
+		try{
+			xformsServer.processConnection(dis, dos);
+		}catch(Exception e){
+			log.error(e);
+			try{
+				dos.writeByte(XformsServer.STATUS_FAILURE);
+				//dos.writeUTF(e.getMessage());
+			}catch(IOException ex){
+				log.error(ex);
+			}
+		}
 	}
 		
 	/**

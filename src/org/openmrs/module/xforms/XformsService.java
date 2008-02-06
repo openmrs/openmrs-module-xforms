@@ -145,4 +145,25 @@ public interface XformsService {
 	 */
 	@Transactional(readOnly=true)
 	public Object getFieldDefaultValue(Integer formId, String fieldName);
+	
+	/**
+	 * Get the XForm for the given form and can create a new one if none exists in the database.
+	 * 
+	 * @param formId - id of the form that owns the XForm to retrieve
+	 * @param createNewIfNonExistant -  set to true to create a new xform if none exists in the database, else returns null.
+	 * @return XForm associated with the form
+	 */
+	@Transactional(readOnly=true)
+	public Xform getXform(Integer formId, boolean createNewIfNonExistant);
+	
+	/**
+	 * Gets a new XForm for the given form. This Xform is created on the fly basing on
+	 * the current form schema and template, instead of using an xform stored in
+	 * the database which may not match with the current schema and template.
+	 * 
+	 * @param formId - id of the form that owns the XForm to retrieve
+	 * @return XForm associated with the form
+	 */
+	@Transactional(readOnly=true)
+	public Xform getNewXform(Integer formId);
 }

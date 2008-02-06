@@ -104,4 +104,16 @@
 		</sql>
 	</diff>
 	
+	<diff>
+		<version>1.3</version>
+		<author>Daniel Kayiwa</author>
+		<date>Feb 6th 2008</date>
+		<description>
+			Increasing the size of xform by changing the column data type from text to longtext.
+		</description>
+		<sql>
+			alter table xform modify xform_data longtext
+		</sql>
+	</diff>
+	
 </sqldiff>
