@@ -1,5 +1,6 @@
 package org.openmrs.module.xforms.web.controller;
 
+//baseRelativePath: "scripts/dojo/",
 
 import java.util.HashMap;
 import java.util.Map;

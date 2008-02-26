@@ -25,4 +25,21 @@ public class DWRXformsService {
 		
 		return null;
 	}
+	
+	public boolean saveXform(Xform xform){
+		try{
+			if (Context.isAuthenticated()) {
+				XformsService svc = (XformsService)Context.getService(XformsService.class);
+				Xform xf = svc.getXform(xform.getFormId(),true);
+				xf.setXformData(xform.getXformData());
+				svc.saveXform(xf);
+				return true;
+			}
+		}
+		catch(Exception e){
+			log.error(e);
+		}
+		
+		return false;
+	}
 }

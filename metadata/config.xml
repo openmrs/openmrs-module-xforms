@@ -17,12 +17,8 @@
 	
 	<updateURL>https://dev.openmrs.org/modules/download/xforms/update.rdf</updateURL>
 	
-	
 	<require_version>1.2.0</require_version>
 	<require_database_version>1.2.0</require_database_version>
-	<require_modules>
-		<require_module>org.openmrs.module.formentry</require_module>
-	</require_modules>
 	
 	<!-- Required Global Properties -->
 	<globalProperty>
@@ -137,6 +133,7 @@
 			<create creator="new" javascript="DWRXformsService">
 				<param name="class" value="@MODULE_PACKAGE@.web.DWRXformsService"/>
 			</create>
+			<convert match="@MODULE_PACKAGE@.Xform" converter="bean"/>
 		</allow>
 	</dwr>
 		

@@ -1,10 +1,9 @@
 package org.openmrs.module.xforms.download;
 
-import java.io.InputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileWriter;
-import java.util.ArrayList;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -16,30 +15,21 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Location;
-import org.openmrs.Patient;
-import org.openmrs.PatientIdentifier;
-import org.openmrs.PatientIdentifierType;
-import org.openmrs.PersonName;
-import org.openmrs.User;
-import org.openmrs.api.PatientService;
+import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.formentry.FormEntryQueue;
-import org.openmrs.module.formentry.FormEntryService;
-import org.openmrs.module.formentry.FormEntryUtil;
+import org.openmrs.module.xforms.SerializableData;
 import org.openmrs.module.xforms.Xform;
 import org.openmrs.module.xforms.XformBuilder;
 import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformsService;
 import org.openmrs.module.xforms.XformsUtil;
+import org.openmrs.module.xforms.formentry.FormEntryWrapper;
 import org.openmrs.util.FormUtil;
 import org.openmrs.util.OpenmrsClassLoader;
+import org.openmrs.util.OpenmrsUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.openmrs.module.xforms.SerializableData;
 
 
 /**
@@ -87,7 +77,7 @@ public class XformDataUploadManager {
 	 * @param xml - the xforms model.
 	 */
 	private static void queueForm(String xml) throws Exception{
-		File file = FormEntryUtil.getOutFile(XformsUtil.getXformsQueueDir(), new Date(), Context.getAuthenticatedUser());
+		File file = OpenmrsUtil.getOutFile(XformsUtil.getXformsQueueDir(), new Date(), Context.getAuthenticatedUser());
 		FileWriter writter = new FileWriter(file); //new FileWriter(pathName, false);
 		writter.write(xml);
 		writter.close();		
@@ -107,7 +97,7 @@ public class XformDataUploadManager {
 		
 		elemList = doc.getElementsByTagName(XformConstants.NODE_UID);
 		if (elemList != null && elemList.getLength() > 0) 
-			((Element)elemList.item(0)).setTextContent(FormEntryUtil.generateFormUid());
+			((Element)elemList.item(0)).setTextContent(FormEntryWrapper.generateFormUid());
 		
 		elemList = doc.getElementsByTagName(XformConstants.NODE_DATE_ENTERED);
 		if (elemList != null && elemList.getLength() > 0) 
@@ -150,7 +140,7 @@ public class XformDataUploadManager {
 			createNew = true;
 
 		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
-		FormEntryService formEntryService = (FormEntryService)Context.getService(FormEntryService.class);
+		FormService formService = (FormService)Context.getService(FormService.class);
 		
 		Map<Integer,String> xformMap = new HashMap();
 		List<Xform> xforms = xformsService.getXforms();
@@ -161,7 +151,7 @@ public class XformDataUploadManager {
 			
 			xformData = xform.getXformData();
 			if(createNew)
-				xformData = XformDownloadManager.createNewXform(formEntryService, xform.getFormId(), actionUrl);
+				xformData = XformDownloadManager.createNewXform(formService, xform.getFormId(), actionUrl);
 			
 			xformMap.put(xform.getFormId(), xformData);
 		}

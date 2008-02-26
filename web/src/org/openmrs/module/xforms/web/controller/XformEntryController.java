@@ -5,18 +5,16 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.formentry.FormEntryService;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
-
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.springframework.web.servlet.view.RedirectView;
 
 /**
  * Provides browser based XForm data entry services.
@@ -36,7 +34,7 @@ public class XformEntryController extends SimpleFormController{
     	Integer formId = Integer.parseInt(request.getParameter("formId"));
     	map.put("formId", formId);
     	map.put("patientId", Integer.parseInt(request.getParameter("patientId")));
- 		map.put("formName", ((FormEntryService)Context.getService(FormEntryService.class)).getForm(formId).getName());
+ 		map.put("formName", ((FormService)Context.getService(FormService.class)).getForm(formId).getName());
 
     	return map;
 	}

@@ -6,23 +6,18 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.xforms.Xform;
 import org.openmrs.module.xforms.XformsService;
 import org.openmrs.module.xforms.XformsUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
-
-import org.openmrs.module.formentry.FormEntryService;
 
 
 /**
@@ -41,7 +36,7 @@ public class XformDeleteController  extends SimpleFormController{
     	Integer formId = Integer.parseInt(request.getParameter("formId"));
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("formId", formId);
-		map.put("formName", ((FormEntryService)Context.getService(FormEntryService.class)).getForm(formId).getName());
+		map.put("formName", ((FormService)Context.getService(FormService.class)).getForm(formId).getName());
 		return map;
 	}
     

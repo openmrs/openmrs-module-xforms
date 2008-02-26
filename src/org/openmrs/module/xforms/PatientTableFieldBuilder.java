@@ -1,16 +1,15 @@
 package org.openmrs.module.xforms;
 
 
-import java.util.List;
 import java.util.ArrayList;
-import org.kxml2.kdom.*;
+import java.util.List;
 
-import org.openmrs.api.context.Context;
-import org.openmrs.module.formentry.FormEntryUtil;
-import org.openmrs.module.formentry.FormEntryService;
-import org.openmrs.module.formentry.FormXmlTemplateBuilder;
-import org.openmrs.module.xforms.XformsService;
+import org.kxml2.kdom.Document;
+import org.kxml2.kdom.Element;
 import org.openmrs.Form;
+import org.openmrs.api.FormService;
+import org.openmrs.api.context.Context;
+import org.openmrs.module.xforms.formentry.FormEntryWrapper;
 
 
 /**
@@ -22,7 +21,7 @@ import org.openmrs.Form;
 public class PatientTableFieldBuilder {
 
 	public static List<PatientTableField> getPatientTableFields(XformsService xformsService){
-		FormEntryService formEntryService = (FormEntryService)Context.getService(FormEntryService.class);
+		FormService formService = (FormService)Context.getService(FormService.class);
 
 		List<PatientTableField> fields = new ArrayList<PatientTableField>();
 		
@@ -30,13 +29,13 @@ public class PatientTableFieldBuilder {
 		if(formIds == null || formIds.size() == 0)
 			return null;
 		for(Integer formId : formIds)
-			addFormTableFields(formId,fields,formEntryService);
+			addFormTableFields(formId,fields,formService);
 		return fields;
 	}
 	
-	private static void addFormTableFields(Integer formId,List<PatientTableField> fields, FormEntryService formEntryService){
-		Form form = formEntryService.getForm(formId);
-		String templateXml = new FormXmlTemplateBuilder(form,FormEntryUtil.getFormAbsoluteUrl(form)).getXmlTemplate(false);
+	private static void addFormTableFields(Integer formId,List<PatientTableField> fields, FormService formService){
+		Form form = formService.getForm(formId);
+		String templateXml = FormEntryWrapper.getFormTemplate(form); //new FormXmlTemplateBuilder(form,FormEntryUtil.getFormAbsoluteUrl(form)).getXmlTemplate(false);
 		Document doc = XformBuilder.getDocument(templateXml);
 		addTableFields(doc.getRootElement(),fields);
 	}

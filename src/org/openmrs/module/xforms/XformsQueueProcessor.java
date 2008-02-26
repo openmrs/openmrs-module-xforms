@@ -2,10 +2,8 @@ package org.openmrs.module.xforms;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -23,9 +21,8 @@ import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.formentry.FormEntryQueue;
-import org.openmrs.module.formentry.FormEntryService;
-import org.openmrs.module.formentry.FormEntryUtil;
+import org.openmrs.module.xforms.formentry.FormEntryWrapper;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -69,16 +66,16 @@ public class XformsQueueProcessor {
 			
 			HashMap<String,Integer> patientids = new HashMap<String,Integer>();
 			HashMap<String,String> newPatientForms = new HashMap<String,String>();
-			FormEntryService formEntryService = (FormEntryService)Context.getService(FormEntryService.class);
+			//FormEntryService formEntryService = (FormEntryService)Context.getService(FormEntryService.class);
 
 			File queueDir = XformsUtil.getXformsQueueDir();
 			for (File file : queueDir.listFiles()) 
-				submitXForm(db,XformsUtil.readFile(file.getAbsolutePath()),formEntryService,patientids,newPatientForms,file.getAbsolutePath());
+				submitXForm(db,XformsUtil.readFile(file.getAbsolutePath()),/*formEntryService,*/patientids,newPatientForms,file.getAbsolutePath());
 			
 			//May need to store and read patientids from the hard disk.
 			Set<String> keySet = newPatientForms.keySet();
 			for(String pathName : keySet)
-				submitXForm(db ,newPatientForms.get(pathName),formEntryService,patientids,null,pathName);
+				submitXForm(db ,newPatientForms.get(pathName),/*formEntryService,*/patientids,null,pathName);
 		}
 		catch(Exception e){
 			log.error("Problem occured while processing Xforms queue", e);
@@ -96,7 +93,7 @@ public class XformsQueueProcessor {
 	//5. At the end of this first loop, loop through the new patient forms as in (3) and 
 	//   replace the negative patient ids with the server assigned ones as by the hashtable in (2)
 	//   and then submit them to the server.
-	private void submitXForm(DocumentBuilder db ,String xml, FormEntryService formEntryService,HashMap<String,Integer> patientids,HashMap<String,String>  newPatientForms, String pathName){
+	private void submitXForm(DocumentBuilder db ,String xml, /*FormEntryService formEntryService,*/HashMap<String,Integer> patientids,HashMap<String,String>  newPatientForms, String pathName){
 		String xmlOriginal = xml;
 		//String pathName = saveFormInQueue(xml); //Queue the form just incase we get an error during processing.
 		try{	
@@ -146,9 +143,11 @@ public class XformsQueueProcessor {
 			setMultipleSelectValues(doc.getDocumentElement());
 			
 			xml = XformsUtil.doc2String(doc);
-			FormEntryQueue formEntryQueue = new FormEntryQueue();
+			/*FormEntryQueue formEntryQueue = new FormEntryQueue();
 			formEntryQueue.setFormData(xml);
-			formEntryService.createFormEntryQueue(formEntryQueue);
+			formEntryService.createFormEntryQueue(formEntryQueue);*/
+			FormEntryWrapper.createFormEntryQueue(xml);
+			
 			saveFormInArchive(xmlOriginal,pathName);
 		} catch (Exception e) {
 			log.error(e);
@@ -217,7 +216,7 @@ public class XformsQueueProcessor {
 	private String saveForm(String xml,File folder,String queuePathName){
 		String pathName;// = folder.getAbsolutePath()+File.separatorChar+XformsUtil.getRandomFileName()+XformConstants.XML_FILE_EXTENSION;
 		if(queuePathName == null)
-			pathName = FormEntryUtil.getOutFile(folder, new Date(), Context.getAuthenticatedUser()).getAbsolutePath();
+			pathName = OpenmrsUtil.getOutFile(folder, new Date(), Context.getAuthenticatedUser()).getAbsolutePath();
 		else
 			pathName = folder.getAbsolutePath()+File.separatorChar+queuePathName.substring(queuePathName.lastIndexOf(File.separatorChar)+1);
 		

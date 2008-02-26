@@ -44,7 +44,7 @@ public final class XformBuilder {
 	public static final String NAMESPACE_XHTML = "http://www.w3.org/1999/xhtml";
 	
 	/** Namespace for openmrs. */
-	public static final String NAMESPACE_OPENMRS = "http://localhost:8080/openmrs/moduleServlet/formentry/forms/schema/4-109";
+	//public static final String NAMESPACE_OPENMRS = "http://localhost:8080/openmrs/moduleServlet/formentry/forms/schema/4-109";
 	
 	/** Namespace for openmrs custom type. */
 	public static final String NAMESPACE_OPENMRS_TYPE = "http://localhost:8080/openmrs/moduleServlet/formentry/forms/customtypes/schema/4-109";
@@ -1358,6 +1358,7 @@ public final class XformBuilder {
 		DataOutputStream dos = new DataOutputStream(bos);
 		
 		try{
+			serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
 			serializer.setOutput(dos,null);
 			doc.write(serializer);
 			serializer.flush();

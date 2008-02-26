@@ -3,17 +3,20 @@ package org.openmrs.module.xforms.impl;
 import java.util.Date;
 import java.util.List;
 
-import org.openmrs.Form;
-import org.openmrs.api.context.Context;
-import org.openmrs.module.formentry.FormEntryUtil;
-import org.openmrs.module.formentry.FormEntryXsn;
-import org.openmrs.module.formentry.FormXmlTemplateBuilder;
-import org.openmrs.module.xforms.db.*;
-import org.openmrs.module.xforms.*;
-import org.springframework.transaction.annotation.Transactional;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.module.formentry.FormEntryService;
+import org.openmrs.Form;
+import org.openmrs.api.FormService;
+import org.openmrs.api.context.Context;
+import org.openmrs.module.xforms.Xform;
+import org.openmrs.module.xforms.XformBuilder;
+import org.openmrs.module.xforms.XformConstants;
+import org.openmrs.module.xforms.XformUser;
+import org.openmrs.module.xforms.XformsService;
+import org.openmrs.module.xforms.XformsUtil;
+import org.openmrs.module.xforms.db.XformsDAO;
+import org.openmrs.module.xforms.formentry.FormEntryWrapper;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implements XForms services.
@@ -154,10 +157,10 @@ public class XformsServiceImpl implements XformsService{
      * @see org.openmrs.module.xforms.XformsService#getNewXform(java.lang.Integer)
      */
     public Xform getNewXform(Integer formId) {
-    	FormEntryService formEntryService = (FormEntryService)Context.getService(FormEntryService.class);
-    	Form form = formEntryService.getForm(formId);
-		String schemaXml = formEntryService.getSchema(form);
-		String templateXml = new FormXmlTemplateBuilder(form,FormEntryUtil.getFormAbsoluteUrl(form)).getXmlTemplate(false);
+    	FormService formService = (FormService)Context.getService(FormService.class);
+    	Form form = formService.getForm(formId);
+		String schemaXml = XformsUtil.getSchema(form);
+		String templateXml = FormEntryWrapper.getFormTemplate(form); //new FormXmlTemplateBuilder(form,FormEntryUtil.getFormAbsoluteUrl(form)).getXmlTemplate(false);
 		
 		//TODO This localhost and port(8080) should not be hardcoded.
 		String actionUrl = "http://" + "localhost" + ":8080/openmrs" + XformConstants.XFORM_DATA_UPLOAD_RELATIVE_URL;

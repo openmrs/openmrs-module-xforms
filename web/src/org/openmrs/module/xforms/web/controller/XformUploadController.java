@@ -5,14 +5,15 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Form;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.formentry.FormEntryService;
+import org.openmrs.module.xforms.Xform;
+import org.openmrs.module.xforms.XformConstants;
+import org.openmrs.module.xforms.XformsService;
+import org.openmrs.module.xforms.XformsUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -21,10 +22,6 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
-import org.openmrs.module.xforms.XformConstants;
-import org.openmrs.module.xforms.XformsService;
-import org.openmrs.module.xforms.Xform;
-import org.openmrs.module.xforms.XformsUtil;
 
 
 /**

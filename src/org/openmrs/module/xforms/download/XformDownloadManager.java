@@ -7,17 +7,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openmrs.Form;
+import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.formentry.FormEntryService;
-import org.openmrs.module.formentry.FormEntryUtil;
-import org.openmrs.module.formentry.FormXmlTemplateBuilder;
+import org.openmrs.module.xforms.SerializableData;
 import org.openmrs.module.xforms.Xform;
 import org.openmrs.module.xforms.XformBuilder;
 import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformsService;
 import org.openmrs.module.xforms.XformsUtil;
+import org.openmrs.module.xforms.formentry.FormEntryWrapper;
 import org.openmrs.util.OpenmrsClassLoader;
-import org.openmrs.module.xforms.SerializableData;
 
 /**
  * Manages xforms download.
@@ -60,13 +59,13 @@ public class XformDownloadManager {
 			createNew = true;
 
 		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
-		FormEntryService formEntryService = (FormEntryService)Context.getService(FormEntryService.class);
+		FormService formService = (FormService)Context.getService(FormService.class);
 
 		List<Xform> xforms = xformsService.getXforms();
 		List<String> xmlforms = new ArrayList<String>();
 		for(Xform xform : xforms){
 			if(xform.getFormId() != XformConstants.PATIENT_XFORM_FORM_ID){
-				String s = getXform(formEntryService,xformsService,xform.getFormId(),createNew,actionUrl);
+				String s = getXform(formService,xformsService,xform.getFormId(),createNew,actionUrl);
 				xmlforms.add(s);
 			}
 		}
@@ -80,13 +79,13 @@ public class XformDownloadManager {
 	 * Creates a new xform.
 	 * 
 	 * @param request - the http request.
-	 * @param formEntryService - the formentry service.
+	 * @param formService - the form service.
 	 * @param formId - the form id.
 	 * @return - the created xml form.
 	 */
-	public static String createNewXform(FormEntryService formEntryService, Integer formId,String actionUrl){
-		Form form = formEntryService.getForm(formId);
-		return createNewXform(formEntryService, form,actionUrl);
+	public static String createNewXform(FormService formService, Integer formId,String actionUrl){
+		Form form = formService.getForm(formId);
+		return createNewXform(formService, form,actionUrl);
 	}
 	
 	
@@ -95,26 +94,26 @@ public class XformDownloadManager {
 	 * Creates a new xform for an given openmrs form.
 	 * 
 	 * @param request - the request object.
-	 * @param formEntryService - the formentry service.
+	 * @param formService - the form service.
 	 * @param form - the form object.
 	 * @return - the xml content of the xform.
 	 */
-	public static String createNewXform(FormEntryService formEntryService, Form form,String actionUrl){
-		String schemaXml = formEntryService.getSchema(form);
-		String templateXml = new FormXmlTemplateBuilder(form,FormEntryUtil.getFormAbsoluteUrl(form)).getXmlTemplate(false);
+	public static String createNewXform(FormService formService, Form form,String actionUrl){
+		String schemaXml = XformsUtil.getSchema(form);
+		String templateXml = FormEntryWrapper.getFormTemplate(form);//new FormXmlTemplateBuilder(form,FormEntryUtil.getFormAbsoluteUrl(form)).getXmlTemplate(false);
 		return XformBuilder.getXform4mStrings(schemaXml, templateXml,actionUrl);
 	}
 	
 	/**
 	 * Gets an xform for a given form id.
 	 * 
-	 * @param formEntryService - the formentry service.
+	 * @param formService - the form service.
 	 * @param xformsService  the xforms service.
 	 * @param formId - the form id.
 	 * @param createNew - true if you want
 	 * @return - the xml content of the xform.
 	 */
-	public static String getXform(FormEntryService formEntryService,XformsService xformsService,Integer formId,boolean createNew,String actionUrl){
+	public static String getXform(FormService formService,XformsService xformsService,Integer formId,boolean createNew,String actionUrl){
 		
 		String xformXml = null;
 		
@@ -125,7 +124,7 @@ public class XformDownloadManager {
 		}
 		
 		if(xformXml == null)
-			xformXml = createNewXform(formEntryService, formId,actionUrl);
+			xformXml = createNewXform(formService, formId,actionUrl);
 		
 		return xformXml;
 	}

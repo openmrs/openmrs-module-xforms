@@ -1,14 +1,14 @@
 package org.openmrs.module.xforms;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.StringWriter;
-import java.util.Date;
-import java.text.SimpleDateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,8 +16,6 @@ import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -26,16 +24,15 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Form;
 import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
-import org.w3c.dom.Document;
-
 import org.openmrs.api.context.ContextAuthenticationException;
-import org.openmrs.module.formentry.FormEntryConstants;
+import org.openmrs.module.xforms.formentry.FormEntryWrapper;
 import org.openmrs.util.OpenmrsUtil;
-import org.openmrs.module.formentry.*;
 import org.openmrs.web.WebConstants;
+import org.w3c.dom.Document;
 
 /**
  * Provides utilities needed when processing xforms.
@@ -258,7 +255,7 @@ public class XformsUtil {
     	String xformsArchiveFileName = as.getGlobalProperty(XformConstants.XFORMS_ARCHIVE_DIR, XformConstants.XFORMS_ARCHIVE_DIR_DEFAULT);
     	
     	// replace %Y %M %D in the folderName with the date
-		String folderName = FormEntryUtil.replaceVariables(xformsArchiveFileName, d);
+		String folderName = FormEntryWrapper.replaceVariables(xformsArchiveFileName, d);
 		
 		// get the file object for this potentially new file
 		File xformsArchiveDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(folderName);
@@ -320,5 +317,16 @@ public class XformsUtil {
 	 */
 	public static String getActionUrl(HttpServletRequest request){
 		return request.getContextPath() + XformConstants.XFORM_DATA_UPLOAD_RELATIVE_URL;
+	}
+	
+	/**
+	 * Gets the schema of a form.
+	 * 
+	 * @param form - the form reference.
+	 * @return
+	 */
+	public static String getSchema(Form form){
+		//TODO I need some implementattion here.
+		return FormEntryWrapper.getSchema(form);//((FormEntryService)Context.getService(FormEntryService.class)).getSchema(form);
 	}
 }
