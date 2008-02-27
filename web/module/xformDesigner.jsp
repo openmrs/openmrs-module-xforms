@@ -1,41 +1,45 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<openmrs:htmlInclude file="/moduleResources/xforms/scripts/dojo/dojo/resources/dojo.css"/>
+		<openmrs:htmlInclude file="/moduleResources/xforms/scripts/dojo/dijit/themes/tundra/tundra.css"/>
+		
+		<script type="text/javascript">
+			var djConfig = {debugAtAllCosts: true, isDebug: true, parseOnLoad: true };
+		</script>
+    
+		<openmrs:htmlInclude file="/moduleResources/xforms/scripts/dojo/dojo/dojo.js"/>
+		
+		<script type="text/javascript">
+		    dojo.require("dojo.parser");
+			dojo.require("dijit.layout.TabContainer");
+			dojo.require("dijit.layout.LinkPane");
+			dojo.require("dijit.layout.ContentPane");
+			dojo.require("dijit.layout.LayoutContainer");
+			dojo.require("dijit.layout.SplitContainer");
+		    dojo.require("dijit.layout.AccordionContainer");
+		    
+			dojo.require("dijit.Menu");
+			dojo.require("dijit.Toolbar");
+			dojo.require("dijit.Tree");
+			
+			dojo.require("dijit._tree.dndSource");
+			dojo.require("dijit._tree.dndContainer");
+			dojo.require("dijit._tree.dndSelector");
+		    	
+			dojo.require("dijit.form.Button");
+			dojo.require("dijit.form.CheckBox");
+		</script>
+		
+	</head>
+
+<body class="tundra">
+
 <script type="text/javascript" src='${pageContext.request.contextPath}/dwr/engine.js'></script>
 <script type="text/javascript" src='${pageContext.request.contextPath}/dwr/util.js'></script>
 <script type="text/javascript" src='${pageContext.request.contextPath}/dwr/interface/DWRXformsService.js'></script>
 
-<script type="text/javascript">
-	var djConfig = {debugAtAllCosts: false, isDebug: true };
-</script>
-
-<openmrs:htmlInclude file="/module/xforms/scripts/dojo/dojo.js" />
-
-<script type="text/javascript">
-	dojo.require("dojo.widget.TabContainer");
-	dojo.require("dojo.widget.LinkPane");
-	dojo.require("dojo.widget.ContentPane");
-	dojo.require("dojo.widget.LayoutContainer");
-	dojo.require("dojo.widget.Checkbox");
-	dojo.require("dojo.widget.Menu2");
-	
-	dojo.require("dojo.widget.Toolbar");
-    dojo.require("dojo.widget.SplitContainer");
-    dojo.require("dojo.widget.AccordionContainer");
-    dojo.require("dojo.widget.FloatingPane");
-    dojo.require("dojo.widget.Editor2");
-    dojo.require("dojo.widget.Tree");
-    dojo.require("dojo.widget.TreeContextMenu");
-	dojo.require("dojo.widget.TreeNode");
-	dojo.require("dojo.widget.TreeSelector");
-	dojo.require("dojo.widget.TreeLoadingController");
-	
-	dojo.require("dojo.widget.TaskBar");
-	dojo.require("dojo.widget.ComboBox");
-	dojo.require("dojo.widget.Button");
-	dojo.require("dojo.widget.FilteringTable");
-	dojo.require("dojo.widget.Textbox");
-	
-</script>
 
 <style type="text/css">
 	table thead td, table thead th {
@@ -51,7 +55,7 @@
 	var xformDoc;
 	   
 	function Refresh(){
-		if(dojo.widget.manager.getWidgetById("mainTabContainer").selectedChildWidget.widgetId.toString() == "tabPreviewXform"){
+		if(dojo.byId("mainTabContainer").selectedChildWidget..toString() == "tabPreviewXform"){
 			var f = document.getElementById('xformEntryIframe');
 			f.contentWindow.location.reload(true);
 		}
@@ -78,7 +82,7 @@
 		{
 			childXformNode = parentXformNode.childNodes[i];
 			if(childXformNode.nodeType == 1 && childXformNode.localName.toString() == "label"){
-				childTreeNode = dojo.widget.createWidget("TreeNode",{title:childXformNode.childNodes[0].nodeValue, object:childXformNode.parentNode, childIconSrc:(childXformNode.parentNode.getAttribute("bind")) ? "../../images/note2.gif" : "../../images/add.gif"});
+				childTreeNode = new dijit.TreeNode("TreeNode",{title:childXformNode.childNodes[0].nodeValue, object:childXformNode.parentNode, childIconSrc:(childXformNode.parentNode.getAttribute("bind")) ? "../../images/note2.gif" : "../../images/add.gif"});
 	       		parentTreeNode.addChild(childTreeNode);
 	       	}
 	       	else if(childXformNode.nodeType == 1 && childXformNode.childNodes)
@@ -145,8 +149,8 @@
 		var binding = xformNode.getAttribute("bind");
 		if(!binding){
 			document.getElementById("cboType").selectedIndex = -1;
-			dojo.widget.manager.getWidgetById("chkRequired").setValue(false);
-			dojo.widget.manager.getWidgetById("chkReadonly").setValue(false);
+			dojo.byId("chkRequired").setValue(false);
+			dojo.byId("chkReadonly").setValue(false);
 			document.getElementById("cboBinding").selectedIndex = -1;
 			return;
 		}
@@ -164,12 +168,12 @@
    				if(node.getAttribute("required"))
    					val = (node.getAttribute("required").toString() == "true()") ? true : false;
     					
-    			dojo.widget.manager.getWidgetById("chkRequired").setValue(val);
+    			dojo.byId("chkRequired").setValue(val);
    				
    				val = false;
    				if(node.getAttribute("readonly"))
    					val = (node.getAttribute("readonly").toString() == "true()") ? true : false;
-   				dojo.widget.manager.getWidgetById("chkReadonly").setValue(val);
+   				dojo.byId("chkReadonly").setValue(val);
    				
    				break;
    			}
@@ -218,7 +222,7 @@
    	}
    	
    	function onApplyProperties(){
-    	var treeSelector = dojo.widget.manager.getWidgetById("treeSelector");
+    	var treeSelector = dojo.byId("treeSelector");
    		if(treeSelector.selectedNode){
    			var labelText = document.getElementById('txtText').value;
    			treeSelector.selectedNode.titleNode.innerHTML = labelText;
@@ -263,12 +267,12 @@
     			node.setAttribute("bind",binding);
    				
    				var bindingNode = getBindingNode(binding);
-   				if(dojo.widget.manager.getWidgetById("chkRequired").checked)
+   				if(dojo.byId("chkRequired").checked)
    					bindingNode.setAttribute("required","true()");
    				else
    					bindingNode.removeAttribute("required");
 	   				
-	   			if(dojo.widget.manager.getWidgetById("chkReadonly").checked)
+	   			if(dojo.byId("chkReadonly").checked)
 	   				bindingNode.setAttribute("readonly","true()");
 	   			else
 	   				bindingNode.removeAttribute("readonly");
@@ -372,41 +376,41 @@
 		myTreeWidget: null,
    		buildTree:function (){
    			
-   			//var myControllerSelector = dojo.widget.createWidget( "TreeController",{widgetId : "treeSelector"} );
+   			//var myControllerSelector = dojo.widget.createWidget( "TreeController",{id : "treeSelector"} );
    			
-   			var myTreeController= dojo.widget.createWidget("TreeBasicController",{widgetId:"myTreeController",DNDController:"create"});
+   			var myTreeController;//= new dijit._tree.Controller({id:"myTreeController",DNDController:"create"});
        			
-   			var myTreeSelector = dojo.widget.createWidget( "TreeSelector",{widgetId : "treeSelector"} );
-			dojo.event.topic.subscribe( myTreeSelector.eventNames.select,onTreeNodeSelection);
-			dojo.event.topic.subscribe( myTreeSelector.eventNames.dblselect,onTreeNodeDoubleSelection);
+   			var myTreeSelector;// = new dijit._tree.dndSelector({id : "treeSelector"} );
+			//dojo.event.topic.subscribe( myTreeSelector.eventNames.select,onTreeNodeSelection);
+			//dojo.event.topic.subscribe( myTreeSelector.eventNames.dblselect,onTreeNodeDoubleSelection);
 			
-     		myTreeWidget = dojo.widget.createWidget("Tree",{
-       		widgetId:"myNewTreeWidget",
+     		myTreeWidget = new dijit.Tree({
+       		id:"myNewTreeWidget",
        		selector:"treeSelector",
        		controller:"myTreeController",
         	DNDMode:"between",
        		DNDAcceptTypes:["myNewTreeWidget"]});
        		
-       		dojo.event.topic.subscribe( myTreeWidget.eventNames.moveTo,onTreeNodeMoveTo);
+       		//dojo.event.topic.subscribe( myTreeWidget.eventNames.moveTo,onTreeNodeMoveTo);
       	},
    		addTreeContextMenu:function (){
-  			var djWdgt = dojo.widget;
-  			var ctxMenu = djWdgt.createWidget("TreeContextMenu",{});
+  			//var djWdgt = dojo.widget;
+  			var ctxMenu = new TreeContextMenu("TreeContextMenu",{});
   			
-   			ctxMenu.addChild(djWdgt.createWidget(
-   				"TreeMenuItem",{caption:"Add Field",widgetId:"ctxAddField"}));
+   			ctxMenu.addChild(new TreeMenuItem(
+   				"TreeMenuItem",{caption:"Add Field",id:"ctxAddField"}));
    				
-   			ctxMenu.addChild(djWdgt.createWidget(
-   				"TreeMenuItem",{caption:"Add Child",widgetId:"ctxAddChild"}));
+   			ctxMenu.addChild(new TreeMenuItem(
+   				"TreeMenuItem",{caption:"Add Child",id:"ctxAddChild"}));
    				
-   			ctxMenu.addChild(djWdgt.createWidget(
-     			"TreeMenuItem",{caption:"Delete",widgetId:"ctxDelete"}));
+   			ctxMenu.addChild(new TreeMenuItem(
+     			"TreeMenuItem",{caption:"Delete",id:"ctxDelete"}));
      		
-     		ctxMenu.addChild(djWdgt.createWidget(
-     			"TreeMenuItem",{caption:"Properties",widgetId:"ctxProperties"}));
+     		ctxMenu.addChild(new TreeMenuItem(
+     			"TreeMenuItem",{caption:"Properties",id:"ctxProperties"}));
      			
    			document.body.appendChild(ctxMenu.domNode);
-   			var myTree = dojo.widget.manager.getWidgetById("myNewTreeWidget");
+   			var myTree = dojo.byId("myNewTreeWidget");
    			ctxMenu.listenTree(myTree);
  		},
     	bindEvents: function(){
@@ -432,7 +436,7 @@
      		);
    		},
    		init: function(){
-      		this.djWdgt = dojo.widget;
+      		//this.djWdgt = dojo.widget;
        		this.addTreeContextMenu();
      		this.bindEvents();
    		},
@@ -451,7 +455,7 @@
 				xformDoc=parser.parseFromString(data,"text/xml");
 			}
 
-			populateNodes(dojo.widget.manager.getWidgetById("myNewTreeWidget"),xformDoc.documentElement);
+			populateNodes(dojo.byId("myNewTreeWidget"),xformDoc.documentElement);
 			displayTree();
 			fillBindings();
 			fillTypes();
@@ -470,11 +474,11 @@
   	var TreeActions = {
    		addFieldNode: function(parent,controllerId){
    			
-     		this.controller = dojo.widget.manager.getWidgetById(controllerId);
+     		this.controller = dojo.byId(controllerId);
      		if (!parent.isFolder) 
        			parent.setFolder();
      		
-     		var treeSelector = dojo.widget.manager.getWidgetById("treeSelector");
+     		var treeSelector = dojo.byId("treeSelector");
    			if(treeSelector.selectedNode){   				
 	     		var node = xformDoc.createElementNS(treeSelector.selectedNode.object.namespaceURI,"input");
 	     		var child = xformDoc.createElementNS(treeSelector.selectedNode.object.namespaceURI,"label");
@@ -490,17 +494,17 @@
 	     		xformDoc.documentElement.appendChild(node);
 	     		xformDoc.documentElement.appendChild(xformDoc.createTextNode('\r\n'));
 	     		
-	     		var childTreeNode = dojo.widget.createWidget("TreeNode",{title:"New Field", object:node, childIconSrc:"../../images/note2.gif"});
-	       		dojo.widget.manager.getWidgetById("myNewTreeWidget").addChild(childTreeNode);	
-	     		//var res = this.controller.createChild(dojo.widget.manager.getWidgetById("myNewTreeWidget"), 0, { title: "New Field", object:node, childIconSrc:"../../images/note2.gif"});
+	     		var childTreeNode = new TreeNode("TreeNode",{title:"New Field", object:node, childIconSrc:"../../images/note2.gif"});
+	       		dojo.byId("myNewTreeWidget").addChild(childTreeNode);	
+	     		//var res = this.controller.createChild(dojo.byId("myNewTreeWidget"), 0, { title: "New Field", object:node, childIconSrc:"../../images/note2.gif"});
 	     	}
    		},
    		addChildNode: function(parent,controllerId){
-     		this.controller = dojo.widget.manager.getWidgetById(controllerId);
+     		this.controller = dojo.byId(controllerId);
      		if (!parent.isFolder) 
        			parent.setFolder();
        			
-   			var treeSelector = dojo.widget.manager.getWidgetById("treeSelector");
+   			var treeSelector = dojo.byId("treeSelector");
    			if(treeSelector.selectedNode){
      			var node = xformDoc.createElementNS(treeSelector.selectedNode.object.namespaceURI,"input");
  	     		var child = xformDoc.createElementNS(treeSelector.selectedNode.object.namespaceURI,"label");
@@ -517,42 +521,41 @@
        			alert("Nothing selected to delete");
        			return false;
      		}
-     		this.controller = dojo.widget.manager.getWidgetById(controllerId);
+     		this.controller = dojo.byId(controllerId);
      		var res = this.controller.removeNode(node, dojo.lang.hitch(this));
      		
      		removeNode(node.object);
      		showXformSource();
    		},
    		showNodeProperties: function(node,controllerId){
-   			dojo.widget.manager.getWidgetById("mainTabContainer").selectChild(dojo.widget.manager.getWidgetById("tabProperties"));
+   			dojo.byId("mainTabContainer").selectChild(dojo.byId("tabProperties"));
    		}
  	};
 
  	dojo.addOnLoad(function(){TreeBuilder.setupTree()});
 
 </script>
-	<div> ${pageContext.request.contextPath} </div>
-	<div dojoType="LayoutContainer" style="width: 100%; height: 100%; padding: 0; margin: 0; border: 0;">
+	<div dojoType="dijit.layout.LayoutContainer" style="width: 100%; height: 100%; padding: 0; margin: 0; border: 0;">
    
-	<div dojoType="MenuBar2" layoutAlign="top">
-		<div dojoType="MenuBarItem2" caption="File" submenuId="submenu1"></div>
+	<div dojoType="dijit.Toolbar" layoutAlign="top">
+		<div dojoType="dijit.MenuItem" caption="File" submenuId="submenu1"></div>
 	</div>
 
-   <div id="topMenu" dojoType="ContentPane" layoutAlign="top" class="header" style="padding-bottom: 5px;">
+   <div id="topMenu" dojoType="dijit.layout.ContentPane" layoutAlign="top" class="header" style="padding-bottom: 5px;">
 		<div style="float: left; margin-right: 10px;">
-			<button dojoType="Button" onclick="alert('pretending to download new mail');">
+			<button dojoType="dijit.form.Button" onclick="alert('pretending to download new mail');">
 				<img src="../../images/file.gif" height=18 width=18>
 				New
 			</button>
 		</div>
 		<div style="float: left;">
-			<button dojoType="Button" onclick='open("Mail/NewMessage.html",null,"height=500,width=600,status=yes,toolbar=no,menubar=no,location=no");'>
+			<button dojoType="dijit.form.Button" onclick='open("Mail/NewMessage.html",null,"height=500,width=600,status=yes,toolbar=no,menubar=no,location=no");'>
 				<img src="../../images/open.gif" height=18 width=18>
 				Open
 			</button>
 		</div>
 		<div style="float: right;">
-			<button dojoType="Button" onclick="saveXform();">
+			<button dojoType="dijit.form.Button" onclick="saveXform();">
 				<img src="../../images/save.gif" height=18 width=18>
 				Save
 			</button>
@@ -561,55 +564,58 @@
 		
 	</div>
    
-   <div dojoType="SplitContainer" layoutAlign="client" orientation="horizontal" sizerWidth="3" persist = "false" activeSizing="true">
+    <div dojoType="dijit.layout.ContentPane" id="mytaskbar" layoutAlign="bottom" hasShadow="true" resizable="false">
+	</div>
+	
+   <div dojoType="dijit.layout.SplitContainer" layoutAlign="client" orientation="horizontal" sizerWidth="3" persist = "false" activeSizing="true">
         
- 	        <div dojoType="AccordionContainer"  sizeShare="1" duration="200" >
+ 	        <div dojoType="dijit.layout.AccordionContainer"  sizeShare="1" duration="200" >
 	   		
-		   		<div id="myWidgetContainer" dojoType="ContentPane" selected="true" label="Fields" style="overflow: auto;" >
+		   		<div id="myWidgetContainer" dojoType="dijit.layout.AccordionPane" selected="true" title="Fields" style="overflow: auto;" >
 					<div id="treePlaceHolder" style="background-color:#F00; color:#FFF;">
 					      Loading ...
 					</div>
 				</div>
 				
-				<div dojoType="ContentPane" label="Model">
+				<div dojoType="dijit.layout.AccordionPane" title="Model">
 					The second panel
 				</div>
 				
-				<div dojoType="ContentPane" label="Pallete" style="overflow: auto;">
+				<div dojoType="dijit.layout.AccordionPane" title="Pallete" style="overflow: auto;">
 					<table cellspacing="10" cellpadding="10">
 					<tr>
 						<td>
-						<button dojoType="Button" style="height:18; width:18;">
+						<button dojoType="dijit.form.Button" style="height:18; width:18;">
 							Input 
 						</button> 
 						</td>
 					</tr>
 					<tr>
-						<td> <button dojoType="Button"> Select1 </button> </td>
+						<td> <button dojoType="dijit.form.Button"> Select1 </button> </td>
 					</tr>
 					<tr>
-						<td> <button dojoType="Button"> Select </button> </td>
+						<td> <button dojoType="dijit.form.Button"> Select </button> </td>
 					</tr>
 					<tr>
-						<td> <button dojoType="Button"> TextArea </button> </td>
+						<td> <button dojoType="dijit.form.Button"> TextArea </button> </td>
 					</tr>
 					<tr>
-						<td> <button dojoType="Button"> Output </button> </td>
+						<td> <button dojoType="dijit.form.Button"> Output </button> </td>
 					</tr>
 					<tr>
-						<td> <button dojoType="Button"> Secret </button> </td>
+						<td> <button dojoType="dijit.form.Button"> Secret </button> </td>
 					</tr>
 					<tr>
-						<td> <button dojoType="Button"> Range </button> </td>
+						<td> <button dojoType="dijit.form.Button"> Range </button> </td>
 					</tr>
 					<tr>
-						<td> <button dojoType="Button"> Upload </button> </td>
+						<td> <button dojoType="dijit.form.Button"> Upload </button> </td>
 					</tr>
 					<tr>
-						<td> <button dojoType="Button"> Submit </button> </td>
+						<td> <button dojoType="dijit.form.Button"> Submit </button> </td>
 					</tr>
 					<tr>
-						<td> <button dojoType="Button"> Triger </button> </td>
+						<td> <button dojoType="dijit.form.Button"> Triger </button> </td>
 					</tr>
 					</table>
 				</div>
@@ -617,11 +623,11 @@
 		    </div>
 		
 	    
-	    <div dojoType="ContentPane" sizeShare="4" style="background-color:white;">
+	    <div dojoType="dijit.layout.ContentPane" sizeShare="4" style="background-color:white;">
 	    	
-			<div id="mainTabContainer" dojoType="TabContainer" widgetId="mainTabContainer" tabposition="bottom" style="width: 100%; height: 100%" selectedChild="tabProperties" >
+			<div id="mainTabContainer" dojoType="dijit.layout.TabContainer" tabPosition="top" style="width: 100%; height: 100%" >
 	
-				<div widgetId="tabProperties" dojoType="ContentPane" widgetId="tabProperties" label="Properties" >
+				<div id="tabProperties" dojoType="dijit.layout.ContentPane" title="Properties" selected="true">
 					<table border="1" width="100%">
 						<thead>
 							<tr>
@@ -630,8 +636,8 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr><td>Required</td><td><input type="checkbox" id="chkRequired" widgetId="chkRequired" dojoType="Checkbox"/></td></tr>
-							<tr><td>Readonly</td><td><input type="checkbox" id="chkReadonly" widgetId="chkReadonly" dojoType="Checkbox"/></td></tr>
+							<tr><td>Required</td><td><input type="checkbox" id="chkRequired" dojoType="dijit.form.CheckBox"/></td></tr>
+							<tr><td>Readonly</td><td><input type="checkbox" id="chkReadonly" dojoType="dijit.form.CheckBox"/></td></tr>
 							<tr><td>Text</td><td><input id="txtText" style="width: 100%; height: 100%" /></td></tr>
 							<tr><td>Short Text</td><td><input id="txtShortText" style="width: 100%; height: 100%" /></td></tr>
 							<tr><td>Help Text</td><td><input id="txtHelpText" style="width: 100%; height: 100%" /></td></tr>
@@ -648,28 +654,28 @@
 							</tr>
 						</tbody>
 					</table>
-					<button dojoType="Button" onclick="onApplyProperties();">
+					<button dojoType="dijit.form.Button" onclick="onApplyProperties();">
 						<img src="../../images/markRead.gif" height=18 width=18>
 						Apply
 					</button>
 				</div>
 				
-				<div widgetId="tabXformSource" dojoType="ContentPane" label="XForm Source" style="display: none">
+				<div id="tabXformSource" dojoType="dijit.layout.ContentPane" title="XForm Source" >
 					<div id="divXformSource"> </div>  
 				</div>
 				
-				<div widgetId="tabXhtmlXsltSource" dojoType="ContentPane" label="XHTML XSLT Source" style="display: none">
+				<div id="tabXhtmlXsltSource" dojoType="dijit.layout.ContentPane" title="XHTML XSLT Source" >
 					<div id="divXhtmlXsltSource"> </div>  
 				</div>
 				
-				<div widgetId="tabHtmlFormXsltSource" dojoType="ContentPane" label="HTML Form XSLT Source" style="display: none">
+				<div id="tabHtmlFormXsltSource" dojoType="dijit.layout.ContentPane" title="HTML Form XSLT Source" >
 					<div id="divHtmlFormXsltSource"> </div>  
 				</div>
 		
-				<div widgetId="tabDesign" dojoType="ContentPane" label="Design" style="display: none">
+				<div id="tabDesign" dojoType="dijit.layout.ContentPane" title="Design" style="display: none">
 				</div>
 				
-				<div widgetId="tabPreviewXform" dojoType="ContentPane" label="Preview XForm" style="display: none">
+				<div id="tabPreviewXform" dojoType="dijit.layout.ContentPane" title="Preview XForm" >
 					<iframe 
 						src ="<%= request.getContextPath() %>/moduleServlet/xforms/xformDownload?target=xformentry&formId=${formId}"
 						width="100%"
@@ -680,7 +686,7 @@
 					</iframe>
 				</div>
 				
-				<div widgetId="tabPreviewHtmlForm" dojoType="ContentPane" label="Preview HTML Form" style="display: none">
+				<div id="tabPreviewHtmlForm" dojoType="dijit.layout.ContentPane" title="Preview HTML Form" >
 					The preview HTML Form goes here.
 				</div>
 
@@ -689,25 +695,23 @@
 	    </div>
     
    </div>
-   
-   	<div dojoType="TaskBar" id="mytaskbar" layoutAlign="bottom" hasShadow="true" resizable="false">
-	</div>
 </div>
 
-<div dojoType="PopupMenu2" widgetId="submenu1" contextMenuForWindow="true">
-	<div dojoType="MenuItem2" caption="Enabled Item" onClick="alert('Hello world');"></div>
-	<div dojoType="MenuItem2" caption="Disabled Item" disabled="true"></div>
-	<div dojoType="MenuItem2" caption="Refresh" onClick="Refresh();" ></div>
-	<div dojoType="MenuSeparator2" ></div>
-	<div dojoType="MenuItem2" iconSrc="../../src/widget/templates/buttons/cut.gif" caption="Cut" accelKey="Ctrl+C"
+<div dojoType="dijit.Menu" id="submenu1" contextMenuForWindow="true">
+	<div dojoType="dijit.MenuItem" caption="Enabled Item" onClick="alert('Hello world');"></div>
+	<div dojoType="dijit.MenuItem" caption="Disabled Item" disabled="true"></div>
+	<div dojoType="dijit.MenuItem" caption="Refresh" onClick="Refresh();" ></div>
+	<div dojoType="dijit.MenuSeparator" ></div>
+	<div dojoType="dijit.MenuItem" iconSrc="../../src/widget/templates/buttons/cut.gif" caption="Cut" accelKey="Ctrl+C"
 		onClick="alert('not actually cutting anything, just a test!')"></div>
-	<div dojoType="MenuItem2" iconSrc="../../src/widget/templates/buttons/copy.gif" caption="Copy" accelKey="Ctrl+X"
+	<div dojoType="dijit.MenuItem" iconSrc="../../src/widget/templates/buttons/copy.gif" caption="Copy" accelKey="Ctrl+X"
 		onClick="alert('not actually copying anything, just a test!')"></div>
-	<div dojoType="MenuItem2" iconSrc="../../src/widget/templates/buttons/paste.gif" caption="Paste" accelKey="Ctrl+V"
+	<div dojoType="dijit.MenuItem" iconSrc="../../src/widget/templates/buttons/paste.gif" caption="Paste" accelKey="Ctrl+V"
 		onClick="alert('not actually pasting anything, just a test!')"></div>
-	<div dojoType="MenuSeparator2"></div>
-	<div dojoType="MenuItem2" caption="Enabled Submenu" submenuId="submenu2"></div>
-	<div dojoType="MenuItem2" caption="Disabled Submenu" submenuId="submenu2" disabled="true"></div>
+	<div dojoType="dijit.MenuSeparator"></div>
+	<div dojoType="dijit.MenuItem" caption="Enabled Submenu" submenuId="submenu2"></div>
+	<div dojoType="dijit.MenuItem" caption="Disabled Submenu" submenuId="submenu2" disabled="true"></div>
 </div>
 
-
+</body>
+</html>
