@@ -129,11 +129,11 @@ public class XformsUtil {
 	 * Gets the default CSS for XForms.
 	 * 
 	 * @return the CSS text
-	 */
+	 */	
 	private static String getDefaultStyle(){
-		return "@namespace xforms url(http://www.w3.org/2002/xforms/); "+
+		return "@namespace xf url(http://www.w3.org/2002/xforms); "+
 			"/* Display a red background on all invalid form controls */ "+
-			"*:invalid { background-color: red; } "+
+			"*:invalid .xf-value { background-color: red; } "+
 			" "+
 			"/* Display a red asterisk after all required form controls */ "+
 			"*:required::after { content: '*'; color: red; } "+
@@ -142,8 +142,18 @@ public class XformsUtil {
 			"*:disabled { visibility: hidden; } "+
 			" "+
 			"/* Display an alert message when appropriate */ "+
-			"*:valid   > xforms|alert { display: none; } "+
-			"*:invalid > xforms|alert { display: inline; } ";
+			"*:valid   > xf|alert { display: none; } "+
+			"*:invalid > xf|alert { display: inline; } "+
+			" "+
+			"xf|input xf|label,xf|select xf|label,xf|select1 xf|label {width: 32ex; text-align: right; vertical-align: top; padding-right: 0.5em; padding-top: 1ex; padding-bottom: 1ex;} " +
+		    " "+
+			"xf|item xf|label {width: 100%; text-align: left; padding-right: 0em; padding-bottom: 0ex; padding-top: 0ex;} " +
+		    " "+
+			"xf|select {padding-top: 1ex; padding-bottom: 1ex;} " +
+		    " "+  
+		    "xf|input, xf|select1, xf|select, xf|submit, xf|item { display: table-row; } "+
+		    " "+
+		    "xf|input xf|label, xf|select1 xf|label, xf|select xf|label { display: table-cell; } ";
 	}
 
 	//<xsl:number value="position()" format="1" />   
@@ -173,17 +183,11 @@ public class XformsUtil {
 			" 	<xsl:copy-of select='/xf:xforms/xf:model' /> "+
 			" </head> "+
 			" <body> "+
-			" <table cellspacing='10'> "+
 			" 	<xsl:for-each select='/xf:xforms/*'> "+
 			"   	<xsl:if test='local-name() != \"model\"'> "+
-			"   	<tr> "+
-			"       <td> "+
 			" 			<xsl:copy-of select='.' /> "+
-			"       </td> "+
-			"       </tr> "+
 			"       </xsl:if> "+
 			" 	</xsl:for-each> "+
-			" </table> "+
 			" </body> "+
 			" </html> "+
 			"</xsl:template> "+

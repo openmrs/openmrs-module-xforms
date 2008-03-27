@@ -53,6 +53,13 @@ public class XformsServiceImpl implements XformsService{
 	public void deleteXform(Integer formId){
 		getXformsDAO().deleteXform(formId);
 	}
+	
+	/**
+	 * @see org.openmrs.module.xforms.XformsService#deleteXslt(java.lang.Integer)
+	 */
+	public void deleteXslt(Integer formId){
+		getXformsDAO().deleteXslt(formId);
+	}
 
 	/**
      * @see org.openmrs.module.xforms.XformsService#saveXform(org.openmrs.module.xforms.Xform)

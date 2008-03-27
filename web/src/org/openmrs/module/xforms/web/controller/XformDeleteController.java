@@ -36,6 +36,14 @@ public class XformDeleteController  extends SimpleFormController{
     	Integer formId = Integer.parseInt(request.getParameter("formId"));
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("formId", formId);
+		
+		String promptText = null;
+		if("xslt".equals(request.getParameter("target")))
+			promptText = "xforms.xsltDeleteConfirm";
+		else
+			promptText = "xforms.xformDeleteConfirm";
+		map.put("promptText", promptText);
+		
 		map.put("formName", ((FormService)Context.getService(FormService.class)).getForm(formId).getName());
 		return map;
 	}
@@ -57,8 +65,20 @@ public class XformDeleteController  extends SimpleFormController{
 		
 		Integer formId = Integer.parseInt(request.getParameter("formId"));
 		if(request.getParameter("yes") != null){
-			((XformsService)Context.getService(XformsService.class)).deleteXform(formId);
-			request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "xforms.xformDeleteSuccess");
+			
+			String target = request.getParameter("target");
+			XformsService xformsService = (XformsService)Context.getService(XformsService.class);
+			
+			String successMsg = "xforms.xformDeleteSuccess";
+			if("xslt".equals(target))
+			{
+				xformsService.deleteXslt(formId);
+				successMsg = "xforms.xsltDeleteSuccess";
+			}
+			else
+				xformsService.deleteXform(formId);
+			
+			request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, successMsg);
 		}
 		else
 			request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "xforms.xformDeleteCancelled");

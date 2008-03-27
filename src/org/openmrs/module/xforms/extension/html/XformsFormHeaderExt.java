@@ -3,10 +3,10 @@ package org.openmrs.module.xforms.extension.html;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.openmrs.module.Extension;
-import org.openmrs.util.InsertedOrderComparator;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.Extension;
 import org.openmrs.module.xforms.XformsService;
+import org.openmrs.util.InsertedOrderComparator;
 
 /**
  * Adds XForm links to the form schema design page.
@@ -35,11 +35,16 @@ public class XformsFormHeaderExt extends Extension {
 			map.put("moduleServlet/xforms/xformDownload?target=xform&formId=" + formId, "xforms.downloadXform");
 			map.put("module/xforms/xformDesigner.form?formId=" + formId, "xforms.designXform");
 			map.put("module/xforms/xformUpload.form?formId=" + formId, "xforms.uploadXform");
-			if(((XformsService)Context.getService(XformsService.class)).hasXform(Integer.valueOf(formId))){
-				map.put("module/xforms/xformDelete.form?formId=" + formId, "xforms.deleteXform");
-				map.put("module/xforms/xsltUpload.form?target=xslt&formId=" + formId, "xforms.uploadXslt");
+			
+			XformsService xformsService = (XformsService)Context.getService(XformsService.class);
+			if(xformsService.hasXform(Integer.valueOf(formId))){
+				map.put("module/xforms/xformDelete.form?target=xform&formId=" + formId, "xforms.deleteXform");
 				map.put("moduleServlet/xforms/xformDownload?target=xslt&formId=" + formId, "xforms.downloadXslt");
+				map.put("module/xforms/xsltUpload.form?target=xslt&formId=" + formId, "xforms.uploadXslt");
 			}
+			
+			if(xformsService.hasXslt(Integer.valueOf(formId)))
+				map.put("module/xforms/xformDelete.form?target=xslt&formId=" + formId, "xforms.deleteXslt");
 		}
 		
 		return map;

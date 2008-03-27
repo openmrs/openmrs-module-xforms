@@ -82,6 +82,16 @@ public class HibernateXformsDAO implements XformsDAO{
 	}
 	
 	/**
+	 * @see org.openmrs.module.xforms.XformsService#deleteXslt(java.lang.Integer)
+	 */
+	public void deleteXslt(Integer formId){
+		Query query = sessionFactory.getCurrentSession().createQuery("update Xform set xslt = null where formId = :formId");
+		query.setParameter("formId", formId);
+    	 
+    	query.executeUpdate();
+	}
+	
+	/**
 	 * @see org.openmrs.module.xforms.XformsService#getPatientValue(java.lang.Integer,java.lang.String,java.lang.String,java.lang.String)
 	 */
 	public Object getPatientValue(Integer patientId, String tableName, String columnName, String filterValue){
@@ -131,7 +141,6 @@ public class HibernateXformsDAO implements XformsDAO{
 			PreparedStatement st = sessionFactory.getCurrentSession().connection().prepareStatement(sql);
 			ResultSet res = st.executeQuery();
 			
-			String varname;
 			while(res.next())
 				formIds.add(res.getInt("form_id"));
 			

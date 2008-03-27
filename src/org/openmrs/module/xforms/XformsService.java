@@ -44,6 +44,13 @@ public interface XformsService {
 	public void deleteXform(Integer formId);
 	
 	/**
+	 * Deletes an XForm to XHTML XSLT for a form of given form id
+	 * 
+	 * @param formId The id of the form
+	 */
+	public void deleteXslt(Integer formId);
+	
+	/**
 	 * Get the XForm for the given form
 	 * 
 	 * @param form - the form

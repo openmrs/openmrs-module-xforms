@@ -35,6 +35,11 @@ public interface XformsDAO {
 	public void deleteXform(Integer formId);
 	
 	/**
+	 * @see org.openmrs.module.xforms.XformsService#deleteXslt(java.lang.Integer)
+	 */
+	public void deleteXslt(Integer formId);
+	
+	/**
 	 * @see org.openmrs.module.xforms.XformsService#getPatientValue(java.lang.Integer,java.lang.String,java.lang.String,jave.lang.String)
 	 */
 	public Object getPatientValue(Integer patientId, String tableName, String columnName, String filterValue);

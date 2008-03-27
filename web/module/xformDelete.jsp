@@ -2,7 +2,7 @@
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
 
-<h2><spring:message code="xforms.xformDeleteConfirm" /> ${formName}?</h2>
+<h2><spring:message code="${promptText}" /> ${formName}?</h2>
 
 <form method="post" enctype="multipart/form-data">
 	<table>

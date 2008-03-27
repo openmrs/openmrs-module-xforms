@@ -11,6 +11,9 @@
     
 		<openmrs:htmlInclude file="/moduleResources/xforms/scripts/dojo/dojo/dojo.js"/>
 		
+		<openmrs:htmlInclude file="/moduleResources/xforms/scripts/Xform.js"/>
+		<openmrs:htmlInclude file="/moduleResources/xforms/scripts/XformModel.js"/>
+		
 		<script type="text/javascript">
 		    dojo.require("dojo.parser");
 			dojo.require("dijit.layout.TabContainer");
@@ -30,6 +33,9 @@
 		    	
 			dojo.require("dijit.form.Button");
 			dojo.require("dijit.form.CheckBox");
+			
+			dojo.require("openmrs.Xform");
+			dojo.require("openmrs.XformModel");
 		</script>
 		
 	</head>
@@ -53,9 +59,9 @@
 <script type="text/javascript">
 	
 	var xformDoc;
-	   
+	
 	function Refresh(){
-		if(dojo.byId("mainTabContainer").selectedChildWidget..toString() == "tabPreviewXform"){
+		if(dijit.byId("mainTabContainer").selectedChildWidget..toString() == "tabPreviewXform"){
 			var f = document.getElementById('xformEntryIframe');
 			f.contentWindow.location.reload(true);
 		}
@@ -82,8 +88,8 @@
 		{
 			childXformNode = parentXformNode.childNodes[i];
 			if(childXformNode.nodeType == 1 && childXformNode.localName.toString() == "label"){
-				childTreeNode = new dijit.TreeNode("TreeNode",{title:childXformNode.childNodes[0].nodeValue, object:childXformNode.parentNode, childIconSrc:(childXformNode.parentNode.getAttribute("bind")) ? "../../images/note2.gif" : "../../images/add.gif"});
-	       		parentTreeNode.addChild(childTreeNode);
+				childTreeNode = new dijit._TreeNode({label:childXformNode.childNodes[0].nodeValue, item:childXformNode.parentNode, tree:dijit.byId("myNewTreeWidget")}); //, childIconSrc:(childXformNode.parentNode.getAttribute("bind")) ? "../../images/note2.gif" : "../../images/add.gif"}
+	       		//dijit.byId("myNewTreeWidget").addChild(childTreeNode,1);
 	       	}
 	       	else if(childXformNode.nodeType == 1 && childXformNode.childNodes)
 	       		populateNodes(childTreeNode,childXformNode);
@@ -93,7 +99,8 @@
    	function displayTree(){
    		var treeContainer = document.getElementById("myWidgetContainer");
 	    var placeHolder = document.getElementById("treePlaceHolder");
-	    treeContainer.replaceChild(myTreeWidget.domNode,placeHolder);
+	    //treeContainer.replaceChild(myTreeWidget.domNode,placeHolder);
+	    alert('replaced');
    	}
    	
    	function getXformXml(){
@@ -149,8 +156,8 @@
 		var binding = xformNode.getAttribute("bind");
 		if(!binding){
 			document.getElementById("cboType").selectedIndex = -1;
-			dojo.byId("chkRequired").setValue(false);
-			dojo.byId("chkReadonly").setValue(false);
+			dijit.byId("chkRequired").setValue(false);
+			dijit.byId("chkReadonly").setValue(false);
 			document.getElementById("cboBinding").selectedIndex = -1;
 			return;
 		}
@@ -168,12 +175,12 @@
    				if(node.getAttribute("required"))
    					val = (node.getAttribute("required").toString() == "true()") ? true : false;
     					
-    			dojo.byId("chkRequired").setValue(val);
+    			dijit.byId("chkRequired").setValue(val);
    				
    				val = false;
    				if(node.getAttribute("readonly"))
    					val = (node.getAttribute("readonly").toString() == "true()") ? true : false;
-   				dojo.byId("chkReadonly").setValue(val);
+   				dijit.byId("chkReadonly").setValue(val);
    				
    				break;
    			}
@@ -222,7 +229,7 @@
    	}
    	
    	function onApplyProperties(){
-    	var treeSelector = dojo.byId("treeSelector");
+    	var treeSelector = dijit.byId("treeSelector");
    		if(treeSelector.selectedNode){
    			var labelText = document.getElementById('txtText').value;
    			treeSelector.selectedNode.titleNode.innerHTML = labelText;
@@ -267,12 +274,12 @@
     			node.setAttribute("bind",binding);
    				
    				var bindingNode = getBindingNode(binding);
-   				if(dojo.byId("chkRequired").checked)
+   				if(dijit.byId("chkRequired").checked)
    					bindingNode.setAttribute("required","true()");
    				else
    					bindingNode.removeAttribute("required");
 	   				
-	   			if(dojo.byId("chkReadonly").checked)
+	   			if(dijit.byId("chkReadonly").checked)
 	   				bindingNode.setAttribute("readonly","true()");
 	   			else
 	   				bindingNode.removeAttribute("readonly");
@@ -378,24 +385,22 @@
    			
    			//var myControllerSelector = dojo.widget.createWidget( "TreeController",{id : "treeSelector"} );
    			
-   			var myTreeController;//= new dijit._tree.Controller({id:"myTreeController",DNDController:"create"});
+   			//var myTreeController;//= new dijit._tree.Controller({id:"myTreeController",DNDController:"create"});
        			
-   			var myTreeSelector;// = new dijit._tree.dndSelector({id : "treeSelector"} );
+   			//var myTreeSelector;// = new dijit._tree.dndSelector({id : "treeSelector"} );
 			//dojo.event.topic.subscribe( myTreeSelector.eventNames.select,onTreeNodeSelection);
 			//dojo.event.topic.subscribe( myTreeSelector.eventNames.dblselect,onTreeNodeDoubleSelection);
 			
      		myTreeWidget = new dijit.Tree({
        		id:"myNewTreeWidget",
-       		selector:"treeSelector",
-       		controller:"myTreeController",
-        	DNDMode:"between",
-       		DNDAcceptTypes:["myNewTreeWidget"]});
+       		model:new openmrs.Xform({xformDoc:xformDoc}),
+       		srcNodeRef:document.getElementById("treePlaceHolder")});
        		
        		//dojo.event.topic.subscribe( myTreeWidget.eventNames.moveTo,onTreeNodeMoveTo);
       	},
    		addTreeContextMenu:function (){
   			//var djWdgt = dojo.widget;
-  			var ctxMenu = new TreeContextMenu("TreeContextMenu",{});
+  			/*var ctxMenu = new TreeContextMenu("TreeContextMenu",{});
   			
    			ctxMenu.addChild(new TreeMenuItem(
    				"TreeMenuItem",{caption:"Add Field",id:"ctxAddField"}));
@@ -410,12 +415,12 @@
      			"TreeMenuItem",{caption:"Properties",id:"ctxProperties"}));
      			
    			document.body.appendChild(ctxMenu.domNode);
-   			var myTree = dojo.byId("myNewTreeWidget");
-   			ctxMenu.listenTree(myTree);
+   			var myTree = dijit.byId("myNewTreeWidget");
+   			ctxMenu.listenTree(myTree);*/
  		},
     	bindEvents: function(){
      		/* Bind the functions in the TreeActions object to the context menu entries */
-     		dojo.event.topic.subscribe("ctxAddField/engage",
+     		/*dojo.event.topic.subscribe("ctxAddField/engage",
        			function (menuItem) { TreeActions.addFieldNode(menuItem.getTreeNode(),
          			"myTreeController"); }
      		);
@@ -433,7 +438,7 @@
      		dojo.event.topic.subscribe("ctxProperties/engage",
        			function (menuItem) { TreeActions.showNodeProperties(menuItem.getTreeNode(),
          			"myTreeController"); }
-     		);
+     		);*/
    		},
    		init: function(){
       		//this.djWdgt = dojo.widget;
@@ -455,8 +460,9 @@
 				xformDoc=parser.parseFromString(data,"text/xml");
 			}
 
-			populateNodes(dojo.byId("myNewTreeWidget"),xformDoc.documentElement);
-			displayTree();
+			//populateNodes(dijit.byId("myNewTreeWidget"),xformDoc.documentElement);
+			//displayTree();
+			this.buildTree();
 			fillBindings();
 			fillTypes();
 			showXformSource();
@@ -466,7 +472,7 @@
 		},
  		setupTree: function(){
  			this.buildTree();
- 			this.init();
+  			this.init();
  			this.loadXmlDocument();
   		}
 	}
@@ -474,11 +480,11 @@
   	var TreeActions = {
    		addFieldNode: function(parent,controllerId){
    			
-     		this.controller = dojo.byId(controllerId);
+     		this.controller = dijit.byId(controllerId);
      		if (!parent.isFolder) 
        			parent.setFolder();
      		
-     		var treeSelector = dojo.byId("treeSelector");
+     		var treeSelector = dijit.byId("treeSelector");
    			if(treeSelector.selectedNode){   				
 	     		var node = xformDoc.createElementNS(treeSelector.selectedNode.object.namespaceURI,"input");
 	     		var child = xformDoc.createElementNS(treeSelector.selectedNode.object.namespaceURI,"label");
@@ -495,16 +501,16 @@
 	     		xformDoc.documentElement.appendChild(xformDoc.createTextNode('\r\n'));
 	     		
 	     		var childTreeNode = new TreeNode("TreeNode",{title:"New Field", object:node, childIconSrc:"../../images/note2.gif"});
-	       		dojo.byId("myNewTreeWidget").addChild(childTreeNode);	
-	     		//var res = this.controller.createChild(dojo.byId("myNewTreeWidget"), 0, { title: "New Field", object:node, childIconSrc:"../../images/note2.gif"});
+	       		dijit.byId("myNewTreeWidget").addChild(childTreeNode);	
+	     		//var res = this.controller.createChild(dijit.byId("myNewTreeWidget"), 0, { title: "New Field", object:node, childIconSrc:"../../images/note2.gif"});
 	     	}
    		},
    		addChildNode: function(parent,controllerId){
-     		this.controller = dojo.byId(controllerId);
+     		this.controller = dijit.byId(controllerId);
      		if (!parent.isFolder) 
        			parent.setFolder();
        			
-   			var treeSelector = dojo.byId("treeSelector");
+   			var treeSelector = dijit.byId("treeSelector");
    			if(treeSelector.selectedNode){
      			var node = xformDoc.createElementNS(treeSelector.selectedNode.object.namespaceURI,"input");
  	     		var child = xformDoc.createElementNS(treeSelector.selectedNode.object.namespaceURI,"label");
@@ -521,26 +527,53 @@
        			alert("Nothing selected to delete");
        			return false;
      		}
-     		this.controller = dojo.byId(controllerId);
+     		this.controller = dijit.byId(controllerId);
      		var res = this.controller.removeNode(node, dojo.lang.hitch(this));
      		
      		removeNode(node.object);
      		showXformSource();
    		},
    		showNodeProperties: function(node,controllerId){
-   			dojo.byId("mainTabContainer").selectChild(dojo.byId("tabProperties"));
+   			dijit.byId("mainTabContainer").selectChild(dijit.byId("tabProperties"));
    		}
  	};
 
- 	dojo.addOnLoad(function(){TreeBuilder.setupTree()});
+    function populateTree(data){
+   		// code for IE
+		if (window.ActiveXObject)
+		{
+			xformDoc=new ActiveXObject("Microsoft.XMLDOM");
+			xformDoc.async="false";
+			xformDoc.loadXML(data);
+		}
+		// code for Mozilla, Firefox, Opera, etc.
+		else
+		{
+			var parser=new DOMParser();
+			xformDoc=parser.parseFromString(data,"text/xml");
+		}
+	
+		//populateNodes(dijit.byId("myNewTreeWidget"),xformDoc.documentElement);
+		//displayTree();
+		var myTreeWidget = new dijit.Tree({
+       		id:"myNewTreeWidget",
+       		model:new openmrs.Xform(xformDoc),
+       		srcNodeRef:document.getElementById("treePlaceHolder")});
+       		
+		fillBindings();
+		fillTypes();
+		showXformSource();
+	}
+	   	
+	function loadXmlDocument(){
+ 		DWRXformsService.getXform('${formId}',populateTree);
+	}
+		
+ 	dojo.addOnLoad(function(){loadXmlDocument()});
 
 </script>
 	<div dojoType="dijit.layout.LayoutContainer" style="width: 100%; height: 100%; padding: 0; margin: 0; border: 0;">
-   
-	<div dojoType="dijit.Toolbar" layoutAlign="top">
-		<div dojoType="dijit.MenuItem" caption="File" submenuId="submenu1"></div>
-	</div>
-
+ 
    <div id="topMenu" dojoType="dijit.layout.ContentPane" layoutAlign="top" class="header" style="padding-bottom: 5px;">
 		<div style="float: left; margin-right: 10px;">
 			<button dojoType="dijit.form.Button" onclick="alert('pretending to download new mail');">
