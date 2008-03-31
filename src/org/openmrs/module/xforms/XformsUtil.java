@@ -142,8 +142,11 @@ public class XformsUtil {
 			"*:disabled { visibility: hidden; } "+
 			" "+
 			"/* Display an alert message when appropriate */ "+
-			"*:valid   > xf|alert { display: none; } "+
-			"*:invalid > xf|alert { display: inline; } "+
+			"*:valid   xf|alert { display: none; } "+
+			"*:invalid xf|alert { display: show; } "+
+			" "+
+			"/* Display the selected repeat-item with a grey color. */ "+
+			".xf-repeat-index { background-color: grey; } "+
 			" "+
 			"xf|input xf|label,xf|select xf|label,xf|select1 xf|label {width: 32ex; text-align: right; vertical-align: top; padding-right: 0.5em; padding-top: 1ex; padding-bottom: 1ex;} " +
 		    " "+

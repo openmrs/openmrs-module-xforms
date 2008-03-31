@@ -1,21 +1,25 @@
 package org.openmrs.module.xforms;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.kxml2.kdom.*;
-import java.io.*;
-import org.xmlpull.v1.*;
-import org.kxml2.io.*;
-import java.util.*;
-import org.openmrs.api.ConceptService;
-import org.openmrs.api.context.*;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.FileReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.Hashtable;
+import java.util.List;
+
+import org.kxml2.io.KXmlParser;
+import org.kxml2.io.KXmlSerializer;
+import org.kxml2.kdom.Document;
+import org.kxml2.kdom.Element;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.Location;
-import org.openmrs.User;
-import org.openmrs.Role;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.module.xforms.XformConstants;
+import org.openmrs.Role;
+import org.openmrs.User;
+import org.openmrs.api.context.Context;
+import org.xmlpull.v1.XmlPullParser;
 
 //TODO This class is too big. May need breaking into smaller ones.
 
@@ -77,7 +81,12 @@ public final class XformBuilder {
 	public static final String CONTROL_INPUT = "input";
 	public static final String CONTROL_SELECT = "select";
 	public static final String CONTROL_SELECT1 = "select1";
+	public static final String CONTROL_REPEAT = "repeat";
+	public static final String CONTROL_TRIGGER = "trigger";
 	public static final String CONTROL_SUBMIT = "submit";
+	
+	public static final String NODE_INSERT = "insert";
+	public static final String NODE_DELETE = "delete";
 	
 	public static final String NODE_LABEL = "label";
 	public static final String NODE_HINT = "hint";
@@ -106,6 +115,7 @@ public final class XformBuilder {
 	public static final String NODE_PATIENT = "patient";
 	public static final String NODE_XFORMS_VALUE= "xforms_value";
 	public static final String NODE_OBS= "obs";
+	public static final String NODE_PROBLEM_LIST = "problem_list";
 	
 	public static final String ATTRIBUTE_ID = "id";
 	public static final String ATTRIBUTE_ACTION = "action";
@@ -130,8 +140,12 @@ public final class XformBuilder {
 	public static final String ATTRIBUTE_DESCRIPTION_TEMPLATE = "description-template";
 	public static final String ATTRIBUTE_BASE = "base";	
 	public static final String ATTRIBUTE_XSI_NILL = "xsi:nil";
+	public static final String ATTRIBUTE_AT = "at";
+	public static final String ATTRIBUTE_POSITION = "position";
+	public static final String ATTRIBUTE_EVENT = "ev:event";
 	
 	public static final String XPATH_VALUE_TRUE = "true()";
+	public static final String XPATH_VALUE_LAST = "last()";
 	public static final String VALUE_TRUE = "true";
 	public static final String VALUE_FALSE = "false";
 	public static final String NODE_SEPARATOR = "/";
@@ -177,13 +191,22 @@ public final class XformBuilder {
 	
 	public static final String MULTIPLE_SELECT_VALUE_SEPARATOR = " ";
 	
-	/** The last five characters of an xml schema complex type name for a concept. e.g weight_kg_type where _type is appended to the concept weight_kg*/
+	/** The last five characters of an xml schema complex type name for a concept. e.g weight_kg_type where _type is appended to the concept weight_kg. */
 	public static final String COMPLEX_TYPE_NAME_POSTFIX = "_type";
+	
+	/** The last eight characters of an xml schema complex type name for a concept. e.g problem_added_section where _section is appended to the concept problem_added. */
+	public static final String COMPLEX_SECTION_NAME_POSTFIX = "_section";
+	
+	/** The complex type node having a list of problems. e.g. Problem Added, Problem Resolved, etc. */
+	public static final String COMPLEX_TYPE_NAME_PROBLEM_LIST = "problem_list_section";
+	
+	public static final String EVENT_DOMACTIVATE = "DOMActivate";
+	public static final String POSITION_VALUE_AFTER = "after";
 	
 	private static String xformAction;
 	
-	private static Element currentRow = null;
-	private static boolean singleColumnLayout = true;
+	//private static Element currentRow = null;
+	//private static boolean singleColumnLayout = true;
 		
 	/**
 	 * Builds an Xform from an openmrs schema and template xml.
@@ -326,10 +349,10 @@ public final class XformBuilder {
 		XformBuilder.xformAction = xformAction;
 		Element formNode = (Element)templateDoc.getRootElement();
 		
-		currentRow = null;
+		/*currentRow = null;
 		singleColumnLayout = false;
 		if(VALUE_TRUE.equalsIgnoreCase(Context.getAdministrationService().getGlobalProperty("xforms.singleColumnLayout")))
-				singleColumnLayout = true;
+				singleColumnLayout = true;*/
 		
 		Document doc = new Document();
 		doc.setEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
@@ -404,14 +427,14 @@ public final class XformBuilder {
 		
 		Element msg = submitNode.createElement(NAMESPACE_XFORMS, NODE_HINT);
 		msg.setName(NODE_MESSAGE);
-		msg.setAttribute(null, "ev:event", "xforms-submit-error");
+		msg.setAttribute(null, ATTRIBUTE_EVENT, "xforms-submit-error");
 		msg.setAttribute(null, "level", "modal");
-		msg.addChild(Element.TEXT, "Could not submit... ");
+		msg.addChild(Element.TEXT, "Please first resolve the errors on the form and then resubmit.");
 		submitNode.addChild(Element.ELEMENT, msg);
 		
 		msg = submitNode.createElement(NAMESPACE_XFORMS, NODE_HINT);
 		msg.setName(NODE_MESSAGE);
-		msg.setAttribute(null, "ev:event", "xforms-submit-done");
+		msg.setAttribute(null, ATTRIBUTE_EVENT, "xforms-submit-done");
 		msg.setAttribute(null, "level", "modal");
 		msg.addChild(Element.TEXT, "Data Submitted Successfully");
 		submitNode.addChild(Element.ELEMENT, msg);
@@ -429,8 +452,10 @@ public final class XformBuilder {
 		xformSchemaDoc.addChild(org.kxml2.kdom.Element.ELEMENT, xformSchemaNode);
 		
 		Hashtable bindings = new Hashtable();
-		parseTemplate(modelNode,formNode,formNode,bindings,bodyNode);
-		parseSchema(schemaDoc.getRootElement(),bodyNode,modelNode,xformSchemaNode,bindings);
+		Hashtable<String,String> problemList = new Hashtable<String,String>();
+		Hashtable<String,String> problemListItems = new Hashtable<String,String>();
+		parseTemplate(modelNode,formNode,formNode,bindings,bodyNode,problemList,problemListItems);
+		parseSchema(schemaDoc.getRootElement(),bodyNode,modelNode,xformSchemaNode,bindings,problemList,problemListItems);
 		
 		//new begin here
 		Element submitButton = bodyNode.createElement(NAMESPACE_XFORMS, null);
@@ -486,7 +511,7 @@ public final class XformBuilder {
 	 * @param bindings - a hash table to populate with the built bindings.
 	 * @param bodyNode - the body node to add the UI control to.
 	 */
-	private static void parseTemplate(Element modelElement, Element formNode, Element formChild, Hashtable bindings,Element bodyNode){
+	private static void parseTemplate(Element modelElement, Element formNode, Element formChild, Hashtable bindings,Element bodyNode, Hashtable<String,String> problemList,Hashtable<String,String> problemListItems){
 		int numOfEntries = formChild.getChildCount();
 		for (int i = 0; i < numOfEntries; i++) {
 			if (formChild.isText(i))
@@ -503,15 +528,17 @@ public final class XformBuilder {
 			if((child.getAttributeValue(null, ATTRIBUTE_OPENMRS_CONCEPT) != null && !child.getName().equals(NODE_OBS)) ||
 			  (child.getAttributeValue(null, ATTRIBUTE_OPENMRS_ATTRIBUTE) != null && child.getAttributeValue(null, ATTRIBUTE_OPENMRS_TABLE) != null)){
 				
-				Element bindNode = createBindNode(modelElement,child,bindings);
-				
-				if(isMultSelectNode(child))
-					addMultipleSelectXformValueNode(child);
+				if(!name.equalsIgnoreCase(NODE_PROBLEM_LIST)){
+					Element bindNode = createBindNode(modelElement,child,bindings,problemList,problemListItems);
 					
-				if(isTableFieldNode(child)){
-					setTableFieldDataType(name,bindNode);
-					setTableFieldBindingAttributes(name,bindNode);
-					setTableFieldDefaultValue(name,formNode);
+					if(isMultSelectNode(child))
+						addMultipleSelectXformValueNode(child);
+						
+					if(isTableFieldNode(child)){
+						setTableFieldDataType(name,bindNode);
+						setTableFieldBindingAttributes(name,bindNode);
+						setTableFieldDefaultValue(name,formNode);
+					}
 				}
 			}
 			
@@ -527,7 +554,7 @@ public final class XformBuilder {
 					populateProviders(controlNode);
 			}
 			
-			parseTemplate(modelElement,formNode,child,bindings, bodyNode);
+			parseTemplate(modelElement,formNode,child,bindings, bodyNode,problemList,problemListItems);
 		}
 	}
 	
@@ -621,15 +648,31 @@ public final class XformBuilder {
 	 * @param bindings - a hashtable of node bindings keyed by their names.
 	 * @return - the created binding node.
 	 */
-	private static Element createBindNode(Element modelElement,Element node, Hashtable bindings){
+	private static Element createBindNode(Element modelElement,Element node, Hashtable bindings, Hashtable<String,String> problemList,Hashtable<String,String> problemListItems){
 		Element bindNode = modelElement.createElement(NAMESPACE_XFORMS, null);
 		bindNode.setName(ATTRIBUTE_BIND);
 		bindNode.setAttribute(null, ATTRIBUTE_ID, node.getName());
-		bindNode.setAttribute(null, ATTRIBUTE_NODESET, getNodesetAttValue(node));
+		
+		String name = node.getName();
+		String nodeset = getNodesetAttValue(node);
+		
+		String parentName = ((Element)node.getParent()).getName();
+		
+		//For problem list element bindings, we do not add the value part.
+		if(parentName.equalsIgnoreCase(NODE_PROBLEM_LIST)){
+			problemList.put(name, name);
+			nodeset = getNodePath(node);
+		}
+		
+		//Check if this is an item of a problem list.
+		if(problemList.containsKey(parentName))
+			problemListItems.put(name, parentName);
+		
+		bindNode.setAttribute(null, ATTRIBUTE_NODESET,nodeset);
 		modelElement.addChild(Element.ELEMENT, bindNode);
 		
 		//store the binding node with the key being its id attribute.
-		bindings.put(node.getName(), bindNode);
+		bindings.put(name, bindNode);
 		return bindNode;
 	}
 	
@@ -774,7 +817,8 @@ public final class XformBuilder {
 	 * @param xformSchemaNode - the root node of the xml schema data types.
 	 * @param bindings - a hashtable of node bindings.
 	 */
-	private static void parseSchema(Element rootNode,Element bodyNode, Element modelNode, Element xformSchemaNode, Hashtable bindings){
+	private static void parseSchema(Element rootNode,Element bodyNode, Element modelNode, Element xformSchemaNode, Hashtable bindings, Hashtable<String,String> problemList, Hashtable<String,String> problemListItems){		
+		Hashtable<String,Element> repeatControls = new Hashtable<String,Element>();
 		int numOfEntries = rootNode.getChildCount();
 		for (int i = 0; i < numOfEntries; i++) {
 			if (rootNode.isText(i))
@@ -783,7 +827,7 @@ public final class XformBuilder {
 			Element child = rootNode.getElement(i);
 			String name = child.getName();
 			if(name.equalsIgnoreCase(NODE_COMPLEXTYPE) && isUserDefinedSchemaElement(child))
-				parseComplexType(child,child.getAttributeValue(null, ATTRIBUTE_NAME),bodyNode,xformSchemaNode,bindings);
+				parseComplexType(child,child.getAttributeValue(null, ATTRIBUTE_NAME),bodyNode,xformSchemaNode,bindings,problemList,problemListItems,repeatControls);
 			else{
 				String nameAttribute = child.getAttributeValue(null, ATTRIBUTE_NAME);
 				if(name.equalsIgnoreCase(NODE_SIMPLETYPE) || (name.equalsIgnoreCase(NODE_COMPLEXTYPE) && nameAttribute != null && nameAttribute.startsWith("_") && !nameAttribute.contains("_section"))/*&& isUserDefinedSchemaElement(child)*/)
@@ -804,12 +848,14 @@ public final class XformBuilder {
 	 * @param xformSchemaNode - the top node of the xml schema data types.
 	 * @param bindings - a hashtable of node bindings.
 	 */
-	private static void parseComplexType(Element complexTypeNode,String name, Element bodyNode, Element xformSchemaNode, Hashtable bindings){
+	private static void parseComplexType(Element complexTypeNode,String name, Element bodyNode, Element xformSchemaNode, Hashtable bindings, Hashtable<String,String> problemList, Hashtable<String,String> problemListItems,Hashtable<String,Element> repeatControls){
 		name = getBindNodeName(name);
 		if(name == null)
 			return;
 		
 		Element labelNode = null, bindNode = (Element)bindings.get(name);
+		if(bindNode == null)
+			return; //could be a section like problem_list_section
 		
 		for(int i=0; i<complexTypeNode.getChildCount(); i++){
 			if(complexTypeNode.isText(i))
@@ -817,7 +863,7 @@ public final class XformBuilder {
 			
 			Element node = (Element)complexTypeNode.getChild(i);
 			if(node.getName().equalsIgnoreCase(NODE_SEQUENCE))
-				labelNode = parseSequenceNode(name,node,bodyNode,xformSchemaNode,bindNode);
+				labelNode = parseSequenceNode(name,node,bodyNode,xformSchemaNode,bindNode,problemList,problemListItems,repeatControls);
 			
 			if(labelNode != null && isNodeWithConceptNameAndId(node))
 				addLabelTextAndHint(labelNode,node);
@@ -860,8 +906,13 @@ public final class XformBuilder {
 		
 		//We are only dealing with names ending with _type. e.g. education_level_type
 		//Openmrs appends the _type to the name when creating xml types for each concept
-		if(name.indexOf(COMPLEX_TYPE_NAME_POSTFIX) == -1)
-			return null;
+		//To handle complicated problem lists that have more than one item, we also handle
+		//names ending with section.
+		if(name.indexOf(COMPLEX_TYPE_NAME_POSTFIX) == -1){
+			if(name.indexOf(COMPLEX_SECTION_NAME_POSTFIX) == -1)
+				return null;
+			return name.substring(0, name.length() - COMPLEX_SECTION_NAME_POSTFIX.length());
+		}
 
 		//remove the _type part. e.g from above the name is education_level
 		name = name.substring(0, name.length() - COMPLEX_TYPE_NAME_POSTFIX.length());
@@ -941,7 +992,7 @@ public final class XformBuilder {
 	 * @param bindingNode
 	 * @return the created label node.
 	 */
-	private static Element parseSequenceNode(String name,Element sequenceNode,Element bodyNode, Element xformSchemaNode, Element bindingNode ){
+	private static Element parseSequenceNode(String name,Element sequenceNode,Element bodyNode, Element xformSchemaNode, Element bindingNode , Hashtable<String,String> problemList, Hashtable<String,String> problemListItems,Hashtable<String,Element> repeatControls){
 		Element labelNode = null,controlNode = bodyNode.createElement(NAMESPACE_XFORMS, null);;
 		
 		for(int i=0; i<sequenceNode.getChildCount(); i++){
@@ -954,18 +1005,55 @@ public final class XformBuilder {
 			//Instead of the value node, multiple select questions have one node
 			//for each possible select option.
 			if(!itemName.equalsIgnoreCase(NODE_VALUE)){
+				//Assuming sections (those that end with _section) don't have this attribute.
+				if(node.getAttributeValue(null, "minOccurs") == null){
+					if(problemList.containsKey(name))
+						return addProblemListSection(name,bodyNode,repeatControls);
+					continue;
+				}
+				
 				if(!(itemName.equalsIgnoreCase(NODE_DATE) || itemName.equalsIgnoreCase(NODE_TIME)) && node.getAttributeValue(null, ATTRIBUTE_OPENMRS_CONCEPT) == null)
 					labelNode = parseMultiSelectNode(name,itemName, node,controlNode,bodyNode, labelNode,bindingNode);
+				//else if(name.equalsIgnoreCase(COMPLEX_TYPE_NAME_PROBLEM_LIST))
+				//	problemList.put(name, name);
+				
 				continue;
 			}
 			
-			//We are interested in the element whose name attribute is equal to value, 
-			//for single select lists.
 			if(node.getAttributeValue(null, ATTRIBUTE_NILLABLE).equalsIgnoreCase("0"))
 				bindingNode.setAttribute(null, ATTRIBUTE_REQUIRED, XPATH_VALUE_TRUE);
 			
-			labelNode = parseSequenceValueNode(name,node,labelNode,bodyNode,bindingNode);
+			//We are interested in the element whose name attribute is equal to value, 
+			//for single select lists.
+			labelNode = parseSequenceValueNode(name,node,labelNode,bodyNode,bindingNode,problemList,problemListItems,repeatControls);
 		}
+		
+		return labelNode;
+	}
+	
+	/**
+	 * Creates a repeat control for problem lists with sections.
+	 * 
+	 * @param name
+	 * @param bodyNode
+	 * @param repeatControls
+	 * @return the label node for the control.
+	 */
+	private static Element addProblemListSection(String name, Element bodyNode,Hashtable<String,Element> repeatControls){
+		Element labelNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
+		labelNode.setName(NODE_LABEL);
+		
+		Element addTrigger = bodyNode.createElement(NAMESPACE_XFORMS, null);
+		Element deleteTrigger = bodyNode.createElement(NAMESPACE_XFORMS, null);
+		
+		Element repeatControl = buildRepeatControl(bodyNode,null,name,addTrigger,deleteTrigger);
+		//repeatControl.addChild(Element.ELEMENT, labelNode);
+		repeatControls.put(name, repeatControl);
+		
+		addControl(bodyNode,labelNode);
+		addControl(bodyNode,repeatControl);
+		addControl(bodyNode,addTrigger);
+		addControl(bodyNode,deleteTrigger);
 		
 		return labelNode;
 	}
@@ -1007,12 +1095,12 @@ public final class XformBuilder {
 	 * @param bindingNode - the binding node.
 	 * @return the created label node.
 	 */
-	private static Element parseSequenceValueNode(String name,Element node, Element labelNode, Element bodyNode,Element bindingNode){
-		//return 
+	private static Element parseSequenceValueNode(String name,Element node, Element labelNode, Element bodyNode,Element bindingNode, Hashtable<String,String> problemList, Hashtable<String,String> problemListItems,Hashtable<String,Element> repeatControls){
 		String type = node.getAttributeValue(null, ATTRIBUTE_TYPE);
 		if(type != null)
 			labelNode = buildSequenceInputControlNode(name,node,type,labelNode,bindingNode,bodyNode);
 		else{
+			//This is a select1 or select control which don't have the type attribute.
 			for(int j=0; j<node.getChildCount(); j++){
 				if(node.isText(j))
 					continue;
@@ -1021,10 +1109,9 @@ public final class XformBuilder {
 				if(!simpleTypeNode.getName().equalsIgnoreCase(NODE_SIMPLETYPE))
 					continue;
 				
-				return parseSimpleType(name,simpleTypeNode,bodyNode,bindingNode);
+				return parseSimpleType(name,simpleTypeNode,bodyNode,bindingNode,problemList,problemListItems,repeatControls);
 			}
-		}
-		
+		}	
 		return labelNode;
 	}
 	
@@ -1047,22 +1134,23 @@ public final class XformBuilder {
 	}
 	
 	/**
-	 * Parses a simple type node in an openmrs schema document.
+	 * Parses a simple type node in an openmrs schema document to build
+	 * select1 and select XForms items from xs:enumeration s.
 	 * 
 	 * @param name
 	 * @param simpleTypeNode
 	 * @param bodyNode
 	 * @param bindingNode
-	 * @return
+	 * @return the xforms label node.
 	 */
-	private static Element parseSimpleType(String name,Element simpleTypeNode,Element bodyNode,Element bindingNode){
+	private static Element parseSimpleType(String name,Element simpleTypeNode,Element bodyNode,Element bindingNode, Hashtable<String,String> problemList, Hashtable<String,String> problemListItems,Hashtable<String,Element> repeatControls){
 		for(int i=0; i<simpleTypeNode.getChildCount(); i++){
 			if(simpleTypeNode.isText(i))
 				continue; //ignore text.
 			
 			Element child = (Element)simpleTypeNode.getElement(i);
 			if(child.getName().equalsIgnoreCase(NODE_RESTRICTION))
-				return parseRestriction(name,(Element)simpleTypeNode.getParent(),child,bodyNode,bindingNode);
+				return parseRestriction(name,(Element)simpleTypeNode.getParent(),child,bodyNode,bindingNode,problemList, problemListItems,repeatControls);
 		}
 		
 		return null;
@@ -1109,6 +1197,8 @@ public final class XformBuilder {
 	 * @return the label node we have created.
 	 */
 	private static Element parseMultiSelectNode(String name,String itemName, Element selectItemNode,Element controlNode,Element bodyNode, Element labelNode, Element bindingNode){		
+		
+		System.out.println("parseMultiSelectNode " + name);
 		
 		//If this is the first time we are looping through, create the input control.
 		//Otherwise just add the items one by one as we get called for each.
@@ -1223,7 +1313,7 @@ public final class XformBuilder {
 	 * @param bindingNode - the binding node.
 	 * @return the label node of the created control.
 	 */
-	private static Element parseRestriction(String name, Element valueNode,Element restrictionNode,Element bodyNode, Element bindingNode){
+	private static Element parseRestriction(String name, Element valueNode,Element restrictionNode,Element bodyNode, Element bindingNode, Hashtable<String,String> problemList, Hashtable<String,String> problemListItems,Hashtable<String,Element> repeatControls){
 		//the base attribute of a restriction has the data type for this question.
 		String type = restrictionNode.getAttributeValue(null, ATTRIBUTE_BASE);
 		type = getPrefixedDataType(type);
@@ -1233,12 +1323,38 @@ public final class XformBuilder {
 		String maxOccurs = valueNode.getAttributeValue(null, ATTRIBUTE_MAXOCCURS);
 		if(maxOccurs != null && maxOccurs.equalsIgnoreCase("1"))
 			controlName = CONTROL_SELECT1;
+		if(!hasRestrictions(restrictionNode))
+			controlName = CONTROL_INPUT;
 		
 		Element controlNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
 		controlNode.setName(controlName);
-		controlNode.setAttribute(null, ATTRIBUTE_BIND, name);
-		controlNode.setAttribute(null, ATTRIBUTE_APPEARANCE, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_SINGLE_SELECT_APPEARANCE));
-		addControl(bodyNode,controlNode); 
+		
+		if(problemList.containsKey(name))
+			controlNode.setAttribute(null, ATTRIBUTE_REF, NODE_VALUE);
+		else if(problemListItems.containsKey(name))
+			controlNode.setAttribute(null, ATTRIBUTE_REF, name+"/"+NODE_VALUE);
+		else
+			controlNode.setAttribute(null, ATTRIBUTE_BIND, name);
+		
+		if(!controlName.equalsIgnoreCase(CONTROL_INPUT))
+				controlNode.setAttribute(null, ATTRIBUTE_APPEARANCE, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_SINGLE_SELECT_APPEARANCE));
+		
+		if(problemList.contains(name)){
+			Element addTrigger = bodyNode.createElement(NAMESPACE_XFORMS, null);
+			Element deleteTrigger = bodyNode.createElement(NAMESPACE_XFORMS, null);
+			addControl(bodyNode,buildRepeatControl(bodyNode,controlNode,name,addTrigger,deleteTrigger));
+			//Put trigger next to problem list item
+			addControl(bodyNode,addTrigger);
+			addControl(bodyNode,deleteTrigger);
+		}
+		else if(problemListItems.containsKey(name)){
+			String repeatControlName = problemListItems.get(name);			
+			Element repeatControl = repeatControls.get(repeatControlName);
+			if(repeatControl != null)
+				repeatControl.addChild(Element.ELEMENT, controlNode);
+		}
+		else
+			addControl(bodyNode,controlNode); 
 		
 		Element labelNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
 		labelNode.setName(NODE_LABEL);
@@ -1247,6 +1363,71 @@ public final class XformBuilder {
 		addRestrictionEnumerations(restrictionNode,controlNode);
 		
 		return labelNode;
+	}
+	
+	/**
+	 * Checks if a restriction node has enumeration restrictions.
+	 * 
+	 * @param restrictionNode the restriction node.
+	 * @return true if it has, else false;
+	 */
+	private static boolean hasRestrictions(Element restrictionNode){
+		for(int i=0; i<restrictionNode.getChildCount(); i++){
+			if(restrictionNode.isText(i))
+				continue;
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Builds an XForms repeat control for problem list elemtnts.
+	 * 
+	 * @param bodyNode
+	 * @param controlNode
+	 * @param name
+	 * @return
+	 */
+	private static Element buildRepeatControl(Element bodyNode,Element controlNode,String name,Element addTrigger,Element deleteTrigger){
+		Element repeatControl = bodyNode.createElement(NAMESPACE_XFORMS, null);
+		repeatControl.setName(CONTROL_REPEAT);
+		repeatControl.setAttribute(null, ATTRIBUTE_BIND, name);
+		repeatControl.setAttribute(null, ATTRIBUTE_ID, name);
+		
+		if(controlNode != null)
+			repeatControl.addChild(Element.ELEMENT, controlNode);
+		
+		//create add new trigger.
+		addTrigger.setName(CONTROL_TRIGGER);
+		Element labelNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
+		labelNode.setName(NODE_LABEL);
+		labelNode.addChild(Element.TEXT,"Add New");
+		addTrigger.addChild(Element.ELEMENT, labelNode);
+		
+		Element insertNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
+		insertNode.setName(NODE_INSERT);
+		insertNode.setAttribute(null, ATTRIBUTE_BIND, name);
+		insertNode.setAttribute(null, ATTRIBUTE_AT, XPATH_VALUE_LAST);
+		insertNode.setAttribute(null, ATTRIBUTE_POSITION, POSITION_VALUE_AFTER);
+		insertNode.setAttribute(null, ATTRIBUTE_EVENT, EVENT_DOMACTIVATE);
+		addTrigger.addChild(Element.ELEMENT, insertNode);
+		
+		//create delete trigger
+		deleteTrigger.setName(CONTROL_TRIGGER);
+		labelNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
+		labelNode.setName(NODE_LABEL);
+		labelNode.addChild(Element.TEXT,"Remove");
+		deleteTrigger.addChild(Element.ELEMENT, labelNode);
+		
+		Element deleteNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
+		deleteNode.setName(NODE_DELETE);
+		deleteNode.setAttribute(null, ATTRIBUTE_BIND, name);
+		deleteNode.setAttribute(null, ATTRIBUTE_AT, "index("+name+")");
+		deleteNode.setAttribute(null, ATTRIBUTE_EVENT, EVENT_DOMACTIVATE);
+		deleteTrigger.addChild(Element.ELEMENT, deleteNode);
+		
+		return repeatControl;
 	}
 	
 	/**
@@ -1281,7 +1462,7 @@ public final class XformBuilder {
 			
 			//Check if both the labal and value are set. First loop sets value and second label.
 			if(itemLabelNode != null && itemValNode != null){
-				Element itemNode = /*bodyNode*/controlNode.createElement(NAMESPACE_XFORMS, null);
+				Element itemNode = controlNode.createElement(NAMESPACE_XFORMS, null);
 				itemNode.setName(NODE_ITEM);
 				controlNode.addChild(Element.ELEMENT, itemNode);
 
@@ -1469,7 +1650,8 @@ public final class XformBuilder {
 	}
 	
 	/**
-	 * Checks if a schema node is a user defined one.
+	 * Checks if a schema node is a user defined one. User defines nodes are the ones whose
+	 * names are not the standard openmrs names like form,_header_section,obs_section, etc.
 	 * 
 	 * @param node - the node to check.
 	 * @return - true if it is a user defined one, else false.
