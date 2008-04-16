@@ -10,7 +10,7 @@
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Daniel Kayiwa</author>
 	<description>
-			Adds XForms support and related services to XForms clients, like user and patient download. You can get Forefox's XForms extension from: https://addons.mozilla.org/en-US/firefox/addon/824
+			Adds XForms support and related services to XForms clients, like user and patient download. You can get Mozilla's XForms extension from: https://addons.mozilla.org/en-US/firefox/addon/824. You could alternatively download an XForms plugin for Microsoft Internet Explorer from http://sourceforge.net/project/showfiles.php?group_id=152820
 	</description>
 
 	<activator>@MODULE_PACKAGE@.XformsActivator</activator>

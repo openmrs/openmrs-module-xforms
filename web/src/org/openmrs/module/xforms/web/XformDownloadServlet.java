@@ -2,6 +2,7 @@ package org.openmrs.module.xforms.web;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.ServletException;
@@ -226,10 +227,11 @@ public class XformDownloadServlet extends HttpServlet {
 					
 			XformBuilder.setPatientTableFieldValues(form.getFormId(),doc.getRootElement(), patientId, xformsService);
 		}
-		
+		//URL url = new URL(""); url.openStream()
 		XformBuilder.setNodeAttributeValue(doc, XformBuilder.NODE_SUBMISSION, XformBuilder.ATTRIBUTE_ACTION, XformsUtil.getActionUrl(request)+patientParam);
 
 		response.setHeader(XformConstants.HTTP_HEADER_CONTENT_TYPE, XformConstants.HTTP_HEADER_CONTENT_TYPE_XHTML_XML);
 		response.getOutputStream().print(XformBuilder.fromDoc2String(doc));
 	}
 }
+//		<form id="selectFormForm" method="get" action="<%= request.getContextPath() %>/module/xforms/xformEntry.form">

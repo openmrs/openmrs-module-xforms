@@ -145,9 +145,15 @@ public class XformsUtil {
 			"*:valid   xf|alert { display: none; } "+
 			"*:invalid xf|alert { display: show; } "+
 			" "+
-			"/* Display the selected repeat-item with a grey color. */ "+
-			".xf-repeat-index { background-color: grey; } "+
+			"/* Display the selected repeat-item with a light blue color. */ "+
+			".xf-repeat-index { background-color: lightblue; } "+
 			" "+
+			"/* Display repeat items in a table row. */ "+
+			"xf|repeat .xf-repeat-item {display: table-row;} "+
+			" "+
+			"/* Display each select1 and input control within a repeat as a table cell, having a thin solid border and its lable aligned centrally. */ "+
+			"xf|repeat xf|select1, xf|repeat xf|input{display: table-cell; border: thin; border-style: solid; text-align: center;}" +
+			" " +
 			"xf|input xf|label,xf|select xf|label,xf|select1 xf|label {width: 32ex; text-align: right; vertical-align: top; padding-right: 0.5em; padding-top: 1ex; padding-bottom: 1ex;} " +
 		    " "+
 			"xf|item xf|label {width: 100%; text-align: left; padding-right: 0em; padding-bottom: 0ex; padding-top: 0ex;} " +

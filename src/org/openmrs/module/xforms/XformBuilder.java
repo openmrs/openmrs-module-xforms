@@ -202,6 +202,7 @@ public final class XformBuilder {
 	
 	public static final String EVENT_DOMACTIVATE = "DOMActivate";
 	public static final String POSITION_VALUE_AFTER = "after";
+	public static final String REPEAT_ID_SUFFIX = "_xf_repeat_id";
 	
 	private static String xformAction;
 	
@@ -1393,7 +1394,7 @@ public final class XformBuilder {
 		Element repeatControl = bodyNode.createElement(NAMESPACE_XFORMS, null);
 		repeatControl.setName(CONTROL_REPEAT);
 		repeatControl.setAttribute(null, ATTRIBUTE_BIND, name);
-		repeatControl.setAttribute(null, ATTRIBUTE_ID, name);
+		repeatControl.setAttribute(null, ATTRIBUTE_ID, name+REPEAT_ID_SUFFIX);
 		
 		if(controlNode != null)
 			repeatControl.addChild(Element.ELEMENT, controlNode);
@@ -1423,7 +1424,7 @@ public final class XformBuilder {
 		Element deleteNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
 		deleteNode.setName(NODE_DELETE);
 		deleteNode.setAttribute(null, ATTRIBUTE_BIND, name);
-		deleteNode.setAttribute(null, ATTRIBUTE_AT, "index("+name+")");
+		deleteNode.setAttribute(null, ATTRIBUTE_AT, "index('"+name+REPEAT_ID_SUFFIX+"')");
 		deleteNode.setAttribute(null, ATTRIBUTE_EVENT, EVENT_DOMACTIVATE);
 		deleteTrigger.addChild(Element.ELEMENT, deleteNode);
 		

@@ -127,6 +127,7 @@ height="100%"
 frameborder="0"
 id="xformEntryIframe"
 name="xformEntryIframe"
+style="overflow: visible;"
 >
 </iframe>
 

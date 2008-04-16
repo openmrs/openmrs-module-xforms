@@ -37,12 +37,12 @@ public class XformsFormHeaderExt extends Extension {
 			map.put("module/xforms/xformUpload.form?formId=" + formId, "xforms.uploadXform");
 			
 			XformsService xformsService = (XformsService)Context.getService(XformsService.class);
-			if(xformsService.hasXform(Integer.valueOf(formId))){
+			if(xformsService.hasXform(Integer.valueOf(formId)))
 				map.put("module/xforms/xformDelete.form?target=xform&formId=" + formId, "xforms.deleteXform");
-				map.put("moduleServlet/xforms/xformDownload?target=xslt&formId=" + formId, "xforms.downloadXslt");
-				map.put("module/xforms/xsltUpload.form?target=xslt&formId=" + formId, "xforms.uploadXslt");
-			}
 			
+			map.put("moduleServlet/xforms/xformDownload?target=xslt&formId=" + formId, "xforms.downloadXslt");
+			map.put("module/xforms/xsltUpload.form?target=xslt&formId=" + formId, "xforms.uploadXslt");
+						
 			if(xformsService.hasXslt(Integer.valueOf(formId)))
 				map.put("module/xforms/xformDelete.form?target=xslt&formId=" + formId, "xforms.deleteXslt");
 		}
