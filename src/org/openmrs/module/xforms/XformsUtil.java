@@ -24,6 +24,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kxml2.kdom.Element;
 import org.openmrs.Form;
 import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
@@ -189,6 +190,7 @@ public class XformsUtil {
 			" > " +
 			" <head> "+
 			"	<style> "+ getDefaultStyle() + " </style> "+
+			"   <script type='text/javascript'> <![CDATA[ "+ getJavaStriptNode() + " ]]> </script> "+
 			" 	<xsl:copy-of select='/xf:xforms/xf:model' /> "+
 			" </head> "+
 			" <body> "+
@@ -201,6 +203,44 @@ public class XformsUtil {
 			" </html> "+
 			"</xsl:template> "+
 			"</xsl:stylesheet> ";
+	}
+	
+	/**
+	 * Gets the javascript needed during the xforms processsing in the browser.
+	 * For now the javascript we have deals with deleting of xform repeat items.
+	 * 
+	 * @return the javascript script.
+	 */
+	private static String getJavaStriptNode(){
+		
+		String script = "function deleteRepeatItem(id){ " +
+                   "        var model = document.getElementById('"+XformBuilder.MODEL_ID+"'); " +
+                   "        var instance = model.getInstanceDocument('"+XformBuilder.INSTANCE_ID+"'); " +
+                   "        var dataElement = instance.getElementsByTagName('problem_list')[0]; " +
+                   "        var itemElements = dataElement.getElementsByTagName(id); " +
+                   "        var cnt = itemElements.length; " +
+
+                   "        if (cnt > 1){ " +
+                   "             dataElement.removeChild(itemElements[cnt-1]); " +
+                   "        } else { " +
+				   " 			var values = itemElements[0].getElementsByTagName('value'); " +
+				   " 			for(var i=0; i<values.length; i++) " +
+				   "			values[i].childNodes[0].nodeValue = null; " +
+                   "        } " +
+
+                   "        model.rebuild(); " +
+                   "        model.recalculate(); " +
+                   "        model.refresh(); " +
+                   "   } ";
+
+		return script;
+		
+		/*Element scriptNode = bodyNode.createElement(XformBuilder.NAMESPACE_XFORMS, null);
+		scriptNode.setName(XformBuilder.NODE_SCRIPT);
+		scriptNode.setAttribute(null, XformBuilder.ATTRIBUTE_TYPE, "text/javascript");
+		scriptNode.addChild(Element.CDSECT, script);
+		
+		return scriptNode;*/
 	}
 	
 	/**

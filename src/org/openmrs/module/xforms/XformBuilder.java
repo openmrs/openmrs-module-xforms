@@ -116,6 +116,7 @@ public final class XformBuilder {
 	public static final String NODE_XFORMS_VALUE= "xforms_value";
 	public static final String NODE_OBS= "obs";
 	public static final String NODE_PROBLEM_LIST = "problem_list";
+	public static final String NODE_SCRIPT = "script";
 	
 	public static final String ATTRIBUTE_ID = "id";
 	public static final String ATTRIBUTE_ACTION = "action";
@@ -143,6 +144,7 @@ public final class XformBuilder {
 	public static final String ATTRIBUTE_AT = "at";
 	public static final String ATTRIBUTE_POSITION = "position";
 	public static final String ATTRIBUTE_EVENT = "ev:event";
+	public static final String ATTRIBUTE_RESOURCE = "resource";
 	
 	public static final String XPATH_VALUE_TRUE = "true()";
 	public static final String XPATH_VALUE_LAST = "last()";
@@ -184,6 +186,7 @@ public final class XformBuilder {
 	public static final String NODE_LOCATION_ID = "location_id";
 	public static final String NODE_PROVIDER_ID = "provider_id";
 	public static final String NODE_IDENTIFIER_TYPE_ID = "patient_identifier_type_id";
+	public static final String NODE_LOAD = "load";
 	
 	public static final String DATA_TYPE_DATE = "xsd:date";
 	public static final String DATA_TYPE_INT = "xsd:int";
@@ -203,6 +206,9 @@ public final class XformBuilder {
 	public static final String EVENT_DOMACTIVATE = "DOMActivate";
 	public static final String POSITION_VALUE_AFTER = "after";
 	public static final String REPEAT_ID_SUFFIX = "_xf_repeat_id";
+	
+	public static final String MODEL_ID = "openmrs_model";
+	public static final String INSTANCE_ID = "openmrs_model_instance";
 	
 	private static String xformAction;
 	
@@ -404,6 +410,7 @@ public final class XformBuilder {
 		
 		Element modelNode =  doc.createElement(NAMESPACE_XFORMS, null);
 		modelNode.setName(NODE_MODEL);
+		modelNode.setAttribute(null, ATTRIBUTE_ID, MODEL_ID);
 		xformsNode.addChild(Element.ELEMENT,modelNode);
 		
 		Element bodyNode = xformsNode;
@@ -411,6 +418,7 @@ public final class XformBuilder {
 		
 		Element instanceNode =  doc.createElement(NAMESPACE_XFORMS, null);
 		instanceNode.setName(NODE_INSTANCE);
+		instanceNode.setAttribute(null, ATTRIBUTE_ID, INSTANCE_ID);
 		modelNode.addChild(Element.ELEMENT,instanceNode);
 		
 		instanceNode.addChild(Element.ELEMENT, formNode);
@@ -1422,9 +1430,17 @@ public final class XformBuilder {
 		deleteTrigger.addChild(Element.ELEMENT, labelNode);
 		
 		Element deleteNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
-		deleteNode.setName(NODE_DELETE);
+		
+		//This was commnted out to use javascript controlled delete in order to
+		//prevent deleting of the last repeat item.
+		/*deleteNode.setName(NODE_DELETE);
 		deleteNode.setAttribute(null, ATTRIBUTE_BIND, name);
-		deleteNode.setAttribute(null, ATTRIBUTE_AT, "index('"+name+REPEAT_ID_SUFFIX+"')");
+		deleteNode.setAttribute(null, ATTRIBUTE_AT, "index('"+name+REPEAT_ID_SUFFIX+"')");*/
+		
+		//TODO Browser specific bits should go to the stylesheet
+		deleteNode.setName(NODE_LOAD);
+		deleteNode.setAttribute(null, ATTRIBUTE_RESOURCE, "javascript:deleteRepeatItem('"+name+"')");
+		
 		deleteNode.setAttribute(null, ATTRIBUTE_EVENT, EVENT_DOMACTIVATE);
 		deleteTrigger.addChild(Element.ELEMENT, deleteNode);
 		

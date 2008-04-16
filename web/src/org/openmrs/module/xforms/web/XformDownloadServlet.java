@@ -230,6 +230,7 @@ public class XformDownloadServlet extends HttpServlet {
 		//URL url = new URL(""); url.openStream()
 		XformBuilder.setNodeAttributeValue(doc, XformBuilder.NODE_SUBMISSION, XformBuilder.ATTRIBUTE_ACTION, XformsUtil.getActionUrl(request)+patientParam);
 
+		//request.getRequestDispatcher("/xform.jsp").forward(request, response);
 		response.setHeader(XformConstants.HTTP_HEADER_CONTENT_TYPE, XformConstants.HTTP_HEADER_CONTENT_TYPE_XHTML_XML);
 		response.getOutputStream().print(XformBuilder.fromDoc2String(doc));
 	}
