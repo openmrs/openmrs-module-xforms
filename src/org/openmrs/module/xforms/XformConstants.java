@@ -51,7 +51,7 @@ public class XformConstants {
 	public static final String DEFAULT_CHARACTER_ENCODING = "UTF-8";
 	
 	/** The default date format. */
-	public static final String DEFAULT_DATE_FORMAT = "dd-mm-yyyy";
+	public static final String DEFAULT_DATE_FORMAT = "dd-mm-yyyy";//yyyy-mm-dd
 	
 	/** The default value for rejecting forms for patients considered new when they already exist, by virture of patient identifier. */
 	public static final String DEFAULT_REJECT_EXIST_PATIENT_CREATE = "true";

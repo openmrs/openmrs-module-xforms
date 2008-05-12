@@ -31,7 +31,7 @@ public class XformDownloadManager {
 	 * 
 	 * @param actionUrl - the URL to post to after data entry.
 	 * @param os - the stream.
-	 * @throws Exception
+	 * @throws Exception  
 	 */
 	public static void downloadXforms(String actionUrl, OutputStream os) throws Exception{
 		Context.openSession(); //This prevents the bluetooth server from failing with the form field lazy load exception.
@@ -42,8 +42,6 @@ public class XformDownloadManager {
 		
 		SerializableData sr = (SerializableData)OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
 		sr.serialize(new DataOutputStream(os), getXmlForms(actionUrl));
-		
-		//Context.closeSession();
 	}
 	
 	/**

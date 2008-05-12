@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>xforms</id>
 	<name>XForms</name>
-	<version>1.4</version>
+	<version>1.6</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Daniel Kayiwa</author>
 	<description>
@@ -17,8 +17,8 @@
 	
 	<updateURL>https://dev.openmrs.org/modules/download/xforms/update.rdf</updateURL>
 	
-	<require_version>1.2.0</require_version>
-	<require_database_version>1.2.0</require_database_version>
+	<require_version>1.2.04</require_version>
+	<require_database_version>1.2.04</require_database_version>
 	
 	<!-- Required Global Properties -->
 	<globalProperty>

@@ -150,7 +150,7 @@ public class XformsQueueProcessor {
 			
 			saveFormInArchive(xmlOriginal,pathName);
 		} catch (Exception e) {
-			log.error(e);
+			log.error(e.getMessage(), e);
 			saveFormInError(xmlOriginal,pathName);
 		}
 	}

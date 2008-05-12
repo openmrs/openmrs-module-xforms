@@ -125,11 +125,10 @@ public class XformDownloadServlet extends HttpServlet {
 			
 			dos.flush();
 			gzip.finish();	
-			System.out.println("downloaded xforms");
 		}
 		catch(Exception e){
-			response.getOutputStream().print("failed with: " + e.getMessage());
-			log.error(e);
+			//response.getOutputStream().print("failed with: " + e.getMessage());
+			log.error(e.getMessage(),e);
 		}
 	}
 	

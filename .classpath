@@ -10,12 +10,12 @@
 	<classpathentry kind="lib" path="lib-common/hibernate3.jar"/>
 	<classpathentry kind="lib" path="lib/kxml2-2.3.0.jar"/>
 	<classpathentry kind="lib" path="lib-common/commons-io-1.1.jar"/>
-	<classpathentry kind="lib" path="lib-common/xform-interfaces.jar"/>
 	<classpathentry kind="lib" path="lib/sms-server.jar"/>
 	<classpathentry kind="lib" path="lib/bluetooth-server.jar"/>
 	<classpathentry kind="lib" path="lib/dwr-1.1.3mod.jar"/>
-	<classpathentry kind="lib" path="lib-common/openmrs-api-1.2.0.3476.jar"/>
-	<classpathentry kind="lib" path="lib-common/web-openmrs-api-1.2.0.3476.jar"/>
 	<classpathentry kind="lib" path="lib-common/velocity-1.6-dev.jar"/>
+	<classpathentry kind="lib" path="lib-common/openmrs-api-1.2.04.4128.jar"/>
+	<classpathentry kind="lib" path="lib-common/web-openmrs-api-1.2.04.4128.jar"/>
+	<classpathentry kind="lib" path="lib/xform-interfaces.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
