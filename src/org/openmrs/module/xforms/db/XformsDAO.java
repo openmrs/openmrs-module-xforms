@@ -1,6 +1,7 @@
 package org.openmrs.module.xforms.db;
 
 import org.openmrs.module.xforms.Xform;
+import org.openmrs.module.xforms.XformCohort;
 import org.openmrs.module.xforms.XformUser;
 import org.springframework.transaction.annotation.Transactional;
 

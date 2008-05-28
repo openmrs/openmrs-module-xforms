@@ -67,6 +67,9 @@ public class XformConstants {
 		
 	/** The global property key for the patient serializer class.*/
 	public static final String GLOBAL_PROP_KEY_PATIENT_SERIALIZER = "xforms.patientSerializer";
+    
+    /** The global property key for the cohort serializer class.*/
+    public static final String GLOBAL_PROP_KEY_COHORT_SERIALIZER = "xforms.cohortSerializer";
 	
 	/** The global property key for the xform serializer class.*/
 	public static final String GLOBAL_PROP_KEY_XFORM_SERIALIZER = "xforms.xformSerializer";
@@ -89,6 +92,9 @@ public class XformConstants {
 	/** The default value for the patient serializer class.*/
 	public static final String DEFAULT_PATIENT_SERIALIZER = "org.openmrs.module.xforms.DefaultPatientSerializer";
 	
+    /** The default value for the cohort serializer class.*/
+    public static final String DEFAULT_COHORT_SERIALIZER = "org.openmrs.module.xforms.DefaultCohortSerializer";
+
 	/** The default value for the xform serializer class.*/
 	public static final String DEFAULT_XFORM_SERIALIZER = "org.openmrs.module.xforms.DefaultXformSerializer";
 	
@@ -174,6 +180,9 @@ public class XformConstants {
 	
 	/** The downloadPatients request parameter. */
 	public static final String REQUEST_PARAM_DOWNLOAD_PATIENTS = "downloadPatients";
+    
+    /** The downloadCohorts request parameter. */
+    public static final String REQUEST_PARAM_DOWNLOAD_COHORTS = "downloadCohorts";
 	
 	/** The setCohort request parameter. */
 	public static final String REQUEST_PARAM_SET_COHORT = "setCohort";

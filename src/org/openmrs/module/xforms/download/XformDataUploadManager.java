@@ -1,6 +1,5 @@
 package org.openmrs.module.xforms.download;
 
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.InputStream;
@@ -17,7 +16,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.xforms.SerializableData;
 import org.openmrs.module.xforms.Xform;
 import org.openmrs.module.xforms.XformBuilder;
 import org.openmrs.module.xforms.XformConstants;
@@ -25,7 +23,6 @@ import org.openmrs.module.xforms.XformsService;
 import org.openmrs.module.xforms.XformsUtil;
 import org.openmrs.module.xforms.formentry.FormEntryWrapper;
 import org.openmrs.util.FormUtil;
-import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -47,16 +44,21 @@ public class XformDataUploadManager {
 	public static void submitXforms(InputStream is, String sessionId, String actionUrl) throws Exception{
 		String enterer = XformsUtil.getEnterer();
 		DocumentBuilder db = dbf.newDocumentBuilder();
-		SerializableData sr = getXformSerializer();
+        
+        List<String> xforms = (List<String>)XformsUtil.invokeDeserializationMethod(is, XformConstants.GLOBAL_PROP_KEY_XFORM_SERIALIZER,XformConstants.DEFAULT_XFORM_SERIALIZER,getXforms(actionUrl));
+        for(String xml : xforms)
+            processXform(xml,sessionId,enterer);
+
+		/*SerializableData sr = getXformSerializer();          
 		if(sr != null){
-			List<String> xforms = (List<String>)sr.deSerialize(new DataInputStream(is),getXforms(actionUrl));
-			for(String xml : xforms)
+            List<String> xforms = (List<String>)sr.deSerialize(new DataInputStream(is),getXforms(actionUrl));
+            for(String xml : xforms)
 				processXform(xml,sessionId,enterer);
 		}
 		else{
 			log.error("Cant create XForms serializer");
 			throw new Exception("Cant create XForms serializer");
-		}
+		}*/
 	}
 		
 	/**
@@ -113,7 +115,7 @@ public class XformDataUploadManager {
 	 * 
 	 * @return
 	 */
-	private static SerializableData getXformSerializer(){
+	/*private static SerializableData getXformSerializer(){
 		try{
 			String className = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_XFORM_SERIALIZER,XformConstants.DEFAULT_XFORM_SERIALIZER);
 			if(className == null || className.length() == 0)
@@ -125,7 +127,7 @@ public class XformDataUploadManager {
 		}
 		
 		return null;
-	}
+	}*/
 	
 	/**
 	 * Gets a map of xforms keyed by the formid

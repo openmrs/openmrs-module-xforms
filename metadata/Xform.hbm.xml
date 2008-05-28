@@ -11,7 +11,7 @@
 				<generator class="assigned" />
 		</id>
 
-		<property name="xformData" type="java.lang.String" not-null="true" column="xform_data" length="2147483647" />
+		<property name="xformData" type="java.lang.String" not-null="false" column="xform_data" length="2147483647" />
 
 		<many-to-one name="creator" class="org.openmrs.User" not-null="true" />
 
@@ -19,5 +19,7 @@
 
 		<property name="xslt" type="java.lang.String" not-null="false" column="xslt" length="2147483647" />
 
+		<property name="publish" type="boolean" column="publish" length="1" not-null="true" />
+		
 	</class>
 </hibernate-mapping>

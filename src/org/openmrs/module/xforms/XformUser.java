@@ -3,7 +3,7 @@ package org.openmrs.module.xforms;
 
 /**
  * An Xform remote user. This class provides a set of attributes for user downloads
- * for say mobile device storage. This attributes are used to ensure that only
+ * to external applications like mobile devices. These attributes are used to ensure that only
  * authorized openmrs users can do data entry using these devices, as a security measure.
  * The main reason why we are not using the openmrs User class is because it does not expose 
  * the salt and password fields as needed for authentication from these devices.

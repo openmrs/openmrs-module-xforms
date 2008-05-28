@@ -3,22 +3,21 @@ package org.openmrs.module.xforms.web.controller;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
-
+import org.openmrs.module.xforms.XformConstants;
+import org.openmrs.module.xforms.XformsUtil;
+import org.openmrs.module.xforms.download.XformDataUploadManager;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-
-import org.openmrs.module.xforms.*;
-import org.openmrs.module.xforms.download.XformDataUploadManager;
 
 
 /**

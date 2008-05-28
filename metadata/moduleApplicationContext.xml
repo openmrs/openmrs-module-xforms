@@ -15,6 +15,7 @@
 	           <prop key="module/@MODULE_ID@/xformDelete.form">xformDelete</prop>
 	           <prop key="module/@MODULE_ID@/xformEntry.form">xformEntry</prop>
 	           <prop key="module/@MODULE_ID@/patientDownload.form">patientDownload</prop>
+	           <prop key="module/@MODULE_ID@/xformProperties.form">xformProperties</prop>
 	    </props>
 	</property>
     </bean>
@@ -89,6 +90,12 @@
 	<property name="commandName"><value>patientDownload</value></property>
 	<property name="formView"><value>/module/@MODULE_ID@/patientDownload</value></property>
 	<property name="successView"><value>patientDownload.form</value></property>
+    </bean>
+    
+    <bean id="xformProperties" class="@MODULE_PACKAGE@.web.controller.XformPropertiesController">
+	<property name="commandName"><value>xformProperties</value></property>
+	<property name="formView"><value>/module/@MODULE_ID@/xformProperties</value></property>
+	<property name="successView"><value>xformProperties.form</value></property>
     </bean>
 	
     <!-- /Controllers -->

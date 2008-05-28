@@ -28,6 +28,9 @@ public class Xform {
 	
 	/** The xslt to transform the xform to xhtml. */
 	private String xslt;
+    
+    /** Whether to send to external clients. */
+    private boolean publish;
 	
 	/**
 	 * Default constructor
@@ -120,4 +123,24 @@ public class Xform {
 	public void setXslt(String xslt) {
 		this.xslt = xslt;
 	}
+
+    /**
+     * 
+     * Checks if form is published.
+     * 
+     * @return true if published else false.
+     */
+    public boolean isPublish() {
+        return publish;
+    }
+
+    /**
+     * 
+     * Sets the form publish status.
+     * 
+     * @param publish true to publish else false.
+     */
+    public void setPublish(boolean publish) {
+        this.publish = publish;
+    }
 }

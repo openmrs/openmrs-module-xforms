@@ -11,6 +11,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.openmrs.module.xforms.Xform;
+import org.openmrs.module.xforms.XformCohort;
 import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformUser;
 import org.openmrs.module.xforms.db.XformsDAO;

@@ -116,4 +116,16 @@
 		</sql>
 	</diff>
 	
+	<diff>
+		<version>1.6</version>
+		<author>Daniel Kayiwa</author>
+		<date>May 23rd 2008</date>
+		<description>
+			Adding publish column to the xform table.
+		</description>
+		<sql>
+			alter table xform add column publish tinyint(1) NOT NULL default 1;	
+		</sql>
+	</diff>
+	
 </sqldiff>

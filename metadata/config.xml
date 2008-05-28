@@ -32,6 +32,11 @@
 		<description>The patient set serializer</description>
 	</globalProperty>
 	<globalProperty>
+		<property>@MODULE_ID@.cohortSerializer</property>
+		<defaultValue>org.openmrs.module.xforms.DefaultCohortSerializer</defaultValue>
+		<description>The patient cohort (cohort_id and name) serializer</description>
+	</globalProperty>
+	<globalProperty>
 		<property>@MODULE_ID@.userSerializer</property>
 		<defaultValue>org.openmrs.module.xforms.DefaultUserSerializer</defaultValue>
 		<description>The user set serializer</description>

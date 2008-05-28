@@ -2,12 +2,10 @@
 <classpath>
 	<classpathentry excluding="**/.svn/" kind="src" path="src"/>
 	<classpathentry excluding="**/.svn/" kind="src" path="web/src"/>
-	<classpathentry excluding="**/.svn/" kind="src" path="test"/>
+	<classpathentry excluding="**/.svn/|org/openmrs/module/xforms/test/TestDefaultCohortSerializer.java" kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib-common/commons-logging-1.0.4.jar"/>
-	<classpathentry kind="lib" path="lib-common/spring-2.0.jar"/>
 	<classpathentry kind="lib" path="lib-common/servlet-api.jar"/>
-	<classpathentry kind="lib" path="lib-common/hibernate3.jar"/>
 	<classpathentry kind="lib" path="lib/kxml2-2.3.0.jar"/>
 	<classpathentry kind="lib" path="lib-common/commons-io-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/sms-server.jar"/>
@@ -16,6 +14,27 @@
 	<classpathentry kind="lib" path="lib-common/velocity-1.6-dev.jar"/>
 	<classpathentry kind="lib" path="lib-common/openmrs-api-1.2.04.4128.jar"/>
 	<classpathentry kind="lib" path="lib-common/web-openmrs-api-1.2.04.4128.jar"/>
+	<classpathentry kind="lib" path="lib-common/tests-openmrs-api-1.2.04.4128.jar"/>
+	<classpathentry kind="lib" path="lib-common/junit-3.8.1.jar"/>
+	<classpathentry kind="lib" path="lib-common/spring-mock.jar"/>
+	<classpathentry kind="lib" path="lib-common/dbunit-2.2.jar"/>
+	<classpathentry kind="lib" path="lib-common/hibernate325.jar"/>
+	<classpathentry kind="lib" path="lib-common/hsqldb.jar"/>
+	<classpathentry kind="lib" path="lib-common/mail.jar"/>
+	<classpathentry kind="lib" path="lib-common/antlr_2.7.6.jar"/>
+	<classpathentry kind="lib" path="lib-common/asm.jar"/>
+	<classpathentry kind="lib" path="lib-common/c3p0-0.9.1.jar"/>
+	<classpathentry kind="lib" path="lib-common/cglib-2.1_3.jar"/>
+	<classpathentry kind="lib" path="lib-common/commons-collections-3.1.jar"/>
+	<classpathentry kind="lib" path="lib-common/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="lib-common/ehcache-1.2.4.jar"/>
+	<classpathentry kind="lib" path="lib-common/hapi-0.5.jar"/>
+	<classpathentry kind="lib" path="lib-common/jta.jar"/>
+	<classpathentry kind="lib" path="lib-common/log4j-1.2.13.jar"/>
+	<classpathentry kind="lib" path="lib-common/mysql-connector-java-3.1.10-bin.jar"/>
+	<classpathentry kind="lib" path="lib-common/spring-2.5.1.jar"/>
+	<classpathentry kind="lib" path="lib-common/spring-webmvc.jar"/>
+	<classpathentry kind="lib" path="lib-common/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="lib/xform-interfaces.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>

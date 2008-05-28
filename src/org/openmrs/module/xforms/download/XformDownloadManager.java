@@ -1,7 +1,6 @@
 package org.openmrs.module.xforms.download;
 
 
-import java.io.DataOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,14 +8,12 @@ import java.util.List;
 import org.openmrs.Form;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.xforms.SerializableData;
 import org.openmrs.module.xforms.Xform;
 import org.openmrs.module.xforms.XformBuilder;
 import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformsService;
 import org.openmrs.module.xforms.XformsUtil;
 import org.openmrs.module.xforms.formentry.FormEntryWrapper;
-import org.openmrs.util.OpenmrsClassLoader;
 
 /**
  * Manages xforms download.
@@ -36,12 +33,18 @@ public class XformDownloadManager {
 	public static void downloadXforms(String actionUrl, OutputStream os) throws Exception{
 		Context.openSession(); //This prevents the bluetooth server from failing with the form field lazy load exception.
 		
-		String className = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_XFORM_SERIALIZER);
+        XformsUtil.invokeSerializationMethod(os, XformConstants.GLOBAL_PROP_KEY_XFORM_SERIALIZER, XformConstants.DEFAULT_XFORM_SERIALIZER, getXmlForms(actionUrl));
+        
+		/*String className = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_XFORM_SERIALIZER);
 		if(className == null || className.length() == 0)
 			className = XformConstants.DEFAULT_XFORM_SERIALIZER;
-		
-		SerializableData sr = (SerializableData)OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
-		sr.serialize(new DataOutputStream(os), getXmlForms(actionUrl));
+        
+        Object obj = OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
+        Method method = obj.getClass().getMethod("serialize", new Class[]{DataOutputStream.class,Object.class});
+        method.invoke(obj, new Object[]{new DataOutputStream(os), getXmlForms(actionUrl)});*/
+        
+		//SerializableData sr = (SerializableData)OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
+		//sr.serialize(new DataOutputStream(os), getXmlForms(actionUrl));
 	}
 	
 	/**

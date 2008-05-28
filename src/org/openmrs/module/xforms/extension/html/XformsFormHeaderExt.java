@@ -45,6 +45,8 @@ public class XformsFormHeaderExt extends Extension {
 						
 			if(xformsService.hasXslt(Integer.valueOf(formId)))
 				map.put("module/xforms/xformDelete.form?target=xslt&formId=" + formId, "xforms.deleteXslt");
+            
+            //map.put("module/xforms/xformProperties.form?formId=" + formId, "xforms.xformProperties");
 		}
 		
 		return map;

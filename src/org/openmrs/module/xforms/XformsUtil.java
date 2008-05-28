@@ -1,11 +1,16 @@
 package org.openmrs.module.xforms;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.StringWriter;
+import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -24,13 +29,13 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.kxml2.kdom.Element;
 import org.openmrs.Form;
 import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.module.xforms.formentry.FormEntryWrapper;
+import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 import org.w3c.dom.Document;
@@ -382,4 +387,48 @@ public class XformsUtil {
 		//TODO I need some implementattion here.
 		return FormEntryWrapper.getSchema(form);//((FormEntryService)Context.getService(FormEntryService.class)).getSchema(form);
 	}
+    
+    /**
+     * 
+     * Auto generated method comment
+     * 
+     * @param os
+     * @param globalPropKey
+     * @param defaultClassName
+     * @param data
+     * @throws Exception
+     */
+    public static void invokeSerializationMethod(OutputStream os, String globalPropKey, String defaultClassName, Object data) throws Exception{
+        String className = Context.getAdministrationService().getGlobalProperty(globalPropKey);
+        if(className == null || className.length() == 0)
+            className = defaultClassName;
+        
+        Object obj = OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
+        Method method = obj.getClass().getMethod("serialize", new Class[]{DataOutputStream.class,Object.class});
+        
+        method.invoke(obj, new Object[]{new DataOutputStream(os), data});
+    }
+    
+    
+    /**
+     * 
+     * Auto generated method comment
+     * 
+     * @param is
+     * @param globalPropKey
+     * @param defaultClassName
+     * @param data
+     * @return
+     * @throws Exception
+     */
+    public static Object  invokeDeserializationMethod(InputStream is, String globalPropKey, String defaultClassName, Object data) throws Exception{
+        String className = Context.getAdministrationService().getGlobalProperty(globalPropKey);
+        if(className == null || className.length() == 0)
+            className = defaultClassName;
+        
+        Object obj = OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
+        Method method = obj.getClass().getMethod("deSerialize", new Class[]{DataInputStream.class,Object.class});
+        
+        return method.invoke(obj, new Object[]{new DataInputStream(is), data});
+    }
 }

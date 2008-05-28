@@ -1,7 +1,6 @@
 package org.openmrs.module.xforms.download;
 
 
-import java.io.DataOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,8 +18,7 @@ import org.openmrs.module.xforms.PatientTableField;
 import org.openmrs.module.xforms.PatientTableFieldBuilder;
 import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformsService;
-import org.openmrs.util.OpenmrsClassLoader;
-import org.openmrs.module.xforms.SerializableData;
+import org.openmrs.module.xforms.XformsUtil;
 
 
 /**
@@ -36,17 +34,23 @@ public class PatientDownloadManager {
 	
 	public static void downloadPatients(String cohortId, OutputStream os) throws Exception{
 		
+        if(cohortId == null)
+            cohortId = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_PATIENT_DOWNLOAD_COHORT);
+
 		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
 
-		String className = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_PATIENT_SERIALIZER);
+        XformsUtil.invokeSerializationMethod(os, XformConstants.GLOBAL_PROP_KEY_PATIENT_SERIALIZER, XformConstants.DEFAULT_PATIENT_SERIALIZER, getPatientData(cohortId,xformsService));
+        
+		/*String className = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_PATIENT_SERIALIZER);
 		if(className == null || className.length() == 0)
 			className = XformConstants.DEFAULT_PATIENT_SERIALIZER;
-		SerializableData sr = (SerializableData)OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
-		
-		if(cohortId == null)
-			cohortId = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_PATIENT_DOWNLOAD_COHORT);
-		
-		sr.serialize(new DataOutputStream(os),getPatientData(cohortId,xformsService));
+	
+        Object obj = OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
+        Method method = obj.getClass().getMethod("serialize", new Class[]{DataOutputStream.class,Object.class});
+        method.invoke(obj, new Object[]{new DataOutputStream(os), getPatientData(cohortId,xformsService)});*/
+
+        //SerializableData sr = (SerializableData)OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
+		//sr.serialize(new DataOutputStream(os),getPatientData(cohortId,xformsService));
 	}
 	
 	private static PatientData getPatientData(String sCohortId,XformsService xformsService){
@@ -91,4 +95,19 @@ public class PatientDownloadManager {
 		
 		return patients;
 	}
+    
+	public static void downloadCohorts(OutputStream os) throws Exception{
+        XformsUtil.invokeSerializationMethod(os, XformConstants.GLOBAL_PROP_KEY_COHORT_SERIALIZER, XformConstants.DEFAULT_COHORT_SERIALIZER, Context.getCohortService().getCohorts());
+        
+        /*String className = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_COHORT_SERIALIZER);
+        if(className == null || className.length() == 0)
+            className = XformConstants.DEFAULT_COHORT_SERIALIZER;
+        
+        Object obj = OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
+        Method method = obj.getClass().getMethod("serialize", new Class[]{DataOutputStream.class,Object.class});
+        method.invoke(obj, new Object[]{new DataOutputStream(os), Context.getCohortService().getCohorts()});*/
+
+        //SerializableData sr = (SerializableData)OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
+        //sr.serialize(new DataOutputStream(os),Context.getCohortService().getCohorts());
+    }
 }

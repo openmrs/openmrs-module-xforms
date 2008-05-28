@@ -1,16 +1,25 @@
 package org.openmrs.module.xforms.web.controller;
 
+import java.io.DataOutputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.zip.GZIPOutputStream;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsClassLoader;
+import org.openmrs.module.xforms.Xform;
+import org.openmrs.module.xforms.XformBuilder;
+import org.openmrs.module.xforms.XformConstants;
+import org.openmrs.module.xforms.XformsService;
+import org.openmrs.module.xforms.XformsUtil;
+import org.openmrs.module.xforms.download.PatientDownloadManager;
 import org.openmrs.web.WebConstants;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -19,21 +28,6 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
-import org.openmrs.api.PatientService;
-//import org.openmrs.api.PersonService;
-
-import java.util.List;
-import java.util.Collection;
-import java.util.ArrayList;
-import java.util.zip.GZIPOutputStream;
-
-import org.openmrs.Cohort;
-import org.openmrs.Patient;
-//import org.openmrs.Person;
-import org.openmrs.module.xforms.*;
-import org.openmrs.module.xforms.download.PatientDownloadManager;
-
-import java.io.*;
 
 //TODO This class may need to be refactored out of the XForms module.
 
@@ -73,6 +67,7 @@ public class PatientDownloadController extends SimpleFormController{
 		
 		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
 
+        //check if the user has requested for a given cohort, else use the default.
 		String cohortId = request.getParameter(XformConstants.REQUEST_PARAM_COHORT_ID);
 		if(cohortId == null)
 			cohortId = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_PATIENT_DOWNLOAD_COHORT);
@@ -113,6 +108,15 @@ public class PatientDownloadController extends SimpleFormController{
 			response.setHeader(XformConstants.HTTP_HEADER_CONTENT_DISPOSITION, XformConstants.HTTP_HEADER_CONTENT_DISPOSITION_VALUE + filename);
 			response.getOutputStream().print(XformBuilder.getNewPatientXform("testing"));
 		}
+        else if(request.getParameter(XformConstants.REQUEST_PARAM_DOWNLOAD_COHORTS) != null){
+            response.setHeader(XformConstants.HTTP_HEADER_CONTENT_DISPOSITION, XformConstants.HTTP_HEADER_CONTENT_DISPOSITION_VALUE + "cohorts" +XformConstants.XML_FILE_EXTENSION);
+            response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
+            GZIPOutputStream gzip = new GZIPOutputStream(response.getOutputStream());
+            DataOutputStream dos = new DataOutputStream(gzip);
+            PatientDownloadManager.downloadCohorts(dos);
+            dos.flush();
+            gzip.finish();
+        }
 		
 		return null;
     }
