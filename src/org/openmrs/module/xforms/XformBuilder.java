@@ -528,18 +528,18 @@ public final class XformBuilder {
 			
 			Element child = formChild.getElement(i);
 			if(child.getAttributeValue(null, ATTRIBUTE_OPENMRS_DATATYPE) == null && child.getAttributeValue(null, ATTRIBUTE_OPENMRS_CONCEPT) != null)
-				continue; //These could be like options for multiple select, which take true or false value.
-			
+                continue; //These could be like options for multiple select, which take true or false value.
+             
 			String name =  child.getName();
 			
 			//If the node has an openmrs_concept attribute but is not called obs,
 			//Or has the openmrs_attribite and openmrs_table attributes. 
 			if((child.getAttributeValue(null, ATTRIBUTE_OPENMRS_CONCEPT) != null && !child.getName().equals(NODE_OBS)) ||
 			  (child.getAttributeValue(null, ATTRIBUTE_OPENMRS_ATTRIBUTE) != null && child.getAttributeValue(null, ATTRIBUTE_OPENMRS_TABLE) != null)){
-				
+                
 				if(!name.equalsIgnoreCase(NODE_PROBLEM_LIST)){
 					Element bindNode = createBindNode(modelElement,child,bindings,problemList,problemListItems);
-					
+                    
 					if(isMultSelectNode(child))
 						addMultipleSelectXformValueNode(child);
 						
@@ -670,13 +670,13 @@ public final class XformBuilder {
 		//For problem list element bindings, we do not add the value part.
 		if(parentName.equalsIgnoreCase(NODE_PROBLEM_LIST)){
 			problemList.put(name, name);
-			nodeset = getNodePath(node);
+  			nodeset = getNodePath(node);
 		}
-		
+        
 		//Check if this is an item of a problem list.
 		if(problemList.containsKey(parentName))
 			problemListItems.put(name, parentName);
-		
+ 		
 		bindNode.setAttribute(null, ATTRIBUTE_NODESET,nodeset);
 		modelElement.addChild(Element.ELEMENT, bindNode);
 		
@@ -836,9 +836,9 @@ public final class XformBuilder {
 			Element child = rootNode.getElement(i);
 			String name = child.getName();
 			if(name.equalsIgnoreCase(NODE_COMPLEXTYPE) && isUserDefinedSchemaElement(child))
-				parseComplexType(child,child.getAttributeValue(null, ATTRIBUTE_NAME),bodyNode,xformSchemaNode,bindings,problemList,problemListItems,repeatControls);
+ 				parseComplexType(child,child.getAttributeValue(null, ATTRIBUTE_NAME),bodyNode,xformSchemaNode,bindings,problemList,problemListItems,repeatControls);
 			else{
-				String nameAttribute = child.getAttributeValue(null, ATTRIBUTE_NAME);
+ 				String nameAttribute = child.getAttributeValue(null, ATTRIBUTE_NAME);
 				if(name.equalsIgnoreCase(NODE_SIMPLETYPE) || (name.equalsIgnoreCase(NODE_COMPLEXTYPE) && nameAttribute != null && nameAttribute.startsWith("_") && !nameAttribute.contains("_section"))/*&& isUserDefinedSchemaElement(child)*/)
 					xformSchemaNode.addChild(0, Element.ELEMENT, child);
 			}
@@ -860,20 +860,20 @@ public final class XformBuilder {
 	private static void parseComplexType(Element complexTypeNode,String name, Element bodyNode, Element xformSchemaNode, Hashtable bindings, Hashtable<String,String> problemList, Hashtable<String,String> problemListItems,Hashtable<String,Element> repeatControls){
 		name = getBindNodeName(name);
 		if(name == null)
-			return;
-		
+ 			return;
+ 		
 		Element labelNode = null, bindNode = (Element)bindings.get(name);
 		if(bindNode == null)
-			return; //could be a section like problem_list_section
-		
+  			return; //could be a section like problem_list_section
+ 		
 		for(int i=0; i<complexTypeNode.getChildCount(); i++){
-			if(complexTypeNode.isText(i))
+			if(complexTypeNode.isText(i))             
 				continue; //ignore text.
 			
 			Element node = (Element)complexTypeNode.getChild(i);
 			if(node.getName().equalsIgnoreCase(NODE_SEQUENCE))
 				labelNode = parseSequenceNode(name,node,bodyNode,xformSchemaNode,bindNode,problemList,problemListItems,repeatControls);
-			
+            
 			if(labelNode != null && isNodeWithConceptNameAndId(node))
 				addLabelTextAndHint(labelNode,node);
 		}
@@ -1010,19 +1010,21 @@ public final class XformBuilder {
 			
 			Element node = (Element)sequenceNode.getChild(i);
 			String itemName = node.getAttributeValue(null, ATTRIBUTE_NAME);
-		
 			//Instead of the value node, multiple select questions have one node
 			//for each possible select option.
 			if(!itemName.equalsIgnoreCase(NODE_VALUE)){
 				//Assuming sections (those that end with _section) don't have this attribute.
-				if(node.getAttributeValue(null, "minOccurs") == null){
-					if(problemList.containsKey(name))
+				if(node.getAttributeValue(null, "type"/*"minOccurs"*/) != null){
+  					if(problemList.containsKey(name))
+                    //if(problemListItems.containsKey(name))
 						return addProblemListSection(name,bodyNode,repeatControls);
-					continue;
+                    else
+                        continue;
 				}
 				
-				if(!(itemName.equalsIgnoreCase(NODE_DATE) || itemName.equalsIgnoreCase(NODE_TIME)) && node.getAttributeValue(null, ATTRIBUTE_OPENMRS_CONCEPT) == null)
-					labelNode = parseMultiSelectNode(name,itemName, node,controlNode,bodyNode, labelNode,bindingNode);
+				//if(!(itemName.equalsIgnoreCase(NODE_DATE) || itemName.equalsIgnoreCase(NODE_TIME)) && node.getAttributeValue(null, ATTRIBUTE_OPENMRS_CONCEPT) == null)
+                if( !itemName.equalsIgnoreCase(NODE_DATE) && !itemName.equalsIgnoreCase(NODE_TIME) && node.getChildCount() > 0 /*&& node.getAttributeValue(null, ATTRIBUTE_OPENMRS_CONCEPT) == null*/)
+                    labelNode = parseMultiSelectNode(name,itemName, node,controlNode,bodyNode, labelNode,bindingNode);
 				//else if(name.equalsIgnoreCase(COMPLEX_TYPE_NAME_PROBLEM_LIST))
 				//	problemList.put(name, name);
 				
@@ -1059,7 +1061,9 @@ public final class XformBuilder {
 		//repeatControl.addChild(Element.ELEMENT, labelNode);
 		repeatControls.put(name, repeatControl);
 		
-		addControl(bodyNode,labelNode);
+		//addControl(bodyNode,labelNode);
+        repeatControl.addChild(Element.ELEMENT, labelNode);
+        
 		addControl(bodyNode,repeatControl);
 		addControl(bodyNode,addTrigger);
 		addControl(bodyNode,deleteTrigger);
@@ -1078,21 +1082,48 @@ public final class XformBuilder {
 	 * @param bodyNode - the body node.
 	 * @return returns the created label node.
 	 */
-	private static Element buildSequenceInputControlNode(String name,Element node,String type,Element labelNode, Element bindingNode,Element bodyNode){
+	private static Element buildSequenceInputControlNode(String name,Element node,String type,Element labelNode, Element bindingNode,Element bodyNode, Hashtable<String,String> problemList, Hashtable<String,String> problemListItems,Hashtable<String,Element> repeatControls){
 		type = getPrefixedDataType(type);
 		bindingNode.setAttribute(null, ATTRIBUTE_TYPE, type);
 		
 		Element inputNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
 		inputNode.setName(CONTROL_INPUT);
-		inputNode.setAttribute(null, ATTRIBUTE_BIND, name);
+		//inputNode.setAttribute(null, ATTRIBUTE_BIND, name);
 		
 		labelNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
 		labelNode.setName(NODE_LABEL);
 		inputNode.addChild(Element.ELEMENT, labelNode);
-						
-		addControl(bodyNode,inputNode);
+		
+        addRepeatControlNode(name,inputNode,bodyNode,problemList,problemListItems,repeatControls);
+        
 		return labelNode;
 	}
+    
+    private static void addRepeatControlNode(String name, Element controlNode,Element bodyNode, Hashtable<String,String> problemList, Hashtable<String,String> problemListItems,Hashtable<String,Element> repeatControls){
+        if(problemList.containsKey(name))
+            controlNode.setAttribute(null, ATTRIBUTE_REF, NODE_VALUE);
+        else if(problemListItems.containsKey(name))
+            controlNode.setAttribute(null, ATTRIBUTE_REF, name+"/"+NODE_VALUE);
+        else
+            controlNode.setAttribute(null, ATTRIBUTE_BIND, name);
+        
+        if(problemList.contains(name)){
+            Element addTrigger = bodyNode.createElement(NAMESPACE_XFORMS, null);
+            Element deleteTrigger = bodyNode.createElement(NAMESPACE_XFORMS, null);
+            addControl(bodyNode,buildRepeatControl(bodyNode,controlNode,name,addTrigger,deleteTrigger));
+            //Put trigger next to problem list item
+            addControl(bodyNode,addTrigger);
+            addControl(bodyNode,deleteTrigger);
+        }
+        else if(problemListItems.containsKey(name)){
+            String repeatControlName = problemListItems.get(name);          
+            Element repeatControl = repeatControls.get(repeatControlName);
+            if(repeatControl != null)
+                repeatControl.addChild(Element.ELEMENT, controlNode);
+        }
+        else
+            addControl(bodyNode,controlNode);
+    }
 	
 	/**
 	 * Parses a sequence value node and builds the corresponding xforms UI control.
@@ -1107,7 +1138,7 @@ public final class XformBuilder {
 	private static Element parseSequenceValueNode(String name,Element node, Element labelNode, Element bodyNode,Element bindingNode, Hashtable<String,String> problemList, Hashtable<String,String> problemListItems,Hashtable<String,Element> repeatControls){
 		String type = node.getAttributeValue(null, ATTRIBUTE_TYPE);
 		if(type != null)
-			labelNode = buildSequenceInputControlNode(name,node,type,labelNode,bindingNode,bodyNode);
+			labelNode = buildSequenceInputControlNode(name,node,type,labelNode,bindingNode,bodyNode,problemList,problemListItems,repeatControls);
 		else{
 			//This is a select1 or select control which don't have the type attribute.
 			for(int j=0; j<node.getChildCount(); j++){
@@ -1205,10 +1236,7 @@ public final class XformBuilder {
 	 * @param bindingNode - the binding node.
 	 * @return the label node we have created.
 	 */
-	private static Element parseMultiSelectNode(String name,String itemName, Element selectItemNode,Element controlNode,Element bodyNode, Element labelNode, Element bindingNode){		
-		
-		System.out.println("parseMultiSelectNode " + name);
-		
+	private static Element parseMultiSelectNode(String name,String itemName, Element selectItemNode,Element controlNode,Element bodyNode, Element labelNode, Element bindingNode){				
 		//If this is the first time we are looping through, create the input control.
 		//Otherwise just add the items one by one as we get called for each.
 		if(controlNode.getChildCount() == 0){
@@ -1225,8 +1253,8 @@ public final class XformBuilder {
 			
 			bindingNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_TEXT);
 		}
-		
-		buildMultipleSelectItemNode(itemName,selectItemNode,controlNode);
+ 
+        buildMultipleSelectItemNode(itemName,selectItemNode,controlNode);
 		
 		return labelNode;
 
@@ -1337,33 +1365,11 @@ public final class XformBuilder {
 		
 		Element controlNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
 		controlNode.setName(controlName);
-		
-		if(problemList.containsKey(name))
-			controlNode.setAttribute(null, ATTRIBUTE_REF, NODE_VALUE);
-		else if(problemListItems.containsKey(name))
-			controlNode.setAttribute(null, ATTRIBUTE_REF, name+"/"+NODE_VALUE);
-		else
-			controlNode.setAttribute(null, ATTRIBUTE_BIND, name);
-		
+	
 		if(!controlName.equalsIgnoreCase(CONTROL_INPUT))
 				controlNode.setAttribute(null, ATTRIBUTE_APPEARANCE, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_SINGLE_SELECT_APPEARANCE));
-		
-		if(problemList.contains(name)){
-			Element addTrigger = bodyNode.createElement(NAMESPACE_XFORMS, null);
-			Element deleteTrigger = bodyNode.createElement(NAMESPACE_XFORMS, null);
-			addControl(bodyNode,buildRepeatControl(bodyNode,controlNode,name,addTrigger,deleteTrigger));
-			//Put trigger next to problem list item
-			addControl(bodyNode,addTrigger);
-			addControl(bodyNode,deleteTrigger);
-		}
-		else if(problemListItems.containsKey(name)){
-			String repeatControlName = problemListItems.get(name);			
-			Element repeatControl = repeatControls.get(repeatControlName);
-			if(repeatControl != null)
-				repeatControl.addChild(Element.ELEMENT, controlNode);
-		}
-		else
-			addControl(bodyNode,controlNode); 
+        
+        addRepeatControlNode(name,controlNode,bodyNode,problemList,problemListItems,repeatControls);
 		
 		Element labelNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
 		labelNode.setName(NODE_LABEL);

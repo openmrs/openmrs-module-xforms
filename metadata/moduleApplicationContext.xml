@@ -9,7 +9,7 @@
     	<property name="mappings">
             <props>
 	           <prop key="module/@MODULE_ID@/xformDesigner.form">xformDesigner</prop>
-	           <prop key="module/@MODULE_ID@/xformDataUpload.form">xformDataUpload</prop>
+	           <!-- <prop key="module/@MODULE_ID@/xformDataUpload.form">xformDataUpload</prop> -->
 	           <prop key="module/@MODULE_ID@/xformUpload.form">xformUpload</prop>
 	           <prop key="module/@MODULE_ID@/xsltUpload.form">xsltUpload</prop>
 	           <prop key="module/@MODULE_ID@/xformDelete.form">xformDelete</prop>
@@ -56,11 +56,13 @@
 	<property name="successView"><value>xformDesigner.form</value></property>
     </bean>
     
+    <!--
     <bean id="xformDataUpload" class="@MODULE_PACKAGE@.web.controller.XformDataUploadController">
 	<property name="commandName"><value>xformDataUpload</value></property>
 	<property name="formView"><value>/module/@MODULE_ID@/xformDataUpload</value></property>
 	<property name="successView"><value>xformDataUpload.form</value></property>
     </bean>
+    -->
     
     <bean id="xformUpload" class="@MODULE_PACKAGE@.web.controller.XformUploadController">
 	<property name="commandName"><value>xformUpload</value></property>

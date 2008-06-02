@@ -197,5 +197,5 @@ public class XformConstants {
 	public static final String REQUEST_PARAM_DOWNLOAD_PATIENT_XFORM = "downloadPatientXform";
 	
 	/** The relative url for xforms data uploads. */
-	public static final String XFORM_DATA_UPLOAD_RELATIVE_URL = "/module/xforms/xformDataUpload.form";
+	public static final String XFORM_DATA_UPLOAD_RELATIVE_URL = "/moduleServlet/xforms/xformDataUpload";
 }

@@ -66,7 +66,7 @@ public class UserDownloadServlet  extends HttpServlet {
 		}
 		catch(Exception e){
 			response.getOutputStream().print("failed with: " + e.getMessage());
-			log.error(e);
+			log.error(e.getMessage(),e);
 		}
 	}
 }

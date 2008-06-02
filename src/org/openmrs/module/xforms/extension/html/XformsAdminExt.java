@@ -36,7 +36,7 @@ public class XformsAdminExt extends AdministrationSectionExt {
 	public Map<String, String> getLinks() {
 		Map<String, String> map = new HashMap<String, String>();
 		
-		map.put("module/xforms/xformDataUpload.form", "xforms.uploadXformData");
+		map.put("moduleServlet/xforms/xformDataUpload", "xforms.uploadXformData");
 		map.put("module/xforms/xformDesigner.form", "xforms.designer");
 		map.put("module/xforms/patientDownload.form", "xforms.downloadPatients");
 		

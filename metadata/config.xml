@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>xforms</id>
 	<name>XForms</name>
-	<version>1.6</version>
+	<version>1.7</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Daniel Kayiwa</author>
 	<description>
@@ -144,6 +144,10 @@
 		
 	<!-- Servlets -->
 	<!-- Accessed through the url /pageContext()/moduleServlet/<moduleId>/<servlet-name> -->
+	<servlet>
+		<servlet-name>xformDataUpload</servlet-name>
+		<servlet-class>@MODULE_PACKAGE@.web.XformDataUploadServlet</servlet-class>
+	</servlet>
 	<servlet>
 		<servlet-name>xformDownload</servlet-name>
 		<servlet-class>@MODULE_PACKAGE@.web.XformDownloadServlet</servlet-class>
