@@ -55,8 +55,7 @@ public static final long serialVersionUID = 1234278783771156L;
                     try{
                         XformDataUploadManager.submitXforms(request.getInputStream(),request.getSession().getId(),XformsUtil.getActionUrl(request));
                         status = XformsServer.STATUS_SUCCESS;
-                        System.out.println("success");
-                     }
+                      }
                     catch(Exception e){
                         log.error( e.getMessage(),e);
                         status = XformsServer.STATUS_FAILURE; 
@@ -72,7 +71,6 @@ public static final long serialVersionUID = 1234278783771156L;
                 GZIPOutputStream gzip = new GZIPOutputStream(response.getOutputStream());
                 DataOutputStream dos = new DataOutputStream(gzip);
                 dos.writeByte(status);
-                System.out.println("success status"+status);
                 dos.flush();
                 gzip.finish();
             }

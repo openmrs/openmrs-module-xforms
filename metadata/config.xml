@@ -108,7 +108,7 @@
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.dateFormat</property>
-		<defaultValue>dd-mm-yyyy</defaultValue>
+		<defaultValue>yyyy-MM-dd</defaultValue>
 		<description>The format of the dates passed in the xml of the xforms model. Please make sure this matches with the date format of your data entry applications, else you will get wrong dates on the server.</description>
 	</globalProperty>
 	<globalProperty>
