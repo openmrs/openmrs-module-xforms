@@ -52,7 +52,7 @@ public class DefaultUserSerializer implements SerializableData{
 				serialize(user,dos);
 			
 		}catch(IOException e){
-			log.error(e);
+			log.error(e.getMessage(),e);
 		}
 	}
 	
@@ -70,7 +70,7 @@ public class DefaultUserSerializer implements SerializableData{
 			dos.writeUTF(user.getSalt());
 		}
 		catch(Exception e){
-			log.error(e);
+			log.error(e.getMessage(),e);
 		}
 	}
 	

@@ -109,7 +109,7 @@ public static final long serialVersionUID = 1234278783771156L;
                     +"</head>" + "</html>");
         }
         catch(IOException e){
-            log.error(e);
+            log.error(e.getMessage(),e);
         }
     }
 }

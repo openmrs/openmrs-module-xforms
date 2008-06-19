@@ -143,7 +143,7 @@ public class HibernateXformsDAO implements XformsDAO {
 
 			return users;
 		} catch (SQLException e) {
-			log.error(e);
+            log.error(e.getMessage(),e);
 		}
 
 		return null;
@@ -165,7 +165,7 @@ public class HibernateXformsDAO implements XformsDAO {
 
 			return formIds;
 		} catch (SQLException e) {
-			log.error(e);
+            log.error(e.getMessage(),e);
 		}
 
 		return null;
@@ -203,7 +203,7 @@ public class HibernateXformsDAO implements XformsDAO {
 			if (res.next())
 				return res.getString("xslt");
 		} catch (SQLException e) {
-			log.error(e);
+            log.error(e.getMessage(),e);
 		}
 
 		return null;
@@ -235,7 +235,7 @@ public class HibernateXformsDAO implements XformsDAO {
 			if (res.next())
 				return res.getString("default_value");
 		} catch (SQLException e) {
-			log.error(e);
+            log.error(e.getMessage(),e);
 		}
 
 		return null;

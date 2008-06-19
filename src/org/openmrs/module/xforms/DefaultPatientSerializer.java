@@ -66,7 +66,7 @@ public class DefaultPatientSerializer implements SerializableData {
 			dos.writeBoolean(false); // flag to tell whether this is a new
 										// patient or not.
 		} catch (IOException e) {
-			log.error(e);
+			log.error(e.getMessage(),e);
 		}
 	}
 
@@ -111,7 +111,7 @@ public class DefaultPatientSerializer implements SerializableData {
 			}
 
 		} catch (IOException e) {
-			log.error(e);
+			log.error(e.getMessage(),e);
 		}
 	}
 

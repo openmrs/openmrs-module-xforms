@@ -114,7 +114,7 @@ public class XformsServer {
         try {
             dos.writeByte(STATUS_SUCCESS);
         } catch (Exception e) {
-            log.error(e);
+            log.error(e.getMessage(),e);
             dos.writeByte(STATUS_FAILURE);
         }
     }

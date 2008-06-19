@@ -123,7 +123,7 @@ public class XformDataUploadManager {
 			return (SerializableData)OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
 		}
 		catch(Exception e){
-			log.error(e);
+			log.error(e.getMessage(),e);
 		}
 		
 		return null;

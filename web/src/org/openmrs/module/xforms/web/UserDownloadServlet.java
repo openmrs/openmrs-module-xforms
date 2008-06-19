@@ -45,7 +45,7 @@ public class UserDownloadServlet  extends HttpServlet {
 			try{
 				XformsUtil.authenticateInlineUser(request);
 			}catch(ContextAuthenticationException e){
-				log.error(e);
+				log.error(e.getMessage(),e);
 				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 				return;
 			}

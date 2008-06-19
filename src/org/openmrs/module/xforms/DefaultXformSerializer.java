@@ -46,7 +46,7 @@ public class DefaultXformSerializer implements SerializableData{
 				dos.writeUTF(xml);
 		}
 		catch(Exception e){
-			log.error(e);
+			log.error(e.getMessage(),e);
 		}
 	}
 	
@@ -61,7 +61,7 @@ public class DefaultXformSerializer implements SerializableData{
 				forms.add(dis.readUTF());
 		}
 		catch(Exception e){
-			log.error(e);
+			log.error(e.getMessage(),e);
 		}
 		
 		return forms;

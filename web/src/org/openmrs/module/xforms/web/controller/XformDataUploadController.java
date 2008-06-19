@@ -115,7 +115,7 @@ public class XformDataUploadController extends SimpleFormController{
 					+"</head>" + "</html>");
 		}
 		catch(IOException e){
-			log.error(e);
+			log.error(e.getMessage(),e);
 		}
 	}
 

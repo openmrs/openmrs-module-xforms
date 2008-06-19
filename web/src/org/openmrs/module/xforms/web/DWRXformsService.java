@@ -37,7 +37,7 @@ public class DWRXformsService {
 			}
 		}
 		catch(Exception e){
-			log.error(e);
+			log.error(e.getMessage(),e);
 		}
 		
 		return false;

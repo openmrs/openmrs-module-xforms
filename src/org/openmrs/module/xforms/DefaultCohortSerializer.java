@@ -46,7 +46,7 @@ public class DefaultCohortSerializer implements SerializableData {
                 serialize(cohort, dos);
 
         } catch (IOException e) {
-            log.error(e);
+            log.error(e.getMessage(),e);
         }
     }
 
@@ -61,7 +61,7 @@ public class DefaultCohortSerializer implements SerializableData {
             dos.writeInt(cohort.getCohortId());
             dos.writeUTF(cohort.getName());
         } catch (Exception e) {
-            log.error(e);
+            log.error(e.getMessage(),e);
         }
     }
 

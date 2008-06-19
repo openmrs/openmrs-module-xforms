@@ -231,12 +231,12 @@ public class XformsQueueProcessor {
 					if(!file.delete())
 						file.deleteOnExit();
 				}catch(Exception e){
-					log.error(e);
+					log.error(e.getMessage(),e);
 				}
 			}
 		}
 		catch(Exception e){
-			log.error(e);
+			log.error(e.getMessage(),e);
 		}
 		
 		return pathName;
@@ -294,6 +294,7 @@ public class XformsQueueProcessor {
 			
 			Integer id = patientIds.get(val);
 			if(id == null){
+                //TODO May need to look for new patient forms in the achive to retrieve the ids
 				log.error("No patient created with an original id of:"+val);
 				return false; //Patient id not found, may be there was a failure at creation.
 			}
@@ -303,7 +304,7 @@ public class XformsQueueProcessor {
 			return true;
 		}
 		catch(Exception e){
-			log.error(e);
+			log.error(e.getMessage(),e);
 		}
 		
 		return false;

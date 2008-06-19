@@ -57,7 +57,7 @@ public class XformsBluetoothServer  implements BluetoothServerListener  {
 		try{
 			xformsServer.processConnection(dis, dos);
 		}catch(Exception e){
-			log.error(e);
+			log.error(e.getMessage(),e);
 			try{
 				dos.writeByte(XformsServer.STATUS_FAILURE);
 				//dos.writeUTF(e.getMessage());
