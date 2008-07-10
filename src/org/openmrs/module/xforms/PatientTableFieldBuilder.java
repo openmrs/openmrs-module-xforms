@@ -4,22 +4,28 @@ package org.openmrs.module.xforms;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.kxml2.kdom.Document;
 import org.kxml2.kdom.Element;
 import org.openmrs.Form;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.xforms.download.PatientDownloadManager;
 import org.openmrs.module.xforms.formentry.FormEntryWrapper;
 
 
 /**
- * Builds patient table field and their corresponding values.
+ * Builds patient table fields and their corresponding values.
  * 
  * @author Daniel
  *
  */
 public class PatientTableFieldBuilder {
 
+    private static Log log = LogFactory.getLog(PatientTableFieldBuilder.class);
+    
+    
 	public static List<PatientTableField> getPatientTableFields(XformsService xformsService){
 		FormService formService = (FormService)Context.getService(FormService.class);
 
@@ -34,10 +40,15 @@ public class PatientTableFieldBuilder {
 	}
 	
 	private static void addFormTableFields(Integer formId,List<PatientTableField> fields, FormService formService){
-		Form form = formService.getForm(formId);
-		String templateXml = FormEntryWrapper.getFormTemplate(form); //new FormXmlTemplateBuilder(form,FormEntryUtil.getFormAbsoluteUrl(form)).getXmlTemplate(false);
-		Document doc = XformBuilder.getDocument(templateXml);
-		addTableFields(doc.getRootElement(),fields);
+		try{
+            Form form = formService.getForm(formId);
+    		String templateXml = FormEntryWrapper.getFormTemplate(form); //new FormXmlTemplateBuilder(form,FormEntryUtil.getFormAbsoluteUrl(form)).getXmlTemplate(false);
+    		Document doc = XformBuilder.getDocument(templateXml);
+    		addTableFields(doc.getRootElement(),fields);
+        }
+        catch(Exception e){
+            log.error(e.getMessage(), e);
+        }
 	}
 	
 	private static void addTableFields(Element node,List<PatientTableField> fields){

@@ -40,18 +40,7 @@ public class PatientDownloadManager {
 		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
 
         XformsUtil.invokeSerializationMethod(os, XformConstants.GLOBAL_PROP_KEY_PATIENT_SERIALIZER, XformConstants.DEFAULT_PATIENT_SERIALIZER, getPatientData(cohortId,xformsService));
-        
-		/*String className = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_PATIENT_SERIALIZER);
-		if(className == null || className.length() == 0)
-			className = XformConstants.DEFAULT_PATIENT_SERIALIZER;
-	
-        Object obj = OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
-        Method method = obj.getClass().getMethod("serialize", new Class[]{DataOutputStream.class,Object.class});
-        method.invoke(obj, new Object[]{new DataOutputStream(os), getPatientData(cohortId,xformsService)});*/
-
-        //SerializableData sr = (SerializableData)OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
-		//sr.serialize(new DataOutputStream(os),getPatientData(cohortId,xformsService));
-	}
+ 	}
 	
 	private static PatientData getPatientData(String sCohortId,XformsService xformsService){
 		Context.openSession(); //This prevents the bluetooth server from failing with the form field lazy load exception.
@@ -98,16 +87,5 @@ public class PatientDownloadManager {
     
 	public static void downloadCohorts(OutputStream os) throws Exception{
         XformsUtil.invokeSerializationMethod(os, XformConstants.GLOBAL_PROP_KEY_COHORT_SERIALIZER, XformConstants.DEFAULT_COHORT_SERIALIZER, Context.getCohortService().getCohorts());
-        
-        /*String className = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_COHORT_SERIALIZER);
-        if(className == null || className.length() == 0)
-            className = XformConstants.DEFAULT_COHORT_SERIALIZER;
-        
-        Object obj = OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
-        Method method = obj.getClass().getMethod("serialize", new Class[]{DataOutputStream.class,Object.class});
-        method.invoke(obj, new Object[]{new DataOutputStream(os), Context.getCohortService().getCohorts()});*/
-
-        //SerializableData sr = (SerializableData)OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
-        //sr.serialize(new DataOutputStream(os),Context.getCohortService().getCohorts());
-    }
+     }
 }
