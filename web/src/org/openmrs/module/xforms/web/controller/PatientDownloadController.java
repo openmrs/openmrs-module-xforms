@@ -4,7 +4,6 @@ import java.io.DataOutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,6 +27,9 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
+
+import com.jcraft.jzlib.JZlib;
+import com.jcraft.jzlib.ZOutputStream;
 
 //TODO This class may need to be refactored out of the XForms module.
 
@@ -76,7 +78,8 @@ public class PatientDownloadController extends SimpleFormController{
 			if(request.getParameter(XformConstants.REQUEST_PARAM_DOWNLOAD_PATIENTS) != null){
 				response.setHeader(XformConstants.HTTP_HEADER_CONTENT_DISPOSITION, XformConstants.HTTP_HEADER_CONTENT_DISPOSITION_VALUE + getCohortName(Integer.parseInt(cohortId))+XformConstants.XML_FILE_EXTENSION);
 				response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
-				GZIPOutputStream gzip = new GZIPOutputStream(response.getOutputStream());
+				//GZIPOutputStream gzip = new GZIPOutputStream(response.getOutputStream());
+                ZOutputStream gzip = new ZOutputStream(response.getOutputStream(),JZlib.Z_BEST_COMPRESSION);
 				DataOutputStream dos = new DataOutputStream(gzip);
 				PatientDownloadManager.downloadPatients(cohortId,dos);
 				dos.flush();
@@ -111,7 +114,8 @@ public class PatientDownloadController extends SimpleFormController{
         else if(request.getParameter(XformConstants.REQUEST_PARAM_DOWNLOAD_COHORTS) != null){
             response.setHeader(XformConstants.HTTP_HEADER_CONTENT_DISPOSITION, XformConstants.HTTP_HEADER_CONTENT_DISPOSITION_VALUE + "cohorts" +XformConstants.XML_FILE_EXTENSION);
             response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
-            GZIPOutputStream gzip = new GZIPOutputStream(response.getOutputStream());
+            //GZIPOutputStream gzip = new GZIPOutputStream(response.getOutputStream());
+            ZOutputStream gzip = new ZOutputStream(response.getOutputStream(),JZlib.Z_BEST_COMPRESSION);
             DataOutputStream dos = new DataOutputStream(gzip);
             PatientDownloadManager.downloadCohorts(dos);
             dos.flush();

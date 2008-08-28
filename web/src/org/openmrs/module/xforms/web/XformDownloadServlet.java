@@ -2,8 +2,6 @@ package org.openmrs.module.xforms.web;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.URL;
-import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -26,6 +24,9 @@ import org.openmrs.module.xforms.download.UserDownloadManager;
 import org.openmrs.module.xforms.download.XformDownloadManager;
 import org.openmrs.module.xforms.formentry.FormEntryWrapper;
 import org.openmrs.util.FormUtil;
+
+import com.jcraft.jzlib.JZlib;
+import com.jcraft.jzlib.ZOutputStream;
 
 /**
  * Provides Xform download services.
@@ -115,7 +116,8 @@ public class XformDownloadServlet extends HttpServlet {
 		{		
 			response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
 			
-			GZIPOutputStream gzip = new GZIPOutputStream(response.getOutputStream());
+			//GZIPOutputStream gzip = new GZIPOutputStream(response.getOutputStream());
+            ZOutputStream gzip = new ZOutputStream(response.getOutputStream(),JZlib.Z_BEST_COMPRESSION);
 			DataOutputStream dos = new DataOutputStream(gzip);
 
 			if(includeUsers)

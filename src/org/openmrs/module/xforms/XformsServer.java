@@ -3,7 +3,6 @@ package org.openmrs.module.xforms;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -13,6 +12,9 @@ import org.openmrs.module.xforms.download.PatientDownloadManager;
 import org.openmrs.module.xforms.download.UserDownloadManager;
 import org.openmrs.module.xforms.download.XformDataUploadManager;
 import org.openmrs.module.xforms.download.XformDownloadManager;
+
+import com.jcraft.jzlib.JZlib;
+import com.jcraft.jzlib.ZOutputStream;
 
 /**
  * Serves xform services to non HTTP connections. Examples of such connections
@@ -72,7 +74,10 @@ public class XformsServer {
 
         byte action = dis.readByte();
 
-        GZIPOutputStream gzip = new GZIPOutputStream(dosParam);
+        System.out.println("processConnection called with action="+action);
+        
+        //GZIPOutputStream gzip = new GZIPOutputStream(dosParam);
+        ZOutputStream gzip = new ZOutputStream(dosParam,JZlib.Z_BEST_COMPRESSION);
         DataOutputStream dos = new DataOutputStream(gzip);
 
         if (action == ACTION_DOWNLOAD_PATIENTS)
@@ -90,6 +95,8 @@ public class XformsServer {
 
         dos.flush();
         gzip.finish();
+        
+        System.out.println("finished processConnection with action="+action);
     }
 
     // TODO I guess this needs to be done in a smarter way.
@@ -107,10 +114,8 @@ public class XformsServer {
      * @param dis - the stream to read from.
      * @param dos - the stream to write to.
      */
-    private void submitXforms(DataInputStream dis, DataOutputStream dos)
-            throws Exception {
-        XformDataUploadManager.submitXforms(dis, new java.util.Date()
-                .toString(), getActionUrl());
+    private void submitXforms(DataInputStream dis, DataOutputStream dos) throws Exception {
+        XformDataUploadManager.submitXforms(dis, new java.util.Date().toString(), getActionUrl());
         try {
             dos.writeByte(STATUS_SUCCESS);
         } catch (Exception e) {

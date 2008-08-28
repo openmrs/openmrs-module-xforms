@@ -4,7 +4,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,6 +20,9 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+
+import com.jcraft.jzlib.JZlib;
+import com.jcraft.jzlib.ZOutputStream;
 
 
 //TODO This class is to be deleted as it functionality is now done by XformDataUploadServlet
@@ -76,7 +78,8 @@ public class XformDataUploadController extends SimpleFormController{
         }
 		
         if(status != -1){
-            GZIPOutputStream gzip = new GZIPOutputStream(response.getOutputStream());
+            //GZIPOutputStream gzip = new GZIPOutputStream(response.getOutputStream());
+            ZOutputStream gzip = new ZOutputStream(response.getOutputStream(),JZlib.Z_BEST_COMPRESSION);
             DataOutputStream dos = new DataOutputStream(gzip);
             dos.writeByte(status);
             System.out.println("success"+status);

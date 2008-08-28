@@ -337,15 +337,6 @@ public class XformsUtil {
     }
     
     /**
-	 * Gets a random file name.
-	 * 
-	 * @return - the file name.
-	 */
-    public static String getRandomFileName(){
-		return new Date().toString().replace(':', '_');
-	}
-    
-    /**
      * Reads the contents of a file as a string.
      * 
      * @param pathName - the full path and name of the file.

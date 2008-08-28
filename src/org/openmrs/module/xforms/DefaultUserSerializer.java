@@ -32,7 +32,7 @@ import org.apache.commons.logging.LogFactory;
  * @author Daniel
  *
  */
-public class DefaultUserSerializer implements SerializableData{
+public class DefaultUserSerializer {
 
 	private Log log = LogFactory.getLog(this.getClass());
 	

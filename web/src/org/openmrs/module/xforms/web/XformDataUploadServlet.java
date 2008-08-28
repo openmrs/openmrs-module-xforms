@@ -2,7 +2,6 @@ package org.openmrs.module.xforms.web;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -17,6 +16,9 @@ import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformsServer;
 import org.openmrs.module.xforms.XformsUtil;
 import org.openmrs.module.xforms.download.XformDataUploadManager;
+
+import com.jcraft.jzlib.JZlib;
+import com.jcraft.jzlib.ZOutputStream;
 
 
 /**
@@ -68,7 +70,8 @@ public static final long serialVersionUID = 1234278783771156L;
             }
             
             if(status != -1){
-                GZIPOutputStream gzip = new GZIPOutputStream(response.getOutputStream());
+                //GZIPOutputStream gzip = new GZIPOutputStream(response.getOutputStream());
+                ZOutputStream gzip = new ZOutputStream(response.getOutputStream(),JZlib.Z_BEST_COMPRESSION);
                 DataOutputStream dos = new DataOutputStream(gzip);
                 dos.writeByte(status);
                 dos.flush();

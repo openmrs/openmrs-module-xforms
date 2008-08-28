@@ -2,7 +2,6 @@ package org.openmrs.module.xforms.web;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -12,9 +11,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.ContextAuthenticationException;
-import org.openmrs.module.xforms.XformsUtil;
 import org.openmrs.module.xforms.XformConstants;
+import org.openmrs.module.xforms.XformsUtil;
 import org.openmrs.module.xforms.download.UserDownloadManager;
+
+import com.jcraft.jzlib.JZlib;
+import com.jcraft.jzlib.ZOutputStream;
 
 
 //TODO This class may need to be refactored out of the XForms module.
@@ -56,7 +58,8 @@ public class UserDownloadServlet  extends HttpServlet {
 			
 			response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
 			
-			GZIPOutputStream gzip = new GZIPOutputStream(response.getOutputStream());
+			//GZIPOutputStream gzip = new GZIPOutputStream(response.getOutputStream());
+            ZOutputStream gzip = new ZOutputStream(response.getOutputStream(),JZlib.Z_BEST_COMPRESSION);
 			DataOutputStream dos = new DataOutputStream(gzip);
 			
 			UserDownloadManager.downloadUsers(dos);

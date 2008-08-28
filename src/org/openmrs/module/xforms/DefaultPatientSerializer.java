@@ -29,7 +29,7 @@ import org.openmrs.PersonName;
  * @author Daniel
  * 
  */
-public class DefaultPatientSerializer implements SerializableData {
+public class DefaultPatientSerializer {
 
 	private Log log = LogFactory.getLog(this.getClass());
 

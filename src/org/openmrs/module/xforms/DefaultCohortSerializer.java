@@ -26,7 +26,7 @@ import org.openmrs.Cohort;
  * @author Daniel
  * 
  */
-public class DefaultCohortSerializer implements SerializableData {
+public class DefaultCohortSerializer {
 
     private Log log = LogFactory.getLog(this.getClass());
 

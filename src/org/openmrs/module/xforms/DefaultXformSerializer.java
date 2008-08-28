@@ -1,11 +1,9 @@
 package org.openmrs.module.xforms;
 
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.zip.GZIPOutputStream;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,7 +25,7 @@ import org.apache.commons.logging.LogFactory;
  * @author Daniel
  *
  */
-public class DefaultXformSerializer implements SerializableData{
+public class DefaultXformSerializer {
 	
 	private Log log = LogFactory.getLog(this.getClass());
 	

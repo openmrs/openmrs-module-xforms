@@ -117,7 +117,7 @@ public class HibernateXformsDAO implements XformsDAO {
 		} catch (Exception e) {
 			log.error("Could not get value for field:[" + columnName
 					+ "] table:[" + tableName + "] SQL=" + sql
-					+ " ErrorDetails=" + e.getMessage(), e);
+					+ " ErrorDetails=" + e.getMessage(), /*e*/null);
 		}
 
 		return null;
