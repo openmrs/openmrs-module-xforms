@@ -6,6 +6,8 @@
 <!-- ** @version 1.0                                        ** -->
 <!-- ********************************************************* -->
 <project name="xforms" default="package-module">
+	
+	<property name="tomcat.home" value="C:/Program Files/Apache Software Foundation/Tomcat 5.5"/>
 		
 	<!-- *********************************************************** -->
 	<!-- **                     TARGETS                           ** -->
@@ -45,13 +47,13 @@
 		</copy>
 		
 		<!--  Compile module java files -->
-		<javac destdir="build" classpathref="classpath" debug="true" debuglevel="lines,source">
+		<javac destdir="build" classpathref="classpath" debug="true" debuglevel="lines,vars,source">
 			<src path="src/" />
 			<include name="**/*.java" />
 		</javac>
 		
 		<!--  Compile module web java files -->
-		<javac destdir="build" classpathref="classpath" debug="true" debuglevel="lines,source">
+		<javac destdir="build" classpathref="classpath" debug="true" debuglevel="lines,vars,source">
 			<compilerarg line="-g" />
 			<src path="web/src/" />
 			<include name="**/*.java" />
@@ -71,7 +73,8 @@
 		<!-- Copy module web data -->
 		<copy todir="build/web/module/">
 			<fileset dir="web/module/" includes="**/*" />
-			<filterset refid="variables.to.replace" />
+			<!-- This is commented out because it messes up my images in the resources folder. -->
+			<!-- <filterset refid="variables.to.replace" /> -->
 		</copy>
 		
 		<!-- Copy lib folder -->
@@ -103,6 +106,21 @@
 			</fileset>
 		</jar>
 	</target>
+	
+	<target name="tomcat-start" description="Start Tomcat">
+			<echo message="Starting Tomcat denoted by the tomcat.home property" />
+			<java jar="${tomcat.home}/bin/bootstrap.jar" fork="true">
+				<jvmarg line='-Dcatalina.home="${tomcat.home}" -Xmx512M -Xms128M -XX:PermSize=64M -XX:MaxPermSize=128m -XX:NewSize=64m -Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5000'/>
+			</java>
+	</target>
+
+     <target name="tomcat-stop" description="Stop Tomcat">
+     	<echo message="Stopping Tomcat denoted by the tomcat.home property" />
+         <java jar="${tomcat.home}/bin/bootstrap.jar" fork="true">
+             <jvmarg line='-Dcatalina.home="${tomcat.home}"'/>
+             <arg line="stop"/>
+         </java>
+     </target>
 
 </project>
 

@@ -5,6 +5,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Form;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
@@ -23,6 +25,11 @@ import org.openmrs.module.xforms.formentry.FormEntryWrapper;
  */
 public class XformDownloadManager {
 	
+    public static final long serialVersionUID = 123427878343561L;
+    
+    private static Log log = LogFactory.getLog(XformDownloadManager.class);
+    
+    
 	/**
 	 * Writes xforms to a stream.
 	 * 
@@ -30,10 +37,10 @@ public class XformDownloadManager {
 	 * @param os - the stream.
 	 * @throws Exception  
 	 */
-	public static void downloadXforms(String actionUrl, OutputStream os) throws Exception{
+	public static void downloadXforms(OutputStream os) throws Exception{
 		Context.openSession(); //This prevents the bluetooth server from failing with the form field lazy load exception.
 		
-        XformsUtil.invokeSerializationMethod(os, XformConstants.GLOBAL_PROP_KEY_XFORM_SERIALIZER, XformConstants.DEFAULT_XFORM_SERIALIZER, getXmlForms(actionUrl));
+        XformsUtil.invokeSerializationMethod(os, XformConstants.GLOBAL_PROP_KEY_XFORM_SERIALIZER, XformConstants.DEFAULT_XFORM_SERIALIZER, getXmlForms());
         
 		/*String className = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_XFORM_SERIALIZER);
 		if(className == null || className.length() == 0)
@@ -53,7 +60,7 @@ public class XformDownloadManager {
 	 * @param actionUrl
 	 * @return a list of xforms xml text.
 	 */
-	private static List<String> getXmlForms(String actionUrl){
+	private static List<String> getXmlForms(){
 		String useStoredXform = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_USER_STORED_XFORMS);
 		boolean createNew = false;
 		if(XformConstants.FALSE_TEXT_VALUE.equalsIgnoreCase(useStoredXform))
@@ -66,12 +73,13 @@ public class XformDownloadManager {
 		List<String> xmlforms = new ArrayList<String>();
 		for(Xform xform : xforms){
 			if(xform.getFormId() != XformConstants.PATIENT_XFORM_FORM_ID){
-				String s = getXform(formService,xformsService,xform.getFormId(),createNew,actionUrl);
-				xmlforms.add(s);
+				String s = getXform(formService,xformsService,xform.getFormId(),createNew);
+				if(s != null) //could fail parsing xform.
+				    xmlforms.add(s);
 			}
 		}
 		
-		String xml = XformBuilder.getNewPatientXform(actionUrl);
+		String xml = XformBuilder.getNewPatientXform();
 		xmlforms.add(xml);
 		return xmlforms;
 	}
@@ -84,9 +92,9 @@ public class XformDownloadManager {
 	 * @param formId - the form id.
 	 * @return - the created xml form.
 	 */
-	public static String createNewXform(FormService formService, Integer formId,String actionUrl){
+	public static String createNewXform(FormService formService, Integer formId){
 		Form form = formService.getForm(formId);
-		return createNewXform(formService, form,actionUrl);
+		return createNewXform(formService, form);
 	}
 	
 	
@@ -99,10 +107,10 @@ public class XformDownloadManager {
 	 * @param form - the form object.
 	 * @return - the xml content of the xform.
 	 */
-	public static String createNewXform(FormService formService, Form form,String actionUrl){
+	public static String createNewXform(FormService formService, Form form){
 		String schemaXml = XformsUtil.getSchema(form);
 		String templateXml = FormEntryWrapper.getFormTemplate(form);//new FormXmlTemplateBuilder(form,FormEntryUtil.getFormAbsoluteUrl(form)).getXmlTemplate(false);
-		return XformBuilder.getXform4mStrings(schemaXml, templateXml,actionUrl);
+		return XformBuilder.getXform4mStrings(schemaXml, templateXml);
 	}
 	
 	/**
@@ -114,18 +122,23 @@ public class XformDownloadManager {
 	 * @param createNew - true if you want
 	 * @return - the xml content of the xform.
 	 */
-	public static String getXform(FormService formService,XformsService xformsService,Integer formId,boolean createNew,String actionUrl){
+	public static String getXform(FormService formService,XformsService xformsService,Integer formId,boolean createNew){
 		
 		String xformXml = null;
 		
-		if(!createNew){
-			Xform xform = xformsService.getXform(formId);
-			if(xform != null)
-				xformXml = xform.getXformData();
-		}
-		
-		if(xformXml == null)
-			xformXml = createNewXform(formService, formId,actionUrl);
+        try{
+    		if(!createNew){
+    			Xform xform = xformsService.getXform(formId);
+    			if(xform != null)
+    				xformXml = xform.getXformXml();
+    		}
+    		
+    		if(xformXml == null)
+    			xformXml = createNewXform(formService, formId);
+        }
+        catch(Exception e){
+            log.error(e.getMessage(),e);
+        }
 		
 		return xformXml;
 	}

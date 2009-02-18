@@ -10,6 +10,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.xforms.XformConstants;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.servlet.ModelAndView;
@@ -35,7 +36,8 @@ public class XformEntryController extends SimpleFormController{
     	map.put("formId", formId);
     	map.put("patientId", Integer.parseInt(request.getParameter("patientId")));
  		map.put("formName", ((FormService)Context.getService(FormService.class)).getForm(formId).getName());
-
+        map.put("dateTimeFormat", Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_FORMAT,XformConstants.DEFAULT_DATE_FORMAT)); //yyyy-MM-dd
+        
     	return map;
 	}
 

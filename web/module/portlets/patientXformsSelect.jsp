@@ -12,14 +12,14 @@
 				return false;
 			}
 			else { 
-				url = '${pageContext.request.contextPath}/moduleServlet/xforms/xformDownload?target=xformentry&formId=' + formId + '&patientId=${patient.patientId}';
+				url = '${pageContext.request.contextPath}/module/xforms/formEntry.form?formId=' + formId + '&patientId=${patient.patientId}';
 			}
 			window.location = url;
 		}
 	</script>
 
 	<div id="selectForm">
-		<form id="selectFormForm" method="get" action="<%= request.getContextPath() %>/moduleServlet/xforms/xformDownload?target=xformentry&patientId=${patient.patientId}&formId=${form.formId}">			
+		<form id="selectFormForm" method="get" action="<%= request.getContextPath() %>/module/xforms/formEntry.form?patientId=${patient.patientId}&formId=${form.formId}">			
 			Add an encounter: 			 
 			<select id="formSelect" name="formId">
 				<option value="" selected></option>

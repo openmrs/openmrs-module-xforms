@@ -1,0 +1,170 @@
+body, html {
+  height: 100%;
+}
+
+.cw-StackPanelHeader {
+  padding-left: 7px;
+  font-weight: bold;
+  font-size: 1.4em;
+}
+
+.cw-FlexTable td {
+  border: 1px solid #BBBBBB;
+  padding: 3px;
+}
+
+.formDesigner-AboutText {
+  width: 24em;
+  font-size: 80%;
+  padding: 10px;
+  text-align: left;
+}
+
+.formDesigner-StackContent {
+  height: 100%;
+}
+
+.dragdrop-dropTarget-engage {
+  background-color: #E0E8FF;
+}
+
+.getting-started-label {
+  border: 1px solid #99AACC;
+  background-color: #AACCFF;
+  padding: 0.1em;
+}
+
+.getting-started-label2 {
+  border: 1px solid #AACCFF;
+  background-color: white;
+  padding: 0.1em;
+}
+
+.purcforms-repeat-border {
+  border: 1px solid #AACCFF;
+  background-color: white;
+  padding: 0.1em;
+}
+
+.getting-started-blue {
+  border: 1px solid red;
+}
+
+.gwt-HorizontalSplitPanel .hsplitter {
+  cursor: move;
+  border: 0px; 
+  background: #91c0ef url(vborder.png) repeat-y;
+}
+
+.FormDesigner-ErrorDialog {
+  border: 2px outset;
+  background-color: white;
+  width: 50%;
+}
+
+.FormDesigner-ErrorDialog .Caption {
+  background-color: #C3D9FF;
+  padding: 3px;
+  margin: 2px;
+  font-weight: bold;
+  cursor: default;
+}
+
+.FormDesigner-FlexTable .table td.header {
+	text-align: left;
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+.gwt-Tree .gwt-CompositeTreeItem {
+  padding: 0px;
+  margin: 0px;
+  border: 1px solid white;
+  white-space: nowrap;
+  cursor: hand;
+  cursor: pointer;
+}
+
+.gwt-Tree .gwt-CompositeTreeItem-hovering {
+}
+
+.gwt-Tree .gwt-CompositeTreeItem-selected {
+  background: #93c2f1;
+  border: 1px dotted #888;
+}
+
+.gwt-Tree .gwt-TreeItem {
+  padding: 0px;
+  margin: 0px;
+  /*border: 1px solid white;*/
+  white-space: nowrap;
+  cursor: hand;
+  cursor: pointer;
+}
+
+.gwt-Tree .gwt-TreeItem-hovering {
+}
+
+.gwt-Tree .gwt-TreeItem-selected {
+  /*background: #93c2f1 url(images/bg_listgradient.gif) repeat-x;*/
+  /*border: 1px dotted #888;*/
+}
+
+/*.gwt-AbsolutePanel {
+      position: relative;
+      overflow: hidden;
+ }
+
+.DragContainer {
+        border:1px solid black;
+        width:125px;
+}
+
+.DragItemInactive {
+        color:gray; */
+        
+.mosaic-WindowPanel .Resize-nw {
+	cursor: nw-resize;
+}
+
+.mosaic-WindowPanel .Resize-n {
+	cursor: n-resize;
+}
+
+.mosaic-WindowPanel .Resize-ne {
+	cursor: ne-resize;
+}
+
+.mosaic-WindowPanel .Resize-e {
+	cursor: e-resize;
+	background: #fff; /* needed by IE */
+}
+
+.mosaic-WindowPanel .Resize-se {
+	cursor: se-resize;
+}
+
+.mosaic-WindowPanel .Resize-s {
+	cursor: s-resize;
+	background: #fff; /* needed by IE */
+}
+
+.mosaic-WindowPanel .Resize-sw {
+	cursor: sw-resize;
+}
+
+.mosaic-WindowPanel .Resize-w {
+	cursor: w-resize;
+}
+
+.dragdrop-selected,.dragdrop-dragging,.dragdrop-proxy {
+  filter: alpha(opacity = 50);
+  opacity: 0.5;
+}
+
+.rubberBand {
+   position: absolute;
+   visibility: hidden;
+   width: 0px; height: 0px;
+   border: 1px dashed black;
+ }

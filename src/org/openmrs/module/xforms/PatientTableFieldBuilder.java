@@ -11,7 +11,6 @@ import org.kxml2.kdom.Element;
 import org.openmrs.Form;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.xforms.download.PatientDownloadManager;
 import org.openmrs.module.xforms.formentry.FormEntryWrapper;
 
 
@@ -24,7 +23,6 @@ import org.openmrs.module.xforms.formentry.FormEntryWrapper;
 public class PatientTableFieldBuilder {
 
     private static Log log = LogFactory.getLog(PatientTableFieldBuilder.class);
-    
     
 	public static List<PatientTableField> getPatientTableFields(XformsService xformsService){
 		FormService formService = (FormService)Context.getService(FormService.class);

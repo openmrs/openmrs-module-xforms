@@ -25,7 +25,7 @@ public class XformBuilderTest extends BaseModuleContextSensitiveTest{
       
         String schemaXml = XformsUtil.getSchema(form);
         String templateXml = FormEntryWrapper.getFormTemplate(form);//new FormXmlTemplateBuilder(form,FormEntryUtil.getFormAbsoluteUrl(form)).getXmlTemplate(false);
-        String xform = XformBuilder.getXform4mStrings(schemaXml, templateXml,"");
+        String xform = XformBuilder.getXform4mStrings(schemaXml, templateXml);
                 
         System.out.println("XForm: \n" + xform);
         File outFile = new File("c:\\xformbuildertest.xml");

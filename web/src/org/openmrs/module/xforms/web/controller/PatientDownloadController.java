@@ -99,7 +99,7 @@ public class PatientDownloadController extends SimpleFormController{
 				String xml = IOUtils.toString(xformFile.getInputStream());
 				Xform xform = new Xform();
 				xform.setFormId(XformConstants.PATIENT_XFORM_FORM_ID);
-				xform.setXformData(xml);
+				xform.setXformXml(xml);
 				xformsService.saveXform(xform);
 				
 				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "xforms.patientXformUploadSuccess");
@@ -109,7 +109,7 @@ public class PatientDownloadController extends SimpleFormController{
 		else if(request.getParameter(XformConstants.REQUEST_PARAM_DOWNLOAD_PATIENT_XFORM) != null){
 			String filename = XformConstants.PATIENT_XFORM_FORM_ID+XformConstants.XML_FILE_EXTENSION;
 			response.setHeader(XformConstants.HTTP_HEADER_CONTENT_DISPOSITION, XformConstants.HTTP_HEADER_CONTENT_DISPOSITION_VALUE + filename);
-			response.getOutputStream().print(XformBuilder.getNewPatientXform("testing"));
+			response.getOutputStream().print(XformBuilder.getNewPatientXform());
 		}
         else if(request.getParameter(XformConstants.REQUEST_PARAM_DOWNLOAD_COHORTS) != null){
             response.setHeader(XformConstants.HTTP_HEADER_CONTENT_DISPOSITION, XformConstants.HTTP_HEADER_CONTENT_DISPOSITION_VALUE + "cohorts" +XformConstants.XML_FILE_EXTENSION);

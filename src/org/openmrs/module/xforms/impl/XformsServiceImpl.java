@@ -10,7 +10,6 @@ import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.Xform;
 import org.openmrs.module.xforms.XformBuilder;
-import org.openmrs.module.xforms.XformCohort;
 import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformUser;
 import org.openmrs.module.xforms.XformsService;
@@ -168,17 +167,11 @@ public class XformsServiceImpl implements XformsService {
      * @see org.openmrs.module.xforms.XformsService#getNewXform(java.lang.Integer)
      */
     public Xform getNewXform(Integer formId) {
-        FormService formService = (FormService) Context
-                .getService(FormService.class);
+        FormService formService = (FormService) Context.getService(FormService.class);
         Form form = formService.getForm(formId);
         String schemaXml = XformsUtil.getSchema(form);
         String templateXml = FormEntryWrapper.getFormTemplate(form); // new
                                                                         // FormXmlTemplateBuilder(form,FormEntryUtil.getFormAbsoluteUrl(form)).getXmlTemplate(false);
-
-        // TODO This localhost and port(8080) should not be hardcoded.
-        String actionUrl = "http://" + "localhost" + ":8080/openmrs"
-                + XformConstants.XFORM_DATA_UPLOAD_RELATIVE_URL;
-        return new Xform(formId, XformBuilder.getXform4mStrings(schemaXml,
-                templateXml, actionUrl));
+        return new Xform(formId, XformBuilder.getXform4mStrings(schemaXml,templateXml));
     }
 }

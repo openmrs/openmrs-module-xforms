@@ -25,6 +25,9 @@ import com.jcraft.jzlib.ZOutputStream;
  */
 public class XformsServer {
 
+    /** Value representing a not yet set status. */
+    public static final byte STATUS_NULL = -1;
+    
     /** Value representing success of an action. */
     public static final byte STATUS_SUCCESS = 1;
 
@@ -85,7 +88,7 @@ public class XformsServer {
         else if(action == ACTION_DOWNLOAD_COHORTS)
             PatientDownloadManager.downloadCohorts(dos);
         else if (action == ACTION_DOWNLOAD_FORMS)
-            XformDownloadManager.downloadXforms(getActionUrl(), dos);
+            XformDownloadManager.downloadXforms(dos);
         else if (action == ACTION_UPLOAD_FORMS)
             submitXforms(dis, dos);
         else if (action == ACTION_DOWNLOAD_USERS)
@@ -115,7 +118,7 @@ public class XformsServer {
      * @param dos - the stream to write to.
      */
     private void submitXforms(DataInputStream dis, DataOutputStream dos) throws Exception {
-        XformDataUploadManager.submitXforms(dis, new java.util.Date().toString(), getActionUrl());
+        XformDataUploadManager.submitXforms(dis, new java.util.Date().toString());
         try {
             dos.writeByte(STATUS_SUCCESS);
         } catch (Exception e) {
@@ -132,6 +135,6 @@ public class XformsServer {
      */
     private void downloadUsersAndForms(DataOutputStream dos) throws Exception {
         UserDownloadManager.downloadUsers(dos);
-        XformDownloadManager.downloadXforms(getActionUrl(), dos);
+        XformDownloadManager.downloadXforms(dos);
     }
 }

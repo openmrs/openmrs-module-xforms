@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.context.Context;
+import org.openmrs.module.xforms.XformConstants;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.servlet.ModelAndView;
@@ -40,8 +42,16 @@ public class XformDesignerController extends SimpleFormController {
     @Override
 	protected Map referenceData(HttpServletRequest request, Object obj, Errors err) throws Exception {    	
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("formId", request.getParameter("formId"));
+        String formId = request.getParameter("formId");
+        if(formId != null && formId.trim().length() > 0)
+            map.put("formId",Integer.parseInt(formId));
+        else
+            map.put("formId",-1);
+        
+        map.put("dateTimeFormat", Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_FORMAT,XformConstants.DEFAULT_DATE_FORMAT)); //yyyy-MM-dd
+        
         return map;
+        
 	}
 
 

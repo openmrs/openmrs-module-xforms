@@ -19,7 +19,7 @@ public class DWRXformsService {
 			XformsService svc = (XformsService)Context.getService(XformsService.class);
 			if(formId != null && formId.trim().length() > 0){
 				xform = svc.getXform(Integer.parseInt(formId),true);
-				return xform.getXformData();
+				return xform.getXformXml();
 			}
 		}
 		
@@ -31,7 +31,7 @@ public class DWRXformsService {
 			if (Context.isAuthenticated()) {
 				XformsService svc = (XformsService)Context.getService(XformsService.class);
 				Xform xf = svc.getXform(xform.getFormId(),true);
-				xf.setXformData(xform.getXformData());
+				xf.setXformXml(xform.getXformXml());
 				svc.saveXform(xf);
 				return true;
 			}

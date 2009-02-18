@@ -2,9 +2,9 @@ package org.openmrs.module.xforms;
 
 import java.util.Date;
 
-import org.openmrs.Form;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+
 
 /**
  * This class holds the XForm of a an openmrs form.
@@ -15,7 +15,10 @@ import org.openmrs.api.context.Context;
 public class Xform { 
 
 	/** The xml for the XForm. */
-	private String xformData;
+	private String xformXml;
+    
+    /** The form layout xml. */
+    private String layoutXml;
 	
 	/** The formId of the form that this XForms represents. */
 	private int formId;
@@ -25,30 +28,43 @@ public class Xform {
 	
 	/** The date this XForm was submitted to the database. */
 	private Date dateCreated;
-	
-	/** The xslt to transform the xform to xhtml. */
-	private String xslt;
     
-    /** Whether to send to external clients. */
-    private boolean publish;
+    /** The user who changed this XForm. */
+    private User changedBy;
+    
+    /** The date this XForm was changed. */
+    private Date dateChanged;
+    
 	
 	/**
 	 * Default constructor
 	 */
 	public Xform() {
 	}
+    
+    /**
+     * Creates an xform object form a formid with xforms xml.
+     * 
+     * @param formId - the form id.
+     * @param xformXml - xml of the xform.
+     * @param layoutXml - xml layout of the form.
+     */
+    public Xform(Integer formId, String xformXml) {
+        setFormId(formId);
+        setXformXml(xformXml);
+        setDateCreated(new Date());
+        setCreator(Context.getAuthenticatedUser());
+    }
 	
 	/**
-	 * Creates an xform object form a formid and xform xml.
+	 * Creates an xform object form a formid with xforms and layout xml.
 	 * 
 	 * @param formId - the form id.
-	 * @param xformData - xml of the xform.
+	 * @param xformXml - xml of the xform.
+     * @param layoutXml - xml layout of the form.
 	 */
-	public Xform(Integer formId, String xformData) {
-		setFormId(formId);
-		setXformData(xformData);
-		setDateCreated(new Date());
-		setXslt(XformsUtil.getDefaultXSLT());
+	public Xform(Integer formId, String xformXml, String layoutXml) {
+        this(formId,xformXml);
 		setCreator(Context.getAuthenticatedUser());
 	}
 	
@@ -94,53 +110,84 @@ public class Xform {
     	this.formId = formId;
     }
 
-	/**
-     * @return the xformData
+    /**
+     * 
+     * Gets the user who changed the form.
+     * 
+     * @return
      */
-    public String getXformData() {
-    	return xformData;
-    }
-
-	/**
-     * @param xformData - the xformData to set
-     */
-    public void setXformData(String xformData) {
-    	this.xformData = xformData;
+    public User getChangedBy() {
+        return changedBy;
     }
 
     /**
      * 
-     * @return the xslt
-     */
-	public String getXslt() {
-		return xslt;
-	}
-
-	/**
-	 * 
-	 * @param xslt - the xslt to set
-	 */
-	public void setXslt(String xslt) {
-		this.xslt = xslt;
-	}
-
-    /**
+     * Sets the user who changed the form.
      * 
-     * Checks if form is published.
-     * 
-     * @return true if published else false.
+     * @param changedBy
      */
-    public boolean isPublish() {
-        return publish;
+    public void setChangedBy(User changedBy) {
+        this.changedBy = changedBy;
     }
 
     /**
      * 
-     * Sets the form publish status.
+     * Gets the date when the form was changed.
      * 
-     * @param publish true to publish else false.
+     * @return
      */
-    public void setPublish(boolean publish) {
-        this.publish = publish;
+    public Date getDateChanged() {
+        return dateChanged;
+    }
+
+    
+    /**
+     * 
+     * Sets the date when the form was changed.
+     * 
+     * @param dateChanged
+     */
+    public void setDateChanged(Date dateChanged) {
+        this.dateChanged = dateChanged;
+    }
+
+    /**
+     * 
+     * Gets the form layout xml
+     * 
+     * @return
+     */
+    public String getLayoutXml() {
+        return layoutXml;
+    }
+
+    /**
+     * 
+     * Sets the form layout xml
+     * 
+     * @param layoutXml
+     */
+    public void setLayoutXml(String layoutXml) {
+        this.layoutXml = layoutXml;
+    }
+
+    /**
+     * 
+     * Gets the xforms xml
+     * 
+     * @return
+     */
+    public String getXformXml() {
+        return xformXml;
+    }
+
+    /**
+     * 
+     * Sets the xforms xml.
+     * 
+     * @param xformXml
+     */
+    public void setXformXml(String xformXml) {
+        this.xformXml = xformXml;
     }
 }

@@ -41,11 +41,11 @@ public class XformDataUploadManager {
     protected static final Log log = LogFactory.getLog(XformDataUploadManager.class);
 	private static final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
-	public static void submitXforms(InputStream is, String sessionId, String actionUrl) throws Exception{
+	public static void submitXforms(InputStream is, String sessionId) throws Exception{
 		String enterer = XformsUtil.getEnterer();
 		DocumentBuilder db = dbf.newDocumentBuilder();
         
-        List<String> xforms = (List<String>)XformsUtil.invokeDeserializationMethod(is, XformConstants.GLOBAL_PROP_KEY_XFORM_SERIALIZER,XformConstants.DEFAULT_XFORM_SERIALIZER,getXforms(actionUrl));
+        List<String> xforms = (List<String>)XformsUtil.invokeDeserializationMethod(is, XformConstants.GLOBAL_PROP_KEY_XFORM_SERIALIZER,XformConstants.DEFAULT_XFORM_SERIALIZER,getXforms());
         for(String xml : xforms)
             processXform(xml,sessionId,enterer);
 
@@ -68,9 +68,13 @@ public class XformDataUploadManager {
 	 */
 	public static void processXform(String xml, String sessionId, String enterer) throws Exception{
 		DocumentBuilder db = dbf.newDocumentBuilder();
+        System.out.println("connecting..................0000000");
 		Document doc = db.parse(IOUtils.toInputStream(xml));
+        System.out.println("connecting..................0000111111");
 		setHeaderValues(doc,sessionId,enterer);
+        System.out.println("connecting..................00022222");
 		queueForm(XformsUtil.doc2String(doc));
+        System.out.println("connecting..................0000333333");
 	}
 	
 	/**
@@ -80,10 +84,10 @@ public class XformDataUploadManager {
 	 */
 	private static void queueForm(String xml) throws Exception{
 		File file = OpenmrsUtil.getOutFile(XformsUtil.getXformsQueueDir(), new Date(), Context.getAuthenticatedUser());
-		FileWriter writter = new FileWriter(file); //new FileWriter(pathName, false);
+        FileWriter writter = new FileWriter(file); //new FileWriter(pathName, false);
 		writter.write(xml);
 		writter.close();		
-	}
+ 	}
 	
 	/**
 	 * Sets the values of openmrs form header
@@ -134,7 +138,7 @@ public class XformDataUploadManager {
 	 * 
 	 * @return - the xforms map.
 	 */
-	private static Map<Integer,String> getXforms(String actionUrl){
+	private static Map<Integer,String> getXforms(){
 		
 		String useStoredXform = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_USER_STORED_XFORMS);
 		boolean createNew = false;
@@ -151,14 +155,14 @@ public class XformDataUploadManager {
 			if(xform.getFormId() == XformConstants.PATIENT_XFORM_FORM_ID)
 				patientXformFound= true;
 			
-			xformData = xform.getXformData();
+			xformData = xform.getXformXml();
 			if(createNew)
-				xformData = XformDownloadManager.createNewXform(formService, xform.getFormId(), actionUrl);
+				xformData = XformDownloadManager.createNewXform(formService, xform.getFormId());
 			
 			xformMap.put(xform.getFormId(), xformData);
 		}
 		if(!patientXformFound) //TODO Should we use the stored global property.
-			xformMap.put(XformConstants.PATIENT_XFORM_FORM_ID, XformBuilder.getNewPatientXform("testing"));
+			xformMap.put(XformConstants.PATIENT_XFORM_FORM_ID, XformBuilder.getNewPatientXform());
 		return xformMap;
 	}
 }

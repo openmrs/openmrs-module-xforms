@@ -128,4 +128,29 @@
 		</sql>
 	</diff>
 	
+	<diff>
+		<version>2.0</version>
+		<author>Daniel Kayiwa</author>
+		<date>Feb 15th 2009</date>
+		<description>
+			Creating new xforms table with proper name and extra columns.
+		</description>
+		<sql>
+			CREATE TABLE IF NOT EXISTS `xforms_xform` (
+			  `form_id` int(11) NOT NULL,
+			  `xform_xml` longtext,
+			  `layout_xml` longtext,
+			  `creator` int(11) NOT NULL default '0',
+			  `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
+			  `changed_by` int(11) default NULL,
+			  `date_changed` datetime default NULL,
+			  PRIMARY KEY  (`form_id`),
+			  KEY `user_who_created_xform` (`creator`),
+			  KEY `form_with_which_xform_is_related` (`form_id`),
+			  CONSTRAINT `user_who_created_xform` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
+			  CONSTRAINT `user_who_last_changed_xform` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+		</sql>
+	</diff>
+	
 </sqldiff>

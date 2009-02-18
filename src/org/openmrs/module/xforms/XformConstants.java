@@ -139,6 +139,9 @@ public class XformConstants {
 	/** The application/xhtml+xml http content type. */
 	public static final String HTTP_HEADER_CONTENT_TYPE_XHTML_XML = "application/xhtml+xml; charset=utf-8";
 	
+    /** The text/xml http content type. */
+    public static final String HTTP_HEADER_CONTENT_TYPE_XML = "text/xml; charset=utf-8";
+
 	/** The text value for boolean true. */
 	public static final String TRUE_TEXT_VALUE = "true";
 	
@@ -165,12 +168,24 @@ public class XformConstants {
 	
 	/** The xform request parameter. */
 	public static final String REQUEST_PARAM_XFORM = "xform";
+    
+    /** The xform refresh request parameter. */
+    public static final String REQUEST_PARAM_XFORMREFRESH = "xformrefresh";
+    
+    /** The layout request parameter. */
+    public static final String REQUEST_PARAM_LAYOUT = "layout";
 	
 	/** The xslt request parameter. */
 	public static final String REQUEST_PARAM_XSLT = "xslt";
 		
 	/** The target request parameter. */
 	public static final String REQUEST_PARAM_TARGET = "target";
+    
+    /** The contentType request parameter. */
+    public static final String REQUEST_PARAM_CONTENT_TYPE = "contentType";
+    
+    /** The contentType value xml. */
+    public static final String REQUEST_PARAM_CONTENT_TYPE_VALUE_XML = "xml";
 	
 	/** The cohortId request parameter. */
 	public static final String REQUEST_PARAM_INCLUDE_USERS = "includeUsers";
@@ -198,4 +213,6 @@ public class XformConstants {
 	
 	/** The relative url for xforms data uploads. */
 	public static final String XFORM_DATA_UPLOAD_RELATIVE_URL = "/moduleServlet/xforms/xformDataUpload";
+
+    public static final String PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR = " PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR ";
 }

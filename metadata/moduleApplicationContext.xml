@@ -9,11 +9,11 @@
     	<property name="mappings">
             <props>
 	           <prop key="module/@MODULE_ID@/xformDesigner.form">xformDesigner</prop>
-	           <!-- <prop key="module/@MODULE_ID@/xformDataUpload.form">xformDataUpload</prop> -->
+	           <prop key="module/@MODULE_ID@/xformDataUpload.form">xformDataUpload</prop>
 	           <prop key="module/@MODULE_ID@/xformUpload.form">xformUpload</prop>
 	           <prop key="module/@MODULE_ID@/xsltUpload.form">xsltUpload</prop>
 	           <prop key="module/@MODULE_ID@/xformDelete.form">xformDelete</prop>
-	           <prop key="module/@MODULE_ID@/xformEntry.form">xformEntry</prop>
+	           <prop key="module/@MODULE_ID@/formEntry.form">formEntry</prop>
 	           <prop key="module/@MODULE_ID@/patientDownload.form">patientDownload</prop>
 	           <prop key="module/@MODULE_ID@/xformProperties.form">xformProperties</prop>
 	    </props>
@@ -56,13 +56,13 @@
 	<property name="successView"><value>xformDesigner.form</value></property>
     </bean>
     
-    <!--
+    
     <bean id="xformDataUpload" class="@MODULE_PACKAGE@.web.controller.XformDataUploadController">
 	<property name="commandName"><value>xformDataUpload</value></property>
 	<property name="formView"><value>/module/@MODULE_ID@/xformDataUpload</value></property>
 	<property name="successView"><value>xformDataUpload.form</value></property>
     </bean>
-    -->
+    
     
     <bean id="xformUpload" class="@MODULE_PACKAGE@.web.controller.XformUploadController">
 	<property name="commandName"><value>xformUpload</value></property>
@@ -82,10 +82,10 @@
 	<property name="successView"><value>xformDelete.form</value></property>
     </bean>
     
-    <bean id="xformEntry" class="@MODULE_PACKAGE@.web.controller.XformEntryController">
-	<property name="commandName"><value>xformEntry</value></property>
-	<property name="formView"><value>/module/@MODULE_ID@/xformEntry</value></property>
-	<property name="successView"><value>xformEntry.form</value></property>
+    <bean id="formEntry" class="@MODULE_PACKAGE@.web.controller.XformEntryController">
+	<property name="commandName"><value>formEntry</value></property>
+	<property name="formView"><value>/module/@MODULE_ID@/formEntry</value></property>
+	<property name="successView"><value>formEntry.form</value></property>
     </bean>
     
     <bean id="patientDownload" class="@MODULE_PACKAGE@.web.controller.PatientDownloadController">

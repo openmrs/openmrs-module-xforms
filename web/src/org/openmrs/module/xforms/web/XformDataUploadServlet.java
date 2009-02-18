@@ -55,7 +55,7 @@ public static final long serialVersionUID = 1234278783771156L;
                 //check if external client sending multiple filled forms.
                 if(XformConstants.TRUE_TEXT_VALUE.equalsIgnoreCase(request.getParameter(XformConstants.REQUEST_PARAM_BATCH_ENTRY))){                           
                     try{
-                        XformDataUploadManager.submitXforms(request.getInputStream(),request.getSession().getId(),XformsUtil.getActionUrl(request));
+                        XformDataUploadManager.submitXforms(request.getInputStream(),request.getSession().getId());
                         status = XformsServer.STATUS_SUCCESS;
                       }
                     catch(Exception e){
@@ -67,9 +67,9 @@ public static final long serialVersionUID = 1234278783771156L;
                     XformDataUploadManager.processXform(IOUtils.toString(request.getInputStream()),request.getSession().getId(),XformsUtil.getEnterer());
                     setSingleEntryResponse(request, response);
                 }
-            }
+            } 
             
-            if(status != -1){
+            if(status != -1){ //if non web client (who will either have faulure (0) or success (1)) 
                 //GZIPOutputStream gzip = new GZIPOutputStream(response.getOutputStream());
                 ZOutputStream gzip = new ZOutputStream(response.getOutputStream(),JZlib.Z_BEST_COMPRESSION);
                 DataOutputStream dos = new DataOutputStream(gzip);
@@ -77,7 +77,6 @@ public static final long serialVersionUID = 1234278783771156L;
                 dos.flush();
                 gzip.finish();
             }
-            
         }
         catch(Exception e){
             log.error(e.getMessage(),e);

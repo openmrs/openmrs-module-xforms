@@ -11,7 +11,6 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.openmrs.module.xforms.Xform;
-import org.openmrs.module.xforms.XformCohort;
 import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformUser;
 import org.openmrs.module.xforms.db.XformsDAO;
@@ -152,7 +151,7 @@ public class HibernateXformsDAO implements XformsDAO {
 	public List<Integer> getXformFormIds() {
 		List<Integer> formIds = new ArrayList<Integer>();
 
-		String sql = "select form_id from xform where form_id in (select form_id from form) and form_id<>"
+		String sql = "select form_id from xforms_xform where form_id in (select form_id from form) and form_id<>"
 				+ XformConstants.PATIENT_XFORM_FORM_ID;
 
 		try {
@@ -176,7 +175,7 @@ public class HibernateXformsDAO implements XformsDAO {
 	 * @see org.openmrs.module.xforms.XformsService#hasXform(java.lang.Integer)
 	 */
 	public boolean hasXform(Integer formId) {
-		String sql = "select 1 from xform where form_id=" + formId;
+		String sql = "select 1 from xforms_xform where form_id=" + formId;
 		return sessionFactory.getCurrentSession().createSQLQuery(sql)
 				.uniqueResult() != null;
 	}
@@ -185,7 +184,7 @@ public class HibernateXformsDAO implements XformsDAO {
 	 * @see org.openmrs.module.xforms.XformsService#hasXslt(java.lang.Integer)
 	 */
 	public boolean hasXslt(Integer formId) {
-		String sql = "select 1 from xform where xslt is not null and form_id="
+		String sql = "select 1 from xforms_xform where xslt is not null and form_id="
 				+ formId;
 		return sessionFactory.getCurrentSession().createSQLQuery(sql)
 				.uniqueResult() != null;
@@ -195,7 +194,7 @@ public class HibernateXformsDAO implements XformsDAO {
 	 * @see org.openmrs.module.xforms.XformsService#getXslt(java.lang.Integer)
 	 */
 	public String getXslt(Integer formId) {
-		String sql = "select xslt from xform where form_id=" + formId;
+		String sql = "select xslt from xforms_xform where form_id=" + formId;
 		try {
 			PreparedStatement st = sessionFactory.getCurrentSession()
 					.connection().prepareStatement(sql);
@@ -214,7 +213,7 @@ public class HibernateXformsDAO implements XformsDAO {
 	 */
 	public void saveXslt(Integer formId, String xslt) {
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(
-				"update xform set xslt = :xslt where form_id = :formId");
+				"update xforms_xform set xslt = :xslt where form_id = :formId");
 		query.setParameter("xslt", xslt);
 		query.setParameter("formId", formId);
 
