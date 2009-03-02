@@ -75,9 +75,11 @@ public class XformsServer {
         String pw = dis.readUTF();
         Context.authenticate(name, pw);
 
+        String serializer = dis.readUTF();
+ 
         byte action = dis.readByte();
 
-        System.out.println("processConnection called with action="+action);
+        //System.out.println("processConnection called with action="+action);
         
         //GZIPOutputStream gzip = new GZIPOutputStream(dosParam);
         ZOutputStream gzip = new ZOutputStream(dosParam,JZlib.Z_BEST_COMPRESSION);
@@ -99,7 +101,7 @@ public class XformsServer {
         dos.flush();
         gzip.finish();
         
-        System.out.println("finished processConnection with action="+action);
+        //System.out.println("finished processConnection with action="+action);
     }
 
     // TODO I guess this needs to be done in a smarter way.

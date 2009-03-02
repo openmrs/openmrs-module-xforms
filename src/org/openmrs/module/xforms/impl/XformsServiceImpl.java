@@ -8,6 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Form;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.xforms.PersonRepeatAttribute;
 import org.openmrs.module.xforms.Xform;
 import org.openmrs.module.xforms.XformBuilder;
 import org.openmrs.module.xforms.XformConstants;
@@ -174,4 +175,20 @@ public class XformsServiceImpl implements XformsService {
                                                                         // FormXmlTemplateBuilder(form,FormEntryUtil.getFormAbsoluteUrl(form)).getXmlTemplate(false);
         return new Xform(formId, XformBuilder.getXform4mStrings(schemaXml,templateXml));
     }
+    
+	public List<PersonRepeatAttribute> getPersonRepeatAttributes(Integer personId, Integer personAttributeId){
+		return getXformsDAO().getPersonRepeatAttributes(personId, personAttributeId);
+	}
+	
+	public void savePersonRepeatAttribute(PersonRepeatAttribute personRepeatAttribute){
+		getXformsDAO().savePersonRepeatAttribute(personRepeatAttribute);
+	}
+	
+	public void deletePersonRepeatAttribute(Integer personRepeatAttributeId){
+		getXformsDAO().deletePersonRepeatAttribute(personRepeatAttributeId);
+	}
+	
+	public List<Object[]> getList(String sql, String displayField, String valueField){
+		return getXformsDAO().getList(sql, displayField, valueField);
+	}
 }

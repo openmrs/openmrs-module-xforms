@@ -12,8 +12,17 @@
 	<!-- *********************************************************** -->
 	<!-- **                     TARGETS                           ** -->
 	<!-- *********************************************************** -->
+	
 	<target name="init" description="initialization">
-		<xmlproperty file="metadata/config.xml" />
+		<xmlcatalog id="common-dtds">
+	        <dtd 
+	            publicId="-//OpenMRS//DTD OpenMRS Config 1.0//EN"
+	            location="lib-common/config-1.0.dtd"/>
+	    </xmlcatalog>
+		
+		<xmlproperty file="metadata/config.xml" >
+			<xmlcatalog refid="common-dtds"/>
+		</xmlproperty>
 
 		<filterset id="variables.to.replace">
 			<filter token="MODULE_ID" value="${module.id}" />
@@ -47,18 +56,18 @@
 		</copy>
 		
 		<!--  Compile module java files -->
-		<javac destdir="build" classpathref="classpath" debug="true" debuglevel="lines,vars,source">
+		<javac destdir="build"  classpathref="classpath" debug="true" debuglevel="lines,var,source">
 			<src path="src/" />
 			<include name="**/*.java" />
 		</javac>
 		
 		<!--  Compile module web java files -->
-		<javac destdir="build" classpathref="classpath" debug="true" debuglevel="lines,vars,source">
+		<javac destdir="build" classpathref="classpath" debug="true" debuglevel="lines,var,source">
 			<compilerarg line="-g" />
 			<src path="web/src/" />
 			<include name="**/*.java" />
 		</javac>
-		
+			
 	</target>
 	
 	<target name="package-module" depends="compile-module" description="Packages module into jar file">

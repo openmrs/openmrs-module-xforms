@@ -39,7 +39,7 @@ public class PatientDownloadManager {
 
 		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
 
-        XformsUtil.invokeSerializationMethod(os, XformConstants.GLOBAL_PROP_KEY_PATIENT_SERIALIZER, XformConstants.DEFAULT_PATIENT_SERIALIZER, getPatientData(cohortId,xformsService));
+        XformsUtil.invokeSerializationMethod("serialize",os, XformConstants.GLOBAL_PROP_KEY_PATIENT_SERIALIZER, XformConstants.DEFAULT_PATIENT_SERIALIZER, getPatientData(cohortId,xformsService));
  	}
 	
 	private static PatientData getPatientData(String sCohortId,XformsService xformsService){
@@ -86,6 +86,6 @@ public class PatientDownloadManager {
 	}
     
 	public static void downloadCohorts(OutputStream os) throws Exception{
-        XformsUtil.invokeSerializationMethod(os, XformConstants.GLOBAL_PROP_KEY_COHORT_SERIALIZER, XformConstants.DEFAULT_COHORT_SERIALIZER, Context.getCohortService().getCohorts());
+        XformsUtil.invokeSerializationMethod("serialize",os, XformConstants.GLOBAL_PROP_KEY_COHORT_SERIALIZER, XformConstants.DEFAULT_COHORT_SERIALIZER, Context.getCohortService().getCohorts());
      }
 }

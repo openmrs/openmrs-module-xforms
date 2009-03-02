@@ -170,4 +170,10 @@ public interface XformsService {
 	 */
 	@Transactional(readOnly=true)
 	public Xform getNewXform(Integer formId);
+	
+	public List<PersonRepeatAttribute> getPersonRepeatAttributes(Integer personId, Integer personAttributeId);
+	public void savePersonRepeatAttribute(PersonRepeatAttribute personRepeatAttribute);
+	public void deletePersonRepeatAttribute(Integer personRepeatAttributeId);
+	
+	public List<Object[]> getList(String sql, String displayField, String valueField);
 }

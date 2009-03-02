@@ -1,5 +1,6 @@
 package org.openmrs.module.xforms.web;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
@@ -55,7 +56,13 @@ public static final long serialVersionUID = 1234278783771156L;
                 //check if external client sending multiple filled forms.
                 if(XformConstants.TRUE_TEXT_VALUE.equalsIgnoreCase(request.getParameter(XformConstants.REQUEST_PARAM_BATCH_ENTRY))){                           
                     try{
-                        XformDataUploadManager.submitXforms(request.getInputStream(),request.getSession().getId());
+                		DataInputStream dis = new DataInputStream(request.getInputStream());
+                		String name = dis.readUTF();
+                		String password = dis.readUTF();
+                		String serializer = dis.readUTF();
+                		byte action = dis.readByte();
+                		
+                        XformDataUploadManager.submitXforms(dis,request.getSession().getId());
                         status = XformsServer.STATUS_SUCCESS;
                       }
                     catch(Exception e){

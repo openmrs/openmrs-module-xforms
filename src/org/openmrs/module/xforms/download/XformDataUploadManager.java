@@ -1,5 +1,6 @@
 package org.openmrs.module.xforms.download;
 
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.InputStream;
@@ -68,14 +69,10 @@ public class XformDataUploadManager {
 	 */
 	public static void processXform(String xml, String sessionId, String enterer) throws Exception{
 		DocumentBuilder db = dbf.newDocumentBuilder();
-        System.out.println("connecting..................0000000");
 		Document doc = db.parse(IOUtils.toInputStream(xml));
-        System.out.println("connecting..................0000111111");
 		setHeaderValues(doc,sessionId,enterer);
-        System.out.println("connecting..................00022222");
 		queueForm(XformsUtil.doc2String(doc));
-        System.out.println("connecting..................0000333333");
-	}
+ 	}
 	
 	/**
 	 * Save xforms data in the xforms queue.

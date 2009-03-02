@@ -40,7 +40,7 @@ public class XformDownloadManager {
 	public static void downloadXforms(OutputStream os) throws Exception{
 		Context.openSession(); //This prevents the bluetooth server from failing with the form field lazy load exception.
 		
-        XformsUtil.invokeSerializationMethod(os, XformConstants.GLOBAL_PROP_KEY_XFORM_SERIALIZER, XformConstants.DEFAULT_XFORM_SERIALIZER, getXmlForms());
+        XformsUtil.invokeSerializationMethod("serializeForms",os, XformConstants.GLOBAL_PROP_KEY_XFORM_SERIALIZER, XformConstants.DEFAULT_XFORM_SERIALIZER, getXmlForms());
         
 		/*String className = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_XFORM_SERIALIZER);
 		if(className == null || className.length() == 0)
@@ -61,15 +61,15 @@ public class XformDownloadManager {
 	 * @return a list of xforms xml text.
 	 */
 	private static List<String> getXmlForms(){
-		String useStoredXform = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_USER_STORED_XFORMS);
+		/*String useStoredXform = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_USER_STORED_XFORMS);
 		boolean createNew = false;
 		if(XformConstants.FALSE_TEXT_VALUE.equalsIgnoreCase(useStoredXform))
-			createNew = true;
+			createNew = true;*/
 
 		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
-		FormService formService = (FormService)Context.getService(FormService.class);
+		//FormService formService = (FormService)Context.getService(FormService.class);
 
-		List<Xform> xforms = xformsService.getXforms();
+		/*List<Xform> xforms = xformsService.getXforms();
 		List<String> xmlforms = new ArrayList<String>();
 		for(Xform xform : xforms){
 			if(xform.getFormId() != XformConstants.PATIENT_XFORM_FORM_ID){
@@ -80,7 +80,16 @@ public class XformDownloadManager {
 		}
 		
 		String xml = XformBuilder.getNewPatientXform();
-		xmlforms.add(xml);
+		xmlforms.add(xml);*/
+		
+		List<Xform> xforms = xformsService.getXforms();
+		List<String> xmlforms = new ArrayList<String>();
+		for(Xform xform : xforms){
+			String xml = xform.getXformXml();
+			if(xml != null)
+				xmlforms.add(xml);
+		}
+		
 		return xmlforms;
 	}
 	

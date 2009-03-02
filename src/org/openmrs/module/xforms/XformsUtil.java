@@ -14,6 +14,7 @@ import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,12 +30,14 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
 import org.openmrs.Form;
 import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.module.xforms.formentry.FormEntryWrapper;
+import org.openmrs.util.FormConstants;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
@@ -332,8 +335,13 @@ public class XformsUtil {
      * @throws ParseException - when passed a badly formatted date.
      */
     public static Date formString2Date(String date) throws ParseException {
-    	SimpleDateFormat dateFormat = new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_FORMAT,XformConstants.DEFAULT_DATE_FORMAT));
+    	SimpleDateFormat dateFormat = new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_SUBMIT_FORMAT,XformConstants.DEFAULT_DATE_SUBMIT_FORMAT));
      	return dateFormat.parse(date);
+    }
+    
+    public static String formDate2DisplayString(Date date) {
+    	SimpleDateFormat dateFormat = new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_DISPLAY_FORMAT,XformConstants.DEFAULT_DATE_DISPLAY_FORMAT));
+     	return dateFormat.format(date);
     }
     
     /**
@@ -389,15 +397,22 @@ public class XformsUtil {
      * @param data
      * @throws Exception
      */
-    public static void invokeSerializationMethod(OutputStream os, String globalPropKey, String defaultClassName, Object data) throws Exception{
+    public static void invokeSerializationMethod(String methodName,OutputStream os, String globalPropKey, String defaultClassName, Object data) throws Exception{
         String className = Context.getAdministrationService().getGlobalProperty(globalPropKey);
         if(className == null || className.length() == 0)
             className = defaultClassName;
         
         Object obj = OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
-        Method method = obj.getClass().getMethod("serialize", new Class[]{DataOutputStream.class,Object.class});
         
-        method.invoke(obj, new Object[]{new DataOutputStream(os), data});
+        if(methodName.equals("serializeForms")){
+        	Method method = obj.getClass().getMethod(methodName, new Class[]{DataOutputStream.class,Object.class,Integer.class,String.class});
+        	method.invoke(obj, new Object[]{new DataOutputStream(os), data,new Integer(1),"OpenMRS Forms"});
+        }
+        else
+        {
+           	Method method = obj.getClass().getMethod(methodName, new Class[]{DataOutputStream.class,Object.class});
+        	method.invoke(obj, new Object[]{new DataOutputStream(os), data});
+        }
     }
     
     
@@ -422,4 +437,9 @@ public class XformsUtil {
         
         return method.invoke(obj, new Object[]{new DataInputStream(is), data});
     }
+    
+    /*public static String conceptToString(Concept concept, Locale locale) {
+		return concept.getConceptId() + "^" + concept.getName(locale).getName()
+				+ "^" + FormConstants.HL7_LOCAL_CONCEPT;
+	}*/
 }

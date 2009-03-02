@@ -1,11 +1,10 @@
 package org.openmrs.module.xforms.db;
 
-import org.openmrs.module.xforms.Xform;
-import org.openmrs.module.xforms.XformCohort;
-import org.openmrs.module.xforms.XformUser;
-import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 
-import java.util.*;
+import org.openmrs.module.xforms.PersonRepeatAttribute;
+import org.openmrs.module.xforms.Xform;
+import org.openmrs.module.xforms.XformUser;
 
 /**
  * Provides data access services to the Xforms module.
@@ -79,4 +78,11 @@ public interface XformsDAO {
 	 * @see org.openmrs.module.xforms.XformsService#getFieldDefaultValue(java.lang.Integer,java.lang.String)
 	 */
 	public Object getFieldDefaultValue(Integer formId, String fieldName);
+	
+	
+	public List<PersonRepeatAttribute> getPersonRepeatAttributes(Integer personId, Integer personAttributeId);
+	public void savePersonRepeatAttribute(PersonRepeatAttribute personRepeatAttribute);
+	public void deletePersonRepeatAttribute(Integer personRepeatAttributeId);
+	
+	public List<Object[]> getList(String sql, String displayField, String valueField);
 }

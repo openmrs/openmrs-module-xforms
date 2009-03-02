@@ -20,7 +20,7 @@ public class UserDownloadManager {
 	
 	public static void downloadUsers(OutputStream os) throws Exception{
 
-        XformsUtil.invokeSerializationMethod(os, XformConstants.GLOBAL_PROP_KEY_USER_SERIALIZER, XformConstants.DEFAULT_USER_SERIALIZER, getUsers());
+        XformsUtil.invokeSerializationMethod("serialize",os, XformConstants.GLOBAL_PROP_KEY_USER_SERIALIZER, XformConstants.DEFAULT_USER_SERIALIZER, getUsers());
 		
         /*String className = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_USER_SERIALIZER);
 		if(className == null || className.length() == 0)

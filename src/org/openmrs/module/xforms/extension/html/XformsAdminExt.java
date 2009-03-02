@@ -39,6 +39,7 @@ public class XformsAdminExt extends AdministrationSectionExt {
 		map.put("moduleServlet/xforms/xformDataUpload", "xforms.uploadXformData");
 		map.put("module/xforms/xformDesigner.form", "xforms.designer");
 		map.put("module/xforms/patientDownload.form", "xforms.downloadPatients");
+		map.put("module/xforms/xformDesigner.form?formId=0", "xforms.designPatientXform");
 		
 		return map;
 	}

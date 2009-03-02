@@ -6,6 +6,7 @@
 <beans>
 	
     <bean id="xformsUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    	<property name="order"><value>1</value></property>
     	<property name="mappings">
             <props>
 	           <prop key="module/@MODULE_ID@/xformDesigner.form">xformDesigner</prop>
@@ -16,6 +17,8 @@
 	           <prop key="module/@MODULE_ID@/formEntry.form">formEntry</prop>
 	           <prop key="module/@MODULE_ID@/patientDownload.form">patientDownload</prop>
 	           <prop key="module/@MODULE_ID@/xformProperties.form">xformProperties</prop>
+	           <prop key="module/@MODULE_ID@/xformDesigner.form">xformDesigner</prop>
+	           <!-- <prop key="admin/patients/newPatient.form">xformDesigner</prop> -->
 	    </props>
 	</property>
     </bean>

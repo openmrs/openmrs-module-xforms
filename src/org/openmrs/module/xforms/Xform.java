@@ -21,7 +21,7 @@ public class Xform {
     private String layoutXml;
 	
 	/** The formId of the form that this XForms represents. */
-	private int formId;
+	private int formId = 0;
 	
 	/** The user who submitted this XForm to the database. */
 	private User creator;

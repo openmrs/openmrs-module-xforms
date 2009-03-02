@@ -16,13 +16,17 @@ import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.PersonAttribute;
+import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.formentry.FormEntryWrapper;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -335,6 +339,7 @@ public class XformsQueueProcessor {
 	 */
 	private boolean saveNewPatient(Document doc, User creator,HashMap<String,Integer> patientids){		
 		PatientService patientService = Context.getPatientService();
+		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
 		
 		Patient pt = new Patient();
 		PersonName pn = new PersonName();
@@ -364,10 +369,13 @@ public class XformsQueueProcessor {
 		identifier.setLocation(getLocation(getElementValue(doc,XformBuilder.NODE_LOCATION_ID)));
 		pt.addIdentifier(identifier);
 		
+		addPersonAttributes(pt,doc,xformsService);
+		
 		Patient pt2 = patientService.identifierInUse(identifier.getIdentifier(),identifier.getIdentifierType(),pt);
 		if(pt2 == null){
 			pt = patientService.createPatient(pt);
 			patientids.put(getElementValue(doc,XformBuilder.NODE_PATIENT_ID), pt.getPatientId());
+			addPersonRepeatAttributes(pt,doc,xformsService);
 			return true;
 		}
 		else if(rejectExistingPatientCreation()){
@@ -378,6 +386,91 @@ public class XformsQueueProcessor {
 			patientids.put(getElementValue(doc,XformBuilder.NODE_PATIENT_ID), pt2.getPatientId());
 			log.warn("Tried to create patient who already exists with the identifier:"+identifier.getIdentifier()+" ACCEPTED.");
 			return true;
+		}
+	}
+	
+	private void addPersonAttributes(Patient pt, Document doc,XformsService xformsService){
+		// look for person attributes in the xml doc and save to person
+		PersonService personService = Context.getPersonService();
+		for (PersonAttributeType type : personService.getPersonAttributeTypes(PERSON_TYPE.PERSON, null)) {
+			NodeList nodes = doc.getElementsByTagName("person_attribute"+type.getPersonAttributeTypeId());
+			
+			if(nodes == null || nodes.getLength() == 0)
+				continue;
+			
+			String value = ((Element)nodes.item(0)).getTextContent();
+			if(value == null || value.length() == 0)
+				continue;
+			
+			pt.addAttribute(new PersonAttribute(type, value));
+		}
+	}
+	
+	private void addPersonRepeatAttributes(Patient pt, Document doc,XformsService xformsService){
+		NodeList nodes = doc.getDocumentElement().getChildNodes();
+		if(nodes == null)
+			return;
+		
+		for(int index = 0; index < nodes.getLength(); index++){
+			Node node = nodes.item(index);
+			if(node.getNodeType() != Node.ELEMENT_NODE)
+				continue;
+			
+			String name = node.getNodeName();
+			if(name.startsWith("person_attribute_repeat_section")){
+				//System.out.println("name="+name);
+				String attributeId = name.substring("person_attribute_repeat_section".length());
+				//System.out.println("attribute id="+attributeId);
+				
+				addPersonRepeatAttribute(pt,node,attributeId,xformsService);
+			}
+		}
+	}
+	
+	private void addPersonRepeatAttribute(Patient pt,Node repeatNode,String attributeId,XformsService xformsService){
+		NodeList nodes = repeatNode.getChildNodes();
+		if(repeatNode == null)
+			return;
+
+		for(int index = 0; index < nodes.getLength(); index++){
+			Node node = nodes.item(index);
+			if(node.getNodeType() != Node.ELEMENT_NODE)
+				continue;
+			
+			String name = node.getNodeName();
+			if(name.startsWith("person_attribute"))		
+				addPersonRepeatAttributeValues(pt,node,attributeId,xformsService,index+1);
+		}
+	}
+	
+	private void addPersonRepeatAttributeValues(Patient pt,Node repeatNode,String attributeId,XformsService xformsService, int displayOrder){
+		NodeList nodes = repeatNode.getChildNodes();
+		if(repeatNode == null)
+			return;
+
+		for(int index = 0; index < nodes.getLength(); index++){
+			Node node = nodes.item(index);
+			if(node.getNodeType() != Node.ELEMENT_NODE)
+				continue;
+			
+			String name = node.getNodeName();
+			if(name.startsWith("person_attribute_concept")){
+				//System.out.println("name="+name);
+				String valueId = name.substring("person_attribute_concept".length());
+				//System.out.println("concept id="+valueId);
+				
+				PersonRepeatAttribute personRepeatAttribute = new PersonRepeatAttribute();
+				personRepeatAttribute.setPersonId(pt.getPersonId());
+				personRepeatAttribute.setCreator(Context.getAuthenticatedUser().getUserId());
+				personRepeatAttribute.setDateCreated(new Date());
+				personRepeatAttribute.setValue(node.getTextContent());
+				personRepeatAttribute.setValueId(Integer.parseInt(valueId));
+				personRepeatAttribute.setValueIdType(PersonRepeatAttribute.VALUE_ID_TYPE_CONCEPT);
+				personRepeatAttribute.setValueDisplayOrder(displayOrder);
+				personRepeatAttribute.setAttributeTypeId(Integer.parseInt(attributeId));
+				
+				xformsService.savePersonRepeatAttribute(personRepeatAttribute);
+			}
 		}
 	}
 	

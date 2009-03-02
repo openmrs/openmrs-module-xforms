@@ -1,20 +1,13 @@
-/** Add css rules here for your application. */
-
-
-/** Example rules used by the template application (remove for your app) */
-.pc-template-btn {
-  display: block;
-  font-size: 16pt
-}
-
-#pc-template-img {
-  margin-top: 20px;
-}
 
 body {
 	height: 100%;
 	width: 100%;
 	padding: 0px;
 	margin: 0px;
-	font-size: 12px;
+}
+
+.purcforms-repeat-border {
+  border: 1px solid #AACCFF;
+  background-color: white;
+  padding: 0.1em;
 }

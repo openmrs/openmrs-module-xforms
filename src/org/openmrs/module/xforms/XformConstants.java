@@ -50,8 +50,14 @@ public class XformConstants {
 	/** The default character encoding used when writting and reading bytes to and from streams. */
 	public static final String DEFAULT_CHARACTER_ENCODING = "UTF-8";
 	
-	/** The default date format. */
-	public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";//yyyy-mm-dd
+	/** The default submit date format. */
+	public static final String DEFAULT_DATE_SUBMIT_FORMAT = "yyyy-MM-dd";//yyyy-mm-dd
+	
+	/** The default display date format. */
+	public static final String DEFAULT_DATE_DISPLAY_FORMAT = "dd-MM-yyyy";//yyyy-mm-dd
+	
+	/** The default font family. */
+	public static final String DEFAULT_FONT_FAMILY = "Verdana, 'Lucida Grande', 'Trebuchet MS', Arial, Sans-Serif";
 	
 	/** The default value for rejecting forms for patients considered new when they already exist, by virture of patient identifier. */
 	public static final String DEFAULT_REJECT_EXIST_PATIENT_CREATE = "true";
@@ -59,8 +65,23 @@ public class XformConstants {
 	/** The global property key for rejecting forms for patients considered new when they already exist, by virture of patient identifier. */
 	public static final String GLOBAL_PROP_KEY_REJECT_EXIST_PATIENT_CREATE = "xforms.rejectExistingPatientCreation";
 	
-	/** The global property key for the date format.*/
-	public static final String GLOBAL_PROP_KEY_DATE_FORMAT = "xforms.dateFormat";
+	/** The global property key for the date submit format.*/
+	public static final String GLOBAL_PROP_KEY_DATE_SUBMIT_FORMAT = "xforms.dateSubmitFormat";
+	
+	/** The global property key for the date display format.*/
+	public static final String GLOBAL_PROP_KEY_DATE_DISPLAY_FORMAT = "xforms.dateDisplayFormat";
+	
+	/** The global property key for the default font family.*/
+	public static final String GLOBAL_PROP_KEY_DEFAULT_FONT_FAMILY = "xforms.defaultFontFamily";
+	
+	/** The global property key for the date submit format.*/
+	public static final String FORM_DESIGNER_KEY_DATE_SUBMIT_FORMAT = "dateTimeSubmitFormat";
+	
+	/** The global property key for the date display format.*/
+	public static final String FORM_DESIGNER_KEY_DATE_DISPLAY_FORMAT = "dateTimeDisplayFormat";
+	
+	/** The global property key for the default font family.*/
+	public static final String FORM_DESIGNER_KEY_DEFAULT_FONT_FAMILY = "defaultFontFamily";
 	
 	/** The global property key for the user serializer class.*/
 	public static final String GLOBAL_PROP_KEY_USER_SERIALIZER= "xforms.userSerializer";
