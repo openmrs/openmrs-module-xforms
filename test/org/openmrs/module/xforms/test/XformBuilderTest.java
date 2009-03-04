@@ -2,37 +2,73 @@ package org.openmrs.module.xforms.test;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.apache.commons.io.IOUtils;
 import org.openmrs.Form;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.XformBuilder;
 import org.openmrs.module.xforms.XformsUtil;
 import org.openmrs.module.xforms.formentry.FormEntryWrapper;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class XformBuilderTest extends BaseModuleContextSensitiveTest{
 
 	public Boolean useInMemoryDatabase() {
 		return false;
 	}
-	
+
+	public void testMergForms(){
+		try{
+			String patient = getFileAsString(new File("patient.xml"));
+			String encounter = getFileAsString(new File("encounter.xml"));
+
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			DocumentBuilder db = dbf.newDocumentBuilder();
+			Document docPatient = db.parse(IOUtils.toInputStream(patient));
+			Document docEncounter = db.parse(IOUtils.toInputStream(encounter));
+			
+			Document doc = db.newDocument();
+			Element root = (Element) doc.createElement("openmrs_data");
+			doc.appendChild(root);
+			
+			Node node = root.getOwnerDocument().adoptNode(docPatient.getDocumentElement());
+			root.appendChild(node);
+			
+			node = root.getOwnerDocument().adoptNode(docEncounter.getDocumentElement());
+			root.appendChild(node);
+			
+			File outFile = new File("output.xml");
+			FileWriter out = new FileWriter(outFile);
+			out.write(XformsUtil.doc2String(doc));
+			out.close();
+		}
+		catch(Exception ex){
+			ex.printStackTrace();
+		}
+	}
+
 	public void testSplit(){
 		String result = "Baganda|1$Bacholi|2$Bagisu|3$Basoga|4$Banyankole|5";
 		//split(result,0);
-		
+
 		final char FIELD_SEPARATOR = '|';
 		final char RECORD_SEPARATOR = '$';
-		
+
 		String text = result; int beginIndex = 0;
 		String displayField = null, valueField = null;
 		int pos = text.indexOf(FIELD_SEPARATOR,beginIndex);
 		while( pos > 0){
 			displayField = text.substring(beginIndex, pos);
-			
+
 			beginIndex = pos+1;
 			pos = text.indexOf(RECORD_SEPARATOR, beginIndex);
 			if(pos > 0){
@@ -97,16 +133,16 @@ public class XformBuilderTest extends BaseModuleContextSensitiveTest{
 		}
 		return null;
 	}
-	
+
 	private void split(String text, int beginIndex){
 		final char FIELD_SEPARATOR = '|';
 		final char RECORD_SEPARATOR = '$';
-		
+
 		String displayField = null, valueField = null;
 		int pos = text.indexOf(FIELD_SEPARATOR,beginIndex);
 		if(pos > 0){
 			displayField = text.substring(beginIndex, pos);
-			
+
 			beginIndex = pos+1;
 			pos = text.indexOf(RECORD_SEPARATOR, beginIndex);
 			if(pos > 0){

@@ -48,11 +48,11 @@ public class HibernateXformsDAO implements XformsDAO {
 	/**
 	 * @see org.openmrs.module.xforms.XformsService#getXform(java.lang.Integer)
 	 */
-	public Xform getXform(Integer formId) {
+	public Xform getXform(Integer formId) {		
 		Query query = sessionFactory.getCurrentSession().createQuery(
 		"from Xform where formId = :formId");
 		query.setParameter("formId", formId);
-
+		
 		return (Xform) query.uniqueResult();
 	}
 
@@ -61,8 +61,7 @@ public class HibernateXformsDAO implements XformsDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Xform> getXforms() {
-		return sessionFactory.getCurrentSession().createQuery("from Xform")
-		.list();
+		return sessionFactory.getCurrentSession().createQuery("from Xform").list();
 	}
 
 	/**

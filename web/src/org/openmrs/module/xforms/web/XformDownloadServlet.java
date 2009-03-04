@@ -134,7 +134,7 @@ public class XformDownloadServlet extends HttpServlet {
 					xml = XformBuilder.getNewPatientXform();
 				else
 					xml = xformsService.getNewXform(formId).getXformXml();
-
+				
 				response.getOutputStream().print(xml);
 			}
 		}
@@ -376,7 +376,7 @@ public class XformDownloadServlet extends HttpServlet {
 			if(layoutXml != null && layoutXml.length() > 0)
 				xml += XformConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR + layoutXml;
 		}
-
+		
 		response.getOutputStream().print(xml);
 
 		//TODO New model we need to get formdef or xform and layout xml to send client

@@ -38,7 +38,7 @@ public class XformDownloadManager {
 	 * @throws Exception  
 	 */
 	public static void downloadXforms(OutputStream os) throws Exception{
-		Context.openSession(); //This prevents the bluetooth server from failing with the form field lazy load exception.
+		//Context.openSession(); //This prevents the bluetooth server from failing with the form field lazy load exception.
 		
         XformsUtil.invokeSerializationMethod("serializeForms",os, XformConstants.GLOBAL_PROP_KEY_XFORM_SERIALIZER, XformConstants.DEFAULT_XFORM_SERIALIZER, getXmlForms());
         
@@ -88,6 +88,8 @@ public class XformDownloadManager {
 			String xml = xform.getXformXml();
 			if(xml != null)
 				xmlforms.add(xml);
+			//if(xform.getFormId() == 18)
+			//	System.out.println(xml);
 		}
 		
 		return xmlforms;

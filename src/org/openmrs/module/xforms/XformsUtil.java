@@ -406,7 +406,7 @@ public class XformsUtil {
         
         if(methodName.equals("serializeForms")){
         	Method method = obj.getClass().getMethod(methodName, new Class[]{DataOutputStream.class,Object.class,Integer.class,String.class});
-        	method.invoke(obj, new Object[]{new DataOutputStream(os), data,new Integer(1),"OpenMRS Forms"});
+        	method.invoke(obj, new Object[]{new DataOutputStream(os), data,new Integer(1),"Mobile"});
         }
         else
         {
