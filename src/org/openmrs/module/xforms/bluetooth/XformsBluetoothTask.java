@@ -67,7 +67,7 @@ public class XformsBluetoothTask extends AbstractTask{
 				log.error("Property "+PROPERTY_SERVER_IP+" was null. Set to "+serverIP);
 			}
 						
-			server = new XformsBluetoothServer(serviceName,serverUUID,serverIP);
+			server = new XformsBluetoothServer(serviceName,serverUUID);
 			server.start();
 		} catch (APIException e) {
 			log.error("Error running xforms bluetooth task", e);

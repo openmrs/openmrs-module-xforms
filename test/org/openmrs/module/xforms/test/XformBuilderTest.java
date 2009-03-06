@@ -18,7 +18,6 @@ import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 public class XformBuilderTest extends BaseModuleContextSensitiveTest{
 
@@ -28,6 +27,10 @@ public class XformBuilderTest extends BaseModuleContextSensitiveTest{
 
 	public void testMergForms(){
 		try{
+			String s = "142^xform xform";
+			String s2 = String.valueOf(s.charAt(0));
+			s2 = s.substring(0,s.indexOf('^'));
+			
 			String patient = getFileAsString(new File("patient.xml"));
 			String encounter = getFileAsString(new File("encounter.xml"));
 

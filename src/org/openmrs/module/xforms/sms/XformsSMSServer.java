@@ -25,9 +25,9 @@ public class XformsSMSServer  implements SMSServerListener{
 	private SMSServer smsServer;
 	private XformsServer xformsServer;
 	 	
-	public XformsSMSServer(String id,String comPort, int msgDstPort, int msgSrcPort, int baudRate, String manufacturer, String model, String serverIP){
+	public XformsSMSServer(String id,String comPort, int msgDstPort, int msgSrcPort, int baudRate, String manufacturer, String model){
 		smsServer = new SMSServer(id,comPort,msgDstPort,msgSrcPort,baudRate,manufacturer,model,this);
-		xformsServer = new XformsServer(serverIP);
+		xformsServer = new XformsServer();
 	}
 	
 	public void start(){

@@ -25,9 +25,9 @@ public class XformsBluetoothServer  implements BluetoothServerListener  {
 	private XformsServer xformsServer;
 	
 	/** Constructs an xforms bluetooth server instance. */
-	public XformsBluetoothServer(String name, String serverUUID,String serverIP){
+	public XformsBluetoothServer(String name, String serverUUID){
 		btServer = new BluetoothServer(name,serverUUID,this);
-		xformsServer = new XformsServer(serverIP);
+		xformsServer = new XformsServer();
 	}
 	
 	/** Starts running this bluetooth server. */

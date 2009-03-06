@@ -1,7 +1,10 @@
 package org.openmrs.module.xforms.web;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -12,6 +15,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.module.xforms.XformConstants;
+import org.openmrs.module.xforms.XformsServer;
 import org.openmrs.module.xforms.XformsUtil;
 import org.openmrs.module.xforms.download.UserDownloadManager;
 
@@ -41,34 +45,11 @@ public class UserDownloadServlet  extends HttpServlet {
 	}
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		//try to authenticate users who logon inline (with the request).
+
 		try{
-			try{
-				XformsUtil.authenticateInlineUser(request);
-			}catch(ContextAuthenticationException e){
-				log.error(e.getMessage(),e);
-				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-				return;
-			}
-	
-			//check for authenticated users
-			if (!XformsUtil.isAuthenticated(request,response,null))
-				return;
-			
-			response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
-			
-			//GZIPOutputStream gzip = new GZIPOutputStream(response.getOutputStream());
-            ZOutputStream gzip = new ZOutputStream(response.getOutputStream(),JZlib.Z_BEST_COMPRESSION);
-			DataOutputStream dos = new DataOutputStream(gzip);
-			
-			UserDownloadManager.downloadUsers(dos);
-			
-			dos.flush();
-			gzip.finish();
+			new XformsServer().processConnection(new DataInputStream((InputStream)request.getInputStream()), new DataOutputStream((OutputStream)response.getOutputStream()));
 		}
 		catch(Exception e){
-			response.getOutputStream().print("failed with: " + e.getMessage());
 			log.error(e.getMessage(),e);
 		}
 	}

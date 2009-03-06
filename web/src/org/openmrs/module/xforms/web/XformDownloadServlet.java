@@ -1,7 +1,11 @@
 package org.openmrs.module.xforms.web;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Date;
 
 import javax.servlet.ServletException;
@@ -17,9 +21,11 @@ import org.openmrs.Patient;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
+import org.openmrs.module.xforms.ResponseStatus;
 import org.openmrs.module.xforms.Xform;
 import org.openmrs.module.xforms.XformBuilder;
 import org.openmrs.module.xforms.XformConstants;
+import org.openmrs.module.xforms.XformsServer;
 import org.openmrs.module.xforms.XformsService;
 import org.openmrs.module.xforms.XformsUtil;
 import org.openmrs.module.xforms.download.UserDownloadManager;
@@ -43,7 +49,7 @@ public class XformDownloadServlet extends HttpServlet {
 
 	private Log log = LogFactory.getLog(this.getClass());
 
-	
+
 	public static final String NODE_PATIENT_PATIENT_ID = "patient_id";
 	public static final String NODE_PATIENT_FAMILY_NAME= "family_name";
 	public static final String NODE_PATIENT_MIDDLE_NAME = "middle_name";
@@ -54,8 +60,8 @@ public class XformDownloadServlet extends HttpServlet {
 	public static final String NODE_LOCATION_ID = "location_id";
 	public static final String NODE_PATIENT_IDENTIFIER = "identifier";
 	public static final String NODE_PATIENT_IDENTIFIER_TYPE_ID = "patient_identifier_type_id";
-	
-	
+
+
 	/**
 	 * This just delegates to the doGet()
 	 */
@@ -69,108 +75,83 @@ public class XformDownloadServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 
-		//try to authenticate users who logon inline (with the request).
-		try{
-			XformsUtil.authenticateInlineUser(request);
-		}catch(ContextAuthenticationException e){
-			log.error(e.getMessage(),e);
-			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			return;
-		}
-
-		//check for authenticated users
-		if (!XformsUtil.isAuthenticated(request,response,null))
-			return;
-
-		boolean attachment = true;
-		if(XformConstants.REQUEST_PARAM_CONTENT_TYPE_VALUE_XML.equals(request.getParameter(XformConstants.REQUEST_PARAM_CONTENT_TYPE)))
-			attachment = false;
-
-		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
-		FormService formService = (FormService)Context.getService(FormService.class);
 		String target = request.getParameter(XformConstants.REQUEST_PARAM_TARGET);
 
-		String useStoredXform = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_USER_STORED_XFORMS);
-		boolean createNew = false;
-		if(XformConstants.FALSE_TEXT_VALUE.equalsIgnoreCase(useStoredXform))
-			createNew = true;
+		try{
+			if(XformConstants.REQUEST_PARAM_XFORMS.equalsIgnoreCase(target))
+				new XformsServer().processConnection(new DataInputStream((InputStream)request.getInputStream()), new DataOutputStream((OutputStream)response.getOutputStream()));
+			else{
+				//try to authenticate users who logon inline (with the request).
+				try{
+					XformsUtil.authenticateInlineUser(request);
+				}catch(ContextAuthenticationException e){
 
-		//This property if for those who do not want to make two separate requests for 
-		//users and xforms. This can be helpfull in say bluetooth implementations where
-		//the first connection succeeds but second fails randomly hence making it better
-		//to fetch everything in once single connection request.
-		String shouldIncludeUsers = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_INCLUDE_USERS_IN_XFORMS_DOWNLOAD);
-		boolean includeUsers = true;
-		if(XformConstants.FALSE_TEXT_VALUE.equalsIgnoreCase(shouldIncludeUsers))
-			includeUsers = false;
+					log.error(e.getMessage(),e);
+					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+					return;
+				}
 
-		if(XformConstants.REQUEST_PARAM_XFORMS.equalsIgnoreCase(target))
-			doXformsGet(request, response,formService,xformsService,createNew,includeUsers);
-		else{
-			Integer formId = Integer.parseInt(request.getParameter(XformConstants.REQUEST_PARAM_FORM_ID));
-			Form form = formService.getForm(formId);
+				//check for authenticated users
+				if(!XformConstants.REQUEST_PARAM_XFORMS.equalsIgnoreCase(target)){
+					if (!XformsUtil.isAuthenticated(request,response,null))
+						return;
+				}
 
-			if (XformConstants.REQUEST_PARAM_XFORM.equalsIgnoreCase(target)) {
-				if(formId == 0)
-					doPatientXformGet(request, response,xformsService,formId);
-				else
-					doXformGet(request, response, form,formService,xformsService,createNew,attachment);
-			}
-			else if (XformConstants.REQUEST_PARAM_XFORM_ENTRY.equals(target)){
-				if(formId == 0)
-					doPatientXformEntryGet(request, response, xformsService,formId);
-				else
-					doXformEntryGet(request, response, form,formService,xformsService,createNew);
-			}
-			else if (XformConstants.REQUEST_PARAM_XSLT.equals(target))		
-				doXsltGet(response, form,xformsService,createNew);
-			else if (XformConstants.REQUEST_PARAM_LAYOUT.equals(target))      
-				doLayoutGet(response, form,xformsService);
-			else if(XformConstants.REQUEST_PARAM_XFORMREFRESH.equals(target)){
-				response.setHeader(XformConstants.HTTP_HEADER_CONTENT_TYPE, XformConstants.HTTP_HEADER_CONTENT_TYPE_XML);               
+				boolean attachment = true;
+				if(XformConstants.REQUEST_PARAM_CONTENT_TYPE_VALUE_XML.equals(request.getParameter(XformConstants.REQUEST_PARAM_CONTENT_TYPE)))
+					attachment = false;
 
-				String xml = null;
-				if(formId == 0)
-					xml = XformBuilder.getNewPatientXform();
-				else
-					xml = xformsService.getNewXform(formId).getXformXml();
-				
-				response.getOutputStream().print(xml);
+				XformsService xformsService = (XformsService)Context.getService(XformsService.class);
+				FormService formService = (FormService)Context.getService(FormService.class);
+
+				String useStoredXform = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_USER_STORED_XFORMS);
+				boolean createNew = false;
+				if(XformConstants.FALSE_TEXT_VALUE.equalsIgnoreCase(useStoredXform))
+					createNew = true;
+
+				//This property if for those who do not want to make two separate requests for 
+				//users and xforms. This can be helpfull in say bluetooth implementations where
+				//the first connection succeeds but second fails randomly hence making it better
+				//to fetch everything in once single connection request.
+				/*String shouldIncludeUsers = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_INCLUDE_USERS_IN_XFORMS_DOWNLOAD);
+				boolean includeUsers = true;
+				if(XformConstants.FALSE_TEXT_VALUE.equalsIgnoreCase(shouldIncludeUsers))
+					includeUsers = false;*/
+
+				Integer formId = Integer.parseInt(request.getParameter(XformConstants.REQUEST_PARAM_FORM_ID));
+				Form form = formService.getForm(formId);
+
+				if (XformConstants.REQUEST_PARAM_XFORM.equalsIgnoreCase(target)) {
+					if(formId == 0)
+						doPatientXformGet(request, response,xformsService,formId);
+					else
+						doXformGet(request, response, form,formService,xformsService,createNew,attachment);
+				}
+				else if (XformConstants.REQUEST_PARAM_XFORM_ENTRY.equals(target)){
+					if(formId == 0)
+						doPatientXformEntryGet(request, response, xformsService,formId);
+					else
+						doXformEntryGet(request, response, form,formService,xformsService,createNew);
+				}
+				else if (XformConstants.REQUEST_PARAM_XSLT.equals(target))		
+					doXsltGet(response, form,xformsService,createNew);
+				else if (XformConstants.REQUEST_PARAM_LAYOUT.equals(target))      
+					doLayoutGet(response, form,xformsService);
+				else if(XformConstants.REQUEST_PARAM_XFORMREFRESH.equals(target)){
+					response.setHeader(XformConstants.HTTP_HEADER_CONTENT_TYPE, XformConstants.HTTP_HEADER_CONTENT_TYPE_XML);               
+
+					String xml = null;
+					if(formId == 0)
+						xml = XformBuilder.getNewPatientXform();
+					else
+						xml = xformsService.getNewXform(formId).getXformXml();
+
+					response.getOutputStream().print(xml);
+				}
 			}
 		}
-	}
-
-	/**
-	 * Handles a form which has been submitted 
-	 * 
-	 * @param request - the http request.
-	 * @param response - the http response.
-	 * @param formService - the form service.
-	 * @param xformsService - the xforms service.
-	 * @param createNew - true to create a new xform or false to load an existing. 
-	 * @param includeUsers - true to include users else not.
-	 * @throws ServletException
-	 * @throws IOException
-	 */
-	protected void doXformsGet(HttpServletRequest request, HttpServletResponse response, FormService formService,XformsService xformsService,boolean createNew,boolean includeUsers) throws ServletException, IOException {
-
-		try
-		{		
-			response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
-
-			ZOutputStream gzip = new ZOutputStream(response.getOutputStream(),JZlib.Z_BEST_COMPRESSION);
-			DataOutputStream dos = new DataOutputStream(gzip);
-
-			if(includeUsers)
-				UserDownloadManager.downloadUsers(dos);
-
-			XformDownloadManager.downloadXforms(dos);
-
-			dos.flush();
-			gzip.finish();	
-		}
-		catch(Exception e){
-			log.error(e.getMessage(),e);
+		catch(Exception ex){
+			log.error(ex.getMessage(), ex);
 		}
 	}
 
@@ -342,41 +323,41 @@ public class XformDownloadServlet extends HttpServlet {
 
 			//XformBuilder.setPatientTableFieldValues(form.getFormId(),doc.getRootElement(), patientId, xformsService);
 		}
-		
+
 		Patient p = new Patient();
 		UserFormController.getMiniPerson(p, request.getParameter("addName"), request.getParameter("addGender"), request.getParameter("addBirthdate"), request.getParameter("addAge"));
-				
+
 		String s = p.getFamilyName();
-        if(s != null && s.trim().length() > 0)
-        	XformBuilder.setNodeValue(doc, NODE_PATIENT_FAMILY_NAME, s);
-        
-        s = p.getMiddleName();
-        if(s != null && s.trim().length() > 0)
-        	XformBuilder.setNodeValue(doc, NODE_PATIENT_MIDDLE_NAME, s);
-        
-        s = p.getGivenName();
-        if(s != null && s.trim().length() > 0)
-        	XformBuilder.setNodeValue(doc, NODE_PATIENT_GIVEN_NAME, s);
-        
-        s = p.getGender();
-        if(s != null && s.trim().length() > 0)
-        	XformBuilder.setNodeValue(doc, NODE_PATIENT_GENDER, s);
-        
-        Date d = p.getBirthdate();
-        if(d != null)
-        	XformBuilder.setNodeValue(doc, NODE_PATIENT_BIRTH_DATE, XformsUtil.formDate2DisplayString(d));
-        		
+		if(s != null && s.trim().length() > 0)
+			XformBuilder.setNodeValue(doc, NODE_PATIENT_FAMILY_NAME, s);
+
+		s = p.getMiddleName();
+		if(s != null && s.trim().length() > 0)
+			XformBuilder.setNodeValue(doc, NODE_PATIENT_MIDDLE_NAME, s);
+
+		s = p.getGivenName();
+		if(s != null && s.trim().length() > 0)
+			XformBuilder.setNodeValue(doc, NODE_PATIENT_GIVEN_NAME, s);
+
+		s = p.getGender();
+		if(s != null && s.trim().length() > 0)
+			XformBuilder.setNodeValue(doc, NODE_PATIENT_GENDER, s);
+
+		Date d = p.getBirthdate();
+		if(d != null)
+			XformBuilder.setNodeValue(doc, NODE_PATIENT_BIRTH_DATE, XformsUtil.formDate2DisplayString(d));
+
 		//request.getRequestDispatcher("/xform.jsp").forward(request, response);
 		response.setHeader(XformConstants.HTTP_HEADER_CONTENT_TYPE, XformConstants.HTTP_HEADER_CONTENT_TYPE_XML);
 
 		String xml = XformBuilder.fromDoc2String(doc); 
-		
+
 		if(xform != null){
 			String layoutXml = xform.getLayoutXml();
 			if(layoutXml != null && layoutXml.length() > 0)
 				xml += XformConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR + layoutXml;
 		}
-		
+
 		response.getOutputStream().print(xml);
 
 		//TODO New model we need to get formdef or xform and layout xml to send client
@@ -384,3 +365,75 @@ public class XformDownloadServlet extends HttpServlet {
 	}
 }//ROOM NO 303
 //		<form id="selectFormForm" method="get" action="<%= request.getContextPath() %>/module/xforms/xformEntry.form">
+
+
+/**
+ * Handles a form which has been submitted 
+ * 
+ * @param request - the http request.
+ * @param response - the http response.
+ * @param formService - the form service.
+ * @param xformsService - the xforms service.
+ * @param createNew - true to create a new xform or false to load an existing. 
+ * @param includeUsers - true to include users else not.
+ * @throws ServletException
+ * @throws IOException
+ */
+/*protected void doXformsGet(HttpServletRequest request, HttpServletResponse response, FormService formService,XformsService xformsService,boolean createNew,boolean includeUsers) throws ServletException, IOException {
+
+	ZOutputStream gzip = new ZOutputStream(response.getOutputStream(),JZlib.Z_BEST_COMPRESSION);
+	DataOutputStream dos = new DataOutputStream(gzip);
+
+	byte responseStatus = ResponseStatus.STATUS_ERROR;
+
+	try
+	{		
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		DataInputStream dis = new DataInputStream(request.getInputStream());
+
+		String name = dis.readUTF();
+		String password = dis.readUTF();
+		String serializer = dis.readUTF();
+
+		byte action = dis.readByte();
+
+		try{
+			XformsUtil.authenticateInlineUser(request);
+		}catch(ContextAuthenticationException e){
+			log.error(e.getMessage(),e);
+			responseStatus = ResponseStatus.STATUS_ACCESS_DENIED;
+		}
+
+		if(responseStatus != ResponseStatus.STATUS_ACCESS_DENIED){
+			DataOutputStream dosTemp = new DataOutputStream(baos);
+
+			response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
+
+			if(includeUsers)
+				UserDownloadManager.downloadUsers(dosTemp);
+
+			XformDownloadManager.downloadXforms(dosTemp);
+
+			responseStatus = ResponseStatus.STATUS_SUCCESS;
+		}
+
+		dos.writeByte(responseStatus);
+
+		if(responseStatus == ResponseStatus.STATUS_SUCCESS)
+			dos.write(baos.toByteArray());
+
+		dos.flush();
+		gzip.finish();
+	}
+	catch(Exception ex){
+		log.error(ex.getMessage(),ex);
+		try{
+			dos.writeByte(responseStatus);
+			dos.flush();
+			gzip.finish();
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+}*/

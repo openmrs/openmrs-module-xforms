@@ -119,7 +119,7 @@ public class XformsSMSTask extends AbstractTask{
 			System.out.println("ModemModel Value="+modemModel);
 			System.out.println("ModemId Value="+modemId);
 			
-			server = new XformsSMSServer(modemId, modemPort,Integer.valueOf(msgDestPort),Integer.valueOf(msgSrcPort), Integer.valueOf(modemBaudRate), modemManufacturer, modemModel,serverIP);
+			server = new XformsSMSServer(modemId, modemPort,Integer.valueOf(msgDestPort),Integer.valueOf(msgSrcPort), Integer.valueOf(modemBaudRate), modemManufacturer, modemModel);
 			server.start();
 
 		} catch (APIException e) {

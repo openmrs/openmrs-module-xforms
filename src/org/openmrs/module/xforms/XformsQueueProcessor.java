@@ -388,7 +388,7 @@ public class XformsQueueProcessor {
 		NodeList elemList = doc.getElementsByTagName(XformConstants.NODE_ENTERER);
 		if (elemList != null && elemList.getLength() > 0) {
 			String s = ((Element)elemList.item(0)).getTextContent();
-			User user = Context.getUserService().getUser(Integer.valueOf(String.valueOf(s.charAt(0))));
+			User user = Context.getUserService().getUser(Integer.valueOf(s.substring(0,s.indexOf('^'))));
 			return user;
 		}
 		return null;
