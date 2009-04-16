@@ -2,9 +2,11 @@ package org.openmrs.module.xforms.db;
 
 import java.util.List;
 
-import org.openmrs.module.xforms.PersonRepeatAttribute;
+import org.openmrs.module.xforms.MedicalHistoryField;
 import org.openmrs.module.xforms.Xform;
-import org.openmrs.module.xforms.XformUser;
+import org.openmrs.module.xforms.model.PatientMedicalHistory;
+import org.openmrs.module.xforms.model.PersonRepeatAttribute;
+import org.openmrs.module.xforms.model.XformUser;
 
 /**
  * Provides data access services to the Xforms module.
@@ -85,4 +87,11 @@ public interface XformsDAO {
 	public void deletePersonRepeatAttribute(Integer personRepeatAttributeId);
 	
 	public List<Object[]> getList(String sql, String displayField, String valueField);
+	
+	public PatientMedicalHistory getPatientMedicalHistory(Integer patientId);
+	
+	public List<MedicalHistoryField> getMedicalHistoryFields();
+	public void saveMedicalHistoryField(MedicalHistoryField field);
+	public void deleteMedicalHistoryField(MedicalHistoryField field);
+	public void deleteMedicalHistoryField(Integer fieldId);
 }

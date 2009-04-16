@@ -1,4 +1,4 @@
-package org.openmrs.module.xforms;
+package org.openmrs.module.xforms.model;
 
 
 /**

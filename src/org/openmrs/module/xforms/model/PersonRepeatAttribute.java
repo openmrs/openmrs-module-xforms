@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.xforms;
+package org.openmrs.module.xforms.model;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

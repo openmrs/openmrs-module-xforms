@@ -1,4 +1,4 @@
-package org.openmrs.module.xforms;
+package org.openmrs.module.xforms.serialization;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -9,6 +9,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.PersonName;
+import org.openmrs.module.xforms.model.PatientData;
+import org.openmrs.module.xforms.model.PatientMedicalHistory;
+import org.openmrs.module.xforms.model.PatientTableField;
+import org.openmrs.module.xforms.model.PatientTableFieldValue;
 
 //TODO This class may need to be refactored out of the XForms module. Am not very sure for now.
 
@@ -58,13 +62,12 @@ public class DefaultPatientSerializer {
 			SerializationUtils.writeDate(dos, patient.getBirthdate());
 
 			if (patient.getPatientIdentifier() != null)
-				SerializationUtils.writeUTF(dos, patient.getPatientIdentifier()
-						.toString());
+				SerializationUtils.writeUTF(dos, patient.getPatientIdentifier().toString());
 			else
 				dos.writeBoolean(false);
 
-			dos.writeBoolean(false); // flag to tell whether this is a new
-										// patient or not.
+			dos.writeBoolean(false); // flag to tell whether this is a new patient or not.
+			
 		} catch (IOException e) {
 			log.error(e.getMessage(),e);
 		}
@@ -78,37 +81,61 @@ public class DefaultPatientSerializer {
 		try {
 			if (data == null)
 				return;
-			PatientData patientData = (PatientData) data; // data will always
-															// be a patient
-															// data.
+			PatientData patientData = (PatientData) data; // data will always be a patient data.
 
 			List<Patient> patients = patientData.getPatients();
-			if (patients == null || patients.size() == 0)
+			if (patients == null || patients.size() == 0){
+				dos.writeInt(0);
+				dos.writeInt(0);
+				dos.writeInt(0);
+				dos.writeInt(0);
 				return;
+			}
 
 			dos.writeInt(patients.size());
 			for (Patient patient : patients)
 				serialize(patient, dos);
 
+			//serialize table fields
 			List<PatientTableField> fields = patientData.getFields();
-			if (fields == null || fields.size() == 0)
+			if (fields == null || fields.size() == 0){
+				dos.writeInt(0);
+				dos.writeInt(0);
+				dos.writeInt(0);
 				return;
+			}
+			
 			dos.writeByte(fields.size());
 			for (PatientTableField field : fields) {
 				dos.writeInt(field.getId());
 				dos.writeUTF(field.getName());
 			}
 
-			List<PatientTableFieldValue> fieldVals = patientData
-					.getFieldValues();
-			if (fieldVals == null || fieldVals.size() == 0)
+			//serialize patient table field values
+			List<PatientTableFieldValue> fieldVals = patientData.getFieldValues();
+			if (fieldVals == null || fieldVals.size() == 0){
+				dos.writeInt(0);
+				dos.writeInt(0);
 				return;
+			}
+			
 			dos.writeInt(fieldVals.size());
 			for (PatientTableFieldValue fieldVal : fieldVals) {
 				dos.writeInt(fieldVal.getFieldId());
 				dos.writeInt(fieldVal.getPatientId());
 				dos.writeUTF(fieldVal.getValue().toString());
 			}
+			
+			//serialize medical history
+			List<PatientMedicalHistory> medicalHistory = patientData.getMedicalHistory();
+			if (medicalHistory == null || medicalHistory.size() == 0){
+				dos.writeInt(0);
+				return;
+			}
+			
+			dos.writeInt(medicalHistory.size());
+			for (PatientMedicalHistory history : medicalHistory)
+				history.write(dos);
 
 		} catch (IOException e) {
 			log.error(e.getMessage(),e);

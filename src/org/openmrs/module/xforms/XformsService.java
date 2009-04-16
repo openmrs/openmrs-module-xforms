@@ -4,6 +4,9 @@ import java.util.List;
 
 import org.openmrs.Form;
 import org.openmrs.module.xforms.db.XformsDAO;
+import org.openmrs.module.xforms.model.PatientMedicalHistory;
+import org.openmrs.module.xforms.model.PersonRepeatAttribute;
+import org.openmrs.module.xforms.model.XformUser;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -176,4 +179,11 @@ public interface XformsService {
 	public void deletePersonRepeatAttribute(Integer personRepeatAttributeId);
 	
 	public List<Object[]> getList(String sql, String displayField, String valueField);
+	
+	public PatientMedicalHistory getPatientMedicalHistory(Integer patientId);
+	
+	public List<MedicalHistoryField> getMedicalHistoryFields();
+	public void saveMedicalHistoryField(MedicalHistoryField field);
+	public void deleteMedicalHistoryField(MedicalHistoryField field);
+	public void deleteMedicalHistoryField(Integer fieldId);
 }

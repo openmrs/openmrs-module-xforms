@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>xforms</id>
 	<name>XForms</name>
-	<version>2.4</version>
+	<version>2.6</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Daniel Kayiwa</author>
 	<description>
@@ -23,22 +23,22 @@
 	<!-- Required Global Properties -->
 	<globalProperty>
 		<property>@MODULE_ID@.xformSerializer</property>
-		<defaultValue>org.openmrs.module.xforms.DefaultXformSerializer</defaultValue>
+		<defaultValue>org.fcitmuk.epihandy.EpihandyXformSerializer</defaultValue>
 		<description>The XForms serializer</description>
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.patientSerializer</property>
-		<defaultValue>org.openmrs.module.xforms.DefaultPatientSerializer</defaultValue>
+		<defaultValue>org.openmrs.module.xforms.serialization.DefaultPatientSerializer</defaultValue>
 		<description>The patient set serializer</description>
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.cohortSerializer</property>
-		<defaultValue>org.openmrs.module.xforms.DefaultCohortSerializer</defaultValue>
+		<defaultValue>org.openmrs.module.xforms.serialization.DefaultCohortSerializer</defaultValue>
 		<description>The patient cohort (cohort_id and name) serializer</description>
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.userSerializer</property>
-		<defaultValue>org.openmrs.module.xforms.DefaultUserSerializer</defaultValue>
+		<defaultValue>org.openmrs.module.xforms.serialization.DefaultUserSerializer</defaultValue>
 		<description>The user set serializer</description>
 	</globalProperty>
 	<globalProperty>
@@ -185,6 +185,7 @@
 	<mappingFiles>
 		Xform.hbm.xml
 		PersonRepeatAttribute.hbm.xml
+		MedicalHistoryField.hbm.xml
 	</mappingFiles>
 	
 </module>

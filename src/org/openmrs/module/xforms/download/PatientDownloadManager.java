@@ -13,12 +13,12 @@ import org.openmrs.Cohort;
 import org.openmrs.Patient;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.xforms.PatientData;
-import org.openmrs.module.xforms.PatientTableField;
-import org.openmrs.module.xforms.PatientTableFieldBuilder;
 import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformsService;
 import org.openmrs.module.xforms.XformsUtil;
+import org.openmrs.module.xforms.model.PatientData;
+import org.openmrs.module.xforms.model.PatientTableField;
+import org.openmrs.module.xforms.model.PatientTableFieldBuilder;
 
 
 /**
@@ -38,12 +38,16 @@ public class PatientDownloadManager {
             cohortId = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_PATIENT_DOWNLOAD_COHORT);
 
 		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
-
         XformsUtil.invokeSerializationMethod("serialize",os, XformConstants.GLOBAL_PROP_KEY_PATIENT_SERIALIZER, XformConstants.DEFAULT_PATIENT_SERIALIZER, getPatientData(cohortId,xformsService));
  	}
 	
+	public static void downloadPatients(String name, String identifier, OutputStream os) throws Exception{
+		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
+        XformsUtil.invokeSerializationMethod("serialize",os, XformConstants.GLOBAL_PROP_KEY_PATIENT_SERIALIZER, XformConstants.DEFAULT_PATIENT_SERIALIZER, getPatientData(name,identifier,xformsService));
+ 	}
+	
 	private static PatientData getPatientData(String sCohortId,XformsService xformsService){
-		Context.openSession(); //This prevents the bluetooth server from failing with the form field lazy load exception.
+		//Context.openSession(); //This prevents the bluetooth server from failing with the form field lazy load exception.
 		PatientData patientData  = new PatientData();
 		
 		Integer cohortId = getCohortId(sCohortId);
@@ -58,9 +62,48 @@ public class PatientDownloadManager {
 					patientData.setFieldValues(PatientTableFieldBuilder.getPatientTableFieldValues(new ArrayList(patientIds), fields, xformsService));
 				}
 			}
+			
+			List<Patient> patients = patientData.getPatients();
+			if(patients != null && patients.size() > 0){
+				for(Patient patient : patients)
+					patientData.addMedicalHistory(xformsService.getPatientMedicalHistory(patient.getPatientId()));
+			}
 		}
 		
 		return patientData;
+	}
+	
+	private static PatientData getPatientData(String name, String identifier,XformsService xformsService){
+		//Context.openSession(); //This prevents the bluetooth server from failing with the form field lazy load exception.
+		PatientData patientData  = new PatientData();
+		
+		if(name != null && name.trim().length() == 0)
+			name = null;
+		if(identifier != null && identifier.trim().length() == 0)
+			identifier = null;
+		
+		List<Patient> patients = Context.getPatientService().getPatients(name, identifier, null);
+		patientData.setPatients(patients);
+		if(patients != null){
+			for(Patient patient : patients){
+				List<PatientTableField> fields = PatientTableFieldBuilder.getPatientTableFields(xformsService);
+				if(fields != null && fields.size() > 0){
+					patientData.setFields(fields);
+					patientData.setFieldValues(PatientTableFieldBuilder.getPatientTableFieldValues(getPatientIds(patients), fields, xformsService));
+					patientData.addMedicalHistory(xformsService.getPatientMedicalHistory(patient.getPatientId()));
+				}
+			}
+		}
+		
+		return patientData;
+	}
+	
+	private static List<Integer> getPatientIds(List<Patient> patients){
+		List<Integer> patientIds = new ArrayList<Integer>();
+		for(Patient patient : patients)
+			patientIds.add(patient.getPatientId());
+
+		return patientIds;
 	}
 	
 	private static Integer getCohortId(String cohortId){

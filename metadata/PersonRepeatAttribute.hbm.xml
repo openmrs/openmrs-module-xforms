@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="@MODULE_PACKAGE@.model">
+
+	<class name="PersonRepeatAttribute"
+		table="xforms_person_repeat_attribute">
+
+		<id name="personRepeatAttributeId" type="java.lang.Integer"
+			column="person_repeat_attribute_id" unsaved-value="0">
+			<generator class="native" />
+		</id>
+		
+		<discriminator column="person_repeat_attribute_id" insert="false" />
+		
+		<property name="personId" type="java.lang.Integer"
+			column="person_id" />
+		
+		<property name="attributeTypeId" type="java.lang.Integer"
+			column="person_attribute_type_id" not-null="true" />
+		
+		<property name="value" type="java.lang.String"
+			not-null="true" length="50" />
+		
+		<property name="valueId" type="java.lang.Integer" not-null="true"
+			column="value_id" />
+			
+		<property name="valueIdType" type="java.lang.Integer" not-null="true"
+			column="value_id_type" />
+			
+		<property name="valueDisplayOrder" type="java.lang.Integer" not-null="true"
+			column="value_display_order" />
+		
+		<property name="creator" type="java.lang.Integer"
+			column="creator" not-null="true" />
+		<property name="dateCreated" type="java.util.Date"
+			column="date_created" not-null="true" />
+		
+		<property name="changedBy" type="java.lang.Integer"
+			column="changed_by" />
+		<property name="dateChanged" type="java.util.Date"
+			column="date_changed"  />
+
+		<property name="voidedBy" type="java.lang.Integer"
+			column="voided_by" />
+		<property name="dateVoided" type="java.util.Date"
+			column="date_voided" />
+		<property name="voided" type="boolean" not-null="true" />
+		<property name="voidReason" type="java.lang.String"
+			column="void_reason" length="255" />
+
+	</class>
+</hibernate-mapping>

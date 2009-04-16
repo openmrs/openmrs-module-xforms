@@ -1,4 +1,4 @@
-package org.openmrs.module.xforms;
+package org.openmrs.module.xforms.model;
 
 
 import java.util.ArrayList;
@@ -11,6 +11,8 @@ import org.kxml2.kdom.Element;
 import org.openmrs.Form;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.xforms.XformBuilder;
+import org.openmrs.module.xforms.XformsService;
 import org.openmrs.module.xforms.formentry.FormEntryWrapper;
 
 

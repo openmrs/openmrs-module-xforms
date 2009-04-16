@@ -1,4 +1,4 @@
-package org.openmrs.module.xforms;
+package org.openmrs.module.xforms.serialization;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.module.xforms.model.XformUser;
 
 
 //TODO This class may need to be refactored out of the XForms module. Not very sure for now.

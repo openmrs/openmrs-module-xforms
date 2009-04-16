@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -52,6 +53,10 @@ public class XformsServer {
 
 	/** Action to download a list of users and forms from the server. */
 	public static final byte ACTION_DOWNLOAD_USERS_AND_FORMS = 11;
+	
+	/** Action to download a list of patients filtered by name and identifier. */
+	public static final byte ACTION_DOWNLOAD_FILTERED_PATIENTS = 15;
+	
 
 	private Log log = LogFactory.getLog(this.getClass());
 
@@ -94,7 +99,7 @@ public class XformsServer {
 				DataOutputStream dosTemp = new DataOutputStream(baos);
 				
 				if (action == ACTION_DOWNLOAD_PATIENTS)
-					PatientDownloadManager.downloadPatients(String.valueOf(dis.readInt()), dosTemp);
+					downloadPatients(String.valueOf(dis.readInt()), dosTemp);
 				else if(action == ACTION_DOWNLOAD_COHORTS)
 					PatientDownloadManager.downloadCohorts(dosTemp);
 				else if (action == ACTION_DOWNLOAD_FORMS)
@@ -105,6 +110,8 @@ public class XformsServer {
 					UserDownloadManager.downloadUsers(dosTemp);
 				else if (action == ACTION_DOWNLOAD_USERS_AND_FORMS)
 					downloadUsersAndForms(dosTemp);
+				else if(action == ACTION_DOWNLOAD_FILTERED_PATIENTS)
+					downloadPatients(dis.readUTF(), dis.readUTF(), dosTemp);
 
 				responseStatus = ResponseStatus.STATUS_SUCCESS;
 			}
@@ -130,6 +137,30 @@ public class XformsServer {
 		}
 	}
 
+	private void downloadPatients(String cohortId, OutputStream os) throws Exception{
+		
+		Context.openSession();
+		
+		try{
+			PatientDownloadManager.downloadPatients(cohortId, os);
+		}
+		finally{
+			Context.closeSession();
+		}
+	}
+	
+	private void downloadPatients(String name, String identifier, OutputStream os) throws Exception{
+		
+		Context.openSession();
+		
+		try{
+			PatientDownloadManager.downloadPatients(name, identifier, os);
+		}
+		finally{
+			Context.closeSession();
+		}
+	}
+	
 	/**
 	 * Saves xforms xml models.
 	 * 

@@ -1,4 +1,4 @@
-package org.openmrs.module.xforms;
+package org.openmrs.module.xforms.serialization;
 
 import java.util.*;
 import java.io.*;
@@ -136,7 +136,7 @@ public class SerializationUtils {
 	 * @param dos - that stream to write to.
 	 * @throws IOException - thrown when a problem occurs during the writing to stream.
 	 */
-	public static void write(Hashtable stringHashtable, DataOutputStream dos) throws IOException {	
+	/*public static void write(Hashtable stringHashtable, DataOutputStream dos) throws IOException {	
 		if(stringHashtable != null){
 			dos.writeInt(stringHashtable.size());
 			Enumeration keys = stringHashtable.keys();
@@ -149,26 +149,39 @@ public class SerializationUtils {
 		}
 		else
 			dos.writeInt(0);
-	}
+	}*/
 	
-	/**
-	 * Reads a hashtable of string keys and values from a stream.
-	 * 
-	 * @param dis - the stream to read from.
-	 * @return - the hashtable of string keys and values or null if none.
-	 * @throws IOException - thrown when a problem occurs during the reading from stream.
-	*/
-	public static Hashtable read(DataInputStream dis) throws IOException {
+	public static List read(DataInputStream dis, Class cls) throws IOException, InstantiationException,IllegalAccessException {
 		
 		int len = dis.readInt();
 		if(len == 0)
 			return null;
-		
-		Hashtable stringHashtable = new Hashtable();
 
-		for(int i=0; i<len; i++ )
-			stringHashtable.put(dis.readUTF(), dis.readUTF());
+		List<Persistent> persistentList = new ArrayList<Persistent>();
 		
-		return stringHashtable;
+		for(byte i=0; i<len; i++ ){
+			Persistent persistent = (Persistent)cls.newInstance();
+			persistent.read(dis);
+			persistentList.add(persistent);
+		}
+		
+		return persistentList;
+	}
+
+	/**
+	 * Writes a small vector (byte size) of Persistent objects to a stream.
+	 * 
+	 * @param persistentVector - the vector of persistent objects.
+	 * @param dos - the stream to write to.
+	 * @throws IOException - thrown when a problem occurs during the writing to stream.
+	 */
+	public static void write(List persistentList, DataOutputStream dos) throws IOException {	
+		if(persistentList != null){
+			dos.writeInt(persistentList.size());
+			for(int i=0; i<persistentList.size(); i++ )
+				((Persistent)persistentList.get(i)).write(dos);
+		}
+		else
+			dos.writeInt(0);
 	}
 }

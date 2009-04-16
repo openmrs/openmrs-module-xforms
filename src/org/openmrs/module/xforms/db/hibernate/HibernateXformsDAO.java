@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -12,11 +13,15 @@ import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
-import org.openmrs.module.xforms.PersonRepeatAttribute;
+import org.openmrs.module.xforms.MedicalHistoryField;
 import org.openmrs.module.xforms.Xform;
 import org.openmrs.module.xforms.XformConstants;
-import org.openmrs.module.xforms.XformUser;
 import org.openmrs.module.xforms.db.XformsDAO;
+import org.openmrs.module.xforms.model.MedicalHistoryFieldData;
+import org.openmrs.module.xforms.model.MedicalHistoryValue;
+import org.openmrs.module.xforms.model.PatientMedicalHistory;
+import org.openmrs.module.xforms.model.PersonRepeatAttribute;
+import org.openmrs.module.xforms.model.XformUser;
 
 /**
  * Provides the hibernate data access services for the Xforms module.
@@ -271,5 +276,83 @@ public class HibernateXformsDAO implements XformsDAO {
 			query.addScalar(valueField, Hibernate.STRING);
 		
 		return query.list();
+	}
+	
+	public List<MedicalHistoryField> getMedicalHistoryFields(){
+		return sessionFactory.getCurrentSession().createQuery("from MedicalHistoryField").list();
+	}
+	
+	public void saveMedicalHistoryField(MedicalHistoryField field){
+		if(field.isNew())
+			sessionFactory.getCurrentSession().save(field);
+		else
+			sessionFactory.getCurrentSession().update(field);
+	}
+	
+	public void deleteMedicalHistoryField(MedicalHistoryField field){
+		sessionFactory.getCurrentSession().delete(field);
+	}
+	
+	public void deleteMedicalHistoryField(Integer fieldId){
+		Query query = sessionFactory.getCurrentSession().createQuery("delete from MedicalHistoryField where fieldId = ?");
+		query.setParameter(0, fieldId);
+		query.executeUpdate();
+	}
+	
+	public PatientMedicalHistory getPatientMedicalHistory(Integer patientId){
+		String sql = "select * from (select mhf.tabIndex,mhf.name, " +
+			"cast(case when value_group_id is not null then value_group_id " +
+			"when value_boolean is not null then value_boolean " +
+			"when value_drug is not null then value_drug " +
+			"when value_datetime is not null then value_datetime " +
+			"when value_numeric is not null then value_numeric " +
+			"when value_modifier is not null then value_modifier " +
+			"when value_text is not null then value_text " +
+			"end as char) as value,e.encounter_datetime " +
+			"from encounter e " +
+			"inner join obs o on o.encounter_id = e.encounter_id " +
+			"inner join field f on f.concept_id=o.concept_id " +
+			"inner join xforms_medical_history_field mhf on mhf.field_id=f.field_id " +
+			"and o.person_id = e.patient_id " +
+			"where e.patient_id = " + patientId + " " +
+			"and value_coded is null " +
+			"UNION " +
+			"select mhf.tabIndex,mhf.name,cn.name,e.encounter_datetime " +
+			"from encounter e " +
+			"inner join obs o on o.encounter_id = e.encounter_id " +
+			"inner join concept_name cn on cn.concept_id=o.value_coded " +
+			"inner join field f on f.concept_id=o.concept_id " +
+			"inner join xforms_medical_history_field mhf on mhf.field_id=f.field_id " +
+			"and o.person_id = e.patient_id " +
+			"where e.patient_id = " + patientId + " " +
+			"and value_coded is not null) as t where value is not null " +
+			"order by tabIndex,name,encounter_datetime";
+		System.out.println(sql);
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		query.addScalar("name", Hibernate.STRING);
+		query.addScalar("value", Hibernate.STRING);
+		query.addScalar("encounter_datetime", Hibernate.DATE);
+		
+		List<Object[]> list = query.list();
+		if(list == null || list.size() == 0)
+			return null;
+		
+		PatientMedicalHistory history = new PatientMedicalHistory();
+		MedicalHistoryFieldData field = null;
+		String prevName = null;
+		for(Object[] item : list){
+			String name = (String)item[0];
+			if(!name.equals(prevName)){
+				field = new MedicalHistoryFieldData();
+				field.setFieldName(name);
+				history.addHistory(field);
+				prevName = name;
+			}
+			field.addValue(new MedicalHistoryValue((String)item[1],(Date)item[2]));
+		}
+		
+		history.setPatientId(patientId);
+		
+		return history;
 	}
 }

@@ -1,7 +1,8 @@
-package org.openmrs.module.xforms;
+package org.openmrs.module.xforms.model;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+
 import org.openmrs.Patient;
 
 public class PatientData {
@@ -15,6 +16,10 @@ public class PatientData {
     /** The list of patient database field values. */
     private List<PatientTableFieldValue> fieldValues = new ArrayList<PatientTableFieldValue>();
 
+    /** The patient medical history. */
+	private List<PatientMedicalHistory> medicalHistory;
+	
+	
     public PatientData() {
 
     }
@@ -50,4 +55,21 @@ public class PatientData {
     public void setPatients(List<Patient> patients) {
         this.patients = patients;
     }
+    
+    public List<PatientMedicalHistory> getMedicalHistory() {
+		return medicalHistory;
+	}
+
+	public void setMedicalHistory(List<PatientMedicalHistory> medicalHistory) {
+		this.medicalHistory = medicalHistory;
+	}
+	
+	public void addMedicalHistory(PatientMedicalHistory history){
+		if(history == null)
+			return;
+		
+		if(medicalHistory == null)
+			medicalHistory = new ArrayList<PatientMedicalHistory>();
+		medicalHistory.add(history);
+	}
 }

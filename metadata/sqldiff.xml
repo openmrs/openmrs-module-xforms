@@ -192,4 +192,21 @@
 		</sql>
 	</diff>
 	
+	<diff>
+		<version>2.6</version>
+		<author>Daniel Kayiwa</author>
+		<date>April 10th 2009</date>
+		<description>
+			Adding table for storing patient medical history.
+		</description>
+		<sql>
+			CREATE TABLE `xforms_medical_history_field` (
+			  `field_id` int(11) NOT NULL,
+			  `name` varchar(255) NOT NULL,
+			  `tabIndex` int(11) default NULL,
+			  PRIMARY KEY  (`field_id`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;	
+		</sql>
+	</diff>
+	
 </sqldiff>

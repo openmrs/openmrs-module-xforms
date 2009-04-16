@@ -1,4 +1,4 @@
-package org.openmrs.module.xforms;
+package org.openmrs.module.xforms.serialization;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

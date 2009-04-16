@@ -8,15 +8,17 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Form;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.xforms.PersonRepeatAttribute;
+import org.openmrs.module.xforms.MedicalHistoryField;
 import org.openmrs.module.xforms.Xform;
 import org.openmrs.module.xforms.XformBuilder;
 import org.openmrs.module.xforms.XformConstants;
-import org.openmrs.module.xforms.XformUser;
 import org.openmrs.module.xforms.XformsService;
 import org.openmrs.module.xforms.XformsUtil;
 import org.openmrs.module.xforms.db.XformsDAO;
 import org.openmrs.module.xforms.formentry.FormEntryWrapper;
+import org.openmrs.module.xforms.model.PatientMedicalHistory;
+import org.openmrs.module.xforms.model.PersonRepeatAttribute;
+import org.openmrs.module.xforms.model.XformUser;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -190,5 +192,25 @@ public class XformsServiceImpl implements XformsService {
 	
 	public List<Object[]> getList(String sql, String displayField, String valueField){
 		return getXformsDAO().getList(sql, displayField, valueField);
+	}
+	
+	public PatientMedicalHistory getPatientMedicalHistory(Integer patientId){
+		return getXformsDAO().getPatientMedicalHistory(patientId);
+	}
+	
+	public List<MedicalHistoryField> getMedicalHistoryFields(){
+		return getXformsDAO().getMedicalHistoryFields();
+	}
+	
+	public void saveMedicalHistoryField(MedicalHistoryField field){
+		getXformsDAO().saveMedicalHistoryField(field);
+	}
+	
+	public void deleteMedicalHistoryField(MedicalHistoryField field){
+		getXformsDAO().deleteMedicalHistoryField(field);
+	}
+	
+	public void deleteMedicalHistoryField(Integer fieldId){
+		getXformsDAO().deleteMedicalHistoryField(fieldId);
 	}
 }
