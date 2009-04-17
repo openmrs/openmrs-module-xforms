@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.openmrs.module.xforms.serialization.Persistent;
@@ -44,8 +45,11 @@ public class MedicalHistoryFieldData implements Persistent{
 		if(value == null)
 			return;
 		
-		if(values == null)
+		if(values != null && appendSameDateValue(value))
+			return;
+		else if(values == null)
 			values = new ArrayList<MedicalHistoryValue>();
+		
 		values.add(value);
 	}
 	
@@ -57,5 +61,18 @@ public class MedicalHistoryFieldData implements Persistent{
 	public void write(DataOutputStream dos) throws IOException {
 		dos.writeUTF(getFieldName());
 		SerializationUtils.write(getValues(), dos);
+	}
+	
+	private boolean appendSameDateValue(MedicalHistoryValue value){
+		Date valueDate = value.getValueDate();
+		MedicalHistoryValue val;
+		for(int index = 0; index < values.size(); index++){
+			val = values.get(index);
+			if(val.getValueDate().equals(valueDate)){
+				val.setValue(val.getValue() + ", " + value.getValue());
+				return true;
+			}
+		}
+		return false;
 	}
 }

@@ -176,12 +176,7 @@ public class DWRXformsService {
 
 
 	public void saveFormField(Integer fieldId, String name, Integer tabIndex, boolean isNew) {
-
-		System.out.println("fieldId="+fieldId);
-		System.out.println("name="+name);
-		System.out.println("tabIndex="+tabIndex);
-		System.out.println("isNew="+isNew);
-
+		
 		((XformsService)Context.getService(XformsService.class)).saveMedicalHistoryField(new MedicalHistoryField(fieldId,name,tabIndex,isNew));
 
 		/*if (formFieldId != null && formFieldId != 0)
@@ -336,7 +331,6 @@ public class DWRXformsService {
 		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
 		List<MedicalHistoryField> fields = xformsService.getMedicalHistoryFields();
 		String s = generateJSTree(getMedicalHistoryFieldsStructure(fields), 0, Context.getLocale());
-		System.out.println(s);
 		return s;
 		/*Form form = Context.getFormService().getForm(15);
 		TreeMap<Integer, TreeSet<FormField>> formFields = getFormStructure(form);

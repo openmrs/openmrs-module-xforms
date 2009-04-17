@@ -105,6 +105,20 @@ public class HibernateXformsDAO implements XformsDAO {
 	 */
 	public Object getPatientValue(Integer patientId, String tableName,
 			String columnName, String filterValue) {
+		
+		if(tableName.equals("patient")){
+			if(columnName.equals("birthdate")||columnName.equals("birthdate_estimated")||columnName.equals("gender"))
+				tableName = "person";
+		}
+		else if(tableName.equals("patient_address")){
+			if(columnName.equals("address1")||columnName.equals("address2"))
+				tableName = "person_address";
+		}
+		else if(tableName.equals("patient_name")){
+			if(columnName.equals("family_name")||columnName.equals("given_name")||columnName.equals("middle_name"))
+				tableName = "person_name";
+		}
+		
 		String sql = "";
 		try {
 			sql = "select "
@@ -327,7 +341,7 @@ public class HibernateXformsDAO implements XformsDAO {
 			"where e.patient_id = " + patientId + " " +
 			"and value_coded is not null) as t where value is not null " +
 			"order by tabIndex,name,encounter_datetime";
-		System.out.println(sql);
+
 		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
 		query.addScalar("name", Hibernate.STRING);
 		query.addScalar("value", Hibernate.STRING);

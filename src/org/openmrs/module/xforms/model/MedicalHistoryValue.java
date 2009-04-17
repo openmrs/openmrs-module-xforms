@@ -28,19 +28,19 @@ public class MedicalHistoryValue implements Persistent{
 		this.valueDate = valueDate;
 	}
 	
-	private String getValue() {
+	public String getValue() {
 		return value;
 	}
 
-	private void setValue(String value) {
+	public void setValue(String value) {
 		this.value = value;
 	}
 
-	private Date getValueDate() {
+	public Date getValueDate() {
 		return valueDate;
 	}
 
-	private void setValueDate(Date valueDate) {
+	public void setValueDate(Date valueDate) {
 		this.valueDate = valueDate;
 	}
 
@@ -50,9 +50,6 @@ public class MedicalHistoryValue implements Persistent{
 	}
 	
 	public void write(DataOutputStream dos) throws IOException {
-		System.out.println("value="+value);
-		System.out.println("date="+valueDate);
-		
 		dos.writeUTF(getValue());
 		dos.writeLong(getValueDate().getTime());
 	}
