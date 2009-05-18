@@ -86,6 +86,8 @@ public class XformsServer {
 			String name = dis.readUTF();
 			String pw = dis.readUTF();
 			String serializer = dis.readUTF();
+			String locale = dis.readUTF();
+			
 			byte action = dis.readByte();
 			
 			try{

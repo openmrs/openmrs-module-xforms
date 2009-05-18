@@ -892,7 +892,11 @@ public final class XformBuilder {
 	 * @return - the cencept name.
 	 */
 	private static String getConceptName(String val){
-		return val.substring(val.indexOf('^')+1, val.lastIndexOf('^'));
+		val = val.substring(val.indexOf('^')+1, val.lastIndexOf('^'));
+		int pos = val.indexOf('^');
+		if(pos > 0)
+			val = val.substring(0,pos);
+		return val;
 	}
 
 	/**
