@@ -30,6 +30,9 @@
 
 <div id="appendEntityIdAfterSubmit" style="visibility:hidden;">1</div>
 
+<div id="timeSubmitFormat" style="visibility:hidden;">hh:mm:ss a</div>
+<div id="timeDisplayFormat" style="visibility:hidden;">hh:mm:ss a</div>
+
 <script language="javascript">
 	var PurcformsText = {
 	    	file: "<spring:message code="xforms.file" />",

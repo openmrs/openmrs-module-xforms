@@ -23,6 +23,9 @@
     <div id="formDefRefreshUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/xformDownload?target=xformrefresh&contentType=xml&</div>
    
     <div id="defaultFontFamily" style="visibility:hidden;">${defaultFontFamily}</div>
+    
+    <div id="timeSubmitFormat" style="visibility:hidden;">hh:mm:ss a</div>
+    <div id="timeDisplayFormat" style="visibility:hidden;">hh:mm:ss a</div>
    
    <script language="javascript">
     	var PurcformsText = {
@@ -36,7 +39,7 @@
     	    	save: "<spring:message code="xforms.save" />",
     	    	saveAs: "<spring:message code="xforms.saveAs" />",
 
-    	    	openLayout: "<spring:message code="xforms.foropenLayoutms" />",
+    	    	openLayout: "<spring:message code="xforms.openLayout" />",
     	    	saveLayout: "<spring:message code="xforms.saveLayout" />",
     	    	openLanguageText: "<spring:message code="xforms.openLanguageText" />",
     	    	saveLanguageText: "<spring:message code="xforms.saveLanguageText" />",
