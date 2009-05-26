@@ -266,7 +266,8 @@
     		remove: "<spring:message code="xforms.remove" />",
     		browse: "<spring:message code="xforms.browse" />",
     		clear: "<spring:message code="xforms.clear" />",
-    		deleteItem: "<spring:message code="xforms.deleteItem" />"
+    		deleteItem: "<spring:message code="xforms.deleteItem" />",
+    		cancel: "<spring:message code="xforms.cancel" />"
 	};
 </script>
     
