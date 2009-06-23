@@ -35,7 +35,7 @@ body, html {
 }
 
 .getting-started-label2 {
-  border: 1px solid #AACCFF;
+  border: 1px solid navy;
   background-color: white;
   padding: 0.1em;
 }
@@ -168,3 +168,10 @@ body, html {
    width: 0px; height: 0px;
    border: 1px dashed black;
  }
+ 
+ .dragdrop-handle-resize {
+  cursor: w-resize;
+  user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+}

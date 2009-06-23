@@ -229,6 +229,7 @@
 		    fontStyle: "<spring:message code="xforms.fontStyle" />",
 		    fontSize: "<spring:message code="xforms.fontSize" />",
 		    textDecoration: "<spring:message code="xforms.textDecoration" />",
+		    textAlign: "<spring:message code="xforms.textAlign" />",
 		    backgroundColor: "<spring:message code="xforms.backgroundColor" />",
 		    borderStyle: "<spring:message code="xforms.borderStyle" />",
 		    borderWidth: "<spring:message code="xforms.borderWidth" />",
@@ -267,7 +268,9 @@
     		browse: "<spring:message code="xforms.browse" />",
     		clear: "<spring:message code="xforms.clear" />",
     		deleteItem: "<spring:message code="xforms.deleteItem" />",
-    		cancel: "<spring:message code="xforms.cancel" />"
+    		cancel: "<spring:message code="xforms.cancel" />",
+    		clickToAddNewCondition: "<spring:message code="xforms.clickToAddNewCondition" />",
+    		qtnTypeGPS: "<spring:message code="xforms.qtnTypeGPS" />"
 	};
 </script>
     
