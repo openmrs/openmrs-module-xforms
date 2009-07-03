@@ -265,7 +265,8 @@
         		cancel: "<spring:message code="xforms.cancel" />",
         		clickToAddNewCondition: "<spring:message code="xforms.clickToAddNewCondition" />",
         		qtnTypeGPS: "<spring:message code="xforms.qtnTypeGPS" />",
-        		palette: "<spring:message code="xforms.palette" />"
+        		palette: "<spring:message code="xforms.palette" />",
+        		saveAsXhtml: "<spring:message code="xforms.saveAsXhtml" />"
     	};
     </script>
     

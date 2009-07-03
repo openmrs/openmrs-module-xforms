@@ -109,6 +109,5 @@
 		<property name="formView"><value>/module/@MODULE_ID@/medicalHistoryFields</value></property>
 		<property name="successView"><value>medicalHistoryFields.form</value></property>
 	</bean>
-	
-    <!-- /Controllers -->
+    
 </beans>
