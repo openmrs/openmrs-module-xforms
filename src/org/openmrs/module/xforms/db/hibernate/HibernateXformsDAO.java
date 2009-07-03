@@ -149,7 +149,7 @@ public class HibernateXformsDAO implements XformsDAO {
 	public List<XformUser> getUsers() {
 		List<XformUser> users = new ArrayList<XformUser>();
 
-		String sql = "select user_id,username,password,salt from users";
+		String sql = "select user_id,system_id,username,password,salt from users";
 
 		try {
 			PreparedStatement st = sessionFactory.getCurrentSession()
@@ -157,9 +157,8 @@ public class HibernateXformsDAO implements XformsDAO {
 			ResultSet res = st.executeQuery();
 
 			while (res.next())
-				users.add(new XformUser(res.getInt("user_id"), res
-						.getString("username"), res.getString("password"), res
-						.getString("salt")));
+				users.add(new XformUser(res.getInt("user_id"), res.getString("system_id"),
+						res.getString("username"),res.getString("password"), res.getString("salt")));
 
 			return users;
 		} catch (SQLException e) {

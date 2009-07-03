@@ -22,11 +22,15 @@ public class XformUser {
 		
 	}
 	
-	public XformUser(int userId,String name, String password, String salt){
+	public XformUser(int userId,String systemId,String name, String password, String salt){
 		this.userId = userId;
 		this.name = name;
 		this.password = password;
 		this.salt = salt;
+		
+		//Sometimes the name can be empty.
+		if(this.name == null || this.name.trim().length() == 0)
+			this.name = systemId;
 	}
 
 	public String getName() {
