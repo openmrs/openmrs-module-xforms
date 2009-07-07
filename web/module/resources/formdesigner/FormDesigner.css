@@ -159,6 +159,10 @@ body, html {
   opacity: 0.5;
 }
 
+.purcforms-label-editor {
+  filter: alpha(opacity = 100);
+}
+
 .rubberBand {
    position: absolute;
    visibility: hidden;
