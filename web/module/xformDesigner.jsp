@@ -15,6 +15,9 @@
     <div id="dateTimeSubmitFormat" style="visibility:hidden;">${dateTimeSubmitFormat}</div>
     <div id="dateTimeDisplayFormat" style="visibility:hidden;">${dateTimeDisplayFormat}</div>
     
+    <div id="dateSubmitFormat" style="visibility:hidden;">${dateSubmitFormat}</div>
+	<div id="dateDisplayFormat" style="visibility:hidden;">${dateDisplayFormat}</div>
+    
     <div id="entityIdName" style="visibility:hidden;">patientId</div>
     <div id="formIdName" style="visibility:hidden;">formId</div>
     
@@ -26,6 +29,8 @@
     
     <div id="timeSubmitFormat" style="visibility:hidden;">hh:mm:ss a</div>
     <div id="timeDisplayFormat" style="visibility:hidden;">hh:mm:ss a</div>
+    
+    <div id="allowBindEdit" style="visibility:hidden;">${allowBindEdit}</div>
    
    <script language="javascript">
     	var PurcformsText = {
@@ -266,7 +271,8 @@
         		clickToAddNewCondition: "<spring:message code="xforms.clickToAddNewCondition" />",
         		qtnTypeGPS: "<spring:message code="xforms.qtnTypeGPS" />",
         		palette: "<spring:message code="xforms.palette" />",
-        		saveAsXhtml: "<spring:message code="xforms.saveAsXhtml" />"
+        		saveAsXhtml: "<spring:message code="xforms.saveAsXhtml" />",
+        		groupWidgets: "<spring:message code="xforms.groupWidgets" />"
     	};
     </script>
     

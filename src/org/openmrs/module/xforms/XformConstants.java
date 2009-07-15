@@ -53,8 +53,20 @@ public class XformConstants {
 	/** The default submit date format. */
 	public static final String DEFAULT_DATE_SUBMIT_FORMAT = "yyyy-MM-dd";//yyyy-mm-dd
 	
+	/** The default submit datetime format. */
+	public static final String DEFAULT_DATE_TIME_SUBMIT_FORMAT = "yyyy-MM-dd hh:mm:ss a";
+	
+	/** The default submit time format. */
+	public static final String DEFAULT_TIME_SUBMIT_FORMAT = "hh:mm:ss a";
+	
 	/** The default display date format. */
 	public static final String DEFAULT_DATE_DISPLAY_FORMAT = "dd-MM-yyyy";//yyyy-mm-dd
+	
+	/** The default display date format. */
+	public static final String DEFAULT_DATE_TIME_DISPLAY_FORMAT = "dd-MM-yyyy hh:mm:ss a";
+	
+	/** The default display date format. */
+	public static final String DEFAULT_TIME_DISPLAY_FORMAT = "hh:mm:ss a";
 	
 	/** The default font family. */
 	public static final String DEFAULT_FONT_FAMILY = "Verdana, 'Lucida Grande', 'Trebuchet MS', Arial, Sans-Serif";
@@ -68,17 +80,41 @@ public class XformConstants {
 	/** The global property key for the date submit format.*/
 	public static final String GLOBAL_PROP_KEY_DATE_SUBMIT_FORMAT = "xforms.dateSubmitFormat";
 	
+	/** The global property key for the datetime submit format.*/
+	public static final String GLOBAL_PROP_KEY_DATE_TIME_SUBMIT_FORMAT = "xforms.dateTimeSubmitFormat";
+	
+	/** The global property key for the time submit format.*/
+	public static final String GLOBAL_PROP_KEY_TIME_SUBMIT_FORMAT = "xforms.timeSubmitFormat";
+	
 	/** The global property key for the date display format.*/
 	public static final String GLOBAL_PROP_KEY_DATE_DISPLAY_FORMAT = "xforms.dateDisplayFormat";
+	
+	/** The global property key for the datetime display format.*/
+	public static final String GLOBAL_PROP_KEY_DATE_TIME_DISPLAY_FORMAT = "xforms.dateTimeDisplayFormat";
+	
+	/** The global property key for the time display format.*/
+	public static final String GLOBAL_PROP_KEY_TIME_DISPLAY_FORMAT = "xforms.timeDisplayFormat";
 	
 	/** The global property key for the default font family.*/
 	public static final String GLOBAL_PROP_KEY_DEFAULT_FONT_FAMILY = "xforms.defaultFontFamily";
 	
 	/** The global property key for the date submit format.*/
-	public static final String FORM_DESIGNER_KEY_DATE_SUBMIT_FORMAT = "dateTimeSubmitFormat";
+	public static final String FORM_DESIGNER_KEY_DATE_SUBMIT_FORMAT = "dateSubmitFormat";
+	
+	/** The global property key for the datetime submit format.*/
+	public static final String FORM_DESIGNER_KEY_DATE_TIME_SUBMIT_FORMAT = "dateTimeSubmitFormat";
+	
+	/** The global property key for the time submit format.*/
+	public static final String FORM_DESIGNER_KEY_TIME_SUBMIT_FORMAT = "timeSubmitFormat";
 	
 	/** The global property key for the date display format.*/
-	public static final String FORM_DESIGNER_KEY_DATE_DISPLAY_FORMAT = "dateTimeDisplayFormat";
+	public static final String FORM_DESIGNER_KEY_DATE_DISPLAY_FORMAT = "dateDisplayFormat";
+	
+	/** The global property key for the datetime display format.*/
+	public static final String FORM_DESIGNER_KEY_DATE_TIME_DISPLAY_FORMAT = "dateTimeDisplayFormat";
+	
+	/** The global property key for the time display format.*/
+	public static final String FORM_DESIGNER_KEY_TIME_DISPLAY_FORMAT = "timeDisplayFormat";
 	
 	/** The global property key for the default font family.*/
 	public static final String FORM_DESIGNER_KEY_DEFAULT_FONT_FAMILY = "defaultFontFamily";

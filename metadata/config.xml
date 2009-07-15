@@ -107,9 +107,29 @@
 		<description>The format of the dates passed in the xml of the xforms model. Please make sure this matches with the date format of your data entry applications, else you will get wrong dates on the server.</description>
 	</globalProperty>
 	<globalProperty>
+		<property>@MODULE_ID@.dateTimeSubmitFormat</property>
+		<defaultValue>yyyy-MM-dd hh:mm:ss a</defaultValue>
+		<description>The format of the datetime is passed in the xml of the xforms model. Please make sure this matches with the date format of your data entry applications, else you will get wrong dates on the server.</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.timeSubmitFormat</property>
+		<defaultValue>hh:mm:ss a</defaultValue>
+		<description>The format of the time is passed in the xml of the xforms model. Please make sure this matches with the date format of your data entry applications, else you will get wrong dates on the server.</description>
+	</globalProperty>
+	<globalProperty>
 		<property>@MODULE_ID@.dateDisplayFormat</property>
 		<defaultValue>dd/MM/yyyy</defaultValue>
 		<description>The display format of dates used by the xforms module.</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.dateTimeDisplayFormat</property>
+		<defaultValue>dd/MM/yyyy hh:mm:ss a</defaultValue>
+		<description>The display format of datetime used by the xforms module.</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.timeDisplayFormat</property>
+		<defaultValue>hh:mm:ss a</defaultValue>
+		<description>The display format of time used by the xforms module.</description>
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.defaultFontFamily</property>
