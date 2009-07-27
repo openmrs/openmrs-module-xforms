@@ -5,7 +5,7 @@
   
 <beans>
 	
-    <bean id="xformsUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <bean id="xformsUrlMapping" class="org.openmrs.module.xforms.web.controller.XformsUrlHandlerMapping">
     	<property name="order"><value>1</value></property>
     	<property name="mappings">
             <props>
@@ -20,6 +20,7 @@
 	           <prop key="module/@MODULE_ID@/xformDesigner.form">xformDesigner</prop>
 	           <prop key="module/@MODULE_ID@/medicalHistoryFields.form">medicalHistoryFields</prop>
 	           <!-- <prop key="admin/patients/newPatient.form">xformDesigner</prop> -->
+	           <!-- <prop key="admin/encounters/encounter.form">formEntry</prop> -->
 	    </props>
 	</property>
     </bean>
@@ -109,5 +110,11 @@
 		<property name="formView"><value>/module/@MODULE_ID@/medicalHistoryFields</value></property>
 		<property name="successView"><value>medicalHistoryFields.form</value></property>
 	</bean>
+	
+	<bean id="patientReg" class="@MODULE_PACKAGE@.web.controller.PatientRegController">
+		<property name="commandName"><value>patientReg</value></property>
+		<property name="formView"><value>/module/@MODULE_ID@/patientReg</value></property>
+		<property name="successView"><value>patientReg.form</value></property>
+    </bean>
     
 </beans>

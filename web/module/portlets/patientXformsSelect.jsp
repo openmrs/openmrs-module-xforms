@@ -1,7 +1,7 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
 <openmrs:hasPrivilege privilege="View Encounters">
-	<openmrs:portlet url="patientEncounters" id="patientDashboardEncounters" patientId="${patient.patientId}" parameters="num=3|hideHeader=true|title=Encounter.last.encounters" />
+	<openmrs:portlet url="patientEncounters" id="patientDashboardEncounters" patientId="${patient.patientId}" parameters="num=10|hideHeader=true|title=Encounter.last.encounters|showPagination=true" />
 	<br/>
 </openmrs:hasPrivilege>
 

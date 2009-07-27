@@ -142,7 +142,11 @@ public class XformConstants {
 
 	/** The global property key for the patient download cohort.*/
 	public static final String GLOBAL_PROP_KEY_PATIENT_DOWNLOAD_COHORT = "xforms.patientDownloadCohort";
+	
+	public static final String GLOBAL_PROP_KEY_USE_PATIENT_XFORM = "xforms.usePatientXform";
 
+	public static final String GLOBAL_PROP_KEY_USE_ENCOUNTER_XFORM = "xforms.useEncounterXform";
+	
 	/** The default value for the user serializer class.*/
 	public static final String DEFAULT_USER_SERIALIZER= "org.openmrs.module.xforms.DefaultUserSerializer";
 	

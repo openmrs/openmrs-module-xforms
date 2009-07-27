@@ -8,9 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Encounter;
-import org.openmrs.Form;
-import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.XformConstants;
 import org.springframework.validation.BindException;
@@ -19,13 +16,8 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
-/**
- * Provides browser based XForm data entry services.
- * 
- * @author Daniel
- *
- */
-public class XformEntryController extends SimpleFormController{
+
+public class PatientRegController extends SimpleFormController{
 
 	/** Logger for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
@@ -34,22 +26,38 @@ public class XformEntryController extends SimpleFormController{
 	protected Map referenceData(HttpServletRequest request, Object obj, Errors err) throws Exception {
 		HashMap<String,Object> map = new HashMap<String,Object>();
 
-		if(request.getParameter("encounterId") == null){ //Must be new form
-			Integer formId = Integer.parseInt(request.getParameter("formId"));
-			map.put("formId", formId);
-			map.put("patientId", Integer.parseInt(request.getParameter("patientId")));
-			map.put("formName", ((FormService)Context.getService(FormService.class)).getForm(formId).getName());
-			map.put("entityFormDefDownloadUrlSuffix", "moduleServlet/xforms/xformDownload?target=xformentry&contentType=xml&");
-		}
-		else{ //editing existing form
-			Integer encounterId = Integer.parseInt(request.getParameter("encounterId"));
-			Encounter encounter = Context.getEncounterService().getEncounter(encounterId);
-			Form form = encounter.getForm();
-			map.put("formId", form.getFormId());
-			map.put("patientId", encounter.getPatientId());
-			map.put("formName", ((FormService)Context.getService(FormService.class)).getForm(form.getFormId()).getName());
-			map.put("entityFormDefDownloadUrlSuffix", "moduleServlet/xforms/xformDownload?target=xformentry&contentType=xml&encounterId="+encounterId+"&");
-		}
+		map.put("formId", 0);
+     	
+     	Integer patientId = null;
+     	String id = request.getParameter("patientId");
+     	if(id != null && id.trim().length() > 0)
+     		patientId = Integer.parseInt(id);
+     	
+     	if(patientId == null)
+     		patientId = 0;
+     	
+    	map.put("patientId", patientId);
+    	
+        String patientParams = "";
+        String s = request.getParameter("addName");
+        if(s != null && s.trim().length() > 0)
+        	patientParams += "&addName=" + s;
+        
+        s = request.getParameter("addBirthdate");
+        if(s != null && s.trim().length() > 0)
+        	patientParams += "&addBirthdate=" + s;
+        
+        s = request.getParameter("addAge");
+        if(s != null && s.trim().length() > 0)
+        	patientParams += "&addAge=" + s;
+        
+        s = request.getParameter("addGender");
+        if(s != null && s.trim().length() > 0)
+        	patientParams += "&addGender=" + s;
+       
+        map.put("patientParams", patientParams);
+        
+        //"?addName=" + name + "&addBirthdate=" + birthdate + "&addAge=" + age + "&addGender=" + gender;
 
 		map.put(XformConstants.FORM_DESIGNER_KEY_DATE_SUBMIT_FORMAT, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_SUBMIT_FORMAT,XformConstants.DEFAULT_DATE_SUBMIT_FORMAT));
 		map.put(XformConstants.FORM_DESIGNER_KEY_DATE_DISPLAY_FORMAT, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_DISPLAY_FORMAT,XformConstants.DEFAULT_DATE_DISPLAY_FORMAT));
@@ -73,6 +81,6 @@ public class XformEntryController extends SimpleFormController{
 
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception { 
-		return "Not Yet";
+		return "";
 	}    
 }

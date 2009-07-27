@@ -141,6 +141,16 @@
 		<defaultValue>true</defaultValue>
 		<description>Set to true to Reject forms for patients considered new when they already exist, by virture of patient identifier. Else set to false to allow them.</description>
 	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.usePatientXform</property>
+		<defaultValue>false</defaultValue>
+		<description>Set to true if you want to use XForms to create new patients, else set to false.</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.useEncounterXform</property>
+		<defaultValue>false</defaultValue>
+		<description>Set to true if you want to use XForms to edit encounters, else set to false.</description>
+	</globalProperty>
 	<!-- /Required Global Properties -->
 
 	<!-- /Xforms Module Properties -->
