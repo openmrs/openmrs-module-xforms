@@ -24,7 +24,6 @@ import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
-import org.w3c.dom.Node;
 import org.xmlpull.v1.XmlPullParser;
 
 //TODO This class is too big. May need breaking into smaller ones.
@@ -158,6 +157,7 @@ public final class XformBuilder {
 	public static final String DATA_TYPE_TEXT = "xsd:string";
 	public static final String DATA_TYPE_BOOLEAN = "xsd:boolean";
 	public static final String DATA_TYPE_DECIMAL = "xsd:decimal";
+	public static final String DATA_TYPE_BASE64BINARY = "xsd:base64Binary";
 
 	public static final String MULTIPLE_SELECT_VALUE_SEPARATOR = " ";
 
@@ -994,6 +994,7 @@ public final class XformBuilder {
 	 */
 	private static Element buildSequenceInputControlNode(String name,Element node,String type,Element labelNode, Element bindingNode,Element bodyNode, Hashtable<String,String> problemList, Hashtable<String,String> problemListItems,Hashtable<String,Element> repeatControls){
 		type = getPrefixedDataType(type);
+		
 		bindingNode.setAttribute(null, ATTRIBUTE_TYPE, type);
 
 		Element inputNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
@@ -1913,6 +1914,8 @@ public final class XformBuilder {
 			return DATA_TYPE_BOOLEAN;
 		else if(datatype.isDate())
 			return DATA_TYPE_DATE;
+		else if(concept.isComplex())
+			return DATA_TYPE_BASE64BINARY;
 
 		return DATA_TYPE_TEXT;
 	}
@@ -1931,7 +1934,6 @@ public final class XformBuilder {
 			if(concept == null)
 				return null;
 
-			System.out.println(concept.getName().getName() + " is set= "+ concept.isSet());
 			if(concept.isSet())
 				return CONTROL_REPEAT;
 			return CONTROL_SELECT1;

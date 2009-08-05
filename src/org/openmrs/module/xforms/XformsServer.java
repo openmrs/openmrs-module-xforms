@@ -81,6 +81,9 @@ public class XformsServer {
 		byte responseStatus = ResponseStatus.STATUS_ERROR;
 
 		try{
+			
+			Context.openSession();
+			
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
 			String name = dis.readUTF();
@@ -136,6 +139,9 @@ public class XformsServer {
 			catch(Exception e){
 				e.printStackTrace();
 			}
+		}
+		finally{
+			Context.closeSession();
 		}
 	}
 

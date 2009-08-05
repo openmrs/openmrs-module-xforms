@@ -121,6 +121,9 @@ public class FormSchemaBuilder {
 								.selectSingle(token, concept, answers,
 										required, Context.getLocale()));
 				}
+				else if ("ED".equals(datatype.getHl7Abbreviation()))
+					schema.append(FormSchemaFragment.simpleConcept(token,
+							concept, "xs:base64Binary",required, Context.getLocale()));
 			}
 		}
 
