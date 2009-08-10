@@ -3,7 +3,9 @@ package org.openmrs.module.xforms.web.controller;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,11 +13,17 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kxml2.kdom.Document;
+import org.openmrs.Encounter;
+import org.openmrs.Obs;
+import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.xforms.XformBuilder;
 import org.openmrs.module.xforms.XformConstants;
+import org.openmrs.module.xforms.XformObsEdit;
 import org.openmrs.module.xforms.XformsServer;
-import org.openmrs.module.xforms.XformsUtil;
 import org.openmrs.module.xforms.download.XformDataUploadManager;
+import org.openmrs.module.xforms.util.XformsUtil;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.servlet.ModelAndView;
@@ -69,7 +77,10 @@ public class XformDataUploadController extends SimpleFormController{
 			}
 			else{ //else single form filled from browser.
 				String xml = IOUtils.toString(request.getInputStream());
-				XformDataUploadManager.processXform(xml,request.getSession().getId(),XformsUtil.getEnterer());
+				if("edit".equals(request.getParameter("mode")))
+					processXformEdit(xml);
+				else
+					XformDataUploadManager.processXform(xml,request.getSession().getId(),XformsUtil.getEnterer());
 				setSingleEntryResponse(request, response);
 			}
 		}
@@ -84,6 +95,20 @@ public class XformDataUploadController extends SimpleFormController{
 		}
 
 		return null;
+	}
+	
+	private void processXformEdit(String xml) throws Exception{
+		Document doc = XformBuilder.getDocument(xml);
+		
+		Set<Obs> obs2Void = new HashSet<Obs>();
+		Encounter encounter = XformObsEdit.getEditedEncounter(doc.getRootElement(),obs2Void);
+		
+		//TODO These two below need to be put in a transaction
+		Context.getEncounterService().saveEncounter(encounter);
+		
+		ObsService obsService = Context.getObsService();
+		for(Obs obs : obs2Void)
+			obsService.voidObs(obs, "xformsmodule");
 	}
 
 	/**

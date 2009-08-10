@@ -1,6 +1,5 @@
 package org.openmrs.module.xforms;
 
-import org.openmrs.FormField;
 
 
 

@@ -6,8 +6,8 @@ import java.util.List;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformsService;
-import org.openmrs.module.xforms.XformsUtil;
 import org.openmrs.module.xforms.model.XformUser;
+import org.openmrs.module.xforms.util.XformsUtil;
 
 
 /**

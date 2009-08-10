@@ -24,6 +24,8 @@
     <div id="formDefDownloadUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/xformDownload?target=xform&contentType=xml&</div>
     <div id="formDefUploadUrlSuffix" style="visibility:hidden;">module/xforms/xformUpload.form?target=xform&contentType=xml&</div>
     <div id="formDefRefreshUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/xformDownload?target=xformrefresh&contentType=xml&</div>
+    <div id="externalSourceUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/widgetValueDownload?</div>
+    <div id="multimediaUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/multimediaDownload</div>
    
     <div id="defaultFontFamily" style="visibility:hidden;">${defaultFontFamily}</div>
     

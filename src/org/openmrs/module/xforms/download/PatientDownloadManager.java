@@ -15,10 +15,10 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformsService;
-import org.openmrs.module.xforms.XformsUtil;
 import org.openmrs.module.xforms.model.PatientData;
 import org.openmrs.module.xforms.model.PatientTableField;
 import org.openmrs.module.xforms.model.PatientTableFieldBuilder;
+import org.openmrs.module.xforms.util.XformsUtil;
 
 
 /**

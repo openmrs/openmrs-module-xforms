@@ -22,7 +22,7 @@ import org.openmrs.module.xforms.serialization.SerializationUtils;
 public class MedicalHistoryFieldData implements Persistent{
 	
 	private String fieldName;
-	private List<MedicalHistoryValue> values;
+	private List<MedicalHistoryValue> values = new ArrayList<MedicalHistoryValue>();
 	
 	
 	public String getFieldName() {

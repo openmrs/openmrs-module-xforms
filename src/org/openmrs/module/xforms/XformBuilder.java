@@ -243,6 +243,30 @@ public final class XformBuilder {
 		setNodeValue(node,value);
 		return true;
 	}
+	
+	public static String getNodeValue(Element parentNode, String name){
+		Element node = getElement(parentNode,name);
+		if(node == null)
+			return null;
+
+		return getTextValue(node);
+	}
+	
+	public static String getTextValue(Element node){
+		int numOfEntries = node.getChildCount();
+		for (int i = 0; i < numOfEntries; i++) {
+			if (node.isText(i))
+				return node.getText(i);
+
+			if(node.getType(i) == Element.ELEMENT){
+				String val = getTextValue(node.getElement(i));
+				if(val != null)
+					return val;
+			}
+		}
+
+		return null;
+	}
 
 	/**
 	 * Sets the text value of a node.
@@ -250,7 +274,7 @@ public final class XformBuilder {
 	 * @param node - the node whose value to set.
 	 * @param value - the value to set.
 	 */
-	private static void setNodeValue(Element node, String value){
+	public static void setNodeValue(Element node, String value){
 		for(int i=0; i<node.getChildCount(); i++){
 			if(node.isText(i)){
 				node.removeChild(i);
@@ -287,7 +311,7 @@ public final class XformBuilder {
 	 * @param name - the name of the child.
 	 * @return - the child element.
 	 */
-	private static Element getElement(Element parent, String name){
+	public static Element getElement(Element parent, String name){
 		for(int i=0; i<parent.getChildCount(); i++){
 			if(parent.getType(i) != Element.ELEMENT)
 				continue;
@@ -1914,7 +1938,7 @@ public final class XformBuilder {
 			return DATA_TYPE_BOOLEAN;
 		else if(datatype.isDate())
 			return DATA_TYPE_DATE;
-		else if(concept.isComplex())
+		else if(datatype.getHl7Abbreviation().equals("ED"))
 			return DATA_TYPE_BASE64BINARY;
 
 		return DATA_TYPE_TEXT;

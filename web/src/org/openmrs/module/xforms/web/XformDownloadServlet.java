@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
-import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -16,9 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kxml2.kdom.Document;
-import org.openmrs.Encounter;
 import org.openmrs.Form;
-import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
@@ -26,11 +23,12 @@ import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.module.xforms.Xform;
 import org.openmrs.module.xforms.XformBuilder;
 import org.openmrs.module.xforms.XformConstants;
+import org.openmrs.module.xforms.XformObsEdit;
 import org.openmrs.module.xforms.XformsServer;
 import org.openmrs.module.xforms.XformsService;
-import org.openmrs.module.xforms.XformsUtil;
 import org.openmrs.module.xforms.download.XformDownloadManager;
 import org.openmrs.module.xforms.formentry.FormEntryWrapper;
+import org.openmrs.module.xforms.util.XformsUtil;
 import org.openmrs.util.FormUtil;
 import org.openmrs.web.controller.user.UserFormController;
 
@@ -282,7 +280,7 @@ public class XformDownloadServlet extends HttpServlet {
 		}
 		
 		if(request.getParameter("encounterId") != null)
-			fillObs(doc,Integer.parseInt(request.getParameter("encounterId")));
+			XformObsEdit.fillObs(doc,Integer.parseInt(request.getParameter("encounterId")));
 
 		String xml = XformBuilder.fromDoc2String(doc);        
 		Xform xform = xformsService.getXform(form.getFormId());
@@ -362,17 +360,6 @@ public class XformDownloadServlet extends HttpServlet {
 
 		//TODO New model we need to get formdef or xform and layout xml to send client
 		//formRunner.loadForm(formDef,layoutXml);
-	}
-	
-	private void fillObs(Document doc, Integer encounterId){
-		Encounter encounter = Context.getEncounterService().getEncounter(encounterId);
-		Set<Obs> observations = encounter.getObs();
-		String s = "";
-		for(Obs obs : observations){
-			s+=":" + FormUtil.conceptToString(obs.getConcept(), Context.getLocale());
-			s+="=" + obs.getValueAsString(Context.getLocale());
-		}
-		XformBuilder.setNodeValue(doc, XformBuilder.NODE_PATIENT_FAMILY_NAME, s);
 	}
 }//ROOM NO 303
 //		<form id="selectFormForm" method="get" action="<%= request.getContextPath() %>/module/xforms/xformEntry.form">

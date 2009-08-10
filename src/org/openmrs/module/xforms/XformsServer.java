@@ -81,9 +81,6 @@ public class XformsServer {
 		byte responseStatus = ResponseStatus.STATUS_ERROR;
 
 		try{
-			
-			Context.openSession();
-			
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
 			String name = dis.readUTF();
@@ -92,6 +89,8 @@ public class XformsServer {
 			String locale = dis.readUTF();
 			
 			byte action = dis.readByte();
+			
+			//Context.openSession();
 			
 			try{
 				Context.authenticate(name, pw);
@@ -141,31 +140,31 @@ public class XformsServer {
 			}
 		}
 		finally{
-			Context.closeSession();
+			//Context.closeSession();
 		}
 	}
 
 	private void downloadPatients(String cohortId, OutputStream os) throws Exception{
 		
-		Context.openSession();
+		//Context.openSession();
 		
 		try{
 			PatientDownloadManager.downloadPatients(cohortId, os);
 		}
 		finally{
-			Context.closeSession();
+			//Context.closeSession();
 		}
 	}
 	
 	private void downloadPatients(String name, String identifier, OutputStream os) throws Exception{
 		
-		Context.openSession();
+		//Context.openSession();
 		
 		try{
 			PatientDownloadManager.downloadPatients(name, identifier, os);
 		}
 		finally{
-			Context.closeSession();
+			//Context.closeSession();
 		}
 	}
 	

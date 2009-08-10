@@ -23,14 +23,13 @@ import org.openmrs.module.xforms.Xform;
 import org.openmrs.module.xforms.XformBuilder;
 import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformsService;
-import org.openmrs.module.xforms.XformsUtil;
 import org.openmrs.module.xforms.formentry.FormEntryWrapper;
 import org.openmrs.module.xforms.util.DOMUtil;
+import org.openmrs.module.xforms.util.XformsUtil;
 import org.openmrs.util.FormUtil;
 import org.openmrs.util.OpenmrsUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 
@@ -184,25 +183,6 @@ public class XformDataUploadManager {
 	}
 
 	/**
-	 * Gets a reference to an object implementing the xforms serialization interface.
-	 * 
-	 * @return
-	 */
-	/*private static SerializableData getXformSerializer(){
-		try{
-			String className = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_XFORM_SERIALIZER,XformConstants.DEFAULT_XFORM_SERIALIZER);
-			if(className == null || className.length() == 0)
-				className = XformConstants.DEFAULT_XFORM_SERIALIZER;
-			return (SerializableData)OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
-		}
-		catch(Exception e){
-			log.error(e.getMessage(),e);
-		}
-
-		return null;
-	}*/
-
-	/**
 	 * Gets a map of xforms keyed by the formid
 	 * 
 	 * @return - the xforms map.
@@ -217,7 +197,7 @@ public class XformDataUploadManager {
 		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
 		FormService formService = (FormService)Context.getService(FormService.class);
 
-		Map<Integer,String> xformMap = new HashMap();
+		Map<Integer,String> xformMap = new HashMap<Integer,String>();
 		List<Xform> xforms = xformsService.getXforms();
 		boolean patientXformFound = false; String xformData;
 		for(Xform xform : xforms){

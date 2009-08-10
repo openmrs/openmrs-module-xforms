@@ -40,6 +40,8 @@ public class XformEntryController extends SimpleFormController{
 			map.put("patientId", Integer.parseInt(request.getParameter("patientId")));
 			map.put("formName", ((FormService)Context.getService(FormService.class)).getForm(formId).getName());
 			map.put("entityFormDefDownloadUrlSuffix", "moduleServlet/xforms/xformDownload?target=xformentry&contentType=xml&");
+			map.put("formDataUploadUrlSuffix", "module/xforms/xformDataUpload.form");
+			map.put("afterSubmitUrlSuffix", "patientDashboard.form?");
 		}
 		else{ //editing existing form
 			Integer encounterId = Integer.parseInt(request.getParameter("encounterId"));
@@ -49,6 +51,8 @@ public class XformEntryController extends SimpleFormController{
 			map.put("patientId", encounter.getPatientId());
 			map.put("formName", ((FormService)Context.getService(FormService.class)).getForm(form.getFormId()).getName());
 			map.put("entityFormDefDownloadUrlSuffix", "moduleServlet/xforms/xformDownload?target=xformentry&contentType=xml&encounterId="+encounterId+"&");
+			map.put("formDataUploadUrlSuffix", "module/xforms/xformDataUpload.form?mode=edit");
+			map.put("afterSubmitUrlSuffix", "patientDashboard.form?");
 		}
 
 		map.put(XformConstants.FORM_DESIGNER_KEY_DATE_SUBMIT_FORMAT, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_SUBMIT_FORMAT,XformConstants.DEFAULT_DATE_SUBMIT_FORMAT));

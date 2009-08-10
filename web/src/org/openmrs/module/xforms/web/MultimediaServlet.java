@@ -30,9 +30,8 @@ public class MultimediaServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
 		if("recentbinary".equals(request.getParameter("action"))){
-			if(postData != null){				
+			if(postData != null){	
 				response.setContentType(postContentType);
 				response.getOutputStream().write(postData);
 				postData = null;
@@ -40,8 +39,8 @@ public class MultimediaServlet extends HttpServlet {
 			}
 			return;
 		}
-
-		try{
+		
+		/*try{
 			String sFormId = request.getParameter("formId");
 			String xpath = request.getParameter("xpath");
 			String contentType = request.getParameter("contentType");
@@ -52,7 +51,7 @@ public class MultimediaServlet extends HttpServlet {
 			if(xpath == null || xpath.trim().length() == 0)
 				return;
 
-			/*int id = Integer.parseInt(sFormId);
+			int id = Integer.parseInt(sFormId);
 			FormData formData = Context.getStudyManagerService().getFormData(id);
 			if(formData == null)
 				return;
@@ -74,22 +73,27 @@ public class MultimediaServlet extends HttpServlet {
 			        response.setDateHeader("Expires", -1);
 			        response.setHeader("Cache-Control", "no-store");
 			        
-					if(contentType != null && contentType.trim().length() > 0)
+					if(contentType != null && contentType.trim().length() > 0){
 						response.setContentType(contentType);
+						
+						//Send it as an attachement such that atleast firefox can also detect it
+						if(contentType.contains("video") || contentType.contains("audio"))
+							response.setHeader(OpenXDataConstants.HTTP_HEADER_CONTENT_DISPOSITION, OpenXDataConstants.HTTP_HEADER_CONTENT_DISPOSITION_VALUE + "multimedia.3gp" + "\"");
+					}
 					
 					response.getOutputStream().write(bytes);
 				}
-			}*/
+			}
 		}
 		catch(Exception ex){
 			ex.printStackTrace();
-		}
+		}*/
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		postData = null;
 		postContentType = null;
-
+		
 		CommonsMultipartResolver multipartResover = new CommonsMultipartResolver(/*this.getServletContext()*/);
 		if(multipartResover.isMultipart(request)){
 			MultipartHttpServletRequest multipartRequest = multipartResover.resolveMultipart(request);

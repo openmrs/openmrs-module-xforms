@@ -1,4 +1,4 @@
-package org.openmrs.module.xforms;
+package org.openmrs.module.xforms.util;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -34,6 +34,8 @@ import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
+import org.openmrs.module.xforms.XformBuilder;
+import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.formentry.FormEntryWrapper;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
@@ -338,6 +340,11 @@ public class XformsUtil {
     
     public static String formDate2DisplayString(Date date) {
     	SimpleDateFormat dateFormat = new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_DISPLAY_FORMAT,XformConstants.DEFAULT_DATE_DISPLAY_FORMAT));
+     	return dateFormat.format(date);
+    }
+    
+    public static String formDate2SubmitString(Date date) {
+    	SimpleDateFormat dateFormat = new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_SUBMIT_FORMAT,XformConstants.DEFAULT_DATE_SUBMIT_FORMAT));
      	return dateFormat.format(date);
     }
     

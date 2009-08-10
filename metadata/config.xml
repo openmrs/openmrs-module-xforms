@@ -195,6 +195,10 @@
 		<servlet-name>widgetValueDownload</servlet-name>
 		<servlet-class>@MODULE_PACKAGE@.web.WidgetValueServlet</servlet-class>
 	</servlet>
+	<servlet>
+		<servlet-name>multimediaDownload</servlet-name>
+		<servlet-class>@MODULE_PACKAGE@.web.MultimediaServlet</servlet-class>
+	</servlet>
 	
 	<!-- Internationalization -->
 	<!-- All message codes should start with moduleId.* -->

@@ -17,8 +17,8 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformsServer;
-import org.openmrs.module.xforms.XformsUtil;
 import org.openmrs.module.xforms.download.XformDataUploadManager;
+import org.openmrs.module.xforms.util.XformsUtil;
 
 
 /**
@@ -41,7 +41,6 @@ public class XformDataUploadServlet extends HttpServlet{
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
 		try{
 			//check if external client sending multiple filled forms.
 			if(XformConstants.TRUE_TEXT_VALUE.equalsIgnoreCase(request.getParameter(XformConstants.REQUEST_PARAM_BATCH_ENTRY)))                        

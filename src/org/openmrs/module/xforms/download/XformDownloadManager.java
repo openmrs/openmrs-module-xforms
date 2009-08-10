@@ -14,8 +14,8 @@ import org.openmrs.module.xforms.Xform;
 import org.openmrs.module.xforms.XformBuilder;
 import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformsService;
-import org.openmrs.module.xforms.XformsUtil;
 import org.openmrs.module.xforms.formentry.FormEntryWrapper;
+import org.openmrs.module.xforms.util.XformsUtil;
 
 /**
  * Manages xforms download.

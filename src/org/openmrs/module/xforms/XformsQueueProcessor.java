@@ -25,6 +25,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.formentry.FormEntryWrapper;
 import org.openmrs.module.xforms.model.PersonRepeatAttribute;
 import org.openmrs.module.xforms.util.DOMUtil;
+import org.openmrs.module.xforms.util.XformsUtil;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.springframework.transaction.annotation.Transactional;

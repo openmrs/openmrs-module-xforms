@@ -11,7 +11,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.XformsService;
-import org.openmrs.module.xforms.XformsUtil;
+import org.openmrs.module.xforms.util.XformsUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;

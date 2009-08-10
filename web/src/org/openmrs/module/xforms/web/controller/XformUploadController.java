@@ -15,7 +15,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.Xform;
 import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformsService;
-import org.openmrs.module.xforms.XformsUtil;
+import org.openmrs.module.xforms.util.XformsUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;

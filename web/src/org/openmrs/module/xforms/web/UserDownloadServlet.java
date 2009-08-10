@@ -16,8 +16,8 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformsServer;
-import org.openmrs.module.xforms.XformsUtil;
 import org.openmrs.module.xforms.download.UserDownloadManager;
+import org.openmrs.module.xforms.util.XformsUtil;
 
 import com.jcraft.jzlib.JZlib;
 import com.jcraft.jzlib.ZOutputStream;
