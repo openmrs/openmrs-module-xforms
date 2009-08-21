@@ -274,7 +274,8 @@
         		qtnTypeGPS: "<spring:message code="xforms.qtnTypeGPS" />",
         		palette: "<spring:message code="xforms.palette" />",
         		saveAsXhtml: "<spring:message code="xforms.saveAsXhtml" />",
-        		groupWidgets: "<spring:message code="xforms.groupWidgets" />"
+        		groupWidgets: "<spring:message code="xforms.groupWidgets" />",
+        		action: "<spring:message code="xforms.action" />"
     	};
     </script>
     
