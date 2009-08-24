@@ -31,6 +31,14 @@ public class DOMUtil {
 	public static String getElementValue(Document doc,String name){
 		return getElementValue(doc.getDocumentElement(),name);
 	}
+	
+	public static boolean setElementValue(Element root,String name,String value){
+		NodeList elemList = root.getElementsByTagName(name);
+		if (!(elemList != null && elemList.getLength() > 0))
+			return false;
+		elemList.item(0).setTextContent(value);
+		return true;
+	}
 
 	/**
 	 * Checks if a document is a create new patient one.
@@ -44,8 +52,6 @@ public class DOMUtil {
 	}
 	
 	public static boolean isNewPatientElementDoc(Element element){
-		System.out.println("node name="+element.getNodeName());
-		System.out.println("attribute value="+element.getAttribute(XformBuilder.ATTRIBUTE_ID));
 		return (element.getNodeName().equalsIgnoreCase(XformBuilder.NODE_PATIENT) && 
 				String.valueOf(XformConstants.PATIENT_XFORM_FORM_ID).equals(element.getAttribute(XformBuilder.ATTRIBUTE_ID)));
 	}

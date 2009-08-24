@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>xforms</id>
 	<name>XForms</name>
-	<version>2.9</version>
+	<version>3.0</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Daniel Kayiwa</author>
 	<description>
@@ -150,6 +150,21 @@
 		<property>@MODULE_ID@.useEncounterXform</property>
 		<defaultValue>false</defaultValue>
 		<description>Set to true if you want to use XForms to edit encounters, else set to false.</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.smsSendSuccessReports</property>
+		<defaultValue>true</defaultValue>
+		<description>Set to true if you want sms sender to get success reports, else set to false.</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.smsSendFailureReports</property>
+		<defaultValue>true</defaultValue>
+		<description>Set to true if you want sms sender to get failure reports, else set to false.</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.smsFieldSepChar</property>
+		<defaultValue>=</defaultValue>
+		<description>The separator for different fields in the sms text.</description>
 	</globalProperty>
 	<!-- /Required Global Properties -->
 

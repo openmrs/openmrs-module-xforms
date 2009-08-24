@@ -115,7 +115,8 @@ public final class XformBuilder {
 	public static final String ATTRIBUTE_OPENMRS_ATTRIBUTE = "openmrs_attribute";
 	public static final String ATTRIBUTE_OPENMRS_TABLE = "openmrs_table";
 	public static final String ATTRIBUTE_SUBMISSION = "submission";
-	public static final String ATTRIBUTE_READONLY= "readonly";
+	public static final String ATTRIBUTE_READONLY = "readonly";
+	public static final String ATTRIBUTE_LOCKED = "locked";
 	public static final String ATTRIBUTE_REQUIRED = "required";
 	public static final String ATTRIBUTE_DESCRIPTION_TEMPLATE = "description-template";
 	public static final String ATTRIBUTE_BASE = "base";	
@@ -139,6 +140,7 @@ public final class XformBuilder {
 	public static final String NODE_PATIENT_GIVEN_NAME = "patient.given_name";
 	public static final String NODE_PATIENT_BIRTH_DATE = "patient.birthdate";
 	public static final String NODE_PATIENT_GENDER = "patient.sex";
+	public static final String NODE_PATIENT_IDENTIFIER_TYPE= "patient_identifier.identifier_type";
 
 	public static final String NODE_PATIENT_ID = "patient_id";
 	public static final String NODE_FAMILY_NAME = "family_name";
@@ -173,6 +175,14 @@ public final class XformBuilder {
 	public static final String MODEL_ID = "openmrs_model";
 	public static final String INSTANCE_ID = "openmrs_model_instance";
 
+	public static final String BINDING_LOCATION_ID = "/form/encounter/encounter.location_id";
+	public static final String BINDING_PATIENT_ID = "/form/patient/patient.patient_id";
+	public static final String BINDING_FAMILY_NAME = "/form/patient/patient.family_name";
+	public static final String BINDING_GIVEN_NAME = "/form/patient/patient.given_name";
+	public static final String BINDING_MIDDLE_NAME = "/form/patient/patient.middle_name";
+	public static final String BINDING_GENDER = "/form/patient/patient.sex";
+	public static final String BINDING_BIRTH_DATE = "/form/patient/patient.birthdate";
+	public static final String BINDING_IDENTIFIER_TYPE = "/form/patient/patient_identifier.identifier_type";
 
 	/**
 	 * Builds an Xform from an openmrs schema and template xml.
@@ -636,6 +646,7 @@ public final class XformBuilder {
 		else if(name.equalsIgnoreCase(NODE_PATIENT_PATIENT_ID)){
 			bindNode.setAttribute(null, ATTRIBUTE_REQUIRED, XPATH_VALUE_TRUE);
 			bindNode.setAttribute(null, ATTRIBUTE_READONLY, XPATH_VALUE_TRUE);
+			bindNode.setAttribute(null, ATTRIBUTE_LOCKED, XPATH_VALUE_TRUE);
 		}
 		else if(name.equalsIgnoreCase(NODE_PATIENT_FAMILY_NAME))
 			bindNode.setAttribute(null, ATTRIBUTE_READONLY, XPATH_VALUE_TRUE);
@@ -643,10 +654,15 @@ public final class XformBuilder {
 			bindNode.setAttribute(null, ATTRIBUTE_READONLY, XPATH_VALUE_TRUE);
 		else if(name.equalsIgnoreCase(NODE_PATIENT_GIVEN_NAME))
 			bindNode.setAttribute(null, ATTRIBUTE_READONLY, XPATH_VALUE_TRUE);
-		else
+		else{
 			//all table field are readonly on forms since they cant be populated in their tables 
 			//form encounter forms. This population only happens when creating or editing patient.
 			bindNode.setAttribute(null, ATTRIBUTE_READONLY, XPATH_VALUE_TRUE);
+			bindNode.setAttribute(null, ATTRIBUTE_LOCKED, XPATH_VALUE_TRUE);
+		}
+		
+		if(name.equalsIgnoreCase(NODE_PATIENT_BIRTH_DATE))
+			bindNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_DATE);
 	}
 
 	private static void setTableFieldDefaultValue(String name, Element formElement){

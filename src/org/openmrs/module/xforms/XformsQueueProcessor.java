@@ -3,6 +3,7 @@ package org.openmrs.module.xforms;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.Date;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -154,7 +155,8 @@ public class XformsQueueProcessor {
 	
 	private void submitXForm(Document doc, String xml, String pathName, boolean archive){
 		String xmlOriginal = xml;
-		try{	
+		try{
+			fillPatientIdIfMissing(doc);
 			setMultipleSelectValues(doc.getDocumentElement());
 			xml = XformsUtil.doc2String(doc);
 			FormEntryWrapper.createFormEntryQueue(xml);
@@ -251,7 +253,7 @@ public class XformsQueueProcessor {
 
 		String val = DOMUtil.getElementValue(root,XformBuilder.NODE_BIRTH_DATE);
 		if(val != null && val.length() > 0)
-			try{ pt.setBirthdate(XformsUtil.formString2Date(val)); } catch(Exception e){log.error(val,e); }
+			try{ pt.setBirthdate(XformsUtil.fromSubmitString2Date(val)); } catch(Exception e){log.error(val,e); }
 
 			pt.setGender(DOMUtil.getElementValue(root,XformBuilder.NODE_GENDER));
 			pt.setCreator(creator);
@@ -499,5 +501,99 @@ public class XformsQueueProcessor {
 		}
 
 		return multipSelect;
+	}
+	
+	private void fillPatientIdIfMissing(Document doc) throws Exception{
+		String patientid = DOMUtil.getElementValue(doc,XformBuilder.NODE_PATIENT_PATIENT_ID);
+		if(patientid != null && patientid.trim().length() > 0)
+			return; //patient id is properly filled. may need to check if the patient exists
+		
+		//Check if patient identifier is filled.
+		String patientIdentifier = getPatientIdentifier(doc);;
+		if(patientIdentifier == null || patientIdentifier.trim().length() == 0)
+			throw new Exception("Expected patient identifier value");
+
+		List<Patient> patients = Context.getPatientService().getPatients(null, patientIdentifier, null);
+		if(patients != null && patients.size() > 1)
+			throw new Exception("More than one patient was found with identifier " + patientIdentifier);
+
+		if(patients != null && patients.size() == 1){
+			DOMUtil.setElementValue(doc.getDocumentElement(), XformBuilder.NODE_PATIENT_PATIENT_ID, patients.get(0).getPatientId().toString());
+			return;
+		}
+
+		//Check if patient identifier type is filled
+		String identifierType = DOMUtil.getElementValue(doc, XformBuilder.NODE_PATIENT_IDENTIFIER_TYPE);
+		if(identifierType == null || identifierType.trim().length() == 0)
+			throw new Exception("Expected patient identifier type value");
+
+		//Check if family name is filled.
+		String familyName = DOMUtil.getElementValue(doc, XformBuilder.NODE_PATIENT_FAMILY_NAME);
+		if(familyName == null || familyName.trim().length() == 0)
+			throw new Exception("Expected patient family name value");
+
+		//Check if gender is filled
+		String gender = DOMUtil.getElementValue(doc, XformBuilder.NODE_PATIENT_GENDER);
+		if(gender == null || gender.trim().length() == 0)
+			throw new Exception("Expected patient gender value");
+
+		//Check if birth date is filled
+		String birthDate = DOMUtil.getElementValue(doc, XformBuilder.NODE_PATIENT_BIRTH_DATE);
+		if(birthDate == null || birthDate.trim().length() == 0)
+			throw new Exception("Expected patient birth date value");
+
+		Patient patient = new Patient();
+		patient.setCreator(getCreator(doc));
+		patient.setDateCreated(new Date());	
+		patient.setGender(gender);
+
+		PersonName pn = new PersonName();
+
+		pn.setFamilyName(familyName);
+		pn.setGivenName(DOMUtil.getElementValue(doc, XformBuilder.NODE_PATIENT_GIVEN_NAME));
+		pn.setMiddleName(DOMUtil.getElementValue(doc, XformBuilder.NODE_PATIENT_MIDDLE_NAME));
+
+		pn.setCreator(patient.getCreator());
+		pn.setDateCreated(patient.getDateCreated());
+		patient.addName(pn);
+
+		PatientIdentifier identifier = new PatientIdentifier();
+		identifier.setCreator(patient.getCreator());
+		identifier.setDateCreated(patient.getDateCreated());
+		identifier.setIdentifier(patientIdentifier.toString());
+
+		int id = Integer.parseInt(identifierType);
+		PatientIdentifierType idtfType = Context.getPatientService().getPatientIdentifierType(id);
+
+		identifier.setIdentifierType(idtfType);
+		identifier.setLocation(getLocation(DOMUtil.getElementValue(doc, XformBuilder.NODE_ENCOUNTER_LOCATION_ID)));
+		patient.addIdentifier(identifier);
+
+		patient.setBirthdate(XformsUtil.fromSubmitString2Date(birthDate.toString()));
+
+		Context.getPatientService().savePatient(patient);
+		DOMUtil.setElementValue(doc.getDocumentElement(), XformBuilder.NODE_PATIENT_PATIENT_ID, patient.getPatientId().toString());
+	}
+	
+	private String getPatientIdentifier(Document doc){
+		NodeList elemList = doc.getDocumentElement().getElementsByTagName("patient");
+		if (!(elemList != null && elemList.getLength() > 0))
+			return null;
+		
+		Element patientNode = (Element)elemList.item(0);
+
+		NodeList children = patientNode.getChildNodes();
+		int len = patientNode.getChildNodes().getLength();
+		for(int index=0; index<len; index++){
+			Node child = children.item(index);
+			if(child.getNodeType() != Node.ELEMENT_NODE)
+				continue;
+			
+			if("patient_identifier".equalsIgnoreCase(((Element)child).getAttribute("openmrs_table")) &&
+					"identifier".equalsIgnoreCase(((Element)child).getAttribute("openmrs_attribute")))
+				return child.getTextContent();
+		}
+
+		return null;
 	}
 }

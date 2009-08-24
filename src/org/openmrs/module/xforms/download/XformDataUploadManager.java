@@ -150,7 +150,7 @@ public class XformDataUploadManager {
 	 * 
 	 * @param xml - the xforms model.
 	 */
-	private static void queueForm(String xml) throws Exception{
+	public static void queueForm(String xml) throws Exception{
 		File file = OpenmrsUtil.getOutFile(XformsUtil.getXformsQueueDir(), new Date(), Context.getAuthenticatedUser());
 		FileWriter writter = new FileWriter(file); //new FileWriter(pathName, false);
 		writter.write(xml);

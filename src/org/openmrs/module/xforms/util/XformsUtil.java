@@ -333,8 +333,23 @@ public class XformsUtil {
      * @return - the Date object.
      * @throws ParseException - when passed a badly formatted date.
      */
-    public static Date formString2Date(String date) throws ParseException {
+    public static Date fromSubmitString2Date(String date) throws ParseException {
     	SimpleDateFormat dateFormat = new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_SUBMIT_FORMAT,XformConstants.DEFAULT_DATE_SUBMIT_FORMAT));
+     	return dateFormat.parse(date);
+    }
+    
+    public static Date fromDisplayString2Date(String date) throws ParseException {
+    	SimpleDateFormat dateFormat = new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_DISPLAY_FORMAT,XformConstants.DEFAULT_DATE_DISPLAY_FORMAT));
+     	return dateFormat.parse(date);
+    }
+    
+    public static Date fromDisplayString2DateTime(String date) throws ParseException {
+    	SimpleDateFormat dateFormat = new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_TIME_DISPLAY_FORMAT,XformConstants.DEFAULT_DATE_TIME_DISPLAY_FORMAT));
+     	return dateFormat.parse(date);
+    }
+    
+    public static Date fromDisplayString2Time(String date) throws ParseException {
+    	SimpleDateFormat dateFormat = new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_TIME_DISPLAY_FORMAT,XformConstants.DEFAULT_TIME_DISPLAY_FORMAT));
      	return dateFormat.parse(date);
     }
     
@@ -345,6 +360,16 @@ public class XformsUtil {
     
     public static String formDate2SubmitString(Date date) {
     	SimpleDateFormat dateFormat = new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_SUBMIT_FORMAT,XformConstants.DEFAULT_DATE_SUBMIT_FORMAT));
+     	return dateFormat.format(date);
+    }
+    
+    public static String formDateTime2SubmitString(Date date) {
+    	SimpleDateFormat dateFormat = new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_TIME_SUBMIT_FORMAT,XformConstants.DEFAULT_DATE_TIME_SUBMIT_FORMAT));
+     	return dateFormat.format(date);
+    }
+    
+    public static String formTime2SubmitString(Date date) {
+    	SimpleDateFormat dateFormat = new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_TIME_SUBMIT_FORMAT,XformConstants.DEFAULT_TIME_SUBMIT_FORMAT));
      	return dateFormat.format(date);
     }
     

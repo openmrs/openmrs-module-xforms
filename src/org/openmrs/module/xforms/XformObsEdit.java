@@ -1,5 +1,6 @@
 package org.openmrs.module.xforms;
 
+import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
@@ -7,6 +8,15 @@ import java.util.Hashtable;
 import java.util.Locale;
 import java.util.Set;
 
+import javax.servlet.ServletException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.app.event.EventCartridge;
+import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.runtime.log.CommonsLogLogChute;
 import org.kxml2.kdom.Document;
 import org.kxml2.kdom.Element;
 import org.openmrs.Concept;
@@ -21,6 +31,7 @@ import org.openmrs.module.xforms.util.XformsUtil;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.UserEditor;
+import org.openmrs.reporting.export.DataExportUtil.VelocityExceptionHandler;
 import org.openmrs.util.FormConstants;
 import org.openmrs.util.FormUtil;
 
@@ -32,7 +43,10 @@ import org.openmrs.util.FormUtil;
  */
 public class XformObsEdit {
 
+	private static final Log log = LogFactory.getLog(XformObsEdit.class);
+
 	public static void fillObs(Document doc, Integer encounterId){
+
 		Element formNode = XformBuilder.getElement(doc.getRootElement(),"form");
 		if(formNode == null)
 			return;
@@ -103,7 +117,7 @@ public class XformObsEdit {
 		Integer encounterId = Integer.parseInt(formNode.getAttributeValue(null, "encounterId"));
 		Encounter encounter = Context.getEncounterService().getEncounter(encounterId);
 		setEncounterHeader(encounter,formNode);
-		
+
 		Hashtable<String,String[]> multipleSelValues = new Hashtable<String,String[]>();
 
 		Set<Obs> observations = encounter.getObs();
@@ -127,28 +141,28 @@ public class XformObsEdit {
 				if(valueNode != null){
 					String oldValue = obs.getValueAsString(Context.getLocale());
 					String newValue = XformBuilder.getTextValue(valueNode);
-					
+
 					if(concept.getDatatype().isCoded())
 						oldValue = conceptToString(obs.getValueCoded(), Context.getLocale());
-					
+
 					if(oldValue.equals(newValue))
 						continue; //obs has not changed
-					
+
 					voidObs(obs,datetime,obs2Void);
-					
+
 					if(newValue == null || newValue.trim().length() == 0)
 						continue;
-					
+
 					//setObsValue(obs,newValue);
-					
+
 					//obs.setDateChanged(datetime);
 					//obs.setChangedBy(Context.getAuthenticatedUser());
-					
+
 					encounter.addObs(createObs(concept,newValue,datetime));
 				}
 				else
 					throw new IllegalArgumentException("cannot locate node for concept: " + concept.getDisplayString());
-			
+
 			}
 		}
 
@@ -156,20 +170,20 @@ public class XformObsEdit {
 
 		return encounter;
 	}
-	
+
 	private static void voidObs(Obs obs, Date datetime, Set<Obs> obs2Void){
 		obs.setVoided(true);
 		obs.setVoidedBy(Context.getAuthenticatedUser());
 		obs.setDateVoided(datetime);
 		obs.setVoidReason("xformsmodule"); //TODO Need to set this from user.
-		
+
 		obs2Void.add(obs);
 	}
-	
+
 	private static void setEncounterHeader(Encounter encounter, Element formNode) throws Exception{
 		encounter.setLocation(Context.getLocationService().getLocation(Integer.valueOf(XformBuilder.getNodeValue(formNode, XformBuilder.NODE_ENCOUNTER_LOCATION_ID))));
 		encounter.setProvider(Context.getUserService().getUser(Integer.valueOf(XformBuilder.getNodeValue(formNode, XformBuilder.NODE_ENCOUNTER_PROVIDER_ID))));
-		encounter.setEncounterDatetime(XformsUtil.formString2Date(XformBuilder.getNodeValue(formNode, XformBuilder.NODE_ENCOUNTER_ENCOUNTER_DATETIME)));
+		encounter.setEncounterDatetime(XformsUtil.fromSubmitString2Date(XformBuilder.getNodeValue(formNode, XformBuilder.NODE_ENCOUNTER_ENCOUNTER_DATETIME)));
 	}
 
 	private static void addNewObs(Encounter encounter, Element obsNode, Date datetime) throws Exception{
@@ -193,7 +207,7 @@ public class XformObsEdit {
 				String obsId = node.getAttributeValue(null, "obsId");
 				if(obsId != null && obsId.trim().length() > 0)
 					continue; //new obs cant have an obs id
-				
+
 				Element valueNode = XformBuilder.getElement(node, "value");
 				if(valueNode == null)
 					continue;
@@ -224,7 +238,7 @@ public class XformObsEdit {
 				continue;
 
 			Element valueNode = (Element)node.getChild(i);
-			
+
 			String obsId = valueNode.getAttributeValue(null, "obsId");
 			if(obsId != null && obsId.trim().length() > 0)
 				continue; //new obs cant have an obs id
@@ -232,10 +246,10 @@ public class XformObsEdit {
 			String conceptStr = valueNode.getAttributeValue(null, "openmrs_concept");
 			if(conceptStr == null || conceptStr.trim().length() == 0)
 				continue; //must have an openmrs_concept attribute hence nothing like date or value nodes
-			
+
 			if(!contains(valueNode.getName(),valueArray))
 				continue; //name must be in the xforms_value
-			
+
 			Obs obs = createObs(concept,conceptStr,datetime);
 			encounter.addObs(obs);
 		}
@@ -276,7 +290,7 @@ public class XformObsEdit {
 			obs.setValueNumeric(booleanValue ? 1.0 : 0.0);
 		}
 		else if (dt.isDate())
-			obs.setValueDatetime(XformsUtil.formString2Date(value));
+			obs.setValueDatetime(XformsUtil.fromSubmitString2Date(value));
 		else if ("ZZ".equals(dt.getHl7Abbreviation())) {
 			// don't set a value
 		}else
@@ -347,12 +361,12 @@ public class XformObsEdit {
 
 		return false;
 	}
-	
+
 	public static String conceptToString(Concept concept, Locale locale) {
 		ConceptName localizedName = concept.getName(locale);
 		return conceptToString(concept, localizedName);
 	}
-	
+
 	/**
 	 * Turn the given concept/concept-name pair into a string acceptable for hl7 and forms
 	 * 
@@ -362,24 +376,24 @@ public class XformObsEdit {
 	 */
 	public static String conceptToString(Concept concept, ConceptName localizedName) {
 		return concept.getConceptId() + "^" + localizedName.getName() + "^" + FormConstants.HL7_LOCAL_CONCEPT; // + "^"
-		        // + localizedName.getConceptNameId() + "^" + localizedName.getName() + "^" + FormConstants.HL7_LOCAL_CONCEPT_NAME;
+		// + localizedName.getConceptNameId() + "^" + localizedName.getName() + "^" + FormConstants.HL7_LOCAL_CONCEPT_NAME;
 	}
 }
 
 
-//String s = "";
-//if(formNode != null)
-//	s = "NOT NULL";
-//else
-//	s = "NULL";
-//for(Obs obs : observations){
-//	Concept concept = obs.getConcept();
-//	s+=":" + FormUtil.conceptToString(concept, Context.getLocale());
-//	s+="+++" + FormUtil.getXmlToken(concept.getDisplayString());
-//	s+="=" + obs.getValueAsString(Context.getLocale());
-//
-//	ConceptDatatype dataType = concept.getDatatype();
-//	s += " & " + FormUtil.getXmlToken(obs.getValueAsString(Context.getLocale()));
-//	if(dataType.isCoded())
-//		s += " !! " + FormUtil.conceptToString(obs.getValueCoded(), Context.getLocale());
-//
+	//String s = "";
+	//if(formNode != null)
+	//	s = "NOT NULL";
+	//else
+	//	s = "NULL";
+	//for(Obs obs : observations){
+	//	Concept concept = obs.getConcept();
+	//	s+=":" + FormUtil.conceptToString(concept, Context.getLocale());
+	//	s+="+++" + FormUtil.getXmlToken(concept.getDisplayString());
+	//	s+="=" + obs.getValueAsString(Context.getLocale());
+	//
+	//	ConceptDatatype dataType = concept.getDatatype();
+	//	s += " & " + FormUtil.getXmlToken(obs.getValueAsString(Context.getLocale()));
+	//	if(dataType.isCoded())
+	//		s += " !! " + FormUtil.conceptToString(obs.getValueCoded(), Context.getLocale());
+	//
