@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>xforms</id>
 	<name>XForms</name>
-	<version>3.0</version>
+	<version>3.1</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Daniel Kayiwa</author>
 	<description>
@@ -165,6 +165,11 @@
 		<property>@MODULE_ID@.smsFieldSepChar</property>
 		<defaultValue>=</defaultValue>
 		<description>The separator for different fields in the sms text.</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.complexobs_dir</property>
+		<defaultValue>xforms/complexobs</defaultValue>
+		<description>Directory for storing complex obs used by the xforms module.</description>
 	</globalProperty>
 	<!-- /Required Global Properties -->
 

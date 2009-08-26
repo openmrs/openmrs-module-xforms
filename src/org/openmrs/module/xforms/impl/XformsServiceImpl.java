@@ -150,7 +150,7 @@ public class XformsServiceImpl implements XformsService {
     /**
      * @see org.openmrs.module.xforms.XformsService#getFieldDefaultValue(java.lang.Integer,java.lang.String)
      */
-    public Object getFieldDefaultValue(Integer formId, String fieldName) {
+    public String getFieldDefaultValue(Integer formId, String fieldName) {
         return getXformsDAO().getFieldDefaultValue(formId, fieldName);
     }
 

@@ -151,7 +151,7 @@ public interface XformsService {
 	 * @return the default value of the form field.
 	 */
 	@Transactional(readOnly=true)
-	public Object getFieldDefaultValue(Integer formId, String fieldName);
+	public String getFieldDefaultValue(Integer formId, String fieldName);
 	
 	/**
 	 * Get the XForm for the given form and can create a new one if none exists in the database.

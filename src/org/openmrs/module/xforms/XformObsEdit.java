@@ -1,22 +1,20 @@
 package org.openmrs.module.xforms;
 
-import java.io.StringWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import javax.servlet.ServletException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.app.event.EventCartridge;
-import org.apache.velocity.runtime.RuntimeConstants;
-import org.apache.velocity.runtime.log.CommonsLogLogChute;
 import org.kxml2.kdom.Document;
 import org.kxml2.kdom.Element;
 import org.openmrs.Concept;
@@ -27,25 +25,45 @@ import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.xforms.util.DOMUtil;
 import org.openmrs.module.xforms.util.XformsUtil;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.UserEditor;
-import org.openmrs.reporting.export.DataExportUtil.VelocityExceptionHandler;
 import org.openmrs.util.FormConstants;
 import org.openmrs.util.FormUtil;
+import org.openmrs.util.OpenmrsUtil;
+import org.springframework.util.FileCopyUtils;
+
+import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 
 
 /**
+ * Utility functions and variables for editing for obs using xforms.
  * 
  * @author daniel
  *
  */
+//TODO This class needs to be session aware instead of static
 public class XformObsEdit {
-
+	
 	private static final Log log = LogFactory.getLog(XformObsEdit.class);
 
-	public static void fillObs(Document doc, Integer encounterId){
+	/** A mapping of xpath expressions to their complex data. */
+	private static HashMap<String,byte[]> complexData = new HashMap<String,byte[]>();
+
+	/** A mapping of xpath expressions and their corresponding node names. */
+	private static HashMap<String,String> complexDataNodeNames = new HashMap<String,String>();
+
+	/** A list of xpath expressions for complex data which has beed edited. */
+	private static List<String> dirtyComplexData = new ArrayList<String>();
+
+
+	public static void fillObs(Document doc, Integer encounterId, String xml)throws Exception{
+
+		complexData.clear();
+		complexDataNodeNames.clear();
+		dirtyComplexData.clear();
 
 		Element formNode = XformBuilder.getElement(doc.getRootElement(),"form");
 		if(formNode == null)
@@ -58,6 +76,8 @@ public class XformObsEdit {
 		XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_LOCATION_ID, encounter.getLocation().getLocationId().toString());
 		XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_ENCOUNTER_DATETIME, XformsUtil.formDate2SubmitString(encounter.getEncounterDatetime()));
 		XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_PROVIDER_ID, encounter.getProvider().getUserId().toString());
+
+		List<String> complexObs = DOMUtil.getXformComplexObsNodeNames(xml);
 
 		Set<Obs> observations = encounter.getObs();
 		for(Obs obs : observations){
@@ -93,6 +113,11 @@ public class XformObsEdit {
 			else{
 				Element valueNode = XformBuilder.getElement(node, "value");
 				if(valueNode != null){
+					if(complexObs.contains(node.getName())){
+						String key = getComplexDataKey(formNode.getAttributeValue(null, "id"),"/form/obs/" + node.getName() + "/value");
+						value = getComplexObsValue(node.getName(),valueNode,value,key);
+					}
+
 					XformBuilder.setNodeValue(valueNode,value);
 					valueNode.setAttribute(null, "obsId", obs.getObsId().toString());
 				}
@@ -104,7 +129,25 @@ public class XformObsEdit {
 		//System.out.println(XformBuilder.fromDoc2String(doc));
 	}
 
-	public static Encounter getEditedEncounter(Document doc,Set<Obs> obs2Void) throws Exception{
+	private static String getComplexObsValue(String nodeName, Element valueNode, String value, String key){
+		complexDataNodeNames.put(key, nodeName);
+
+		if(value == null || value.trim().length() == 0)
+			return value;
+
+		try{
+			byte[] bytes = FileCopyUtils.copyToByteArray(new FileInputStream(value));
+			complexData.put(key, bytes);
+			return Base64.encode(bytes);
+		}
+		catch(Exception ex){
+			log.error(ex); //File may be deleted, but that should not prevent loading of the form.
+		}
+
+		return value;
+	}
+
+	public static Encounter getEditedEncounter(Document doc,Set<Obs> obs2Void, String xml) throws Exception{
 		return getEditedEncounter(XformBuilder.getElement(doc.getRootElement(),"form"),obs2Void);
 	}
 
@@ -112,6 +155,9 @@ public class XformObsEdit {
 		if(formNode == null || !"form".equals(formNode.getName()))
 			return null;
 
+		List<String> complexObs = DOMUtil.getModelComplexObsNodeNames(formNode.getAttributeValue(null, "id"));
+		List<String> dirtyComplexObs = getEditedComplexObsNames();
+	
 		Date datetime = new Date();
 
 		Integer encounterId = Integer.parseInt(formNode.getAttributeValue(null, "encounterId"));
@@ -139,19 +185,37 @@ public class XformObsEdit {
 			else{
 				Element valueNode = XformBuilder.getElement(node, "value");
 				if(valueNode != null){
+					String newValue = XformBuilder.getTextValue(valueNode);;
 					String oldValue = obs.getValueAsString(Context.getLocale());
-					String newValue = XformBuilder.getTextValue(valueNode);
 
-					if(concept.getDatatype().isCoded())
-						oldValue = conceptToString(obs.getValueCoded(), Context.getLocale());
+					//Deal with complex obs first
+					if(complexObs.contains(nodeName)){
+						//Continue if complex obs has neither been replaced 
+						//with a another one nor cleared.
+						if(!dirtyComplexObs.contains(nodeName) && 
+								!( (newValue == null || newValue.trim().length() == 0) && 
+										(oldValue != null && oldValue.trim().length() > 0 ) ))
+							continue; //complex obs not modified.
 
-					if(oldValue.equals(newValue))
-						continue; //obs has not changed
+						voidObs(obs,datetime,obs2Void);
 
-					voidObs(obs,datetime,obs2Void);
+						if(newValue == null || newValue.trim().length() == 0)
+							continue; //complex obs just cleared without a replacement.
 
-					if(newValue == null || newValue.trim().length() == 0)
-						continue;
+						newValue = saveComplexObs(nodeName,newValue,formNode);
+					}
+					else{
+						if(concept.getDatatype().isCoded())
+							oldValue = conceptToString(obs.getValueCoded(), Context.getLocale());
+
+						if(oldValue.equals(newValue))
+							continue; //obs has not changed
+
+						voidObs(obs,datetime,obs2Void);
+
+						if(newValue == null || newValue.trim().length() == 0)
+							continue;
+					}
 
 					//setObsValue(obs,newValue);
 
@@ -166,7 +230,7 @@ public class XformObsEdit {
 			}
 		}
 
-		addNewObs(encounter,XformBuilder.getElement(formNode,"obs"),datetime);
+		addNewObs(formNode,complexObs,encounter,XformBuilder.getElement(formNode,"obs"),datetime);
 
 		return encounter;
 	}
@@ -186,7 +250,7 @@ public class XformObsEdit {
 		encounter.setEncounterDatetime(XformsUtil.fromSubmitString2Date(XformBuilder.getNodeValue(formNode, XformBuilder.NODE_ENCOUNTER_ENCOUNTER_DATETIME)));
 	}
 
-	private static void addNewObs(Encounter encounter, Element obsNode, Date datetime) throws Exception{
+	private static void addNewObs(Element formNode, List<String> complexObs,Encounter encounter, Element obsNode, Date datetime) throws Exception{
 		if(obsNode == null)
 			return;
 
@@ -204,17 +268,23 @@ public class XformObsEdit {
 			if(isMultipleSelNode(node))
 				addMultipleSelObs(encounter,concept,node,datetime);
 			else{
+				Element valueNode = XformBuilder.getElement(node, "value");
+				String value = XformBuilder.getTextValue(valueNode);
+				
 				String obsId = node.getAttributeValue(null, "obsId");
 				if(obsId != null && obsId.trim().length() > 0)
 					continue; //new obs cant have an obs id
 
-				Element valueNode = XformBuilder.getElement(node, "value");
 				if(valueNode == null)
 					continue;
-
-				String value = XformBuilder.getTextValue(valueNode);
+				
 				if(value == null || value.trim().length() == 0)
 					continue;
+				
+				String nodeName = node.getName();
+				
+				if(complexObs.contains(nodeName))
+					value = saveComplexObs(nodeName,value,formNode);
 
 				Obs obs = createObs(concept,value,datetime);
 				encounter.addObs(obs);
@@ -378,22 +448,62 @@ public class XformObsEdit {
 		return concept.getConceptId() + "^" + localizedName.getName() + "^" + FormConstants.HL7_LOCAL_CONCEPT; // + "^"
 		// + localizedName.getConceptNameId() + "^" + localizedName.getName() + "^" + FormConstants.HL7_LOCAL_CONCEPT_NAME;
 	}
+
+	public static String getComplexDataKey(String formid, String xpath){
+		return formid + xpath;
+	}
+
+	public static byte[] getComplexData(String formId, String xpath){
+		return complexData.get(getComplexDataKey(formId, xpath));
+	}
+
+	public static void setComplexDataDirty(String formId, String xpath){
+		String key = getComplexDataKey(formId, xpath);
+		if(!dirtyComplexData.contains(key))
+			dirtyComplexData.add(key);
+	}
+
+	private static List<String> getEditedComplexObsNames(){
+		List<String> names = new ArrayList<String>();
+
+		for(String xpath : dirtyComplexData){
+			String name = complexDataNodeNames.get(xpath);
+			if(name != null)
+				names.add(name);
+		}
+
+		return names;
+	}
+
+	private static String saveComplexObs(String nodeName, String value, Element formNode) throws Exception {
+		byte[] bytes = Base64.decode(value);
+
+		String path = formNode.getAttributeValue(null,"name");
+		path += File.separatorChar + nodeName;
+
+		File file = OpenmrsUtil.getOutFile(XformsUtil.getXformsComplexObsDir(path), new Date(), Context.getAuthenticatedUser());
+		FileOutputStream writter = new FileOutputStream(file);
+		writter.write(bytes);
+		writter.close();
+
+		return file.getAbsolutePath();
+	}
 }
 
 
-	//String s = "";
-	//if(formNode != null)
-	//	s = "NOT NULL";
-	//else
-	//	s = "NULL";
-	//for(Obs obs : observations){
-	//	Concept concept = obs.getConcept();
-	//	s+=":" + FormUtil.conceptToString(concept, Context.getLocale());
-	//	s+="+++" + FormUtil.getXmlToken(concept.getDisplayString());
-	//	s+="=" + obs.getValueAsString(Context.getLocale());
-	//
-	//	ConceptDatatype dataType = concept.getDatatype();
-	//	s += " & " + FormUtil.getXmlToken(obs.getValueAsString(Context.getLocale()));
-	//	if(dataType.isCoded())
-	//		s += " !! " + FormUtil.conceptToString(obs.getValueCoded(), Context.getLocale());
-	//
+//String s = "";
+//if(formNode != null)
+//	s = "NOT NULL";
+//else
+//	s = "NULL";
+//for(Obs obs : observations){
+//	Concept concept = obs.getConcept();
+//	s+=":" + FormUtil.conceptToString(concept, Context.getLocale());
+//	s+="+++" + FormUtil.getXmlToken(concept.getDisplayString());
+//	s+="=" + obs.getValueAsString(Context.getLocale());
+//
+//	ConceptDatatype dataType = concept.getDatatype();
+//	s += " & " + FormUtil.getXmlToken(obs.getValueAsString(Context.getLocale()));
+//	if(dataType.isCoded())
+//		s += " !! " + FormUtil.conceptToString(obs.getValueCoded(), Context.getLocale());
+//

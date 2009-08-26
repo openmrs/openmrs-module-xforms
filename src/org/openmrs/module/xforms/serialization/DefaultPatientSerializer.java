@@ -1,8 +1,9 @@
 package org.openmrs.module.xforms.serialization;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -50,7 +51,7 @@ public class DefaultPatientSerializer {
 	 *            the stream to write to.
 	 */
 	protected void serialize(Patient patient, DataOutputStream dos) {
-		try {
+		try {			
 			SerializationUtils.writeInteger(dos, patient.getPatientId());
 
 			PersonName personName = patient.getPersonName();
@@ -77,8 +78,10 @@ public class DefaultPatientSerializer {
 	 * @see org.openmrs.module.xforms.SerializableData#serialize(java.io.DataOutputStream,
 	 *      java.lang.Object)
 	 */
-	public void serialize(DataOutputStream dos, Object data) {
+	public void serialize(OutputStream os, Object data) {
 		try {
+			DataOutputStream dos = new DataOutputStream(os);
+			
 			if (data == null)
 				return;
 			PatientData patientData = (PatientData) data; // data will always be a patient data.
@@ -146,7 +149,7 @@ public class DefaultPatientSerializer {
 	 * @see org.openmrs.module.xforms.SerializableData#deSerialize(java.io.DataInputStream,
 	 *      java.lang.Object)
 	 */
-	public Object deSerialize(DataInputStream dis, Object data) {
+	public Object deSerialize(InputStream is, Object data) {
 		return null; // not necessary for now because patients come back as
 						// xforms.
 	}

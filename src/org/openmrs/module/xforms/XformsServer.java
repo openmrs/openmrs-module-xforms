@@ -90,7 +90,7 @@ public class XformsServer {
 			
 			byte action = dis.readByte();
 			
-			//Context.openSession();
+			Context.openSession();
 			
 			try{
 				Context.authenticate(name, pw);
@@ -140,7 +140,7 @@ public class XformsServer {
 			}
 		}
 		finally{
-			//Context.closeSession();
+			Context.closeSession();
 		}
 	}
 

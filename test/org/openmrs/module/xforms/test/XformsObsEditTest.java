@@ -84,7 +84,8 @@ public class XformsObsEditTest extends BaseModuleContextSensitiveTest{
 	public void testGetEditedEncounter() throws Exception{
 		authenticate();
 
-		Document doc = XformBuilder.getDocument(getDoc());
+		String xml = getDoc();
+		Document doc = XformBuilder.getDocument(xml);
 
 		Set<Obs> obs2Void = new HashSet<Obs>();
 		Encounter encounter = XformObsEdit.getEditedEncounter(XformBuilder.getElement(doc.getRootElement(), "form"),obs2Void);

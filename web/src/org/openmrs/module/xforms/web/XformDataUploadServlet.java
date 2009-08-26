@@ -55,7 +55,9 @@ public class XformDataUploadServlet extends HttpServlet{
 
 					///else single form filled from browser.
 					XformDataUploadManager.processXform(IOUtils.toString(request.getInputStream()),request.getSession().getId(),XformsUtil.getEnterer());
-					setSingleEntryResponse(request, response);
+					//setSingleEntryResponse(request, response);
+					response.setStatus(HttpServletResponse.SC_OK);
+					response.getOutputStream().println("Data submitted successfully");
 				} 
 			}
 		}

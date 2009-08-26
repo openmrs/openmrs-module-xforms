@@ -10,19 +10,25 @@ public class XformConstants {
 	//TODO More constants need to be put in this class from the various classes where they are scattered.
 	
 	/** 
-	 * The dirrectory where to put xforms that are not submitted to the formentry queue
+	 * The name of the global property for the directory where to put xforms that are not submitted to the formentry queue
 	 * because of errors.
 	 */
 	public static final String XFORMS_ERROR_DIR = "xforms.error_dir";
 	
-	/** The default xforms error dirrectory. */
+	/** The default xforms error directory. */
 	public static final String XFORMS_ERROR_DIR_DEFAULT = "xforms/error";
 	
-	/** The dirrectory for queuing xforms before they are processed. */
+	/** The name of the global property for the directory for queuing xforms before they are processed. */
 	public static final String XFORMS_QUEUE_DIR = "xforms.queue_dir";
 	
-	/** The default xforms queue dirrectory. */
+	/** The default xforms queue directory. */
 	public static final String XFORMS_QUEUE_DIR_DEFAULT = "xforms/queue";
+	
+	/** The name of the global property for the name of the global property for the directory for storing complex obs. */
+	public static final String XFORMS_COMPLEX_OBS_DIR = "xforms.complexobs_dir";
+	
+	/** The default xforms complex obs directory. */
+	public static final String XFORMS_COMPLEX_OBS_DIR_DEFAULT = "xforms/complexobs";
 	
 	/** 
 	 * The dirrectory for archiving xforms after submission to the formentry queue.

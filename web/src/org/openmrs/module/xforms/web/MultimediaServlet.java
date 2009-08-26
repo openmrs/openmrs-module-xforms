@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.openmrs.module.xforms.XformConstants;
+import org.openmrs.module.xforms.XformObsEdit;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
@@ -30,70 +32,61 @@ public class MultimediaServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		String formId = request.getParameter("formId");
+		String xpath = request.getParameter("xpath");
+		String contentType = request.getParameter("contentType");
+		String name = request.getParameter("name");
+		
+		if(name == null || name.trim().length() == 0)
+			name = "multimedia.3gp";
+		
 		if("recentbinary".equals(request.getParameter("action"))){
 			if(postData != null){	
 				response.setContentType(postContentType);
 				response.getOutputStream().write(postData);
 				postData = null;
 				postContentType = null;
+				
+				XformObsEdit.setComplexDataDirty(formId, xpath);
 			}
 			return;
 		}
-		
-		/*try{
-			String sFormId = request.getParameter("formId");
-			String xpath = request.getParameter("xpath");
-			String contentType = request.getParameter("contentType");
 
-			if(sFormId == null || sFormId.trim().length() == 0)
+		try{
+			if(formId == null || formId.trim().length() == 0)
 				return;
 
 			if(xpath == null || xpath.trim().length() == 0)
 				return;
 
-			int id = Integer.parseInt(sFormId);
-			FormData formData = Context.getStudyManagerService().getFormData(id);
-			if(formData == null)
-				return;
+			byte[] bytes = XformObsEdit.getComplexData(formId,xpath);
+			if(bytes != null){		
+				response.setHeader("Cache-Control", "no-cache");
+				response.setHeader("Pragma", "no-cache");
+				response.setDateHeader("Expires", -1);
+				response.setHeader("Cache-Control", "no-store");
 
-			String xml = formData.getData();
-			if(xml == null || xml.trim().length() == 0)
-				return;
+				if(contentType != null && contentType.trim().length() > 0){
+					response.setContentType(contentType);
 
-			Document doc = XmlUtil.fromString2Doc(xml);
-			if(doc == null)
-				return;
-
-			String value = XmlUtil.getNodeValue(doc, xpath);
-			if(value != null && value.trim().length() > 0){
-				byte[] bytes = Base64.decode(value);
-				if(bytes != null){
-					response.setHeader("Cache-Control", "no-cache");
-			        response.setHeader("Pragma", "no-cache");
-			        response.setDateHeader("Expires", -1);
-			        response.setHeader("Cache-Control", "no-store");
-			        
-					if(contentType != null && contentType.trim().length() > 0){
-						response.setContentType(contentType);
-						
-						//Send it as an attachement such that atleast firefox can also detect it
-						if(contentType.contains("video") || contentType.contains("audio"))
-							response.setHeader(OpenXDataConstants.HTTP_HEADER_CONTENT_DISPOSITION, OpenXDataConstants.HTTP_HEADER_CONTENT_DISPOSITION_VALUE + "multimedia.3gp" + "\"");
-					}
-					
-					response.getOutputStream().write(bytes);
+					//Send it as an attachement such that atleast firefox can also detect it
+					if(contentType.contains("video") || contentType.contains("audio"))
+						response.setHeader(XformConstants.HTTP_HEADER_CONTENT_DISPOSITION, XformConstants.HTTP_HEADER_CONTENT_DISPOSITION_VALUE + name + "\"");
 				}
+
+				response.getOutputStream().write(bytes);
 			}
 		}
 		catch(Exception ex){
 			ex.printStackTrace();
-		}*/
+		}
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		postData = null;
 		postContentType = null;
-		
+
 		CommonsMultipartResolver multipartResover = new CommonsMultipartResolver(/*this.getServletContext()*/);
 		if(multipartResover.isMultipart(request)){
 			MultipartHttpServletRequest multipartRequest = multipartResover.resolveMultipart(request);

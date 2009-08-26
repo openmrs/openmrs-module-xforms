@@ -1,7 +1,9 @@
 package org.openmrs.module.xforms;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -35,6 +37,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 
 
 /**
@@ -87,7 +91,7 @@ public class XformsQueueProcessor {
 		try{	
 			Document doc = db.parse(IOUtils.toInputStream(xml));
 			Element root = doc.getDocumentElement();
-			
+
 			if(DOMUtil.isNewPatientDoc(doc)){
 				if(saveNewPatient(root,getCreator(doc)) == null)
 					saveFormInError(xml,pathName);
@@ -98,13 +102,13 @@ public class XformsQueueProcessor {
 				submitXForm(doc,xml,pathName,true);
 			else{
 				Integer patientId = null;
-				
+
 				NodeList list = doc.getDocumentElement().getChildNodes();
 				for(int index = 0; index < list.getLength(); index++){
 					Node node = list.item(index);
 					if(node.getNodeType() != Node.ELEMENT_NODE)
 						continue;
-					
+
 					if(DOMUtil.isNewPatientElementDoc((Element)node)){
 						patientId = saveNewPatient((Element)node,getCreator(doc));
 						if(patientId == null){
@@ -119,7 +123,7 @@ public class XformsQueueProcessor {
 						submitXForm(encounterDoc,xml,pathName,false);
 					}
 				}
-				
+
 				saveFormInArchive(xmlOriginal,pathName);
 			}
 		} catch (Exception e) {
@@ -127,7 +131,7 @@ public class XformsQueueProcessor {
 			saveFormInError(xmlOriginal,pathName);
 		}
 	}
-	
+
 	private Document createNewDocFromNode(DocumentBuilder db, Element element){
 		Document doc = db.newDocument();
 		doc.appendChild(doc.adoptNode(element));
@@ -145,22 +149,23 @@ public class XformsQueueProcessor {
 			NodeList elemList = root.getElementsByTagName(XformBuilder.NODE_PATIENT_PATIENT_ID);
 			if (!(elemList != null && elemList.getLength() > 0)) 
 				return;
-			
+
 			elemList.item(0).setTextContent(patientId.toString());
 		}
 		catch(Exception e){
 			log.error(e.getMessage(),e);
 		}
 	}
-	
+
 	private void submitXForm(Document doc, String xml, String pathName, boolean archive){
 		String xmlOriginal = xml;
 		try{
 			fillPatientIdIfMissing(doc);
+			saveComplexObs(doc);
 			setMultipleSelectValues(doc.getDocumentElement());
 			xml = XformsUtil.doc2String(doc);
 			FormEntryWrapper.createFormEntryQueue(xml);
-			
+
 			if(archive)
 				saveFormInArchive(xmlOriginal,pathName);
 
@@ -502,12 +507,12 @@ public class XformsQueueProcessor {
 
 		return multipSelect;
 	}
-	
+
 	private void fillPatientIdIfMissing(Document doc) throws Exception{
 		String patientid = DOMUtil.getElementValue(doc,XformBuilder.NODE_PATIENT_PATIENT_ID);
 		if(patientid != null && patientid.trim().length() > 0)
 			return; //patient id is properly filled. may need to check if the patient exists
-		
+
 		//Check if patient identifier is filled.
 		String patientIdentifier = getPatientIdentifier(doc);;
 		if(patientIdentifier == null || patientIdentifier.trim().length() == 0)
@@ -574,12 +579,12 @@ public class XformsQueueProcessor {
 		Context.getPatientService().savePatient(patient);
 		DOMUtil.setElementValue(doc.getDocumentElement(), XformBuilder.NODE_PATIENT_PATIENT_ID, patient.getPatientId().toString());
 	}
-	
+
 	private String getPatientIdentifier(Document doc){
 		NodeList elemList = doc.getDocumentElement().getElementsByTagName("patient");
 		if (!(elemList != null && elemList.getLength() > 0))
 			return null;
-		
+
 		Element patientNode = (Element)elemList.item(0);
 
 		NodeList children = patientNode.getChildNodes();
@@ -588,12 +593,48 @@ public class XformsQueueProcessor {
 			Node child = children.item(index);
 			if(child.getNodeType() != Node.ELEMENT_NODE)
 				continue;
-			
+
 			if("patient_identifier".equalsIgnoreCase(((Element)child).getAttribute("openmrs_table")) &&
 					"identifier".equalsIgnoreCase(((Element)child).getAttribute("openmrs_attribute")))
 				return child.getTextContent();
 		}
 
 		return null;
+	}
+
+	private void saveComplexObs(Document doc) throws Exception {
+		/*NodeList nodes = doc.getDocumentElement().getElementsByTagName("obs").item(0).getChildNodes();
+		for(int i=0; i<nodes.getLength(); i++){
+			Node node = nodes.item(i);
+			if(node.getNodeType() != Node.ELEMENT_NODE)
+				continue;
+
+			Element element = (Element)node;
+			if("ED".equalsIgnoreCase(element.getAttribute("openmrs_datatype")))
+				saveComplexObsValue(element);
+		}*/
+
+		List<String> names = DOMUtil.getModelComplexObsNodeNames(doc.getDocumentElement().getAttribute("id"));
+		for(String name : names)
+			saveComplexObsValue(DOMUtil.getElement(doc, name));
+	}
+
+	private void saveComplexObsValue(Element element) throws Exception {
+		String value = DOMUtil.getElementValue(element, "value");
+		if(value == null || value.trim().length() == 0)
+			return;
+
+		byte[] bytes = Base64.decode(value);
+
+		String path = element.getOwnerDocument().getDocumentElement().getAttribute("name");
+		
+		path += File.separatorChar + element.getNodeName();
+
+		File file = OpenmrsUtil.getOutFile(XformsUtil.getXformsComplexObsDir(path), new Date(), Context.getAuthenticatedUser());
+		FileOutputStream writter = new FileOutputStream(file);
+		writter.write(bytes);
+		writter.close();
+
+		DOMUtil.setElementValue(element, "value", file.getAbsolutePath());
 	}
 }

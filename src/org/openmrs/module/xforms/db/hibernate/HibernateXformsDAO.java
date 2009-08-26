@@ -243,7 +243,7 @@ public class HibernateXformsDAO implements XformsDAO {
 	/**
 	 * @see org.openmrs.module.xforms.XformsService#getFieldDefaultValue(java.lang.Integer,java.lang.String)
 	 */
-	public Object getFieldDefaultValue(Integer formId, String fieldName) {
+	/*public Object getFieldDefaultValue(Integer formId, String fieldName) {
 		String sql = "select default_value from field f inner join form_field ff on f.field_id=ff.field_id where form_id="
 			+ formId + " and name='" + fieldName + "'";
 
@@ -258,7 +258,7 @@ public class HibernateXformsDAO implements XformsDAO {
 		}
 
 		return null;
-	}
+	}*/
 
 	public List<PersonRepeatAttribute> getPersonRepeatAttributes(Integer personId, Integer personAttributeId){
 		Query query = sessionFactory.getCurrentSession().createQuery(
@@ -367,5 +367,16 @@ public class HibernateXformsDAO implements XformsDAO {
 		history.setPatientId(patientId);
 		
 		return history;
+	}
+	
+	public String getFieldDefaultValue(Integer formId, String fieldName){
+		String sql = "select default_value from form_field ff inner join field f " +
+					"where ff.field_id=f.field_id " +
+					"and ff.form_id=" + formId + " and name = '" + fieldName + "'";
+		
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		query.addScalar("default_value", Hibernate.STRING);
+		
+		return (String)query.uniqueResult();
 	}
 }

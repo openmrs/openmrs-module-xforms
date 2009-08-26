@@ -14,6 +14,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.runtime.log.CommonsLogLogChute;
 import org.kxml2.kdom.Document;
 import org.openmrs.Form;
 import org.openmrs.Patient;
@@ -242,7 +246,7 @@ public class XformDownloadServlet extends HttpServlet {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	protected void doXformEntryGet(HttpServletRequest request, HttpServletResponse response, Form form,FormService formService,XformsService xformsService, boolean createNew) throws ServletException, IOException {			
+	protected void doXformEntryGet(HttpServletRequest request, HttpServletResponse response, Form form,FormService formService,XformsService xformsService, boolean createNew) throws ServletException, Exception {			
 		String xformXml = XformDownloadManager.getXform(formService,xformsService,form.getFormId(),createNew);
 
 		/*try{
@@ -264,9 +268,10 @@ public class XformDownloadServlet extends HttpServlet {
 		String patientIdParam = request.getParameter(XformConstants.REQUEST_PARAM_PATIENT_ID);
 		if(patientIdParam != null){
 			Integer patientId = Integer.parseInt(patientIdParam);
-			XformBuilder.setNodeValue(doc, XformBuilder.NODE_PATIENT_PATIENT_ID, patientId.toString());
-
 			Patient patient = Context.getPatientService().getPatient(patientId);
+			
+			/*XformBuilder.setNodeValue(doc, XformBuilder.NODE_PATIENT_PATIENT_ID, patientId.toString());
+
 			if(patient.getFamilyName() != null)
 				XformBuilder.setNodeValue(doc, XformBuilder.NODE_PATIENT_FAMILY_NAME, patient.getFamilyName());
 			
@@ -274,18 +279,19 @@ public class XformDownloadServlet extends HttpServlet {
 				XformBuilder.setNodeValue(doc, XformBuilder.NODE_PATIENT_MIDDLE_NAME,patient.getMiddleName());
 			
 			if(patient.getGivenName() != null)
-				XformBuilder.setNodeValue(doc, XformBuilder.NODE_PATIENT_GIVEN_NAME, patient.getGivenName());
+				XformBuilder.setNodeValue(doc, XformBuilder.NODE_PATIENT_GIVEN_NAME, patient.getGivenName());*/
 
 			patientParam = "?"+XformConstants.REQUEST_PARAM_PATIENT_ID+"="+patientId;
 			String phrase = request.getParameter(XformConstants.REQUEST_PARAM_PATIENT_SEARCH_PHRASE);
 			if(phrase != null)
 				patientParam += "&"+XformConstants.REQUEST_PARAM_PATIENT_SEARCH_PHRASE+"=" + phrase;
 
-			XformBuilder.setPatientTableFieldValues(form.getFormId(),doc.getRootElement(), patientId, xformsService);
+			//XformBuilder.setPatientTableFieldValues(form.getFormId(),doc.getRootElement(), patient, xformsService);
+			XformBuilder.setPatientFieldValues(patient,form,doc.getRootElement(), xformsService);
 		}
-		
+
 		if(request.getParameter("encounterId") != null)
-			XformObsEdit.fillObs(doc,Integer.parseInt(request.getParameter("encounterId")));
+			XformObsEdit.fillObs(doc,Integer.parseInt(request.getParameter("encounterId")),xformXml);
 
 		String xml = XformBuilder.fromDoc2String(doc);        
 		Xform xform = xformsService.getXform(form.getFormId());

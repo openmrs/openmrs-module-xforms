@@ -5,10 +5,17 @@ import java.io.DataOutputStream;
 import java.io.FileReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.StringWriter;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.app.event.EventCartridge;
+import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.runtime.log.CommonsLogLogChute;
 import org.kxml2.io.KXmlParser;
 import org.kxml2.io.KXmlSerializer;
 import org.kxml2.kdom.Document;
@@ -17,12 +24,15 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptName;
+import org.openmrs.Form;
 import org.openmrs.Location;
+import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.reporting.export.DataExportUtil.VelocityExceptionHandler;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.xmlpull.v1.XmlPullParser;
 
@@ -637,6 +647,7 @@ public final class XformBuilder {
 	 * @param bindingNode - the binding node whose required and readonly attributes we are to set.
 	 */
 	private static void setTableFieldBindingAttributes(String name, Element bindNode){
+		
 		if(name.equalsIgnoreCase(NODE_ENCOUNTER_ENCOUNTER_DATETIME))
 			bindNode.setAttribute(null, ATTRIBUTE_REQUIRED, XPATH_VALUE_TRUE);
 		else if(name.equalsIgnoreCase(NODE_ENCOUNTER_LOCATION_ID))
@@ -645,21 +656,28 @@ public final class XformBuilder {
 			bindNode.setAttribute(null, ATTRIBUTE_REQUIRED, XPATH_VALUE_TRUE);
 		else if(name.equalsIgnoreCase(NODE_PATIENT_PATIENT_ID)){
 			bindNode.setAttribute(null, ATTRIBUTE_REQUIRED, XPATH_VALUE_TRUE);
-			bindNode.setAttribute(null, ATTRIBUTE_READONLY, XPATH_VALUE_TRUE);
+			//bindNode.setAttribute(null, ATTRIBUTE_READONLY, XPATH_VALUE_TRUE);
 			bindNode.setAttribute(null, ATTRIBUTE_LOCKED, XPATH_VALUE_TRUE);
 		}
-		else if(name.equalsIgnoreCase(NODE_PATIENT_FAMILY_NAME))
+		else{
+			//all table field are readonly on forms since they cant be populated in their tables 
+			//form encounter forms. This population only happens when creating or editing patient.
+			bindNode.setAttribute(null, ATTRIBUTE_LOCKED, XPATH_VALUE_TRUE);
+			
+			//The ATTRIBUTE_READONLY prevents firefox from displaying values in the disabled
+			//widgets. So this is why we are using locked which will still be readonly
+			//but values can be seen in the widgets.
+		}
+		/*else if(name.equalsIgnoreCase(NODE_PATIENT_FAMILY_NAME))
 			bindNode.setAttribute(null, ATTRIBUTE_READONLY, XPATH_VALUE_TRUE);
 		else if(name.equalsIgnoreCase(NODE_PATIENT_MIDDLE_NAME))
 			bindNode.setAttribute(null, ATTRIBUTE_READONLY, XPATH_VALUE_TRUE);
 		else if(name.equalsIgnoreCase(NODE_PATIENT_GIVEN_NAME))
 			bindNode.setAttribute(null, ATTRIBUTE_READONLY, XPATH_VALUE_TRUE);
 		else{
-			//all table field are readonly on forms since they cant be populated in their tables 
-			//form encounter forms. This population only happens when creating or editing patient.
 			bindNode.setAttribute(null, ATTRIBUTE_READONLY, XPATH_VALUE_TRUE);
 			bindNode.setAttribute(null, ATTRIBUTE_LOCKED, XPATH_VALUE_TRUE);
-		}
+		}*/
 		
 		if(name.equalsIgnoreCase(NODE_PATIENT_BIRTH_DATE))
 			bindNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_DATE);
@@ -1484,7 +1502,7 @@ public final class XformBuilder {
 	 * @param patientId - the patient id.
 	 * @param xformsService - the xforms service.
 	 */
-	public static void setPatientTableFieldValues(Integer formId,Element parentNode, Integer patientId, XformsService xformsService){
+	public static void setPatientTableFieldValues(Integer formId,Element parentNode, XformsService xformsService,VelocityEngine velocityEngine, VelocityContext velocityContext) throws Exception{
 		int numOfEntries = parentNode.getChildCount();
 		for (int i = 0; i < numOfEntries; i++) {
 			if (parentNode.getType(i) != Element.ELEMENT)
@@ -1493,14 +1511,26 @@ public final class XformBuilder {
 			Element child = (Element)parentNode.getChild(i);
 			String tableName = child.getAttributeValue(null, ATTRIBUTE_OPENMRS_TABLE);
 			String columnName = child.getAttributeValue(null, ATTRIBUTE_OPENMRS_ATTRIBUTE);
-			if(tableName != null && columnName != null && isUserDefinedNode(child.getName())){
+			/*if(tableName != null && columnName != null && isUserDefinedNode(child.getName())){
 				String filterValue = getFieldDefaultValue(child.getName(), formId,false);
 				Object value  = getPatientValue(xformsService,patientId,tableName,columnName,filterValue);
 				if(value != null)
 					setNodeValue(child, value.toString());
+			}*/
+			
+			if(tableName != null && columnName != null){
+				String value = xformsService.getFieldDefaultValue(formId, child.getName().toUpperCase());
+				if(value != null && value.trim().length() > 0){
+					StringWriter w = new StringWriter();
+					velocityEngine.evaluate(velocityContext, w, XformBuilder.class.getName(), value);
+					value = w.toString();
+					
+					if(value != null && value.trim().length() > 0)
+						setNodeValue(child, value.toString());
+				}
 			}
 
-			setPatientTableFieldValues(formId,child, patientId, xformsService);
+			setPatientTableFieldValues(formId,child, xformsService,velocityEngine,velocityContext);
 		}
 	}
 
@@ -1987,5 +2017,25 @@ public final class XformBuilder {
 		else if(concept.getAnswers() != null && concept.getAnswers().size() > 0)
 			return CONTROL_SELECT1;
 		return  CONTROL_INPUT;
+	}
+	
+	public static void setPatientFieldValues(Patient patient, Form form,Element parentNode, XformsService xformsService) throws Exception {
+		VelocityEngine velocityEngine = new VelocityEngine();
+		velocityEngine.setProperty( RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.runtime.log.CommonsLogLogChute" );
+		velocityEngine.setProperty(CommonsLogLogChute.LOGCHUTE_COMMONS_LOG_NAME, "xforms_velocity");
+		velocityEngine.init();
+		VelocityContext velocityContext = new VelocityContext();
+		velocityContext.put("patient", patient);
+		velocityContext.put("form", form);
+		velocityContext.put("timestamp", new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_TIME_SUBMIT_FORMAT,XformConstants.DEFAULT_DATE_TIME_SUBMIT_FORMAT)));
+		velocityContext.put("date", new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_SUBMIT_FORMAT,XformConstants.DEFAULT_DATE_SUBMIT_FORMAT)));
+		velocityContext.put("time", new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_TIME_SUBMIT_FORMAT,XformConstants.DEFAULT_TIME_SUBMIT_FORMAT)));
+
+		// add the error handler
+		EventCartridge eventCartridge = new EventCartridge();
+		eventCartridge.addEventHandler(new VelocityExceptionHandler());
+		velocityContext.attachEventCartridge(eventCartridge);
+
+		setPatientTableFieldValues(form.getFormId(),parentNode,xformsService,velocityEngine,velocityContext);
 	}
 }

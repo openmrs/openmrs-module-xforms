@@ -79,7 +79,7 @@ public interface XformsDAO {
 	/**
 	 * @see org.openmrs.module.xforms.XformsService#getFieldDefaultValue(java.lang.Integer,java.lang.String)
 	 */
-	public Object getFieldDefaultValue(Integer formId, String fieldName);
+	public String getFieldDefaultValue(Integer formId, String fieldName);
 	
 	
 	public List<PersonRepeatAttribute> getPersonRepeatAttributes(Integer personId, Integer personAttributeId);

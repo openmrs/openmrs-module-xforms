@@ -1,8 +1,9 @@
 package org.openmrs.module.xforms.serialization;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -35,10 +36,12 @@ public class DefaultCohortSerializer {
     }
 
     /**
-     * @see org.openmrs.module.xforms.SerializableData#serialize(java.io.DataOutputStream,java.lang.Object)
+     * @see org.openmrs.module.xforms.SerializableData#serialize(java.io.OutputStream,java.lang.Object)
      */
-    public void serialize(DataOutputStream dos, Object data) {
+    public void serialize(OutputStream os, Object data) {
         try {
+        	DataOutputStream dos = new DataOutputStream(os);
+        	
             List<Cohort> cohorts = (List<Cohort>) data;
 
             dos.writeByte(cohorts.size());
@@ -56,8 +59,10 @@ public class DefaultCohortSerializer {
      * @param cohort - the cohort to serialize.
      * @param dos - the stream to write to.
      */
-    protected void serialize(Cohort cohort, DataOutputStream dos) {
+    protected void serialize(Cohort cohort, OutputStream os) {
         try {
+        	DataOutputStream dos = new DataOutputStream(os);
+        	
             dos.writeInt(cohort.getCohortId());
             dos.writeUTF(cohort.getName());
         } catch (Exception e) {
@@ -66,10 +71,10 @@ public class DefaultCohortSerializer {
     }
 
     /**
-     * @see org.openmrs.module.xforms.SerializableData#deSerialize(java.io.DataInputStream,
+     * @see org.openmrs.module.xforms.SerializableData#deSerialize(java.io.InputStream,
      *      java.lang.Object)
      */
-    public Object deSerialize(DataInputStream dis, Object data) {
+    public Object deSerialize(InputStream is, Object data) {
         return null;
     }
 }

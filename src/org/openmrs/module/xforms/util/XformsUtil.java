@@ -2,7 +2,6 @@ package org.openmrs.module.xforms.util;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -17,6 +16,7 @@ import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -305,6 +305,21 @@ public class XformsUtil {
     }
     
     /**
+     * Gets the directory where the user specified for storage of complex obs.
+     * 
+     * @return directory in which to store xform queue items
+     */
+    public static File getXformsComplexObsDir(String path) {
+ 		AdministrationService as = Context.getAdministrationService();
+		String folderName = as.getGlobalProperty(XformConstants.XFORMS_COMPLEX_OBS_DIR, XformConstants.XFORMS_COMPLEX_OBS_DIR_DEFAULT);
+		File xformsComplexObsDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(folderName+File.separatorChar+path);
+		if (log.isDebugEnabled())
+			log.debug("Loaded xforms complex obs directory from global properties: " + xformsComplexObsDir.getAbsolutePath());
+	
+		return xformsComplexObsDir;
+    }
+    
+    /**
      * Gets the directory where the user specified their xform archives were being stored
      * 
      * @param optional Date to specify the folder this should possibly be sorted into 
@@ -434,13 +449,13 @@ public class XformsUtil {
         Object obj = OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
         
         if(methodName.equals("serializeForms")){
-        	Method method = obj.getClass().getMethod(methodName, new Class[]{DataOutputStream.class,Object.class,Integer.class,String.class});
-        	method.invoke(obj, new Object[]{new DataOutputStream(os), data,new Integer(1),""});
+        	Method method = obj.getClass().getMethod(methodName, new Class[]{OutputStream.class,Object.class,Integer.class,String.class});
+        	method.invoke(obj, new Object[]{os, data,new Integer(1),""});
         }
         else
         {
-           	Method method = obj.getClass().getMethod(methodName, new Class[]{DataOutputStream.class,Object.class});
-        	method.invoke(obj, new Object[]{new DataOutputStream(os), data});
+           	Method method = obj.getClass().getMethod(methodName, new Class[]{OutputStream.class,Object.class});
+        	method.invoke(obj, new Object[]{os, data});
         }
     }
     
@@ -462,13 +477,17 @@ public class XformsUtil {
             className = defaultClassName;
         
         Object obj = OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
-        Method method = obj.getClass().getMethod("deSerialize", new Class[]{DataInputStream.class,Object.class});
+        Method method = obj.getClass().getMethod("deSerialize", new Class[]{InputStream.class,Object.class});
         
-        return method.invoke(obj, new Object[]{new DataInputStream(is), data});
+        return method.invoke(obj, new Object[]{is, data});
     }
     
     /*public static String conceptToString(Concept concept, Locale locale) {
 		return concept.getConceptId() + "^" + concept.getName(locale).getName()
 				+ "^" + FormConstants.HL7_LOCAL_CONCEPT;
 	}*/
+    
+    public static Document fromString2Doc(String xml) throws Exception{
+		return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(IOUtils.toInputStream(xml));
+	}
 }
