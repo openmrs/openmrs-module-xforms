@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kxml2.kdom.Document;
@@ -27,6 +30,7 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.util.DOMUtil;
 import org.openmrs.module.xforms.util.XformsUtil;
+import org.openmrs.module.xforms.web.MultimediaServlet;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.UserEditor;
@@ -44,33 +48,33 @@ import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
  * @author daniel
  *
  */
-//TODO This class needs to be session aware instead of static
 public class XformObsEdit {
 	
 	private static final Log log = LogFactory.getLog(XformObsEdit.class);
 
 	/** A mapping of xpath expressions to their complex data. */
-	private static HashMap<String,byte[]> complexData = new HashMap<String,byte[]>();
+	private static HashMap<String,byte[]> complexData;
 
 	/** A mapping of xpath expressions and their corresponding node names. */
-	private static HashMap<String,String> complexDataNodeNames = new HashMap<String,String>();
+	private static HashMap<String,String> complexDataNodeNames;
 
 	/** A list of xpath expressions for complex data which has beed edited. */
-	private static List<String> dirtyComplexData = new ArrayList<String>();
+	private static List<String> dirtyComplexData;
 
 
-	public static void fillObs(Document doc, Integer encounterId, String xml)throws Exception{
-
-		complexData.clear();
-		complexDataNodeNames.clear();
-		dirtyComplexData.clear();
+	public static void fillObs(HttpServletRequest request,Document doc, Integer encounterId, String xml)throws Exception{
 
 		Element formNode = XformBuilder.getElement(doc.getRootElement(),"form");
 		if(formNode == null)
 			return;
 
 		Encounter encounter = Context.getEncounterService().getEncounter(encounterId);
+		if(encounter == null)
+			return;
 
+		retrieveSessionValues(request);
+		clearSessionData(request,encounter.getForm().getFormId());
+		
 		formNode.setAttribute(null, "encounterId", encounter.getEncounterId().toString());
 
 		XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_LOCATION_ID, encounter.getLocation().getLocationId().toString());
@@ -147,15 +151,20 @@ public class XformObsEdit {
 		return value;
 	}
 
-	public static Encounter getEditedEncounter(Document doc,Set<Obs> obs2Void, String xml) throws Exception{
-		return getEditedEncounter(XformBuilder.getElement(doc.getRootElement(),"form"),obs2Void);
+	public static Encounter getEditedEncounter(HttpServletRequest request,Document doc,Set<Obs> obs2Void, String xml) throws Exception{
+		return getEditedEncounter(request,XformBuilder.getElement(doc.getRootElement(),"form"),obs2Void);
 	}
 
-	public static Encounter getEditedEncounter(Element formNode,Set<Obs> obs2Void) throws Exception{
+	public static Encounter getEditedEncounter(HttpServletRequest request,Element formNode,Set<Obs> obs2Void) throws Exception{
 		if(formNode == null || !"form".equals(formNode.getName()))
 			return null;
+		
+		String formId = formNode.getAttributeValue(null, "id");
+		
+		retrieveSessionValues(request);
+		clearSessionData(request,Integer.parseInt(formId));
 
-		List<String> complexObs = DOMUtil.getModelComplexObsNodeNames(formNode.getAttributeValue(null, "id"));
+		List<String> complexObs = DOMUtil.getModelComplexObsNodeNames(formId);
 		List<String> dirtyComplexObs = getEditedComplexObsNames();
 	
 		Date datetime = new Date();
@@ -453,16 +462,6 @@ public class XformObsEdit {
 		return formid + xpath;
 	}
 
-	public static byte[] getComplexData(String formId, String xpath){
-		return complexData.get(getComplexDataKey(formId, xpath));
-	}
-
-	public static void setComplexDataDirty(String formId, String xpath){
-		String key = getComplexDataKey(formId, xpath);
-		if(!dirtyComplexData.contains(key))
-			dirtyComplexData.add(key);
-	}
-
 	private static List<String> getEditedComplexObsNames(){
 		List<String> names = new ArrayList<String>();
 
@@ -487,6 +486,70 @@ public class XformObsEdit {
 		writter.close();
 
 		return file.getAbsolutePath();
+	}
+	
+	private static void retrieveSessionValues(HttpServletRequest request){
+		HttpSession session = request.getSession();
+		
+		complexData = (HashMap<String,byte[]>)session.getAttribute("XformObsEdit.complexData");
+		complexDataNodeNames = (HashMap<String,String>)session.getAttribute("XformObsEdit.complexDataNodeNames");
+		dirtyComplexData = (List<String>)session.getAttribute("XformObsEdit.dirtyComplexData");
+		
+		if(complexData == null){
+			complexData = new HashMap<String,byte[]>();
+			session.setAttribute("XformObsEdit.complexData", complexData);
+		}
+			
+		if(complexDataNodeNames == null){
+			complexDataNodeNames = new HashMap<String,String>();
+			session.setAttribute("XformObsEdit.complexDataNodeNames", complexDataNodeNames);
+		}
+		
+		if(dirtyComplexData == null){
+			dirtyComplexData = new ArrayList<String>();
+			session.setAttribute("XformObsEdit.dirtyComplexData", dirtyComplexData);
+		}
+	}
+	
+	private static void clearSessionData(HttpServletRequest request,Integer formId){
+		complexData.clear();
+		complexDataNodeNames.clear();
+		dirtyComplexData.clear();
+		
+		MultimediaServlet.clearFormSessionData(request, formId.toString());
+	}
+	
+	
+	public static byte[] getComplexData(HttpServletRequest request,String formId, String xpath){
+		retrieveSessionValues(request);
+		return complexData.get(getComplexDataKey(formId, xpath));
+	}
+
+	public static void setComplexDataDirty(HttpServletRequest request,String formId, String xpath){
+		retrieveSessionValues(request);
+		
+		String key = getComplexDataKey(formId, xpath);
+		if(!dirtyComplexData.contains(key))
+			dirtyComplexData.add(key);
+	}
+	
+	public static void loadAndClearSessionData(HttpServletRequest request,Integer formId){
+		HttpSession session = request.getSession();
+		
+		complexData = (HashMap<String,byte[]>)session.getAttribute("XformObsEdit.complexData");
+		complexDataNodeNames = (HashMap<String,String>)session.getAttribute("XformObsEdit.complexDataNodeNames");
+		dirtyComplexData = (List<String>)session.getAttribute("XformObsEdit.dirtyComplexData");
+
+		if(complexData != null)
+			complexData.clear();
+		
+		if(complexDataNodeNames != null)
+			complexDataNodeNames.clear();
+		
+		if(dirtyComplexData != null)
+			dirtyComplexData.clear();
+		
+		MultimediaServlet.clearFormSessionData(request, formId.toString());
 	}
 }
 

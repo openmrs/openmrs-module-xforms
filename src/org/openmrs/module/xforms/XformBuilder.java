@@ -411,7 +411,7 @@ public final class XformBuilder {
 	 * @return - the label.
 	 */
 	private static String getDisplayText(String name){
-		if(name.equalsIgnoreCase(NODE_ENCOUNTER_ENCOUNTER_DATETIME))
+		/*if(name.equalsIgnoreCase(NODE_ENCOUNTER_ENCOUNTER_DATETIME))
 			return "ENCOUNTER DATE";
 		else if(name.equalsIgnoreCase(NODE_ENCOUNTER_LOCATION_ID))
 			return "LOCATION";
@@ -426,7 +426,21 @@ public final class XformBuilder {
 		else if(name.equalsIgnoreCase(NODE_PATIENT_FAMILY_NAME))
 			return "FAMILY NAME";
 		else
-			return name.replace('_', ' ');
+			return name.replace('_', ' ');*/
+		
+		name = name.replace('.', ' ');
+		name = name.replace("patient ", "");
+		name = name.replace("encounter ", "");
+		name = name.replace("person_address ", "");
+		name = name.replace("patient_address ", "");
+		name = name.replace("person_name ", "");
+		name = name.replace("person_attribute ", "");
+		name = name.replace("patient_identifier ", "");
+		
+		name = name.replace('_', ' '); //This is done after the above in order not to make patient_id=id
+		name = name.toUpperCase();
+		
+		return name;
 	}
 
 	/**

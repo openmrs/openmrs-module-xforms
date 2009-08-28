@@ -28,6 +28,7 @@
 <div id="formDataUploadUrlSuffix" style="visibility:hidden;">module/xforms/xformDataUpload.form</div>
 <div id="afterSubmitUrlSuffix" style="visibility:hidden;">findPatient.htm?</div>
 <div id="externalSourceUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/widgetValueDownload?</div>
+<div id="multimediaUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/multimediaDownload</div>
 
 <div id="defaultFontFamily" style="visibility:hidden;">${defaultFontFamily}</div>
 
@@ -276,7 +277,9 @@
     		qtnTypeGPS: "<spring:message code="xforms.qtnTypeGPS" />",
     		palette: "<spring:message code="xforms.palette" />",
     		saveAsXhtml: "<spring:message code="xforms.saveAsXhtml" />",
-    		groupWidgets: "<spring:message code="xforms.groupWidgets" />"
+    		groupWidgets: "<spring:message code="xforms.groupWidgets" />",
+    		action: "<spring:message code="xforms.action" />",
+    		submitting: "<spring:message code="xforms.submitting" />"
 	};
 </script>
     

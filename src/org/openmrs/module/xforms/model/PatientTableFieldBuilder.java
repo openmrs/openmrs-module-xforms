@@ -82,6 +82,7 @@ public class PatientTableFieldBuilder {
 		Object val;
 		for(PatientTableField pfld : fields){
 			for(Integer patientId : patientids){
+				//TODO Need to use velocity variable replacement here
 				val = xformsService.getPatientValue(patientId, pfld.getTableName(), pfld.getColumnName(),null);
 				if(val != null)
 					fieldValues.add(new PatientTableFieldValue(pfld.getId(),patientId,val));

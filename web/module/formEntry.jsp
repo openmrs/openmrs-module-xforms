@@ -278,7 +278,8 @@
     		palette: "<spring:message code="xforms.palette" />",
     		saveAsXhtml: "<spring:message code="xforms.saveAsXhtml" />",
     		groupWidgets: "<spring:message code="xforms.groupWidgets" />",
-    		action: "<spring:message code="xforms.action" />"
+    		action: "<spring:message code="xforms.action" />",
+    		submitting: "<spring:message code="xforms.submitting" />"
 	};
 </script>
     

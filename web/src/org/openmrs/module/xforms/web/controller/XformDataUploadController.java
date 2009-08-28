@@ -78,7 +78,7 @@ public class XformDataUploadController extends SimpleFormController{
 			else{ //else single form filled from browser.
 				String xml = IOUtils.toString(request.getInputStream());
 				if("edit".equals(request.getParameter("mode")))
-					processXformEdit(xml);
+					processXformEdit(request,xml);
 				else
 					XformDataUploadManager.processXform(xml,request.getSession().getId(),XformsUtil.getEnterer());
 				setSingleEntryResponse(request, response);
@@ -97,11 +97,11 @@ public class XformDataUploadController extends SimpleFormController{
 		return null;
 	}
 	
-	private void processXformEdit(String xml) throws Exception{
+	private void processXformEdit(HttpServletRequest request,String xml) throws Exception{
 		Document doc = XformBuilder.getDocument(xml);
 		
 		Set<Obs> obs2Void = new HashSet<Obs>();
-		Encounter encounter = XformObsEdit.getEditedEncounter(doc.getRootElement(),obs2Void);
+		Encounter encounter = XformObsEdit.getEditedEncounter(request,doc.getRootElement(),obs2Void);
 		
 		//TODO These two below need to be put in a transaction
 		Context.getEncounterService().saveEncounter(encounter);

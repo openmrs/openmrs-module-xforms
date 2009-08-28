@@ -17,6 +17,7 @@
     
     <div id="dateSubmitFormat" style="visibility:hidden;">${dateSubmitFormat}</div>
 	<div id="dateDisplayFormat" style="visibility:hidden;">${dateDisplayFormat}</div>
+	<div id="closeUrl" style="visibility:hidden;">${closeUrl}</div>
     
     <div id="entityIdName" style="visibility:hidden;">patientId</div>
     <div id="formIdName" style="visibility:hidden;">formId</div>
@@ -275,7 +276,8 @@
         		palette: "<spring:message code="xforms.palette" />",
         		saveAsXhtml: "<spring:message code="xforms.saveAsXhtml" />",
         		groupWidgets: "<spring:message code="xforms.groupWidgets" />",
-        		action: "<spring:message code="xforms.action" />"
+        		action: "<spring:message code="xforms.action" />",
+        		submitting: "<spring:message code="xforms.submitting" />"
     	};
     </script>
     

@@ -116,7 +116,9 @@ public class FormSmsParser {
 			String key = text.substring(startindex,pos);  //eg 1=,2=,3=,4=
 			startindex = pos + value.length();
 
-			setQuestionAnswer(getQuestion(key,formData),formData,value.trim(),errors);
+			QuestionData questionData = getQuestion(key,formData,errors);
+			if(questionData != null)
+				setQuestionAnswer(questionData,formData,value.trim(),errors);
 		}
 
 		//Turn off required attribute for patient id for the sake of thoses patients
@@ -228,13 +230,20 @@ public class FormSmsParser {
 		return text.substring(pos);
 	}
 
-	private QuestionData getQuestion(String idtext,org.fcitmuk.epihandy.FormData formData) throws Exception{
-		String text = idtext.substring(0,idtext.indexOf('=')).trim();
+	private QuestionData getQuestion(String idtext,org.fcitmuk.epihandy.FormData formData,List<String> errors) throws Exception{
+		/*String text = idtext.substring(0,idtext.indexOf('=')).trim();
 		int id = Integer.parseInt(text);
 		QuestionData questionData = formData.getQuestion((byte)id);
 		if(questionData == null)
 			throw new Exception("No form question found at position " + id);
 
+		return questionData;*/
+		
+		String text = idtext.substring(0,idtext.indexOf('=')).trim();
+		int id = Integer.parseInt(text);
+		QuestionData questionData = formData.getQuestion((byte)id);
+		if(questionData == null)
+			errors.add("Form has not question at position "+id);
 		return questionData;
 	}
 
@@ -252,6 +261,8 @@ public class FormSmsParser {
 				optionAnswers.addElement(getOptionData(questionDef,values[index],errors));
 			questionData.setAnswer(optionAnswers);
 		}
+		else if(questionDef.getType() == QuestionDef.QTN_TYPE_BOOLEAN)
+			questionData.setAnswer(answer);
 		else
 			questionData.setTextAnswer(answer);
 	}
@@ -350,6 +361,18 @@ public class FormSmsParser {
 		QuestionDef questionDef = questionData.getDef();
 		switch(questionDef.getType()){
 		case QuestionDef.QTN_TYPE_BOOLEAN:
+			if(questionData.getAnswer() == null)
+				return null;
+			else if("1".equals(questionData.getAnswer()) || "yes".equals(questionData.getAnswer()) || "y".equals(questionData.getAnswer())){
+				questionData.setTextAnswer(QuestionData.TRUE_VALUE);
+				return null;
+			}
+			else if("2".equals(questionData.getAnswer()) || "no".equals(questionData.getAnswer()) || "n".equals(questionData.getAnswer())){
+				questionData.setTextAnswer(QuestionData.FALSE_VALUE);
+				return null;
+			}
+			else
+				return questionData.getAnswer() + " " + questionDef.getText() + " should be in list {1,2,y,n,yes,no}";
 		case QuestionDef.QTN_TYPE_TEXT:
 			return null;
 		case QuestionDef.QTN_TYPE_DATE:

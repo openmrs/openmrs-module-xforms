@@ -269,15 +269,15 @@ public class XformDownloadServlet extends HttpServlet {
 		if(patientIdParam != null){
 			Integer patientId = Integer.parseInt(patientIdParam);
 			Patient patient = Context.getPatientService().getPatient(patientId);
-			
+
 			/*XformBuilder.setNodeValue(doc, XformBuilder.NODE_PATIENT_PATIENT_ID, patientId.toString());
 
 			if(patient.getFamilyName() != null)
 				XformBuilder.setNodeValue(doc, XformBuilder.NODE_PATIENT_FAMILY_NAME, patient.getFamilyName());
-			
+
 			if(patient.getMiddleName() != null)
 				XformBuilder.setNodeValue(doc, XformBuilder.NODE_PATIENT_MIDDLE_NAME,patient.getMiddleName());
-			
+
 			if(patient.getGivenName() != null)
 				XformBuilder.setNodeValue(doc, XformBuilder.NODE_PATIENT_GIVEN_NAME, patient.getGivenName());*/
 
@@ -290,14 +290,20 @@ public class XformDownloadServlet extends HttpServlet {
 			XformBuilder.setPatientFieldValues(patient,form,doc.getRootElement(), xformsService);
 		}
 
+		//clear any previously stored form session data
+		XformObsEdit.loadAndClearSessionData(request, form.getFormId());
+
 		if(request.getParameter("encounterId") != null)
-			XformObsEdit.fillObs(doc,Integer.parseInt(request.getParameter("encounterId")),xformXml);
+			XformObsEdit.fillObs(request,doc,Integer.parseInt(request.getParameter("encounterId")),xformXml);
 
 		String xml = XformBuilder.fromDoc2String(doc);        
 		Xform xform = xformsService.getXform(form.getFormId());
-		String layoutXml = xform.getLayoutXml();
-		if(layoutXml != null && layoutXml.length() > 0)
-			xml += XformConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR + layoutXml;
+
+		if(xform != null){
+			String layoutXml = xform.getLayoutXml();
+			if(layoutXml != null && layoutXml.length() > 0)
+				xml += XformConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR + layoutXml;
+		}
 
 		//request.getRequestDispatcher("/xform.jsp").forward(request, response);
 		response.setHeader(XformConstants.HTTP_HEADER_CONTENT_TYPE, XformConstants.HTTP_HEADER_CONTENT_TYPE_XHTML_XML);
