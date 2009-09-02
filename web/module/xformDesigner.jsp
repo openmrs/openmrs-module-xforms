@@ -1,5 +1,9 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
+<script type="text/javascript" src='${pageContext.request.contextPath}/dwr/engine.js'></script>
+<script type="text/javascript" src='${pageContext.request.contextPath}/dwr/util.js'></script>
+<script type="text/javascript" src='${pageContext.request.contextPath}/dwr/interface/DWRXformsService.js'></script>
+
 <html>
   <head>
     <title>OpenMRS Form Designer</title>
@@ -277,8 +281,26 @@
         		saveAsXhtml: "<spring:message code="xforms.saveAsXhtml" />",
         		groupWidgets: "<spring:message code="xforms.groupWidgets" />",
         		action: "<spring:message code="xforms.action" />",
-        		submitting: "<spring:message code="xforms.submitting" />"
+        		submitting: "<spring:message code="xforms.submitting" />",
+        		authenticationPrompt: "<spring:message code="xforms.authenticationPrompt" />",
+        		invalidUser: "<spring:message code="xforms.invalidUser" />",
+        		login: "<spring:message code="xforms.login" />",
+        		userName: "<spring:message code="xforms.userName" />",
+        		password: "<spring:message code="xforms.password" />"
     	};
+
+    	function isUserAuthenticated(){
+    		DWRXformsService.isAuthenticated(checkIfLoggedInCallback);
+    	}
+
+    	function authenticateUser(username, password){
+    		DWRXformsService.authenticate(username,password,checkIfLoggedInCallback);
+    	}
+
+    	function checkIfLoggedInCallback(isLoggedIn) {
+    		authenticationCallback(isLoggedIn);
+    	}
+    	
     </script>
     
   </body>

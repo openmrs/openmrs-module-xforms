@@ -12,6 +12,7 @@ import org.openmrs.Field;
 import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.module.xforms.MedicalHistoryField;
 import org.openmrs.module.xforms.Xform;
 import org.openmrs.module.xforms.XformsService;
@@ -422,4 +423,17 @@ public class DWRXformsService {
 				return 0;
 		}
     }*/
+	
+	public boolean isAuthenticated() {
+        return Context.isAuthenticated();
+    }
+    
+    public boolean authenticate(String user, String pass) {
+        try {
+            Context.authenticate(user, pass);
+            return true;
+        } catch (ContextAuthenticationException ex) {
+            return false;
+        }
+    }
 }

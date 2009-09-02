@@ -1,7 +1,6 @@
 package org.openmrs.module.xforms.util;
 
 import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;

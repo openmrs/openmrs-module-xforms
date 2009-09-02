@@ -109,6 +109,8 @@ public final class XformBuilder {
 	public static final String NODE_OBS= "obs";
 	public static final String NODE_PROBLEM_LIST = "problem_list";
 	public static final String NODE_GROUP = "group";
+	public static final String NODE_MININCLUSIVE = "minInclusive";
+	public static final String NODE_MAXINCLUSIVE = "maxInclusive";
 
 	public static final String ATTRIBUTE_ID = "id";
 	public static final String ATTRIBUTE_NODESET = "nodeset";
@@ -133,6 +135,9 @@ public final class XformBuilder {
 	public static final String ATTRIBUTE_XSI_NILL = "xsi:nil";
 	public static final String ATTRIBUTE_RESOURCE = "resource";
 	public static final String ATTRIBUTE_MULTIPLE = "multiple";
+	public static final String ATTRIBUTE_CONSTRAINT = "constraint";
+	public static final String ATTRIBUTE_MESSAGE = "message";
+	public static final String ATTRIBUTE_VALUE = "value";
 
 	public static final String XPATH_VALUE_TRUE = "true()";
 	public static final String XPATH_VALUE_LAST = "last()";
@@ -170,11 +175,15 @@ public final class XformBuilder {
 	public static final String DATA_TYPE_BOOLEAN = "xsd:boolean";
 	public static final String DATA_TYPE_DECIMAL = "xsd:decimal";
 	public static final String DATA_TYPE_BASE64BINARY = "xsd:base64Binary";
+	public static final String DATA_TYPE_DATETIME = "xsd:dateTime";
+	public static final String DATA_TYPE_TIME = "xsd:time";
 
 	public static final String MULTIPLE_SELECT_VALUE_SEPARATOR = " ";
 
 	/** The last five characters of an xml schema complex type name for a concept. e.g weight_kg_type where _type is appended to the concept weight_kg. */
 	public static final String COMPLEX_TYPE_NAME_POSTFIX = "_type";
+
+	public static final String SIMPLE_TYPE_NAME_POSTFIX = "_type_restricted_type";
 
 	/** The last eight characters of an xml schema complex type name for a concept. e.g problem_added_section where _section is appended to the concept problem_added. */
 	public static final String COMPLEX_SECTION_NAME_POSTFIX = "_section";
@@ -263,7 +272,7 @@ public final class XformBuilder {
 		setNodeValue(node,value);
 		return true;
 	}
-	
+
 	public static String getNodeValue(Element parentNode, String name){
 		Element node = getElement(parentNode,name);
 		if(node == null)
@@ -271,7 +280,7 @@ public final class XformBuilder {
 
 		return getTextValue(node);
 	}
-	
+
 	public static String getTextValue(Element node){
 		int numOfEntries = node.getChildCount();
 		for (int i = 0; i < numOfEntries; i++) {
@@ -427,7 +436,7 @@ public final class XformBuilder {
 			return "FAMILY NAME";
 		else
 			return name.replace('_', ' ');*/
-		
+
 		name = name.replace('.', ' ');
 		name = name.replace("patient ", "");
 		name = name.replace("encounter ", "");
@@ -436,10 +445,10 @@ public final class XformBuilder {
 		name = name.replace("person_name ", "");
 		name = name.replace("person_attribute ", "");
 		name = name.replace("patient_identifier ", "");
-		
+
 		name = name.replace('_', ' '); //This is done after the above in order not to make patient_id=id
 		name = name.toUpperCase();
-		
+
 		return name;
 	}
 
@@ -490,9 +499,10 @@ public final class XformBuilder {
 
 				if(name.equalsIgnoreCase(NODE_ENCOUNTER_LOCATION_ID))
 					populateLocations(controlNode);
-
-				if(name.equalsIgnoreCase(NODE_ENCOUNTER_PROVIDER_ID))
+				else if(name.equalsIgnoreCase(NODE_ENCOUNTER_PROVIDER_ID))
 					populateProviders(controlNode);
+				else if(name.equalsIgnoreCase(NODE_ENCOUNTER_ENCOUNTER_DATETIME))
+					setNodeValue(child, "today()"); //Set encounter date defaulting to today
 			}
 
 			parseTemplate(modelElement,formNode,child,bindings, bodyNode,problemList,problemListItems);
@@ -641,8 +651,11 @@ public final class XformBuilder {
 	 * @param bindingNode - the binding node whose type attribute we are to set.
 	 */
 	private static void setTableFieldDataType(String name, Element bindNode){
-		if(name.equalsIgnoreCase(NODE_ENCOUNTER_ENCOUNTER_DATETIME))
+		if(name.equalsIgnoreCase(NODE_ENCOUNTER_ENCOUNTER_DATETIME)){
 			bindNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_DATE);
+			bindNode.setAttribute(null, ATTRIBUTE_CONSTRAINT, ". &lt;= 'today()'");
+			bindNode.setAttribute(null, ATTRIBUTE_MESSAGE,"Encounter date cannot be after today");
+		}
 		else if(name.equalsIgnoreCase(NODE_ENCOUNTER_LOCATION_ID))
 			bindNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_INT);
 		else if(name.equalsIgnoreCase(NODE_ENCOUNTER_PROVIDER_ID))
@@ -661,7 +674,7 @@ public final class XformBuilder {
 	 * @param bindingNode - the binding node whose required and readonly attributes we are to set.
 	 */
 	private static void setTableFieldBindingAttributes(String name, Element bindNode){
-		
+
 		if(name.equalsIgnoreCase(NODE_ENCOUNTER_ENCOUNTER_DATETIME))
 			bindNode.setAttribute(null, ATTRIBUTE_REQUIRED, XPATH_VALUE_TRUE);
 		else if(name.equalsIgnoreCase(NODE_ENCOUNTER_LOCATION_ID))
@@ -677,7 +690,7 @@ public final class XformBuilder {
 			//all table field are readonly on forms since they cant be populated in their tables 
 			//form encounter forms. This population only happens when creating or editing patient.
 			bindNode.setAttribute(null, ATTRIBUTE_LOCKED, XPATH_VALUE_TRUE);
-			
+
 			//The ATTRIBUTE_READONLY prevents firefox from displaying values in the disabled
 			//widgets. So this is why we are using locked which will still be readonly
 			//but values can be seen in the widgets.
@@ -692,7 +705,7 @@ public final class XformBuilder {
 			bindNode.setAttribute(null, ATTRIBUTE_READONLY, XPATH_VALUE_TRUE);
 			bindNode.setAttribute(null, ATTRIBUTE_LOCKED, XPATH_VALUE_TRUE);
 		}*/
-		
+
 		if(name.equalsIgnoreCase(NODE_PATIENT_BIRTH_DATE))
 			bindNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_DATE);
 	}
@@ -790,6 +803,38 @@ public final class XformBuilder {
 				if(name.equalsIgnoreCase(NODE_SIMPLETYPE) || (name.equalsIgnoreCase(NODE_COMPLEXTYPE) && nameAttribute != null && nameAttribute.startsWith("_") && !nameAttribute.contains("_section"))/*&& isUserDefinedSchemaElement(child)*/)
 					xformSchemaNode.addChild(0, Element.ELEMENT, child);
 			}
+
+			if(name.equalsIgnoreCase(NODE_SIMPLETYPE))
+				parseSimpleType(child,child.getAttributeValue(null, ATTRIBUTE_NAME),bindings);
+		}
+	}
+
+	private static void parseSimpleType(Element simpleTypeNode, String name, Hashtable bindings){
+
+		if(name == null || name.trim().length() == 0)
+			return;
+
+		name = getBindNodeName(name);
+
+		if(name == null || name.trim().length() == 0)
+			return;
+
+		for(int i=0; i<simpleTypeNode.getChildCount(); i++){
+			if(simpleTypeNode.isText(i))
+				continue; //ignore text.
+
+			Element child = (Element)simpleTypeNode.getElement(i);
+			if(child.getName().equalsIgnoreCase(NODE_RESTRICTION))
+				parseRestriction(child,name,bindings);
+		}
+	}
+
+	private static void parseRestriction(Element restrictionNode, String name, Hashtable bindings){
+		Element bindNode = (Element)bindings.get(name);
+		if(bindNode != null){
+			String type = restrictionNode.getAttributeValue(null, ATTRIBUTE_BASE);
+			if("xs:int".equalsIgnoreCase(type) || "xs:float".equalsIgnoreCase(type))
+				addValidationRuleRanges(bindNode,restrictionNode);
 		}
 	}
 
@@ -833,7 +878,63 @@ public final class XformBuilder {
 
 			if(labelNode != null && isNodeWithConceptNameAndId(node))
 				addLabelTextAndHint(labelNode,node);
+			else if(isNodeWithDataType(node))
+				setDataType(bindNode,node);
 		}
+	}
+
+
+	/**
+	 * Checks if the xforms data type is set to any value other than text.
+	 * 
+	 * @param bindNode the xforms bind node
+	 * @return
+	 */
+	private static boolean isDataTypeSetPrecisely(Element bindNode){
+		String type = bindNode.getAttributeValue(null, ATTRIBUTE_TYPE);
+		if(type != null && !type.equalsIgnoreCase(DATA_TYPE_TEXT))
+			return true;
+		return false;
+	}
+
+
+	/**
+	 * Sets the xforms data type from an openmrs data type
+	 * 
+	 * @param bindNode the bind xforms node whose data type to set.
+	 * @param node the schema node having the openmrs data type
+	 */
+	private static void setDataType(Element bindNode, Element node){
+
+		//Some types may have been already set to the precise value
+		//and hence should not be overwritten. eg NM could have been
+		//set to either int or decimal.
+		if(isDataTypeSetPrecisely(bindNode))
+			return;
+
+		String fixed = node.getAttributeValue(null, ATTRIBUTE_FIXED);
+		if("ED".equalsIgnoreCase(fixed))
+			bindNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_BASE64BINARY);
+		else if("BIT".equalsIgnoreCase(fixed))
+			bindNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_BOOLEAN);
+		else if("TS".equalsIgnoreCase(fixed))
+			bindNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_DATETIME);
+		else if("TM".equalsIgnoreCase(fixed))
+			bindNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_TIME);
+		else if("DT".equalsIgnoreCase(fixed))
+			bindNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_DATE);
+		else if("NM".equalsIgnoreCase(fixed))
+			bindNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_DECIMAL);
+		else if("RP".equalsIgnoreCase(fixed))
+			bindNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_BASE64BINARY);
+		else if("ST".equalsIgnoreCase(fixed))
+			bindNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_TEXT);
+		else if("CWE".equalsIgnoreCase(fixed))
+			bindNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_TEXT);
+		else if("N/A".equalsIgnoreCase(fixed))
+			bindNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_TEXT);
+
+		//TODO What of ZZ(Rule) and SM(Structured Numeric)?
 	}
 
 	private static void removeChildNode(Element node,String name){
@@ -848,42 +949,57 @@ public final class XformBuilder {
 		}
 	}
 
-
 	/**
-	 * Gets the binding of a complex type node. 
+	 * Gets the binding of a complex or simple type node. 
 	 * An example of such a node would be: complexType name="weight_kg_type"
+	 * or
+	 * <xs:simpleType name="weight_kg_type_restricted_type">
 	 * 
 	 * @param name - the name of the complex type node.
 	 * @param bindings - a hashtable of bingings.
 	 * @return - the binding node.
 	 */
-	private static Element getBindNode(String name, Hashtable bindings){
+	/*private static Element getBindNode(String name, Hashtable bindings){
 		if(name == null)
 			return null;
 
 		//We are only dealing with names ending with _type. e.g. education_level_type
 		//Openmrs appends the _type to the name when creating xml types for each concept
-		if(name.indexOf(COMPLEX_TYPE_NAME_POSTFIX) == -1)
+		if(name.indexOf(COMPLEX_TYPE_NAME_POSTFIX) != -1){
+			//remove the _type part. e.g from above the name is education_level
+			name = name.substring(0, name.length() - COMPLEX_TYPE_NAME_POSTFIX.length());
+			Element bindNode = (Element)bindings.get(name);
+			return bindNode;
+		}
+		else if(name.indexOf(SIMPLE_TYPE_NAME_POSTFIX) != -1){
+			//Now dealing with things like weight_kg_type_restricted_type
+			//remove the _type_restricted_type part. e.g from above the name is weight_kg
+			name = name.substring(0, name.length() - SIMPLE_TYPE_NAME_POSTFIX.length());
+			Element bindNode = (Element)bindings.get(name);
+			return bindNode;
+		}
+		else
 			return null;
-
-		//remove the _type part. e.g from above the name is education_level
-		name = name.substring(0, name.length() - COMPLEX_TYPE_NAME_POSTFIX.length());
-		Element bindNode = (Element)bindings.get(name);
-		return bindNode;
-	}
+	}*/
 
 	/**
-	 * Gets the binding node name of a complex type node name. 
+	 * Gets the binding node name of a complex or simple type node name. 
 	 * An example of such a node would be weight_kg for: complexType name="weight_kg_type"
+	 * or <xs:simpleType name="weight_kg_type_restricted_type">
 	 * 
-	 * @param name - the name of the complex type node.
+	 * @param name - the name of the complex or simple type node.
 	 * @return - the binding node name.
 	 */
 	private static String getBindNodeName(String name){
 		if(name == null)
 			return null;
 
-		//We are only dealing with names ending with _type. e.g. education_level_type
+		//Now dealing with things like weight_kg_type_restricted_type
+		//remove the _type_restricted_type part. e.g from above the name is weight_kg
+		if(name.indexOf(SIMPLE_TYPE_NAME_POSTFIX) != -1)
+			return name.substring(0, name.length() - SIMPLE_TYPE_NAME_POSTFIX.length());
+
+		//Now we are only dealing with names ending with _type. e.g. education_level_type
 		//Openmrs appends the _type to the name when creating xml types for each concept
 		//To handle complicated problem lists that have more than one item, we also handle
 		//names ending with section.
@@ -926,6 +1042,18 @@ public final class XformBuilder {
 	 */
 	private static boolean isNodeWithConceptNameAndId(Element node){
 		return node.getName().equalsIgnoreCase(NODE_ATTRIBUTE) && node.getAttributeValue(null, ATTRIBUTE_NAME) != null && node.getAttributeValue(null, ATTRIBUTE_NAME).equalsIgnoreCase(ATTRIBUTE_OPENMRS_CONCEPT);
+	}
+
+	/**
+	 * Checks if this node has the openmrs data type. An example of such a node would be as:
+	 *  <xs:attribute name="openmrs_datatype" type="xs:string" use="required" fixed="NM" />
+	 *  where the data type is pointed to by the fixed attribute
+	 * 
+	 * @param node - the node to check.
+	 * @return true if so, else false.
+	 */
+	private static boolean isNodeWithDataType(Element node){
+		return node.getName().equalsIgnoreCase(NODE_ATTRIBUTE) && ATTRIBUTE_OPENMRS_DATATYPE.equalsIgnoreCase(node.getAttributeValue(null, ATTRIBUTE_NAME));
 	}
 
 	/**
@@ -1066,8 +1194,9 @@ public final class XformBuilder {
 	 */
 	private static Element buildSequenceInputControlNode(String name,Element node,String type,Element labelNode, Element bindingNode,Element bodyNode, Hashtable<String,String> problemList, Hashtable<String,String> problemListItems,Hashtable<String,Element> repeatControls){
 		type = getPrefixedDataType(type);
-		
-		bindingNode.setAttribute(null, ATTRIBUTE_TYPE, type);
+
+		if(!isDataTypeSetPrecisely(bindingNode))
+			bindingNode.setAttribute(null, ATTRIBUTE_TYPE, type);
 
 		Element inputNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
 		inputNode.setName(CONTROL_INPUT);
@@ -1114,6 +1243,7 @@ public final class XformBuilder {
 	 */
 	private static Element parseSequenceValueNode(String name,Element node, Element labelNode, Element bodyNode,Element bindingNode, Hashtable<String,String> problemList, Hashtable<String,String> problemListItems,Hashtable<String,Element> repeatControls){
 		String type = node.getAttributeValue(null, ATTRIBUTE_TYPE);
+		
 		if(type != null)
 			labelNode = buildSequenceInputControlNode(name,node,type,labelNode,bindingNode,bodyNode,problemList,problemListItems,repeatControls);
 		else{
@@ -1128,7 +1258,7 @@ public final class XformBuilder {
 
 				return parseSimpleType(name,simpleTypeNode,bodyNode,bindingNode,problemList,problemListItems,repeatControls);
 			}
-		}	
+		}
 		return labelNode;
 	}
 
@@ -1150,6 +1280,11 @@ public final class XformBuilder {
 
 		if(type.contains("openmrs"))
 			type = "xsd:string";
+
+		if(type.contains("float"))
+			type = DATA_TYPE_DECIMAL;
+		else if(type.contains("int"))
+			type = DATA_TYPE_INT;
 
 		return type;
 	}
@@ -1292,6 +1427,7 @@ public final class XformBuilder {
 	 * @return the label node of the created control.
 	 */
 	private static Element parseRestriction(String name, Element valueNode,Element restrictionNode,Element bodyNode, Element bindingNode, Hashtable<String,String> problemList, Hashtable<String,String> problemListItems,Hashtable<String,Element> repeatControls){
+
 		//the base attribute of a restriction has the data type for this question.
 		String type = restrictionNode.getAttributeValue(null, ATTRIBUTE_BASE);
 		type = getPrefixedDataType(type);
@@ -1335,6 +1471,34 @@ public final class XformBuilder {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Adds validation constraints to the xfrom as specified from the openmrs schema.
+	 * For now these are for openmrs numeric concepts (int and float)
+	 * 
+	 * @param bindingNode  the xforms node to contain the constraint
+	 * @param restrictionNode the openmrs schema node having the allowed range values
+	 */
+	private static void addValidationRuleRanges(Element bindingNode, Element restrictionNode){
+
+		String lower = null, upper = null;
+
+		for(int i=0; i<restrictionNode.getChildCount(); i++){
+			if(restrictionNode.isText(i))
+				continue; //ignore text.
+
+			Element child = (Element)restrictionNode.getChild(i);
+			if(child.getName().equalsIgnoreCase(NODE_MININCLUSIVE))
+				lower = child.getAttributeValue(null, ATTRIBUTE_VALUE);
+			else if(child.getName().equalsIgnoreCase(NODE_MAXINCLUSIVE))
+				upper = child.getAttributeValue(null, ATTRIBUTE_VALUE);
+		}
+
+		if(upper != null && lower != null && upper.trim().length() > 0 && lower.trim().length() > 0){
+			bindingNode.setAttribute(null, ATTRIBUTE_CONSTRAINT, ". &gt;= " + lower + " and . &lt;= " +upper);
+			bindingNode.setAttribute(null, ATTRIBUTE_MESSAGE, "value should be between " + lower + " and " + upper + " inclusive");
+		}
 	}
 
 	/**
@@ -1531,14 +1695,14 @@ public final class XformBuilder {
 				if(value != null)
 					setNodeValue(child, value.toString());
 			}*/
-			
+
 			if(tableName != null && columnName != null){
 				String value = xformsService.getFieldDefaultValue(formId, child.getName().toUpperCase());
 				if(value != null && value.trim().length() > 0){
 					StringWriter w = new StringWriter();
 					velocityEngine.evaluate(velocityContext, w, XformBuilder.class.getName(), value);
 					value = w.toString();
-					
+
 					if(value != null && value.trim().length() > 0)
 						setNodeValue(child, value.toString());
 				}
@@ -1717,7 +1881,7 @@ public final class XformBuilder {
 		Element element = formNode.createElement(null, null);
 		element.setName(name);
 		formNode.addChild(Element.ELEMENT, element);
-		
+
 		//if(name.equals("patient_identifier_type_id"))
 		//	element.addChild(Element.TEXT, getDefaultIdentifierType());
 
@@ -1770,7 +1934,7 @@ public final class XformBuilder {
 			}
 		}
 	}
-	
+
 	private static String getDefaultIdentifierType(){
 		return null; //TODO Not high priority for now
 	}
@@ -2032,7 +2196,7 @@ public final class XformBuilder {
 			return CONTROL_SELECT1;
 		return  CONTROL_INPUT;
 	}
-	
+
 	public static void setPatientFieldValues(Patient patient, Form form,Element parentNode, XformsService xformsService) throws Exception {
 		VelocityEngine velocityEngine = new VelocityEngine();
 		velocityEngine.setProperty( RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.runtime.log.CommonsLogLogChute" );
