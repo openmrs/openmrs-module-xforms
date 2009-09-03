@@ -13,14 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.context.ContextAuthenticationException;
-import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformsServer;
-import org.openmrs.module.xforms.download.UserDownloadManager;
-import org.openmrs.module.xforms.util.XformsUtil;
-
-import com.jcraft.jzlib.JZlib;
-import com.jcraft.jzlib.ZOutputStream;
 
 
 //TODO This class may need to be refactored out of the XForms module.

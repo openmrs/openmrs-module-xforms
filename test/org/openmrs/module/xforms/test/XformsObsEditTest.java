@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.StringWriter;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import org.apache.velocity.VelocityContext;
@@ -49,6 +50,12 @@ public class XformsObsEditTest extends BaseModuleContextSensitiveTest{
 		and length(default_value) > 0*/
 		
 		authenticate();
+		
+		Locale locale = Context.getLocale();
+		System.out.println(locale.getLanguage());
+		System.out.println(locale.getISO3Language());
+		//for (Locale locale : locales)
+		//	;
 
 		String xml = getDoc();
 		xml = "$!{patient.getFamilyName()} with id $!{patient.getPatientIdentifier(4).getIdentifier()}";

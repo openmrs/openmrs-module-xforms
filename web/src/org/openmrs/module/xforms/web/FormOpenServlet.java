@@ -15,6 +15,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 
 /**
+ * Handles opening of files (xforms,pictures,audio,video) as needed by the form designer.
  * 
  * @author daniel
  *

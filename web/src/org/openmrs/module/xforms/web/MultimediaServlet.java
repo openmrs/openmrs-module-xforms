@@ -75,7 +75,7 @@ public class MultimediaServlet extends HttpServlet {
 			if(xpath == null || xpath.trim().length() == 0)
 				return;
 			
-			//TODO Confirm that this is the required behavour.
+			//TODO Confirm that this is the required behaviour.
 			//The user could have uploaded a new file to replace the one in the database
 			//but when they have not yet saved. So this is why the data in session memory
 			//is taking preference to that in the database
@@ -93,7 +93,7 @@ public class MultimediaServlet extends HttpServlet {
 				}
 
 				response.getOutputStream().write(bytes);
-			}//This elese if is to prevent a blank page if there is no data.
+			}//This else if is to prevent a blank page if there is no data.
 			else if(contentType != null && (contentType.contains("video") || contentType.contains("audio")))
 				response.setHeader(XformConstants.HTTP_HEADER_CONTENT_DISPOSITION, XformConstants.HTTP_HEADER_CONTENT_DISPOSITION_VALUE + name + "\"");
 		}

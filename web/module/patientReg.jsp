@@ -288,7 +288,8 @@
     		invalidUser: "<spring:message code="xforms.invalidUser" />",
     		login: "<spring:message code="xforms.login" />",
     		userName: "<spring:message code="xforms.userName" />",
-    		password: "<spring:message code="xforms.password" />"
+    		password: "<spring:message code="xforms.password" />",
+    		noSelection: "<spring:message code="xforms.noSelection" />"
 	};
 
 	function isUserAuthenticated(){

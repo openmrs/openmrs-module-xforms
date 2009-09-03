@@ -43,6 +43,9 @@ public class WidgetValueServlet extends HttpServlet {
 		if(!sql.startsWith("select"))
 			sql = "select " + displayField + "," + valueField + " from " + source;
 		
+		if(source.equalsIgnoreCase("concept"))
+			sql = "select name, concat(concept_id,concat(concat('^',name),'^99DCT')) as id from concept_name where locale='"+ Context.getLocale().getLanguage()+"'";
+		
 		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
 		List<Object[]> list = xformsService.getList(sql, displayField, valueField);
 		
