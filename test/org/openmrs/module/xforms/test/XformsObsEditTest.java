@@ -52,13 +52,17 @@ public class XformsObsEditTest extends BaseModuleContextSensitiveTest{
 		authenticate();
 		
 		Locale locale = Context.getLocale();
-		System.out.println(locale.getLanguage());
-		System.out.println(locale.getISO3Language());
+		//System.out.println(locale.getLanguage());
+		//System.out.println(locale.getISO3Language());
 		//for (Locale locale : locales)
 		//	;
 
 		String xml = getDoc();
 		xml = "$!{patient.getFamilyName()} with id $!{patient.getPatientIdentifier(4).getIdentifier()}";
+		xml = "$!{patient.getFamilyName()} in village $!{patient.getPersonAddress().getCityVillage()}";
+		//${patient.attributeMap.Cell}
+		//${patient.attributeMap.HeadOfHousehold}
+		//${patient.attributeMap.Sector}
 
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty( RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.runtime.log.CommonsLogLogChute" );

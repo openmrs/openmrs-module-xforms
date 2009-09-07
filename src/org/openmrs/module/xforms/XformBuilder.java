@@ -457,7 +457,7 @@ public final class XformBuilder {
 	 * UI controls for openmrs table field questions.
 	 * 
 	 * @param modelElement - the model element to add bindings to.
-	 * @param formElement
+	 * @param formNode the form node.
 	 * @param bindings - a hash table to populate with the built bindings.
 	 * @param bodyNode - the body node to add the UI control to.
 	 */
@@ -468,6 +468,8 @@ public final class XformBuilder {
 				continue; //Ignore all text.
 
 			Element child = formChild.getElement(i);
+			//These two attributes are a must for all nodes to be filled with values.
+			//eg openmrs_concept="1740^ARV REGIMEN^99DCT" openmrs_datatype="CWE" 
 			if(child.getAttributeValue(null, ATTRIBUTE_OPENMRS_DATATYPE) == null && child.getAttributeValue(null, ATTRIBUTE_OPENMRS_CONCEPT) != null)
 				continue; //These could be like options for multiple select, which take true or false value.
 
@@ -563,7 +565,6 @@ public final class XformBuilder {
 
 			controlNode.addChild(Element.ELEMENT, itemNode);
 		}
-
 	}
 
 	/**
@@ -1138,7 +1139,7 @@ public final class XformBuilder {
 
 				//if(!(itemName.equalsIgnoreCase(NODE_DATE) || itemName.equalsIgnoreCase(NODE_TIME)) && node.getAttributeValue(null, ATTRIBUTE_OPENMRS_CONCEPT) == null)
 				if( !itemName.equalsIgnoreCase(NODE_DATE) && !itemName.equalsIgnoreCase(NODE_TIME) && node.getChildCount() > 0 /*&& node.getAttributeValue(null, ATTRIBUTE_OPENMRS_CONCEPT) == null*/)
-					labelNode = parseMultiSelectNode(name,itemName, node,controlNode,bodyNode, labelNode,bindingNode);
+					labelNode = parseMultiSelectNode(name,itemName, node,controlNode,bodyNode, labelNode,bindingNode,problemList, problemListItems,repeatControls);
 				//else if(name.equalsIgnoreCase(COMPLEX_TYPE_NAME_PROBLEM_LIST))
 				//	problemList.put(name, name);
 
@@ -1206,16 +1207,16 @@ public final class XformBuilder {
 		labelNode.setName(NODE_LABEL);
 		inputNode.addChild(Element.ELEMENT, labelNode);
 
-		addRepeatControlNode(name,inputNode,bodyNode,problemList,problemListItems,repeatControls);
+		addRepeatControlNode(name,inputNode,bodyNode,problemList,problemListItems,repeatControls,NODE_VALUE);
 
 		return labelNode;
 	}
 
-	private static void addRepeatControlNode(String name, Element controlNode,Element bodyNode, Hashtable<String,String> problemList, Hashtable<String,String> problemListItems,Hashtable<String,Element> repeatControls){
+	private static void addRepeatControlNode(String name, Element controlNode,Element bodyNode, Hashtable<String,String> problemList, Hashtable<String,String> problemListItems,Hashtable<String,Element> repeatControls, String valueNodeName){
 		if(problemList.containsKey(name))
-			controlNode.setAttribute(null, ATTRIBUTE_REF, NODE_VALUE);
+			controlNode.setAttribute(null, ATTRIBUTE_REF, valueNodeName);
 		else if(problemListItems.containsKey(name))
-			controlNode.setAttribute(null, ATTRIBUTE_REF, name+"/"+NODE_VALUE);
+			controlNode.setAttribute(null, ATTRIBUTE_REF, name+"/"+valueNodeName);
 		else
 			controlNode.setAttribute(null, ATTRIBUTE_BIND, name);
 
@@ -1352,20 +1353,25 @@ public final class XformBuilder {
 	 * @param bindingNode - the binding node.
 	 * @return the label node we have created.
 	 */
-	private static Element parseMultiSelectNode(String name,String itemName, Element selectItemNode,Element controlNode,Element bodyNode, Element labelNode, Element bindingNode){				
+	private static Element parseMultiSelectNode(String name,String itemName, Element selectItemNode,Element controlNode,Element bodyNode, Element labelNode, Element bindingNode, Hashtable<String,String> problemList, Hashtable<String,String> problemListItems,Hashtable<String,Element> repeatControls){				
 		//If this is the first time we are looping through, create the input control.
 		//Otherwise just add the items one by one as we get called for each.
 		if(controlNode.getChildCount() == 0){
 			//controlNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
 			controlNode.setName(CONTROL_SELECT);
-			controlNode.setAttribute(null, ATTRIBUTE_BIND, name);
+			
+			//For repeat kids, we set ref instead of bind
+			if(!(problemList.containsKey(name) || problemListItems.containsKey(name)))
+				controlNode.setAttribute(null, ATTRIBUTE_BIND, name);
+			
 			controlNode.setAttribute(null, ATTRIBUTE_APPEARANCE, Context.getAdministrationService().getGlobalProperty("xforms.multiSelectAppearance"));
 
 			labelNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
 			labelNode.setName(NODE_LABEL);
 			controlNode.addChild(Element.ELEMENT, labelNode);
 
-			addControl(bodyNode,controlNode); //bodyNode.addChild(Element.ELEMENT, controlNode);
+			//addControl(bodyNode,controlNode); //bodyNode.addChild(Element.ELEMENT, controlNode);
+			addRepeatControlNode(name,controlNode,bodyNode,problemList,problemListItems,repeatControls,NODE_XFORMS_VALUE);
 
 			bindingNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_TEXT);
 		}
@@ -1443,10 +1449,14 @@ public final class XformBuilder {
 		Element controlNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
 		controlNode.setName(controlName);
 
+		String valueNodeName = NODE_VALUE;
+		if(controlName.equals(CONTROL_SELECT))
+			valueNodeName = NODE_XFORMS_VALUE;
+		
 		if(!controlName.equalsIgnoreCase(CONTROL_INPUT))
 			controlNode.setAttribute(null, ATTRIBUTE_APPEARANCE, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_SINGLE_SELECT_APPEARANCE));
 
-		addRepeatControlNode(name,controlNode,bodyNode,problemList,problemListItems,repeatControls);
+		addRepeatControlNode(name,controlNode,bodyNode,problemList,problemListItems,repeatControls,valueNodeName);
 
 		Element labelNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
 		labelNode.setName(NODE_LABEL);
