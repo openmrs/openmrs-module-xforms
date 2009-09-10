@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>xforms</id>
 	<name>XForms</name>
-	<version>3.4</version>
+	<version>3.5</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Daniel Kayiwa</author>
 	<description>
@@ -94,7 +94,7 @@
 	<globalProperty>
 		<property>@MODULE_ID@.archive_dir</property>
 		<defaultValue>xforms/archive/%Y/%M</defaultValue>
-		<description>Directory containing the xforms archive items.  This will contain xform model xml files that have been submitted and then submitted sucessfully into the formentry queue. </description>
+		<description>Directory containing the xforms archive items.  This will contain xform model xml files that have been processed and then submitted successfully into the formentry queue. </description>
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.includeUsersInXformsDownload</property>
@@ -109,12 +109,12 @@
 	<globalProperty>
 		<property>@MODULE_ID@.dateTimeSubmitFormat</property>
 		<defaultValue>yyyy-MM-dd hh:mm:ss a</defaultValue>
-		<description>The format of the datetime is passed in the xml of the xforms model. Please make sure this matches with the date format of your data entry applications, else you will get wrong dates on the server.</description>
+		<description>The format of the datetime passed in the xml of the xforms model. Please make sure this matches with the date format of your data entry applications, else you will get wrong dates on the server.</description>
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.timeSubmitFormat</property>
 		<defaultValue>hh:mm:ss a</defaultValue>
-		<description>The format of the time is passed in the xml of the xforms model. Please make sure this matches with the date format of your data entry applications, else you will get wrong dates on the server.</description>
+		<description>The format of the time passed in the xml of the xforms model. Please make sure this matches with the date format of your data entry applications, else you will get wrong times on the server.</description>
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.dateDisplayFormat</property>
@@ -144,12 +144,12 @@
 	<globalProperty>
 		<property>@MODULE_ID@.usePatientXform</property>
 		<defaultValue>false</defaultValue>
-		<description>Set to true if you want to use XForms to create new patients, else set to false.</description>
+		<description>Set to true if you want to use XForms to create new patients instead of the default openmrs create patient form, else set to false.</description>
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.useEncounterXform</property>
 		<defaultValue>false</defaultValue>
-		<description>Set to true if you want to use XForms to edit encounters, else set to false.</description>
+		<description>Set to true if you want to use XForms to edit encounters instead of the default openmrs edit encounter screen, else set to false.</description>
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.smsSendSuccessReports</property>
@@ -164,7 +164,7 @@
 	<globalProperty>
 		<property>@MODULE_ID@.smsFieldSepChar</property>
 		<defaultValue>=</defaultValue>
-		<description>The separator for different fields in the sms text.</description>
+		<description>The separator between questions and answers in the sms text.</description>
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.complexobs_dir</property>

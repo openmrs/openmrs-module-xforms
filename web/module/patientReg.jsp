@@ -289,7 +289,11 @@
     		login: "<spring:message code="xforms.login" />",
     		userName: "<spring:message code="xforms.userName" />",
     		password: "<spring:message code="xforms.password" />",
-    		noSelection: "<spring:message code="xforms.noSelection" />"
+    		noSelection: "<spring:message code="xforms.noSelection" />",
+    		cancelFormPrompt: "<spring:message code="xforms.cancelFormPrompt" />",
+    		print: "<spring:message code="xforms.print" />",
+    		yes: "<spring:message code="xforms.yes" />",
+    		no: "<spring:message code="xforms.no" />"
 	};
 
 	function isUserAuthenticated(){

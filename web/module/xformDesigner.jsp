@@ -4,14 +4,20 @@
 <script type="text/javascript" src='${pageContext.request.contextPath}/dwr/util.js'></script>
 <script type="text/javascript" src='${pageContext.request.contextPath}/dwr/interface/DWRXformsService.js'></script>
 
+<script type="text/javascript">
+	var djConfig = {debugAtAllCosts: false, isDebug: false };
+</script>
+
+<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
+
 <html>
   <head>
-    <title>OpenMRS Form Designer</title>
+    <title>OpenMRS XForms Designer</title>
     <openmrs:htmlInclude file="/moduleResources/xforms/formdesigner/org.purc.purcforms.FormDesigner.nocache.js"/>
   </head>
   <body>
     <div id="purcformsdesigner"><div>
-    <div id="title" style="visibility:hidden;">OpenMRS Form Designer</div>
+    <div id="title" style="visibility:hidden;">OpenMRS XForms Designer</div>
     <div id="rubberBand"></div>
     
     <div id="formId" style="visibility:hidden;">${formId}</div>
@@ -287,7 +293,11 @@
         		login: "<spring:message code="xforms.login" />",
         		userName: "<spring:message code="xforms.userName" />",
         		password: "<spring:message code="xforms.password" />",
-        		noSelection: "<spring:message code="xforms.noSelection" />"
+        		noSelection: "<spring:message code="xforms.noSelection" />",
+        		cancelFormPrompt: "<spring:message code="xforms.cancelFormPrompt" />",
+        		print: "<spring:message code="xforms.print" />",
+        		yes: "<spring:message code="xforms.yes" />",
+        		no: "<spring:message code="xforms.no" />"
     	};
 
     	function isUserAuthenticated(){

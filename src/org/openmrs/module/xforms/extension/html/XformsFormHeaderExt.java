@@ -31,7 +31,7 @@ public class XformsFormHeaderExt extends Extension {
 		
 		Map<String, String> map = new TreeMap<String, String>(new InsertedOrderComparator());
 		
-		if (formId != null) {
+		if (formId != null && formId.trim().length() > 0) {
 			map.put("moduleServlet/xforms/xformDownload?target=xform&formId=" + formId, "xforms.downloadXform");
 			map.put("module/xforms/xformDesigner.form?formId=" + formId, "xforms.designXform");
 			map.put("module/xforms/xformUpload.form?formId=" + formId, "xforms.uploadXform");
