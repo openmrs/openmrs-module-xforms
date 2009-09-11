@@ -101,13 +101,10 @@ public class FormEntryWrapper {
     	return str;
     }
 	 
-	 public static void createFormEntryQueue(String xml){
+	/* public static void createFormEntryQueue(String xml){
 		FormEntryQueue formEntryQueue = new FormEntryQueue();
 		formEntryQueue.setFormData(xml);
 		
-		/*FormEntryService formEntryService = (FormEntryService)Context.getService(FormEntryService.class);
-		formEntryService.createFormEntryQueue(formEntryQueue);*/
-		 
 		User creator = Context.getAuthenticatedUser();
 		if (formEntryQueue.getDateCreated() == null)
 			formEntryQueue.setDateCreated(new Date());
@@ -133,7 +130,7 @@ public class FormEntryWrapper {
 				log.debug("Error creating queu item", e);
 			}
 		}
-	 }
+	 }*/
 	 
 	 /**
 	 * Gets the directory where the user specified their queues were being stored

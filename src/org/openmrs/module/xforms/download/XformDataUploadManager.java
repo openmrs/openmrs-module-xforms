@@ -1,7 +1,6 @@
 package org.openmrs.module.xforms.download;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,6 +21,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.Xform;
 import org.openmrs.module.xforms.XformBuilder;
 import org.openmrs.module.xforms.XformConstants;
+import org.openmrs.module.xforms.XformsQueueProcessor;
 import org.openmrs.module.xforms.XformsService;
 import org.openmrs.module.xforms.formentry.FormEntryWrapper;
 import org.openmrs.module.xforms.util.DOMUtil;
@@ -45,6 +45,9 @@ public class XformDataUploadManager {
 	protected static final Log log = LogFactory.getLog(XformDataUploadManager.class);
 	private static final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
+	// Instance of xforms processor.
+	private static XformsQueueProcessor processor = null;
+	
 	public static void submitXforms(InputStream is, String sessionId) throws Exception{
 		String enterer = XformsUtil.getEnterer();
 		DocumentBuilder db = dbf.newDocumentBuilder();
@@ -151,10 +154,20 @@ public class XformDataUploadManager {
 	 * @param xml - the xforms model.
 	 */
 	public static void queueForm(String xml) throws Exception{
+		if (processor == null)
+			processor = new XformsQueueProcessor();
+		
 		File file = OpenmrsUtil.getOutFile(XformsUtil.getXformsQueueDir(), new Date(), Context.getAuthenticatedUser());
+		processor.processXForm(xml, file.getAbsolutePath());
+		
+		//We are not queing forms any more because the user wants to see data immediately.
+		//But the xforms processor queue will still run for the sake of those who my dump
+		//forms in the xforms queue.
+		
+		/*File file = OpenmrsUtil.getOutFile(XformsUtil.getXformsQueueDir(), new Date(), Context.getAuthenticatedUser());
 		FileWriter writter = new FileWriter(file); //new FileWriter(pathName, false);
 		writter.write(xml);
-		writter.close();		
+		writter.close();*/		
 	}
 
 	/**

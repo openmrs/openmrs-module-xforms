@@ -3,7 +3,6 @@ package org.openmrs.module.xforms;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -25,7 +24,10 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.xforms.formentry.FormEntryWrapper;
+import org.openmrs.hl7.HL7InQueue;
+import org.openmrs.hl7.HL7InQueueProcessor;
+import org.openmrs.module.xforms.formentry.FormEntryQueue;
+import org.openmrs.module.xforms.formentry.FormEntryQueueProcessor;
 import org.openmrs.module.xforms.model.PersonRepeatAttribute;
 import org.openmrs.module.xforms.util.DOMUtil;
 import org.openmrs.module.xforms.util.XformsUtil;
@@ -55,9 +57,29 @@ public class XformsQueueProcessor {
 	private static final Log log = LogFactory.getLog(XformsQueueProcessor.class);
 	private static Boolean isRunning = false; // allow only one running
 	private static final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-
+	
+	private DocumentBuilder db;
+	
+	// Instance of form entry processor
+	private FormEntryQueueProcessor formEntryProcessor = null;
+	
+	// Instance of hl7 processor
+	private static HL7InQueueProcessor hl7Processor = null;
+	
+	
 	public XformsQueueProcessor(){
-
+		if (formEntryProcessor == null)
+			formEntryProcessor = new FormEntryQueueProcessor();
+		
+		if (hl7Processor == null) 
+			hl7Processor = new HL7InQueueProcessor();
+		
+		try{
+			db = dbf.newDocumentBuilder();
+		}
+		catch(Exception e){
+			log.error("Problem occured while creating document builder", e);
+		}
 	}
 
 	/**
@@ -72,11 +94,9 @@ public class XformsQueueProcessor {
 			isRunning = true;
 		}
 		try {			
-			DocumentBuilder db = dbf.newDocumentBuilder();
-
 			File queueDir = XformsUtil.getXformsQueueDir();
 			for (File file : queueDir.listFiles()) 
-				submitXForm(db,XformsUtil.readFile(file.getAbsolutePath()),file.getAbsolutePath());
+				processXForm(XformsUtil.readFile(file.getAbsolutePath()),file.getAbsolutePath());
 		}
 		catch(Exception e){
 			log.error("Problem occured while processing Xforms queue", e);
@@ -86,7 +106,13 @@ public class XformsQueueProcessor {
 		}
 	}
 
-	private void submitXForm(DocumentBuilder db ,String xml, String pathName){
+	/**
+	 * Processes an xforms model.
+	 * 
+	 * @param xml the xml of the xforms model.
+	 * @param pathName the full path and name of file form which this xform model has been read. null can be passed if the form does not come from a file.
+	 */
+	public void processXForm(String xml, String pathName){
 		String xmlOriginal = xml;
 		try{	
 			Document doc = db.parse(IOUtils.toInputStream(xml));
@@ -157,6 +183,14 @@ public class XformsQueueProcessor {
 		}
 	}
 
+	/**
+	 * Submits a form to the form entry queue for further processing.
+	 * 
+	 * @param doc
+	 * @param xml
+	 * @param pathName
+	 * @param archive
+	 */
 	private void submitXForm(Document doc, String xml, String pathName, boolean archive){
 		String xmlOriginal = xml;
 		try{
@@ -164,7 +198,17 @@ public class XformsQueueProcessor {
 			saveComplexObs(doc);
 			setMultipleSelectValues(doc.getDocumentElement());
 			xml = XformsUtil.doc2String(doc);
-			FormEntryWrapper.createFormEntryQueue(xml);
+			
+			//FormEntryWrapper.createFormEntryQueue(xml);
+			
+			FormEntryQueue formEntryQueue = new FormEntryQueue();
+			formEntryQueue.setCreator(Context.getAuthenticatedUser());
+			formEntryQueue.setDateCreated(new Date());
+			formEntryQueue.setFormData(xml);
+			formEntryQueue.setFileSystemUrl(pathName);
+			
+			HL7InQueue hl7InQueue = formEntryProcessor.transformFormEntryQueue(formEntryQueue);
+			hl7Processor.processHL7InQueue(hl7InQueue);
 
 			if(archive)
 				saveFormInArchive(xmlOriginal,pathName);
@@ -176,7 +220,7 @@ public class XformsQueueProcessor {
 	}
 
 	/**
-	 * Achives a submitted form after processing.
+	 * Archives a submitted form after processing.
 	 * 
 	 * @param xml - the form data.
 	 * @param folder - the folder to save in.
@@ -603,17 +647,6 @@ public class XformsQueueProcessor {
 	}
 
 	private void saveComplexObs(Document doc) throws Exception {
-		/*NodeList nodes = doc.getDocumentElement().getElementsByTagName("obs").item(0).getChildNodes();
-		for(int i=0; i<nodes.getLength(); i++){
-			Node node = nodes.item(i);
-			if(node.getNodeType() != Node.ELEMENT_NODE)
-				continue;
-
-			Element element = (Element)node;
-			if("ED".equalsIgnoreCase(element.getAttribute("openmrs_datatype")))
-				saveComplexObsValue(element);
-		}*/
-
 		List<String> names = DOMUtil.getModelComplexObsNodeNames(doc.getDocumentElement().getAttribute("id"));
 		for(String name : names)
 			saveComplexObsValue(DOMUtil.getElement(doc, name));

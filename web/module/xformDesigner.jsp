@@ -44,6 +44,8 @@
     <div id="timeDisplayFormat" style="visibility:hidden;">hh:mm:ss a</div>
     
     <div id="allowBindEdit" style="visibility:hidden;">${allowBindEdit}</div>
+    
+    <div id="showSubmitSuccessMsg" style="visibility:hidden;">${showSubmitSuccessMsg}</div>
    
    <script language="javascript">
     	var PurcformsText = {

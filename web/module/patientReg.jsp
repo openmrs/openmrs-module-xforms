@@ -41,6 +41,9 @@
 <div id="timeSubmitFormat" style="visibility:hidden;">hh:mm:ss a</div>
 <div id="timeDisplayFormat" style="visibility:hidden;">hh:mm:ss a</div>
 
+<div id="showSubmitSuccessMsg" style="visibility:hidden;">${showSubmitSuccessMsg}</div>
+
+
 <script language="javascript">
 	var PurcformsText = {
 	    	file: "<spring:message code="xforms.file" />",

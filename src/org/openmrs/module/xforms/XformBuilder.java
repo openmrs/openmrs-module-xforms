@@ -504,7 +504,7 @@ public final class XformBuilder {
 				else if(name.equalsIgnoreCase(NODE_ENCOUNTER_PROVIDER_ID))
 					populateProviders(controlNode);
 				else if(name.equalsIgnoreCase(NODE_ENCOUNTER_ENCOUNTER_DATETIME))
-					setNodeValue(child, "today()"); //Set encounter date defaulting to today
+					setNodeValue(child, "'today()'"); //Set encounter date defaulting to today
 			}
 
 			parseTemplate(modelElement,formNode,child,bindings, bodyNode,problemList,problemListItems);

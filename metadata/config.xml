@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>xforms</id>
 	<name>XForms</name>
-	<version>3.5</version>
+	<version>3.6</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Daniel Kayiwa</author>
 	<description>
@@ -171,6 +171,11 @@
 		<defaultValue>xforms/complexobs</defaultValue>
 		<description>Directory for storing complex obs used by the xforms module.</description>
 	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.showSubmitSuccessMsg</property>
+		<defaultValue>false</defaultValue>
+		<description>Set to true if you want to display the form submitted successfully message every time a form is submitted successfully.</description>
+	</globalProperty>
 	<!-- /Required Global Properties -->
 
 	<!-- /Xforms Module Properties -->
@@ -240,6 +245,7 @@
 		Xform.hbm.xml
 		PersonRepeatAttribute.hbm.xml
 		MedicalHistoryField.hbm.xml
+		FormEntryError.hbm.xml
 	</mappingFiles>
 	
 </module>

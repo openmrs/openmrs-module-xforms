@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.openmrs.Form;
 import org.openmrs.module.xforms.db.XformsDAO;
+import org.openmrs.module.xforms.formentry.FormEntryError;
 import org.openmrs.module.xforms.model.PatientMedicalHistory;
 import org.openmrs.module.xforms.model.PersonRepeatAttribute;
 import org.openmrs.module.xforms.model.XformUser;
@@ -186,4 +187,12 @@ public interface XformsService {
 	public void saveMedicalHistoryField(MedicalHistoryField field);
 	public void deleteMedicalHistoryField(MedicalHistoryField field);
 	public void deleteMedicalHistoryField(Integer fieldId);
+	
+	
+	/**
+	 * Create and store the given formentry error item
+	 * 
+	 * @param formEntryError to save to the db
+	 */
+	public void createFormEntryError(FormEntryError formEntryError);
 }

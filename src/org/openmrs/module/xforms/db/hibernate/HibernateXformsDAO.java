@@ -13,10 +13,12 @@ import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
+import org.openmrs.api.db.DAOException;
 import org.openmrs.module.xforms.MedicalHistoryField;
 import org.openmrs.module.xforms.Xform;
 import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.db.XformsDAO;
+import org.openmrs.module.xforms.formentry.FormEntryError;
 import org.openmrs.module.xforms.model.MedicalHistoryFieldData;
 import org.openmrs.module.xforms.model.MedicalHistoryValue;
 import org.openmrs.module.xforms.model.PatientMedicalHistory;
@@ -378,5 +380,9 @@ public class HibernateXformsDAO implements XformsDAO {
 		query.addScalar("default_value", Hibernate.STRING);
 		
 		return (String)query.uniqueResult();
+	}
+	
+	public void createFormEntryError(FormEntryError formEntryError) throws DAOException {
+		sessionFactory.getCurrentSession().save(formEntryError);
 	}
 }

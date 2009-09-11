@@ -92,7 +92,7 @@ public class XformObsEdit {
 				continue;
 
 			String value = obs.getValueAsString(Context.getLocale());
-			if(concept.getDatatype().isCoded())
+			if(concept.getDatatype().isCoded() && obs.getValueCoded() != null)
 				value = FormUtil.conceptToString(obs.getValueCoded(), Context.getLocale());
 
 			if("1".equals(node.getAttributeValue(null,"multiple"))){
@@ -214,7 +214,7 @@ public class XformObsEdit {
 						newValue = saveComplexObs(nodeName,newValue,formNode);
 					}
 					else{
-						if(concept.getDatatype().isCoded())
+						if(concept.getDatatype().isCoded() && obs.getValueCoded() != null)
 							oldValue = conceptToString(obs.getValueCoded(), Context.getLocale());
 
 						if(oldValue.equals(newValue))

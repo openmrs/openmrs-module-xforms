@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.openmrs.module.xforms.MedicalHistoryField;
 import org.openmrs.module.xforms.Xform;
+import org.openmrs.module.xforms.formentry.FormEntryError;
 import org.openmrs.module.xforms.model.PatientMedicalHistory;
 import org.openmrs.module.xforms.model.PersonRepeatAttribute;
 import org.openmrs.module.xforms.model.XformUser;
@@ -94,4 +95,6 @@ public interface XformsDAO {
 	public void saveMedicalHistoryField(MedicalHistoryField field);
 	public void deleteMedicalHistoryField(MedicalHistoryField field);
 	public void deleteMedicalHistoryField(Integer fieldId);
+	
+	public void createFormEntryError(FormEntryError formEntryError);
 }
