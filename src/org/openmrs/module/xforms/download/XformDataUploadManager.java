@@ -34,7 +34,8 @@ import org.w3c.dom.NodeList;
 
 
 /**
- * Manages upload of xform data.
+ * Manages upload of xform data regardless of what transport method (HTTP,Bluetooth, SMS, etc)
+ * was used to send it.
  * 
  * @author Daniel
  *
@@ -43,16 +44,35 @@ public class XformDataUploadManager {
 
 	/** Logger for this class and subclasses */
 	protected static final Log log = LogFactory.getLog(XformDataUploadManager.class);
+	
+	/** XML Document builder factory. */
 	private static final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
-	// Instance of xforms processor.
+	/** Instance of xforms processor processing data immediately without queueing. */
 	private static XformsQueueProcessor processor = null;
 	
-	public static void submitXforms(InputStream is, String sessionId) throws Exception{
+	
+	/**
+	 * Reads xforms data from a stream and saves it in the database.
+	 * 
+	 * @param is
+	 * @param sessionId
+	 * @throws Exception
+	 */
+	public static void submitXforms(InputStream is, String sessionId, String serializerKey) throws Exception{
+		//TODO Need to handles the situation where some forms get processed successfully
+		//while others fail. For now, forms that fail are just put into the erros folder
+		//and the client gets a process successful message. In other wards, the client
+		//success is not meaning successful processing, it simply means successful delivered
+		//to xforms queue where forms sit and wait for processing.
+
+		if(serializerKey == null)
+			serializerKey = XformConstants.GLOBAL_PROP_KEY_XFORM_SERIALIZER;
+		
 		String enterer = XformsUtil.getEnterer();
 		DocumentBuilder db = dbf.newDocumentBuilder();
 
-		List<String> xforms = (List<String>)XformsUtil.invokeDeserializationMethod(is, XformConstants.GLOBAL_PROP_KEY_XFORM_SERIALIZER,XformConstants.DEFAULT_XFORM_SERIALIZER,getXforms());
+		List<String> xforms = (List<String>)XformsUtil.invokeDeserializationMethod(is, serializerKey,XformConstants.DEFAULT_XFORM_SERIALIZER,getXforms());
 		/*for(String xml : xforms)
             processXform(xml,sessionId,enterer);*/
 
@@ -61,81 +81,7 @@ public class XformDataUploadManager {
 		for(Document doc : docs)
 			queueForm(XformsUtil.doc2String(doc));
 	}
-
-	private static List<Document> mergeNewPatientsWithEncounters(List<String> xforms, String sessionId, String enterer) throws Exception{
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		DocumentBuilder db = dbf.newDocumentBuilder();
-
-		List<Document> encounterDocs = new ArrayList<Document>();
-		HashMap<String,Document> patientIdPatientDocMap = new HashMap<String,Document>();
-		HashMap<String,List<Document>> patientIdEncounterDocsMap = new HashMap<String,List<Document>>();
-
-		//Loops through the xml texts creating Document objects for each and put
-		//New patient docs in a map (patientIdEncounterDocsMap) which will point to a list of encounter
-		//docs collected for the new patient keyed by the patient id.
-		for(String xml : xforms){
-			//Create Document from xml text
-			Document doc = db.parse(IOUtils.toInputStream(xml));
-
-			setHeaderValues(doc,sessionId,enterer);
-			
-			//If new patient, put in the new patient map
-			if(DOMUtil.isNewPatientDoc(doc)){
-				String patientId = DOMUtil.getPatientFormPatientId(doc);
-				patientIdEncounterDocsMap.put(patientId, new ArrayList<Document>());
-				patientIdPatientDocMap.put(patientId, doc);
-			}
-			else
-				encounterDocs.add(doc);
-		}
-
-		List<Document> processedDocs = new ArrayList<Document>();
-
-		//Now loop through all encounter docs (encounterDocs) while creating putting them
-		//in the appropriate list as for the patientIdEncounterDocsMap
-		for(Document doc : encounterDocs){
-			String patientId = DOMUtil.getEncounterFormPatientId(doc);
-			if(patientId != null && patientIdEncounterDocsMap.containsKey(patientId))
-				patientIdEncounterDocsMap.get(patientId).add(doc); //encounter form collected for a new patient
-			else
-				processedDocs.add(doc); //encounter form collected for an existing patient
-		}
-
-		Set<Entry<String,List<Document>>> set = patientIdEncounterDocsMap.entrySet();
-		for(Entry<String,List<Document>> entry : set){
-			String patientId = entry.getKey();
-			List<Document> docs = entry.getValue();
-			processedDocs.add(mergeDocs(patientIdPatientDocMap.get(patientId),docs));
-		}			
-
-		return processedDocs;
-	}
-
-	private static Document mergeDocs(Document patientDoc, List<Document> encounterDocs) throws Exception {
-		if(encounterDocs.size() == 0)
-			return patientDoc;
-		
-		Document mergedDoc = getNewMergeDoc();
-		Element mergeRootNode = mergedDoc.getDocumentElement();
-
-		mergeRootNode.appendChild(mergedDoc.adoptNode(patientDoc.getDocumentElement()));
-
-		for(Document encounterDoc : encounterDocs)
-			mergeRootNode.appendChild(mergedDoc.adoptNode(encounterDoc.getDocumentElement()));
-
-		return mergedDoc;
-	}
-
-	private static Document getNewMergeDoc() throws Exception {
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		DocumentBuilder db = dbf.newDocumentBuilder();
-
-		Document doc = db.newDocument();
-		Element root = (Element) doc.createElement("openmrs_data");
-		doc.appendChild(root);
-		return doc;
-	}
-
+	
 	/**
 	 * Adds an xforms data to the xforms queue.
 	 * 
@@ -149,7 +95,131 @@ public class XformDataUploadManager {
 	}
 
 	/**
+	 * Goes though a list of forms and if those for new patients, who also have encounter forms,
+	 * are found, merges them into one new document in the merged document format.
+	 * 
+	 * @param xforms a list of xform models.
+	 * @param sessionId the user session id.
+	 * @param enterer the user submitting the forms.
+	 * @return a list of forms where those that deal with new patients with encounters are already merged into one document.
+	 * @throws Exception
+	 */
+	private static List<Document> mergeNewPatientsWithEncounters(List<String> xforms, String sessionId, String enterer) throws Exception{
+		DocumentBuilder db = dbf.newDocumentBuilder();
+
+		//Holds a list of encounter documents.
+		List<Document> encounterDocs = new ArrayList<Document>();
+		
+		//A map of new patientId and the corresponding new patient document.
+		HashMap<String,Document> patientIdPatientDocMap = new HashMap<String,Document>();
+		
+		//A map of new patientId and a list of encounter documents for this new patient.
+		HashMap<String,List<Document>> patientIdEncounterDocsMap = new HashMap<String,List<Document>>();
+
+		//Loops through the xml texts creating Document objects for each and put
+		//New patient docs in a map (patientIdEncounterDocsMap) which will point to a list of encounter
+		//docs collected for the new patient keyed by the patient id.
+		for(String xml : xforms){
+			//Create Document from xml text
+			Document doc = db.parse(IOUtils.toInputStream(xml));
+
+			//Set the openmrs form header values.
+			setHeaderValues(doc,sessionId,enterer);
+			
+			//If new patient, put in the new patient map
+			if(DOMUtil.isNewPatientDoc(doc)){
+				String patientId = DOMUtil.getPatientFormPatientId(doc);
+				
+				//Assuming we have not more than one new patient doc for each new patient.
+				//If we have more, the are over writing them.
+				patientIdEncounterDocsMap.put(patientId, new ArrayList<Document>());
+				patientIdPatientDocMap.put(patientId, doc);
+			}
+			else
+				encounterDocs.add(doc);
+		}
+
+		//This will have the final list of our documents after processing.
+		List<Document> processedDocs = new ArrayList<Document>();
+
+		//Now loop through all encounter docs (encounterDocs) while creating putting them
+		//in the appropriate list as for the patientIdEncounterDocsMap
+		for(Document doc : encounterDocs){
+			String patientId = DOMUtil.getEncounterFormPatientId(doc);
+			//This works on the assumption that new patient docs have ids that
+			//match those in the corresponding encounter forms which need to be merged.
+			if(patientId != null && patientIdEncounterDocsMap.containsKey(patientId))
+				patientIdEncounterDocsMap.get(patientId).add(doc); //encounter form collected for a new patient
+			else
+				processedDocs.add(doc); //encounter form collected for an existing patient
+		}
+
+		//Now merge the new patient documents together with their list of encounters.
+		Set<Entry<String,List<Document>>> set = patientIdEncounterDocsMap.entrySet();
+		for(Entry<String,List<Document>> entry : set){
+			String patientId = entry.getKey();
+			List<Document> docs = entry.getValue();
+			processedDocs.add(mergeDocs(patientIdPatientDocMap.get(patientId),docs));
+		}			
+
+		return processedDocs;
+	}
+
+	/**
+	 * Merges a new patient document with a list of documents having encounter obs
+	 * entered in various forms for the new patient.
+	 * 
+	 * @param patientDoc the new patient document.
+	 * @param encounterDocs a list of encounter documents for the new patient.
+	 * @return the merged document.
+	 * @throws Exception
+	 */
+	private static Document mergeDocs(Document patientDoc, List<Document> encounterDocs) throws Exception {
+		//If no encounters, then just return the new patient document.
+		if(encounterDocs.size() == 0)
+			return patientDoc;
+		
+		//Create a new merge document with is in the format:
+		//openmrs_data
+		//	patient
+		//	form
+		// 	form
+		//	an more form nodes
+		//openmrs_data
+		
+		//Get the root node of the merge document. This node name is "openmrs_data"
+		Document mergedDoc = getNewMergeDoc();
+		Element mergeRootNode = mergedDoc.getDocumentElement();
+
+		//Add the new patient node. This node name is "patient"
+		mergeRootNode.appendChild(mergedDoc.adoptNode(patientDoc.getDocumentElement()));
+
+		//Add a form node for each encounter for this new patient. The node name is "form"
+		for(Document encounterDoc : encounterDocs)
+			mergeRootNode.appendChild(mergedDoc.adoptNode(encounterDoc.getDocumentElement()));
+
+		return mergedDoc;
+	}
+
+	/**
+	 * Creates a new document in the format expected for new patients who also have encounters.
+	 * 
+	 * @return the document with only the root node
+	 * @throws Exception
+	 */
+	private static Document getNewMergeDoc() throws Exception {
+		DocumentBuilder db = dbf.newDocumentBuilder();
+
+		Document doc = db.newDocument();
+		Element root = (Element) doc.createElement("openmrs_data");
+		doc.appendChild(root);
+		return doc;
+	}
+
+	/**
 	 * Save xforms data in the xforms queue.
+	 * As per from version 3 we are no longer queuing, we process immediately
+	 * because users want to see their encounter obs without waiting.
 	 * 
 	 * @param xml - the xforms model.
 	 */

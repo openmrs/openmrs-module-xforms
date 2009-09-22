@@ -8,8 +8,6 @@
 	var djConfig = {debugAtAllCosts: false, isDebug: false };
 </script>
 
-<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
-
 <html>
   <head>
     <title>OpenMRS XForms Designer</title>
@@ -46,7 +44,9 @@
     <div id="allowBindEdit" style="visibility:hidden;">${allowBindEdit}</div>
     
     <div id="showSubmitSuccessMsg" style="visibility:hidden;">${showSubmitSuccessMsg}</div>
-   
+    
+    <div id="showLanguageTab" style="visibility:hidden;">${showLanguageTab}</div>
+    
    <script language="javascript">
     	var PurcformsText = {
      	    	file: "<spring:message code="xforms.file" />",
@@ -299,7 +299,10 @@
         		cancelFormPrompt: "<spring:message code="xforms.cancelFormPrompt" />",
         		print: "<spring:message code="xforms.print" />",
         		yes: "<spring:message code="xforms.yes" />",
-        		no: "<spring:message code="xforms.no" />"
+        		no: "<spring:message code="xforms.no" />",
+           		searchServer: "<spring:message code="xforms.searchServer" />",
+           		recording: "<spring:message code="xforms.recording" />",
+           		search: "<spring:message code="xforms.search" />"
     	};
 
     	function isUserAuthenticated(){
@@ -313,9 +316,37 @@
     	function checkIfLoggedInCallback(isLoggedIn) {
     		authenticationCallback(isLoggedIn);
     	}
+
+    	function searchExternal(key,parentElement,textElement,valueElement){
+    	
+    	}
+
+    	function initialize(){
+
+		}
     	
     </script>
     
   </body>
 </html>
 
+<!--
+	var searchWidget = dojo.widget.manager.getWidgetById("conceptId_search");
+    		
+    		var link = searchWidget.domNode.parentNode;
+    		parentElement.appendChild(link);
+   				
+    		var selectionWidget = dojo.widget.manager.getWidgetById("conceptId_selection");
+      
+    		selectionWidget.changeButton.style.display = "none";
+  		
+    		if(textElement)
+    			selectionWidget.displayNode = textElement;
+
+    		if(valueElement)
+    			selectionWidget.hiddenInputNode = valueElement;
+    		
+    		searchWidget.clearSearch();
+    		searchWidget.toggleShowing();
+    		searchWidget.inputNode.select();
+-->

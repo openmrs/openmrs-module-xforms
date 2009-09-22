@@ -43,6 +43,7 @@
 
 <div id="showSubmitSuccessMsg" style="visibility:hidden;">${showSubmitSuccessMsg}</div>
 
+<div id="searchConcepts"><openmrs_tag:conceptField formFieldName="conceptId" searchLabel="Search Concept" initialValue="" /></div>
 
 <script language="javascript">
 	var PurcformsText = {
@@ -296,7 +297,10 @@
     		cancelFormPrompt: "<spring:message code="xforms.cancelFormPrompt" />",
     		print: "<spring:message code="xforms.print" />",
     		yes: "<spring:message code="xforms.yes" />",
-    		no: "<spring:message code="xforms.no" />"
+    		no: "<spring:message code="xforms.no" />",
+       		searchServer: "<spring:message code="xforms.searchServer" />",
+       		recording: "<spring:message code="xforms.recording" />",
+       		search: "<spring:message code="xforms.search" />"
 	};
 
 	function isUserAuthenticated(){
@@ -309,6 +313,43 @@
 
 	function checkIfLoggedInCallback(isLoggedIn) {
 		authenticationCallback(isLoggedIn);
+	}
+
+	function initialize(){
+		var selectionWidget = dojo.widget.manager.getWidgetById("conceptId_selection");
+		selectionWidget.changeButton.style.display = "none";
+
+
+		dojo.addOnLoad( function() {
+			dojo.event.topic.subscribe("conceptId_search/select", 
+				function(msg) {
+					if (msg) {
+						var concept = msg.objs[0];
+						var conceptPopup = dojo.widget.manager.getWidgetById("conceptId_selection");
+						conceptPopup.displayNode.innerHTML = concept.conceptId;
+						conceptPopup.hiddenInputNode.value = concept.name;
+						dojo.debug("Before adding if statement");
+						
+						
+					}
+				}
+			);
+		})	
+	}
+
+	function searchExternal(key,value,parentElement,textElement,valueElement){
+		var searchWidget = dojo.widget.manager.getWidgetById("conceptId_search");
+		parentElement.appendChild(searchWidget.domNode.parentNode);
+	
+		var selectionWidget = dojo.widget.manager.getWidgetById("conceptId_selection");
+ 		selectionWidget.displayNode = textElement;
+
+		selectionWidget.hiddenInputNode = valueElement;
+		
+		searchWidget.clearSearch();
+		searchWidget.toggleShowing();
+		searchWidget.inputNode.select();
+		searchWidget.inputNode.value = value;
 	}
 	
 </script>

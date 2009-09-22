@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -14,13 +16,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.runtime.RuntimeConstants;
-import org.apache.velocity.runtime.log.CommonsLogLogChute;
 import org.kxml2.kdom.Document;
 import org.openmrs.Form;
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
+import org.openmrs.PersonAttribute;
+import org.openmrs.PersonAttributeType;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
@@ -32,6 +33,7 @@ import org.openmrs.module.xforms.XformsServer;
 import org.openmrs.module.xforms.XformsService;
 import org.openmrs.module.xforms.download.XformDownloadManager;
 import org.openmrs.module.xforms.formentry.FormEntryWrapper;
+import org.openmrs.module.xforms.util.DOMUtil;
 import org.openmrs.module.xforms.util.XformsUtil;
 import org.openmrs.util.FormUtil;
 import org.openmrs.web.controller.user.UserFormController;
@@ -80,7 +82,7 @@ public class XformDownloadServlet extends HttpServlet {
 			if(XformConstants.REQUEST_PARAM_XFORMS.equalsIgnoreCase(target))
 				new XformsServer().processConnection(new DataInputStream((InputStream)request.getInputStream()), new DataOutputStream((OutputStream)response.getOutputStream()));
 			else{
-				//try to authenticate users who logon inline (with the request).
+				//try to authenticate users who log on inline (with the request).
 				try{
 					XformsUtil.authenticateInlineUser(request);
 				}catch(ContextAuthenticationException e){
@@ -314,7 +316,7 @@ public class XformDownloadServlet extends HttpServlet {
 		//formRunner.loadForm(formDef,layoutXml);
 	}
 
-	protected void doPatientXformEntryGet(HttpServletRequest request, HttpServletResponse response, XformsService xformsService, Integer formId) throws ServletException, IOException {			
+	protected void doPatientXformEntryGet(HttpServletRequest request, HttpServletResponse response, XformsService xformsService, Integer formId) throws Exception {			
 		String xformXml = null;
 		Xform xform = xformsService.getXform(formId);
 		if(xform == null)
@@ -324,12 +326,13 @@ public class XformDownloadServlet extends HttpServlet {
 
 		Document doc = XformBuilder.getDocument(xformXml);
 
+		Patient patient = null;
 		String patientIdParam = request.getParameter(XformConstants.REQUEST_PARAM_PATIENT_ID);
 		if(patientIdParam != null){
 			Integer patientId = Integer.parseInt(patientIdParam);
 			XformBuilder.setNodeValue(doc, XformBuilder.NODE_PATIENT_PATIENT_ID, patientId.toString());
 
-			Patient patient = Context.getPatientService().getPatient(patientId);
+			patient = Context.getPatientService().getPatient(patientId);
 			if(patient != null){
 				XformBuilder.setNodeValue(doc, XformBuilder.NODE_PATIENT_FAMILY_NAME, patient.getFamilyName());
 				XformBuilder.setNodeValue(doc, XformBuilder.NODE_PATIENT_MIDDLE_NAME, patient.getMiddleName());
@@ -339,32 +342,43 @@ public class XformDownloadServlet extends HttpServlet {
 			//XformBuilder.setPatientTableFieldValues(form.getFormId(),doc.getRootElement(), patientId, xformsService);
 		}
 
-		Patient p = new Patient();
-		UserFormController.getMiniPerson(p, request.getParameter("addName"), request.getParameter("addGender"), request.getParameter("addBirthdate"), request.getParameter("addAge"));
+		if(patient == null){
+			patient = new Patient();
+			UserFormController.getMiniPerson(patient, request.getParameter("addName"), request.getParameter("addGender"), request.getParameter("addBirthdate"), request.getParameter("addAge"));
+		}
 
-		String s = p.getFamilyName();
+		String s = patient.getFamilyName();
 		if(s != null && s.trim().length() > 0)
 			XformBuilder.setNodeValue(doc, NODE_PATIENT_FAMILY_NAME, s);
 
-		s = p.getMiddleName();
+		s = patient.getMiddleName();
 		if(s != null && s.trim().length() > 0)
 			XformBuilder.setNodeValue(doc, NODE_PATIENT_MIDDLE_NAME, s);
 
-		s = p.getGivenName();
+		s = patient.getGivenName();
 		if(s != null && s.trim().length() > 0)
 			XformBuilder.setNodeValue(doc, NODE_PATIENT_GIVEN_NAME, s);
 
-		s = p.getGender();
+		s = patient.getGender();
 		if(s != null && s.trim().length() > 0)
 			XformBuilder.setNodeValue(doc, NODE_PATIENT_GENDER, s);
 
-		Date d = p.getBirthdate();
+		Date d = patient.getBirthdate();
 		if(d != null)
-			XformBuilder.setNodeValue(doc, NODE_PATIENT_BIRTH_DATE, XformsUtil.formDate2DisplayString(d));
+			XformBuilder.setNodeValue(doc, NODE_PATIENT_BIRTH_DATE, XformsUtil.formDate2SubmitString(d));
 
-		//request.getRequestDispatcher("/xform.jsp").forward(request, response);
-		response.setHeader(XformConstants.HTTP_HEADER_CONTENT_TYPE, XformConstants.HTTP_HEADER_CONTENT_TYPE_XML);
+		PatientIdentifier identifier = patient.getPatientIdentifier();
 
+		if(identifier !=  null){
+			XformBuilder.setNodeValue(doc,"identifier",identifier.getIdentifier());
+			XformBuilder.setNodeValue(doc,"patient_identifier_type_id",identifier.getIdentifierType().getPatientIdentifierTypeId().toString());
+		
+			fillPersonAttributes(patient,doc);
+
+			XformObsEdit.fillPatientComplexObs(request, doc, xformXml);
+		}
+		//else must be new patient.  
+		
 		String xml = XformBuilder.fromDoc2String(doc); 
 
 		if(xform != null){
@@ -373,11 +387,33 @@ public class XformDownloadServlet extends HttpServlet {
 				xml += XformConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR + layoutXml;
 		}
 
+		//request.getRequestDispatcher("/xform.jsp").forward(request, response);
+		response.setHeader(XformConstants.HTTP_HEADER_CONTENT_TYPE, XformConstants.HTTP_HEADER_CONTENT_TYPE_XML);
 		response.getOutputStream().print(xml);
 
 		//TODO New model we need to get formdef or xform and layout xml to send client
 		//formRunner.loadForm(formDef,layoutXml);
 	}
+
+	/**
+	 * Fills a document with person attributes for a given patient.
+	 * 
+	 * @param patient the patient whos person attributes to fill the document with.
+	 * @param doc the document to fill with the person attributes.
+	 */
+	private void fillPersonAttributes(Patient patient, Document doc){
+		Set<PersonAttribute> attributes = patient.getAttributes();
+		if(attributes == null)
+			return;
+
+		for(PersonAttribute attribute : attributes){
+			PersonAttributeType attributeType = attribute.getAttributeType();
+			String value = attribute.getValue();
+			if(value != null)
+				XformBuilder.setNodeValue(doc, "person_attribute"+attributeType.getPersonAttributeTypeId(), value);
+		}
+	}
+
 }//ROOM NO 303
 //		<form id="selectFormForm" method="get" action="<%= request.getContextPath() %>/module/xforms/xformEntry.form">
 

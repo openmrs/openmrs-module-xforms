@@ -356,6 +356,37 @@ public final class XformBuilder {
 
 		return null;
 	}
+	
+	
+	/**
+	 * Gets a child element of a parent node with a given name or a given attribute prefix.
+	 * 
+	 * @param parent - the parent element
+	 * @param name - the name of the child.
+	 * @param attributeName - the name of the attribute.
+	 * @param attributeValue - the prefix of the attribute.
+	 * @return - the child element.
+	 */
+	public static Element getElement(Element parent, String name, String attributeName, String attributeValue){
+		for(int i=0; i<parent.getChildCount(); i++){
+			if(parent.getType(i) != Element.ELEMENT)
+				continue;
+
+			Element child = (Element)parent.getChild(i);
+			if(child.getName().equalsIgnoreCase(name))
+				return child; //TODO May need to only check the attribute prefix
+			
+			String value = child.getAttributeValue(null, attributeName);
+			if(value != null && value.startsWith(attributeValue))
+				return child;
+			
+			child = getElement(child,name,attributeName,attributeValue);
+			if(child != null)
+				return child;
+		}
+
+		return null;
+	}
 
 	/**
 	 * Builds an Xfrom from an openmrs schema and template document.

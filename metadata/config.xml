@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>xforms</id>
 	<name>XForms</name>
-	<version>3.6</version>
+	<version>3.6.2</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Daniel Kayiwa</author>
 	<description>
@@ -148,7 +148,7 @@
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.useEncounterXform</property>
-		<defaultValue>false</defaultValue>
+		<defaultValue>true</defaultValue>
 		<description>Set to true if you want to use XForms to edit encounters instead of the default openmrs edit encounter screen, else set to false.</description>
 	</globalProperty>
 	<globalProperty>

@@ -85,11 +85,11 @@ public class XformsServer {
 
 			String name = dis.readUTF();
 			String pw = dis.readUTF();
-			String serializer = dis.readUTF();
+			String serializerKey = dis.readUTF();
 			String locale = dis.readUTF();
 			
 			byte action = dis.readByte();
-			
+				
 			Context.openSession();
 			
 			try{
@@ -103,19 +103,19 @@ public class XformsServer {
 				DataOutputStream dosTemp = new DataOutputStream(baos);
 				
 				if (action == ACTION_DOWNLOAD_PATIENTS)
-					downloadPatients(String.valueOf(dis.readInt()), dosTemp);
+					downloadPatients(String.valueOf(dis.readInt()), dosTemp,null);
 				else if(action == ACTION_DOWNLOAD_COHORTS)
 					PatientDownloadManager.downloadCohorts(dosTemp);
 				else if (action == ACTION_DOWNLOAD_FORMS)
-					XformDownloadManager.downloadXforms(dosTemp);
+					XformDownloadManager.downloadXforms(dosTemp,serializerKey);
 				else if (action == ACTION_UPLOAD_FORMS)
-					submitXforms(dis, dosTemp);
+					submitXforms(dis, dosTemp,serializerKey);
 				else if (action == ACTION_DOWNLOAD_USERS)
-					UserDownloadManager.downloadUsers(dosTemp);
+					UserDownloadManager.downloadUsers(dosTemp,serializerKey);
 				else if (action == ACTION_DOWNLOAD_USERS_AND_FORMS)
-					downloadUsersAndForms(dosTemp);
+					downloadUsersAndForms(dosTemp,serializerKey);
 				else if(action == ACTION_DOWNLOAD_FILTERED_PATIENTS)
-					downloadPatients(dis.readUTF(), dis.readUTF(), dosTemp);
+					downloadPatients(dis.readUTF(), dis.readUTF(), dosTemp,serializerKey);
 
 				responseStatus = ResponseStatus.STATUS_SUCCESS;
 			}
@@ -144,24 +144,24 @@ public class XformsServer {
 		}
 	}
 
-	private void downloadPatients(String cohortId, OutputStream os) throws Exception{
+	private void downloadPatients(String cohortId, OutputStream os, String serializerKey) throws Exception{
 		
 		//Context.openSession();
 		
 		try{
-			PatientDownloadManager.downloadPatients(cohortId, os);
+			PatientDownloadManager.downloadPatients(cohortId, os, serializerKey);
 		}
 		finally{
 			//Context.closeSession();
 		}
 	}
 	
-	private void downloadPatients(String name, String identifier, OutputStream os) throws Exception{
+	private void downloadPatients(String name, String identifier, OutputStream os, String serializerKey) throws Exception{
 		
 		//Context.openSession();
 		
 		try{
-			PatientDownloadManager.downloadPatients(name, identifier, os);
+			PatientDownloadManager.downloadPatients(name, identifier, os,serializerKey);
 		}
 		finally{
 			//Context.closeSession();
@@ -174,8 +174,8 @@ public class XformsServer {
 	 * @param dis - the stream to read from.
 	 * @param dos - the stream to write to.
 	 */
-	private void submitXforms(DataInputStream dis, DataOutputStream dos) throws Exception {
-		XformDataUploadManager.submitXforms(dis, new java.util.Date().toString());
+	private void submitXforms(DataInputStream dis, DataOutputStream dos, String serializerKey) throws Exception {
+		XformDataUploadManager.submitXforms(dis, new java.util.Date().toString(),serializerKey);
 		try {
 			dos.writeByte(STATUS_SUCCESS);
 		} catch (Exception e) {
@@ -190,8 +190,9 @@ public class XformsServer {
 	 * @param dos - the stream to write to.
 	 * @throws Exception
 	 */
-	private void downloadUsersAndForms(DataOutputStream dos) throws Exception {
-		UserDownloadManager.downloadUsers(dos);
-		XformDownloadManager.downloadXforms(dos);
+	private void downloadUsersAndForms(DataOutputStream dos, String serializerKey) throws Exception {
+		//Need to have a away of handing user serialization more smartly
+		UserDownloadManager.downloadUsers(dos,null);
+		XformDownloadManager.downloadXforms(dos,serializerKey);
 	}
 }

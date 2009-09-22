@@ -49,7 +49,7 @@ import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
  *
  */
 public class XformObsEdit {
-	
+
 	private static final Log log = LogFactory.getLog(XformObsEdit.class);
 
 	/** A mapping of xpath expressions to their complex data. */
@@ -74,7 +74,7 @@ public class XformObsEdit {
 
 		retrieveSessionValues(request);
 		clearSessionData(request,encounter.getForm().getFormId());
-		
+
 		formNode.setAttribute(null, "encounterId", encounter.getEncounterId().toString());
 
 		XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_LOCATION_ID, encounter.getLocation().getLocationId().toString());
@@ -87,7 +87,10 @@ public class XformObsEdit {
 		for(Obs obs : observations){
 			Concept concept = obs.getConcept();
 
-			Element node = XformBuilder.getElement(formNode,FormUtil.getXmlToken(concept.getDisplayString()));
+			//TODO This needs to do a better job by searching for an attribute that starts with
+			//a concept id of the concept and hence remove the name dependency as the concept name
+			//could change or may be different in a different locale.
+			Element node = XformBuilder.getElement(formNode,FormUtil.getXmlToken(concept.getDisplayString()),"openmrs_concept",concept.getConceptId()+"^");
 			if(node == null)
 				continue;
 
@@ -125,6 +128,7 @@ public class XformObsEdit {
 					XformBuilder.setNodeValue(valueNode,value);
 					valueNode.setAttribute(null, "obsId", obs.getObsId().toString());
 				}
+
 				node.setAttribute(null, "obsId", obs.getObsId().toString());
 				//XformBuilder.setNodeValue(node, "value", value);
 			}
@@ -158,15 +162,15 @@ public class XformObsEdit {
 	public static Encounter getEditedEncounter(HttpServletRequest request,Element formNode,Set<Obs> obs2Void) throws Exception{
 		if(formNode == null || !"form".equals(formNode.getName()))
 			return null;
-		
+
 		String formId = formNode.getAttributeValue(null, "id");
-		
+
 		retrieveSessionValues(request);
 		clearSessionData(request,Integer.parseInt(formId));
 
 		List<String> complexObs = DOMUtil.getModelComplexObsNodeNames(formId);
 		List<String> dirtyComplexObs = getEditedComplexObsNames();
-	
+
 		Date datetime = new Date();
 
 		Integer encounterId = Integer.parseInt(formNode.getAttributeValue(null, "encounterId"));
@@ -279,19 +283,19 @@ public class XformObsEdit {
 			else{
 				Element valueNode = XformBuilder.getElement(node, "value");
 				String value = XformBuilder.getTextValue(valueNode);
-				
+
 				String obsId = node.getAttributeValue(null, "obsId");
 				if(obsId != null && obsId.trim().length() > 0)
 					continue; //new obs cant have an obs id
 
 				if(valueNode == null)
 					continue;
-				
+
 				if(value == null || value.trim().length() == 0)
 					continue;
-				
+
 				String nodeName = node.getName();
-				
+
 				if(complexObs.contains(nodeName))
 					value = saveComplexObs(nodeName,value,formNode);
 
@@ -487,39 +491,39 @@ public class XformObsEdit {
 
 		return file.getAbsolutePath();
 	}
-	
+
 	private static void retrieveSessionValues(HttpServletRequest request){
 		HttpSession session = request.getSession();
-		
+
 		complexData = (HashMap<String,byte[]>)session.getAttribute("XformObsEdit.complexData");
 		complexDataNodeNames = (HashMap<String,String>)session.getAttribute("XformObsEdit.complexDataNodeNames");
 		dirtyComplexData = (List<String>)session.getAttribute("XformObsEdit.dirtyComplexData");
-		
+
 		if(complexData == null){
 			complexData = new HashMap<String,byte[]>();
 			session.setAttribute("XformObsEdit.complexData", complexData);
 		}
-			
+
 		if(complexDataNodeNames == null){
 			complexDataNodeNames = new HashMap<String,String>();
 			session.setAttribute("XformObsEdit.complexDataNodeNames", complexDataNodeNames);
 		}
-		
+
 		if(dirtyComplexData == null){
 			dirtyComplexData = new ArrayList<String>();
 			session.setAttribute("XformObsEdit.dirtyComplexData", dirtyComplexData);
 		}
 	}
-	
+
 	private static void clearSessionData(HttpServletRequest request,Integer formId){
 		complexData.clear();
 		complexDataNodeNames.clear();
 		dirtyComplexData.clear();
-		
+
 		MultimediaServlet.clearFormSessionData(request, formId.toString());
 	}
-	
-	
+
+
 	public static byte[] getComplexData(HttpServletRequest request,String formId, String xpath){
 		retrieveSessionValues(request);
 		return complexData.get(getComplexDataKey(formId, xpath));
@@ -527,29 +531,55 @@ public class XformObsEdit {
 
 	public static void setComplexDataDirty(HttpServletRequest request,String formId, String xpath){
 		retrieveSessionValues(request);
-		
+
 		String key = getComplexDataKey(formId, xpath);
 		if(!dirtyComplexData.contains(key))
 			dirtyComplexData.add(key);
 	}
-	
+
 	public static void loadAndClearSessionData(HttpServletRequest request,Integer formId){
 		HttpSession session = request.getSession();
-		
+
 		complexData = (HashMap<String,byte[]>)session.getAttribute("XformObsEdit.complexData");
 		complexDataNodeNames = (HashMap<String,String>)session.getAttribute("XformObsEdit.complexDataNodeNames");
 		dirtyComplexData = (List<String>)session.getAttribute("XformObsEdit.dirtyComplexData");
 
 		if(complexData != null)
 			complexData.clear();
-		
+
 		if(complexDataNodeNames != null)
 			complexDataNodeNames.clear();
-		
+
 		if(dirtyComplexData != null)
 			dirtyComplexData.clear();
-		
+
 		MultimediaServlet.clearFormSessionData(request, formId.toString());
+	}
+
+	public static void fillPatientComplexObs(HttpServletRequest request,Document doc, String xml) throws Exception{
+		retrieveSessionValues(request);
+		clearSessionData(request,0);
+
+		Element patientNode = XformBuilder.getElement(doc.getRootElement(), "patient");
+		if(patientNode== null)
+			return;
+
+		List<String> complexObs = DOMUtil.getXformComplexObsNodeNames(xml);
+
+		for(int index = 0; index < patientNode.getChildCount(); index++){
+			if(patientNode.getType(index) != Element.ELEMENT)
+				continue;
+//Syste
+			Element node = (Element)patientNode.getChild(index);
+			if(complexObs.contains(node.getName())){
+				String value = XformBuilder.getTextValue(node);
+				if(value != null && value.trim().length() > 0){
+					String key = getComplexDataKey(patientNode.getAttributeValue(null, "id"),"/patient/" + node.getName());
+					value = getComplexObsValue(node.getName(),node,value,key);
+					XformBuilder.setNodeValue(node,value);
+				}
+			}
+		}
 	}
 }
 

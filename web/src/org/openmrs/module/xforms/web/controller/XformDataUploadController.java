@@ -67,7 +67,11 @@ public class XformDataUploadController extends SimpleFormController{
 			//check if external client sending multiple filled forms.
 			if(XformConstants.TRUE_TEXT_VALUE.equalsIgnoreCase(request.getParameter(XformConstants.REQUEST_PARAM_BATCH_ENTRY))){            
 				try{
-					XformDataUploadManager.submitXforms(request.getInputStream(),request.getSession().getId());
+					String serializerKey = request.getParameter("serializer");
+					if(serializerKey == null || serializerKey.trim().length() == 0)
+						serializerKey = XformConstants.GLOBAL_PROP_KEY_XFORM_SERIALIZER;
+					
+					XformDataUploadManager.submitXforms(request.getInputStream(),request.getSession().getId(),serializerKey);
 					status = XformsServer.STATUS_SUCCESS;
 				}
 				catch(Exception e){

@@ -286,7 +286,7 @@ public class XformsQueueProcessor {
 	 * @param creator - the logged on user.
 	 * @return - true if the patient is created successfully, else false.
 	 */
-	private Integer saveNewPatient(Element root, User creator){		
+	private Integer saveNewPatient(Element root, User creator) throws Exception{		
 		PatientService patientService = Context.getPatientService();
 		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
 
@@ -336,7 +336,10 @@ public class XformsQueueProcessor {
 			}
 	}
 
-	private void addPersonAttributes(Patient pt, Element root,XformsService xformsService){
+	private void addPersonAttributes(Patient pt, Element root,XformsService xformsService) throws Exception{
+		//First translate complex obs to file pointers;
+		saveComplexObs(root.getOwnerDocument());
+		
 		// look for person attributes in the xml doc and save to person
 		PersonService personService = Context.getPersonService();
 		for (PersonAttributeType type : personService.getPersonAttributeTypes(PERSON_TYPE.PERSON, null)) {

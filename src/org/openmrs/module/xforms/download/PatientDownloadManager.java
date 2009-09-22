@@ -32,18 +32,24 @@ public class PatientDownloadManager {
 	private static Log log = LogFactory.getLog(PatientDownloadManager.class);
 
 	
-	public static void downloadPatients(String cohortId, OutputStream os) throws Exception{
+	public static void downloadPatients(String cohortId, OutputStream os, String serializerKey) throws Exception{
 		
         if(cohortId == null)
             cohortId = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_PATIENT_DOWNLOAD_COHORT);
 
+        if(serializerKey == null)
+        	serializerKey = XformConstants.GLOBAL_PROP_KEY_PATIENT_SERIALIZER;
+        
 		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
-        XformsUtil.invokeSerializationMethod("serialize",os, XformConstants.GLOBAL_PROP_KEY_PATIENT_SERIALIZER, XformConstants.DEFAULT_PATIENT_SERIALIZER, getPatientData(cohortId,xformsService));
+        XformsUtil.invokeSerializationMethod("serialize",os,serializerKey , XformConstants.DEFAULT_PATIENT_SERIALIZER, getPatientData(cohortId,xformsService));
  	}
 	
-	public static void downloadPatients(String name, String identifier, OutputStream os) throws Exception{
+	public static void downloadPatients(String name, String identifier, OutputStream os,String serializerKey) throws Exception{
+		if(serializerKey == null)
+        	serializerKey = XformConstants.GLOBAL_PROP_KEY_PATIENT_SERIALIZER;
+		
 		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
-        XformsUtil.invokeSerializationMethod("serialize",os, XformConstants.GLOBAL_PROP_KEY_PATIENT_SERIALIZER, XformConstants.DEFAULT_PATIENT_SERIALIZER, getPatientData(name,identifier,xformsService));
+        XformsUtil.invokeSerializationMethod("serialize",os, serializerKey, XformConstants.DEFAULT_PATIENT_SERIALIZER, getPatientData(name,identifier,xformsService));
  	}
 	
 	private static PatientData getPatientData(String sCohortId,XformsService xformsService){

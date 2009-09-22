@@ -49,6 +49,11 @@ public class DefaultUserSerializer {
 		try{
 			DataOutputStream dos = new DataOutputStream(os);
 			
+			if(data == null){
+        		dos.writeByte(0);
+        		return;
+        	}
+			
 			List<XformUser> users = (List<XformUser>)data; //This will always be a list of XFormUser
 
 			dos.writeByte(users.size());

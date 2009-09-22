@@ -35,75 +35,66 @@ import org.springframework.web.servlet.view.RedirectView;
  * 
  */
 public class XformDesignerController extends SimpleFormController {
-	
-    /** Logger for this class and subclasses */
-    protected final Log log = LogFactory.getLog(getClass());
-        	    
-    @Override
+
+	/** Logger for this class and subclasses */
+	protected final Log log = LogFactory.getLog(getClass());
+
+	@Override
 	protected Map referenceData(HttpServletRequest request, Object obj, Errors err) throws Exception {    	
 		Map<String, Object> map = new HashMap<String, Object>();
-        String formId = request.getParameter("formId");
-        
-        String allowBindEdit = "1";
-        if(formId != null && formId.trim().length() > 0){
-            map.put("formId",Integer.parseInt(formId));
-            allowBindEdit = "0";
-        }
-        else
-            map.put("formId",-1);
-        
-        map.put("allowBindEdit", allowBindEdit);
-        
-        map.put(XformConstants.FORM_DESIGNER_KEY_DATE_SUBMIT_FORMAT, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_SUBMIT_FORMAT,XformConstants.DEFAULT_DATE_SUBMIT_FORMAT));
-        map.put(XformConstants.FORM_DESIGNER_KEY_DATE_DISPLAY_FORMAT, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_DISPLAY_FORMAT,XformConstants.DEFAULT_DATE_DISPLAY_FORMAT));
-        map.put(XformConstants.FORM_DESIGNER_KEY_DEFAULT_FONT_FAMILY, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DEFAULT_FONT_FAMILY,XformConstants.DEFAULT_FONT_FAMILY));
-        
-        map.put(XformConstants.FORM_DESIGNER_KEY_DATE_TIME_SUBMIT_FORMAT, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_TIME_SUBMIT_FORMAT,XformConstants.DEFAULT_DATE_TIME_SUBMIT_FORMAT));
-        map.put(XformConstants.FORM_DESIGNER_KEY_DATE_TIME_DISPLAY_FORMAT, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_TIME_DISPLAY_FORMAT,XformConstants.DEFAULT_DATE_TIME_DISPLAY_FORMAT));
-        map.put(XformConstants.FORM_DESIGNER_KEY_TIME_SUBMIT_FORMAT, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_TIME_SUBMIT_FORMAT,XformConstants.DEFAULT_TIME_SUBMIT_FORMAT));
-        map.put(XformConstants.FORM_DESIGNER_KEY_TIME_DISPLAY_FORMAT, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_TIME_DISPLAY_FORMAT,XformConstants.DEFAULT_TIME_DISPLAY_FORMAT));
+		String formId = request.getParameter("formId");
+
+		String allowBindEdit = "1";
+		if(formId != null && formId.trim().length() > 0){
+			map.put("formId",Integer.parseInt(formId));
+			allowBindEdit = "0";
+		}
+		else
+			map.put("formId",-1);
+
+		map.put("allowBindEdit", allowBindEdit);
+		map.put("showLanguageTab", allowBindEdit);
+
+		map.put(XformConstants.FORM_DESIGNER_KEY_DATE_SUBMIT_FORMAT, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_SUBMIT_FORMAT,XformConstants.DEFAULT_DATE_SUBMIT_FORMAT));
+		map.put(XformConstants.FORM_DESIGNER_KEY_DATE_DISPLAY_FORMAT, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_DISPLAY_FORMAT,XformConstants.DEFAULT_DATE_DISPLAY_FORMAT));
+		map.put(XformConstants.FORM_DESIGNER_KEY_DEFAULT_FONT_FAMILY, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DEFAULT_FONT_FAMILY,XformConstants.DEFAULT_FONT_FAMILY));
+
+		map.put(XformConstants.FORM_DESIGNER_KEY_DATE_TIME_SUBMIT_FORMAT, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_TIME_SUBMIT_FORMAT,XformConstants.DEFAULT_DATE_TIME_SUBMIT_FORMAT));
+		map.put(XformConstants.FORM_DESIGNER_KEY_DATE_TIME_DISPLAY_FORMAT, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_TIME_DISPLAY_FORMAT,XformConstants.DEFAULT_DATE_TIME_DISPLAY_FORMAT));
+		map.put(XformConstants.FORM_DESIGNER_KEY_TIME_SUBMIT_FORMAT, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_TIME_SUBMIT_FORMAT,XformConstants.DEFAULT_TIME_SUBMIT_FORMAT));
+		map.put(XformConstants.FORM_DESIGNER_KEY_TIME_DISPLAY_FORMAT, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_TIME_DISPLAY_FORMAT,XformConstants.DEFAULT_TIME_DISPLAY_FORMAT));
 
 		map.put(XformConstants.FORM_DESIGNER_KEY_SHOW_SUBMIT_SUCCESS_MSG, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_SHOW_SUBMIT_SUCCESS_MSG,XformConstants.DEFAULT_SHOW_SUBMIT_SUCCESS_MSG));
 
-        /*System.out.println("getContextPath="+request.getContextPath());
-        System.out.println("getLocalAddr="+request.getLocalAddr());
-        System.out.println("getLocalName="+request.getLocalName());
-        System.out.println("getPathInfo="+request.getPathInfo());
-        System.out.println("getPathTranslated="+request.getPathTranslated());
-        System.out.println("getRemoteAddr="+request.getRemoteAddr());
-        System.out.println("getRequestURI="+request.getRequestURI());
-        System.out.println("getServletPath="+request.getServletPath());
-        System.out.println("getRequestURL="+request.getRequestURL());
-        System.out.println("getLocale="+request.getLocale().getDisplayName());*/
-        
-        String url = request.getRequestURI();
-        url = url.substring(0, url.indexOf("module/xforms/xformDesigner.form"));
-        
-        if(formId != null && formId.trim().length() > 0 && !formId.equals("0"))
-        	url += "admin/forms/formEdit.form?formId=" + formId;
-        else
-        	url += "admin/index.htm";
-        
-        map.put("closeUrl", url);
-        
-        //http://127.0.0.1:8080/openmrs/admin/forms/formEdit.form?formId=20
-        //http://127.0.0.1:8080/openmrs/admin/index.htm
-        
-        //http://127.0.0.1:8080/openmrs/module/xforms/xformDesigner.form
-        
-        return map;
-        
+
+		String url = request.getRequestURI();
+		url = url.substring(0, url.indexOf("module/xforms/xformDesigner.form"));
+
+		if(formId != null && formId.trim().length() > 0 && !formId.equals("0"))
+			url += "admin/forms/formEdit.form?formId=" + formId;
+		else
+			url += "admin/index.htm";
+
+		map.put("closeUrl", url);
+
+		//http://127.0.0.1:8080/openmrs/admin/forms/formEdit.form?formId=20
+		//http://127.0.0.1:8080/openmrs/admin/index.htm
+
+		//http://127.0.0.1:8080/openmrs/module/xforms/xformDesigner.form
+
+		return map;
+
 	}
 
 
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object object, BindException exceptions) throws Exception {						
-    	return new ModelAndView(new RedirectView(getSuccessView()));
-    }
+		return new ModelAndView(new RedirectView(getSuccessView()));
+	}
 
 
-    @Override
+	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception { 
-    	return "Not Yet";
-    }    
+		return "Not Yet";
+	}    
 }
