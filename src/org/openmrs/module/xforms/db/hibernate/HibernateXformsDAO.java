@@ -151,7 +151,9 @@ public class HibernateXformsDAO implements XformsDAO {
 	public List<XformUser> getUsers() {
 		List<XformUser> users = new ArrayList<XformUser>();
 
-		String sql = "select user_id,system_id,username,password,salt from users";
+		String sql = "select user_id,system_id,username,password,salt from users " +
+					"where password is not null and salt is not null and " +
+					"not (username is null and system_id is null)";
 
 		try {
 			PreparedStatement st = sessionFactory.getCurrentSession()

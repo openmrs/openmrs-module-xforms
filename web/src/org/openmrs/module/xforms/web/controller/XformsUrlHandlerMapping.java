@@ -21,8 +21,12 @@ public class XformsUrlHandlerMapping extends SimpleUrlHandlerMapping{
 	@Override
 	protected Object lookupHandler(String arg0, HttpServletRequest arg1) {
 		if("/admin/encounters/encounter.form".equals(arg0)){
-			if("true".equals(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_USE_ENCOUNTER_XFORM,"false")))
-				return "formEntry";
+			if("true".equals(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_USE_ENCOUNTER_XFORM,"false"))){
+				
+				//Make sure we are not from Admininstration/Manage Encounters/Add New Encounter
+				if(arg1.getParameter("encounterId") != null)
+					return "formEntry";
+			}
 		}
 		else if("/admin/patients/newPatient.form".equals(arg0)){
 			if("true".equals(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_USE_PATIENT_XFORM,"false")))

@@ -47,6 +47,8 @@
     
     <div id="showLanguageTab" style="visibility:hidden;">${showLanguageTab}</div>
     
+    <div id="localeList" style="visibility:hidden;">${localeList}</div>
+    
    <script language="javascript">
     	var PurcformsText = {
      	    	file: "<spring:message code="xforms.file" />",
@@ -302,7 +304,9 @@
         		no: "<spring:message code="xforms.no" />",
            		searchServer: "<spring:message code="xforms.searchServer" />",
            		recording: "<spring:message code="xforms.recording" />",
-           		search: "<spring:message code="xforms.search" />"
+           		search: "<spring:message code="xforms.search" />",
+           		processingMsg: "<spring:message code="xforms.processingMsg" />",
+           		length: "<spring:message code="xforms.length" />"
     	};
 
     	function isUserAuthenticated(){

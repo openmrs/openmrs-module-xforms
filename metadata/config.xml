@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>xforms</id>
 	<name>XForms</name>
-	<version>3.6.2</version>
+	<version>3.6.6</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Daniel Kayiwa</author>
 	<description>
@@ -175,6 +175,11 @@
 		<property>@MODULE_ID@.showSubmitSuccessMsg</property>
 		<defaultValue>false</defaultValue>
 		<description>Set to true if you want to display the form submitted successfully message every time a form is submitted successfully.</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.localeList</property>
+		<defaultValue>en:English,fr:French,gr:German,swa:Swahili</defaultValue>
+		<description>The list of locales supported by the form designer.</description>
 	</globalProperty>
 	<!-- /Required Global Properties -->
 
