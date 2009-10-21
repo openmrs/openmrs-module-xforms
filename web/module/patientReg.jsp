@@ -303,7 +303,11 @@
        		recording: "<spring:message code="xforms.recording" />",
        		search: "<spring:message code="xforms.search" />",
        		processingMsg: "<spring:message code="xforms.processingMsg" />",
-       		length: "<spring:message code="xforms.length" />"
+       		length: "<spring:message code="xforms.length" />",
+       		clickForOtherQuestions: "<spring:message code="xforms.clickForOtherQuestions" />",
+       		ok: "<spring:message code="xforms.ok" />",
+       		undo: "<spring:message code="xforms.undo" />",
+       		redo: "<spring:message code="xforms.redo" />"
 	};
 
 	function isUserAuthenticated(){
