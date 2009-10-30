@@ -16,11 +16,13 @@ import org.apache.commons.logging.LogFactory;
 import org.kxml2.kdom.Document;
 import org.openmrs.Encounter;
 import org.openmrs.Obs;
+import org.openmrs.Patient;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.XformBuilder;
 import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformObsEdit;
+import org.openmrs.module.xforms.XformPatientEdit;
 import org.openmrs.module.xforms.XformsServer;
 import org.openmrs.module.xforms.download.XformDataUploadManager;
 import org.openmrs.module.xforms.util.XformsUtil;
@@ -70,7 +72,7 @@ public class XformDataUploadController extends SimpleFormController{
 					String serializerKey = request.getParameter("serializer");
 					if(serializerKey == null || serializerKey.trim().length() == 0)
 						serializerKey = XformConstants.GLOBAL_PROP_KEY_XFORM_SERIALIZER;
-					
+
 					XformDataUploadManager.submitXforms(request.getInputStream(),request.getSession().getId(),serializerKey);
 					status = XformsServer.STATUS_SUCCESS;
 				}
@@ -85,6 +87,7 @@ public class XformDataUploadController extends SimpleFormController{
 					processXformEdit(request,xml);
 				else
 					XformDataUploadManager.processXform(xml,request.getSession().getId(),XformsUtil.getEnterer());
+
 				setSingleEntryResponse(request, response);
 			}
 		}
@@ -100,20 +103,27 @@ public class XformDataUploadController extends SimpleFormController{
 
 		return null;
 	}
-	
+
 	private void processXformEdit(HttpServletRequest request,String xml) throws Exception{
 		Document doc = XformBuilder.getDocument(xml);
 		
-		Set<Obs> obs2Void = new HashSet<Obs>();
-		Encounter encounter = XformObsEdit.getEditedEncounter(request,doc.getRootElement(),obs2Void);
-		
-		//TODO These two below need to be put in a transaction
-		Context.getEncounterService().saveEncounter(encounter);
-		
-		ObsService obsService = Context.getObsService();
-		for(Obs obs : obs2Void)
-			obsService.voidObs(obs, "xformsmodule");
+		if(XformPatientEdit.isPatientElement(doc.getRootElement())){
+			Patient patient = XformPatientEdit.getEditedPatient(doc.getRootElement());			
+			Context.getPatientService().savePatient(patient);
+		}
+		else{
+			Set<Obs> obs2Void = new HashSet<Obs>();
+			Encounter encounter = XformObsEdit.getEditedEncounter(request,doc.getRootElement(),obs2Void);
+
+			//TODO These two below need to be put in a transaction
+			Context.getEncounterService().saveEncounter(encounter);
+
+			ObsService obsService = Context.getObsService();
+			for(Obs obs : obs2Void)
+				obsService.voidObs(obs, "xformsmodule");
+		}
 	}
+
 
 	/**
 	 * Write the response after processing an xform submitted from the browser.

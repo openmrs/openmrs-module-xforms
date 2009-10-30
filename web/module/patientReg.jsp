@@ -29,7 +29,7 @@
 <div id="formIdName" style="visibility:hidden;">formId</div>
     
 <div id="entityFormDefDownloadUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/xformDownload?target=xformentry&contentType=xml${patientParams}&</div>
-<div id="formDataUploadUrlSuffix" style="visibility:hidden;">module/xforms/xformDataUpload.form</div>
+<div id="formDataUploadUrlSuffix" style="visibility:hidden;">${formDataUploadUrlSuffix}</div>
 <div id="afterSubmitUrlSuffix" style="visibility:hidden;">findPatient.htm?</div>
 <div id="externalSourceUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/widgetValueDownload?</div>
 <div id="multimediaUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/multimediaDownload</div>

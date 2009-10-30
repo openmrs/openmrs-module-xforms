@@ -466,7 +466,7 @@ public class XformObsEdit {
 		return formid + xpath;
 	}
 
-	private static List<String> getEditedComplexObsNames(){
+	public static List<String> getEditedComplexObsNames(){
 		List<String> names = new ArrayList<String>();
 
 		for(String xpath : dirtyComplexData){
@@ -478,7 +478,7 @@ public class XformObsEdit {
 		return names;
 	}
 
-	private static String saveComplexObs(String nodeName, String value, Element formNode) throws Exception {
+	public static String saveComplexObs(String nodeName, String value, Element formNode) throws Exception {
 		byte[] bytes = Base64.decode(value);
 
 		String path = formNode.getAttributeValue(null,"name");

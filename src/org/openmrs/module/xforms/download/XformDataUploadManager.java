@@ -127,7 +127,7 @@ public class XformDataUploadManager {
 			setHeaderValues(doc,sessionId,enterer);
 			
 			//If new patient, put in the new patient map
-			if(DOMUtil.isNewPatientDoc(doc)){
+			if(DOMUtil.isPatientDoc(doc)){
 				String patientId = DOMUtil.getPatientFormPatientId(doc);
 				
 				//Assuming we have not more than one new patient doc for each new patient.

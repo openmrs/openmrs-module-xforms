@@ -118,7 +118,7 @@ public class XformsQueueProcessor {
 			Document doc = db.parse(IOUtils.toInputStream(xml));
 			Element root = doc.getDocumentElement();
 
-			if(DOMUtil.isNewPatientDoc(doc)){
+			if(DOMUtil.isPatientDoc(doc)){
 				if(saveNewPatient(root,getCreator(doc)) == null)
 					saveFormInError(xml,pathName);
 				else
@@ -135,7 +135,7 @@ public class XformsQueueProcessor {
 					if(node.getNodeType() != Node.ELEMENT_NODE)
 						continue;
 
-					if(DOMUtil.isNewPatientElementDoc((Element)node)){
+					if(DOMUtil.isPatientElementDoc((Element)node)){
 						patientId = saveNewPatient((Element)node,getCreator(doc));
 						if(patientId == null){
 							saveFormInError(xml,pathName);
@@ -195,7 +195,7 @@ public class XformsQueueProcessor {
 		String xmlOriginal = xml;
 		try{
 			fillPatientIdIfMissing(doc);
-			saveComplexObs(doc);
+			saveComplexObs(doc,true);
 			setMultipleSelectValues(doc.getDocumentElement());
 			xml = XformsUtil.doc2String(doc);
 			
@@ -338,7 +338,7 @@ public class XformsQueueProcessor {
 
 	private void addPersonAttributes(Patient pt, Element root,XformsService xformsService) throws Exception{
 		//First translate complex obs to file pointers;
-		saveComplexObs(root.getOwnerDocument());
+		saveComplexObs(root.getOwnerDocument(),false);
 		
 		// look for person attributes in the xml doc and save to person
 		PersonService personService = Context.getPersonService();
@@ -649,14 +649,19 @@ public class XformsQueueProcessor {
 		return null;
 	}
 
-	private void saveComplexObs(Document doc) throws Exception {
+	private void saveComplexObs(Document doc, boolean useValueNode) throws Exception {
 		List<String> names = DOMUtil.getModelComplexObsNodeNames(doc.getDocumentElement().getAttribute("id"));
 		for(String name : names)
-			saveComplexObsValue(DOMUtil.getElement(doc, name));
+			saveComplexObsValue(DOMUtil.getElement(doc, name),useValueNode);
 	}
 
-	private void saveComplexObsValue(Element element) throws Exception {
-		String value = DOMUtil.getElementValue(element, "value");
+	private void saveComplexObsValue(Element element, boolean useValueNode) throws Exception {
+		String value = null;
+		if(useValueNode)
+			value = DOMUtil.getElementValue(element, "value");
+		else
+			value = element.getTextContent();
+		
 		if(value == null || value.trim().length() == 0)
 			return;
 
@@ -671,6 +676,11 @@ public class XformsQueueProcessor {
 		writter.write(bytes);
 		writter.close();
 
-		DOMUtil.setElementValue(element, "value", file.getAbsolutePath());
+		if(useValueNode)
+			DOMUtil.setElementValue(element, "value", file.getAbsolutePath());
+		else
+			element.setTextContent(file.getAbsolutePath());
+		
+		System.out.println("complex obs value = " + file.getAbsolutePath());
 	}
 }

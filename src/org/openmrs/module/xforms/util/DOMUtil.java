@@ -58,17 +58,17 @@ public class DOMUtil {
 	}
 
 	/**
-	 * Checks if a document is a create new patient one.
-	 * One which collected bio data about a new patient.
+	 * Checks if a document is a create patient one.
+	 * One which collected bio data about a patient.
 	 * 
 	 * @param doc - the document.
 	 * @return - true if so, else false.
 	 */
-	public static boolean isNewPatientDoc(Document doc){
-		return isNewPatientElementDoc(doc.getDocumentElement());
+	public static boolean isPatientDoc(Document doc){
+		return isPatientElementDoc(doc.getDocumentElement());
 	}
 	
-	public static boolean isNewPatientElementDoc(Element element){
+	public static boolean isPatientElementDoc(Element element){
 		return (element.getNodeName().equalsIgnoreCase(XformBuilder.NODE_PATIENT) && 
 				String.valueOf(XformConstants.PATIENT_XFORM_FORM_ID).equals(element.getAttribute(XformBuilder.ATTRIBUTE_ID)));
 	}
@@ -95,17 +95,24 @@ public class DOMUtil {
 	}
 	
 	public static List<String> getModelComplexObsNodeNames(String id) throws Exception{
-		Xform xform = ((XformsService)Context.getService(XformsService.class)).getXform(Integer.parseInt(id));
+		return getModelComplexObsNodeNames(Integer.parseInt(id));
+
+	}
+	
+	public static List<String> getModelComplexObsNodeNames(int id) throws Exception{
+		Xform xform = ((XformsService)Context.getService(XformsService.class)).getXform(id);
 		Document doc = XformsUtil.fromString2Doc(xform.getXformXml());
 
 		return getXformComplexObsNodeNames(doc.getDocumentElement());
-
 	}
 	
 	public static List<String> getXformComplexObsNodeNames(Element root) throws Exception{
 		List<String> names = new ArrayList<String>();
 
 		NodeList elemList = root.getElementsByTagName("xf:bind");
+		if(elemList == null)
+			elemList = root.getElementsByTagName("bind");
+		
 		if (elemList != null){
 			for(int index = 0; index < elemList.getLength(); index++){
 				Element node = (Element)elemList.item(index);

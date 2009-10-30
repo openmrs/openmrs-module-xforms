@@ -1825,14 +1825,14 @@ public final class XformBuilder {
 	public static String getNewPatientXform(){			
 		Document doc = new Document();
 		doc.setEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
-		Element xformsNode = doc.createElement(NAMESPACE_XHTML, null);
+		
+		Element xformsNode = doc.createElement(NAMESPACE_XFORMS, null);
 		xformsNode.setName(NODE_XFORMS);
-		xformsNode.setPrefix(null, NAMESPACE_XHTML);
 		xformsNode.setPrefix(PREFIX_XFORMS, NAMESPACE_XFORMS);
 		xformsNode.setPrefix(PREFIX_XML_SCHEMA, NAMESPACE_XML_SCHEMA);
 		xformsNode.setPrefix(PREFIX_XML_SCHEMA2, NAMESPACE_XML_SCHEMA);
 		xformsNode.setPrefix(PREFIX_XML_INSTANCES, NAMESPACE_XML_INSTANCE);
-		doc.addChild(org.kxml2.kdom.Element.ELEMENT, xformsNode);
+		doc.addChild(org.kxml2.kdom.Element.ELEMENT, xformsNode);		
 
 		Element modelNode =  doc.createElement(NAMESPACE_XFORMS, null);
 		modelNode.setName(NODE_MODEL);

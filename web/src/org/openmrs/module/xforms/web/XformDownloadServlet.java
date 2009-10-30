@@ -179,7 +179,6 @@ public class XformDownloadServlet extends HttpServlet {
 			response.setHeader(XformConstants.HTTP_HEADER_CONTENT_TYPE, XformConstants.HTTP_HEADER_CONTENT_TYPE_XML);
 
 		String xformXml = XformDownloadManager.getXform(formService,xformsService,form.getFormId(),createNew);
-		//xformXml = XformsUtil.fromXform2Xhtml(xformXml, null);
 
 		if(!attachment){
 			Xform xform = xformsService.getXform(form.getFormId());
@@ -337,6 +336,8 @@ public class XformDownloadServlet extends HttpServlet {
 				XformBuilder.setNodeValue(doc, XformBuilder.NODE_PATIENT_FAMILY_NAME, patient.getFamilyName());
 				XformBuilder.setNodeValue(doc, XformBuilder.NODE_PATIENT_MIDDLE_NAME, patient.getMiddleName());
 				XformBuilder.setNodeValue(doc, XformBuilder.NODE_PATIENT_GIVEN_NAME, patient.getGivenName());
+				XformBuilder.setNodeValue(doc, XformBuilder.NODE_LOCATION_ID, patient.getPatientIdentifier().getLocation().getLocationId().toString());
+				XformBuilder.setNodeValue(doc, XformBuilder.NODE_PATIENT_ID, patient.getPatientId().toString());
 			}
 
 			//XformBuilder.setPatientTableFieldValues(form.getFormId(),doc.getRootElement(), patientId, xformsService);

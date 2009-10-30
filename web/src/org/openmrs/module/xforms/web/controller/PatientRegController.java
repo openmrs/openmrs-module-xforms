@@ -70,6 +70,11 @@ public class PatientRegController extends SimpleFormController{
 
 		map.put(XformConstants.FORM_DESIGNER_KEY_SHOW_SUBMIT_SUCCESS_MSG, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_SHOW_SUBMIT_SUCCESS_MSG,XformConstants.DEFAULT_SHOW_SUBMIT_SUCCESS_MSG));
 
+		if(request.getParameter("patientId") != null)
+			map.put("formDataUploadUrlSuffix", "module/xforms/xformDataUpload.form?mode=edit");
+		else
+			map.put("formDataUploadUrlSuffix", "module/xforms/xformDataUpload.form");
+		
 		return map;
 	}
 
