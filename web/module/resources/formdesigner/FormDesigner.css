@@ -98,62 +98,7 @@ body, html {
   cursor: hand;
   cursor: pointer;
 }
-
-.gwt-Tree .gwt-TreeItem-hovering {
-}
-
-.gwt-Tree .gwt-TreeItem-selected {
-  /*background: #93c2f1 url(images/bg_listgradient.gif) repeat-x;*/
-  /*border: 1px dotted #888;*/
-}
-
-/*.gwt-AbsolutePanel {
-      position: relative;
-      overflow: hidden;
- }
-
-.DragContainer {
-        border:1px solid black;
-        width:125px;
-}
-
-.DragItemInactive {
-        color:gray; */
         
-.mosaic-WindowPanel .Resize-nw {
-	cursor: nw-resize;
-}
-
-.mosaic-WindowPanel .Resize-n {
-	cursor: n-resize;
-}
-
-.mosaic-WindowPanel .Resize-ne {
-	cursor: ne-resize;
-}
-
-.mosaic-WindowPanel .Resize-e {
-	cursor: e-resize;
-	background: #fff; /* needed by IE */
-}
-
-.mosaic-WindowPanel .Resize-se {
-	cursor: se-resize;
-}
-
-.mosaic-WindowPanel .Resize-s {
-	cursor: s-resize;
-	background: #fff; /* needed by IE */
-}
-
-.mosaic-WindowPanel .Resize-sw {
-	cursor: sw-resize;
-}
-
-.mosaic-WindowPanel .Resize-w {
-	cursor: w-resize;
-}
-
 .dragdrop-selected,.dragdrop-dragging,.dragdrop-proxy {
   filter: alpha(opacity = 50);
   opacity: 0.5;

@@ -11,7 +11,7 @@
 <html>
   <head>
     <title>OpenMRS XForms Designer</title>
-    <openmrs:htmlInclude file="/moduleResources/xforms/formdesigner/org.purc.purcforms.FormDesigner.nocache.js"/>
+    <openmrs:htmlInclude file="/moduleResources/xforms/formdesigner/FormDesigner.nocache.js"/>
   </head>
   <body>
     <div id="purcformsdesigner"><div>
@@ -310,7 +310,11 @@
            		clickForOtherQuestions: "<spring:message code="xforms.clickForOtherQuestions" />",
            		ok: "<spring:message code="xforms.ok" />",
            		undo: "<spring:message code="xforms.undo" />",
-           		redo: "<spring:message code="xforms.redo" />"
+           		redo: "<spring:message code="xforms.redo" />",
+           		loading: "<spring:message code="xforms.loading" />",
+           		allQuestions: "<spring:message code="xforms.allQuestions" />",
+           		selectedQuestions: "<spring:message code="xforms.selectedQuestions" />",
+           		otherQuestions: "<spring:message code="xforms.otherQuestions" />"
     	};
 
     	function isUserAuthenticated(){

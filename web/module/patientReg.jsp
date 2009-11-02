@@ -12,7 +12,7 @@
 	}
 </style>
 
-<openmrs:htmlInclude file="/moduleResources/xforms/formrunner/org.purc.purcforms.FormRunner.nocache.js"/>
+<openmrs:htmlInclude file="/moduleResources/xforms/formrunner/FormRunner.nocache.js"/>
 
 <div id="purcformrunner"><div>
 
@@ -307,7 +307,11 @@
        		clickForOtherQuestions: "<spring:message code="xforms.clickForOtherQuestions" />",
        		ok: "<spring:message code="xforms.ok" />",
        		undo: "<spring:message code="xforms.undo" />",
-       		redo: "<spring:message code="xforms.redo" />"
+       		redo: "<spring:message code="xforms.redo" />",
+       		loading: "<spring:message code="xforms.loading" />",
+       		allQuestions: "<spring:message code="xforms.allQuestions" />",
+       		selectedQuestions: "<spring:message code="xforms.selectedQuestions" />",
+       		otherQuestions: "<spring:message code="xforms.otherQuestions" />"
 	};
 
 	function isUserAuthenticated(){

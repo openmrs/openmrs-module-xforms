@@ -12,14 +12,14 @@
     <!--                                           -->
     <!-- Any title is fine                         -->
     <!--                                           -->
-    <title>FormRunner</title>
+    <title>PurcForms FormRunner</title>
     
     <!--                                           -->
     <!-- This script loads your compiled module.   -->
     <!-- If you add any GWT meta tags, they must   -->
     <!-- be added before this line.                -->
     <!--                                           -->
-    <script type="text/javascript" language="javascript" src="org.purc.purcforms.FormRunner.nocache.js"></script>
+    <script type="text/javascript" language="javascript" src="FormRunner.nocache.js"></script>
   </head>
 
   <!--                                           -->
@@ -296,7 +296,11 @@
             	processingMsg: "Please wait while processing...",
            		length: "Length",
            		clickForOtherQuestions: "< Click here for other questions >",
-           		ok: "Ok"
+           		ok: "Ok",
+           		loading: "loading",
+           		allQuestions: "All Questions",
+           		selectedQuestions: "Selected Questions",
+           		otherQuestions: "Other Questions"
     		  };
 
     		  function isUserAuthenticated(){
@@ -305,6 +309,14 @@
 
     		  function authenticateUser(username, password){
     			  return true; //Not expected to be used in the design mode.
+    		  }
+
+    		  function searchExternal(key,value,parentElement,textElement,valueElement){
+
+    		  }
+
+    		  function initialize(){
+    			  
     		  }
     </script>
 	
