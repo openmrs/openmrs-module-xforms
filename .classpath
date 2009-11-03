@@ -43,7 +43,7 @@
 	<classpathentry kind="lib" path="lib-common/jcl-over-slf4j-1.5.6.jar"/>
 	<classpathentry kind="lib" path="lib-common/slf4j-api-1.5.6.jar"/>
 	<classpathentry kind="lib" path="lib-common/slf4j-log4j12-1.5.6.jar"/>
-	<classpathentry kind="lib" path="lib-common/openmrs-api-1.3.0.13.4954.jar"/>
+	<classpathentry kind="lib" path="lib-common/openmrs-api-1.3.0.13.4954.jar" sourcepath="lib-common/openmrs-api-1.3.0.13.4954.jar"/>
 	<classpathentry kind="lib" path="lib-common/tests-openmrs-api-1.3.0.11.4649.jar"/>
 	<classpathentry kind="lib" path="lib-common/web-openmrs-api-1.3.0.13.4954.jar"/>
 	<classpathentry kind="lib" path="lib/epihandy-xforms-server.jar" sourcepath="H:/epihandy cldc 1.1"/>

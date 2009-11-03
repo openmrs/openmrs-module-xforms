@@ -103,6 +103,7 @@
 	<property name="commandName"><value>xformProperties</value></property>
 	<property name="formView"><value>/module/@MODULE_ID@/xformProperties</value></property>
 	<property name="successView"><value>xformProperties.form</value></property>
+	
     </bean>
     
     <bean id="medicalHistoryFields" class="@MODULE_PACKAGE@.web.controller.MedicalHistoryFieldsController">

@@ -74,12 +74,12 @@
 	<globalProperty>
 		<property>@MODULE_ID@.multiSelectAppearance</property>
 		<defaultValue>full</defaultValue>
-		<description>The apperance of multi select input fields. Allowed values are: {full,minimal,compact} </description>
+		<description>The appearance of multi select input fields. Allowed values are: {full,minimal,compact} </description>
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.singleSelectAppearance</property>
 		<defaultValue>minimal</defaultValue>
-		<description>The apperance of single select input fields. Allowed values are: {full,minimal,compact} </description>
+		<description>The appearance of single select input fields. Allowed values are: {full,minimal,compact} </description>
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.queue_dir</property>

@@ -2,6 +2,7 @@ package org.openmrs.module.xforms.db;
 
 import java.util.List;
 
+import org.openmrs.GlobalProperty;
 import org.openmrs.module.xforms.MedicalHistoryField;
 import org.openmrs.module.xforms.Xform;
 import org.openmrs.module.xforms.formentry.FormEntryError;
@@ -97,4 +98,6 @@ public interface XformsDAO {
 	public void deleteMedicalHistoryField(Integer fieldId);
 	
 	public void createFormEntryError(FormEntryError formEntryError);
+
+	public List<GlobalProperty> getXFormsGlobalProperties();
 }

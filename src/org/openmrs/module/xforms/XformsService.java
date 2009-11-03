@@ -3,6 +3,7 @@ package org.openmrs.module.xforms;
 import java.util.List;
 
 import org.openmrs.Form;
+import org.openmrs.GlobalProperty;
 import org.openmrs.module.xforms.db.XformsDAO;
 import org.openmrs.module.xforms.formentry.FormEntryError;
 import org.openmrs.module.xforms.model.PatientMedicalHistory;
@@ -174,6 +175,8 @@ public interface XformsService {
 	 */
 	@Transactional(readOnly=true)
 	public Xform getNewXform(Integer formId);
+	
+	public List<GlobalProperty> getXFormsGlobalProperties();
 	
 	public List<PersonRepeatAttribute> getPersonRepeatAttributes(Integer personId, Integer personAttributeId);
 	public void savePersonRepeatAttribute(PersonRepeatAttribute personRepeatAttribute);

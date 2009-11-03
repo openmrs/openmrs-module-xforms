@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Form;
+import org.openmrs.GlobalProperty;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.MedicalHistoryField;
@@ -216,5 +217,10 @@ public class XformsServiceImpl implements XformsService {
 	
 	public void createFormEntryError(FormEntryError formEntryError) {
 		getXformsDAO().createFormEntryError(formEntryError);
+	}
+
+	public List<GlobalProperty> getXFormsGlobalProperties() {
+		return getXformsDAO().getXFormsGlobalProperties();
+		//return null;
 	}
 }

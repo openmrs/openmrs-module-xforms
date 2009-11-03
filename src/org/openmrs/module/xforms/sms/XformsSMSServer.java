@@ -14,6 +14,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.XformsServer;
 import org.openmrs.module.xforms.download.XformDataUploadManager;
 
+
 /**
  * Serves xforms services to SMS connections.
  * 
@@ -27,6 +28,7 @@ public class XformsSMSServer  implements SMSServerListener{
 	private SMSServer smsServer;
 	private XformsServer xformsServer;
 	private FormSmsParser formsSmsParser;
+	
 	
 	/** Flag to determine whether the sms sender wants success reports. */
 	private boolean smsSendSuccessReports = true;
