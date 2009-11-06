@@ -27,7 +27,7 @@ import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
  */
 public class MultimediaServlet extends HttpServlet {
 
-	private static final long serialVersionUID = 1239820102030344L;
+	private static final long serialVersionUID = 1239820102030344234L;
 
 	private Log log = LogFactory.getLog(this.getClass());
 
@@ -124,17 +124,13 @@ public class MultimediaServlet extends HttpServlet {
 		return formId + xpath;
 	}
 	
-	private static String getFormKey(String formId){
-		return "MultidemiaData"+formId;
-	}
-	
 	private void setSessionData(HttpServletRequest request,String formId, String key, Object data){
 		HttpSession session = request.getSession();
-		HashMap<String,Object> dataMap = (HashMap<String,Object>)session.getAttribute(getFormKey(formId));
+		HashMap<String,Object> dataMap = (HashMap<String,Object>)session.getAttribute(XformObsEdit.getFormKey(formId));
 		
 		if(dataMap == null){
 			dataMap = new HashMap<String,Object>();
-			session.setAttribute(getFormKey(formId), dataMap);
+			session.setAttribute(XformObsEdit.getFormKey(formId), dataMap);
 		}
 		
 		dataMap.put(key, data);
@@ -142,16 +138,11 @@ public class MultimediaServlet extends HttpServlet {
 	
 	private Object getSessionData(HttpServletRequest request,String formId, String key){
 		HttpSession session = request.getSession();
-		HashMap<String,Object> dataMap = (HashMap<String,Object>)session.getAttribute(getFormKey(formId));
+		HashMap<String,Object> dataMap = (HashMap<String,Object>)session.getAttribute(XformObsEdit.getFormKey(formId));
 		
 		if(dataMap != null)
 			return dataMap.get(key);
 
 		return null;
-	}
-	
-	public static void clearFormSessionData(HttpServletRequest request,String formId){
-		HttpSession session = request.getSession();
-		session.setAttribute(getFormKey(formId), null);
 	}
 }

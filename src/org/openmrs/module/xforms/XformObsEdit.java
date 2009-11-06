@@ -30,7 +30,6 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.util.DOMUtil;
 import org.openmrs.module.xforms.util.XformsUtil;
-import org.openmrs.module.xforms.web.MultimediaServlet;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.UserEditor;
@@ -520,7 +519,7 @@ public class XformObsEdit {
 		complexDataNodeNames.clear();
 		dirtyComplexData.clear();
 
-		MultimediaServlet.clearFormSessionData(request, formId.toString());
+		clearFormSessionData(request, formId.toString());
 	}
 
 
@@ -553,7 +552,16 @@ public class XformObsEdit {
 		if(dirtyComplexData != null)
 			dirtyComplexData.clear();
 
-		MultimediaServlet.clearFormSessionData(request, formId.toString());
+		clearFormSessionData(request, formId.toString());
+	}
+	
+	public static void clearFormSessionData(HttpServletRequest request,String formId){
+		HttpSession session = request.getSession();
+		session.setAttribute(getFormKey(formId), null);
+	}
+	
+	public static String getFormKey(String formId){
+		return "MultidemiaData"+formId;
 	}
 
 	public static void fillPatientComplexObs(HttpServletRequest request,Document doc, String xml) throws Exception{
