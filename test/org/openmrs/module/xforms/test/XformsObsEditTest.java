@@ -3,6 +3,8 @@ package org.openmrs.module.xforms.test;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.StringWriter;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -49,6 +51,10 @@ public class XformsObsEditTest extends BaseModuleContextSensitiveTest{
 		and ff.form_id=15
 		and length(default_value) > 0*/
 		
+		int k = Calendar.getInstance().getTime().getYear();
+		
+		k = 0;
+		
 		authenticate();
 		
 		Locale locale = Context.getLocale();
@@ -56,7 +62,12 @@ public class XformsObsEditTest extends BaseModuleContextSensitiveTest{
 		//System.out.println(locale.getISO3Language());
 		//for (Locale locale : locales)
 		//	;
-
+		
+		//Calendar.getInstance().add(field, amount)
+		//Calendar.getInstance().
+		//d.getYear();
+		
+		
 		String xml = getDoc();
 		xml = "$!{patient.getFamilyName()} with id $!{patient.getPatientIdentifier(4).getIdentifier()}";
 		xml = "$!{patient.getFamilyName()} in village $!{patient.getPersonAddress().getCityVillage()}";
@@ -72,6 +83,7 @@ public class XformsObsEditTest extends BaseModuleContextSensitiveTest{
 			ve.init();
 
 			VelocityContext velocityContext = new VelocityContext();
+			Context.authenticate("guyzb", "daniel123");
 			Patient patient = Context.getPatientService().getPatient(13);
 			velocityContext.put("patient", patient);
 

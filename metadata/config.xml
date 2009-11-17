@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>xforms</id>
 	<name>XForms</name>
-	<version>3.7.0</version>
+	<version>3.7.1</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Daniel Kayiwa</author>
 	<description>
@@ -108,12 +108,12 @@
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.dateTimeSubmitFormat</property>
-		<defaultValue>yyyy-MM-dd hh:mm:ss a</defaultValue>
+		<defaultValue>yyyy-MM-dd hh:mm a</defaultValue>
 		<description>The format of the datetime passed in the xml of the xforms model. Please make sure this matches with the date format of your data entry applications, else you will get wrong dates on the server.</description>
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.timeSubmitFormat</property>
-		<defaultValue>hh:mm:ss a</defaultValue>
+		<defaultValue>hh:mm a</defaultValue>
 		<description>The format of the time passed in the xml of the xforms model. Please make sure this matches with the date format of your data entry applications, else you will get wrong times on the server.</description>
 	</globalProperty>
 	<globalProperty>
@@ -123,12 +123,12 @@
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.dateTimeDisplayFormat</property>
-		<defaultValue>dd/MM/yyyy hh:mm:ss a</defaultValue>
+		<defaultValue>dd/MM/yyyy hh:mm a</defaultValue>
 		<description>The display format of datetime used by the xforms module.</description>
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.timeDisplayFormat</property>
-		<defaultValue>hh:mm:ss a</defaultValue>
+		<defaultValue>hh:mm a</defaultValue>
 		<description>The display format of time used by the xforms module.</description>
 	</globalProperty>
 	<globalProperty>

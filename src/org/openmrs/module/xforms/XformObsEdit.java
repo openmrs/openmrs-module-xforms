@@ -69,7 +69,7 @@ public class XformObsEdit {
 
 		Encounter encounter = Context.getEncounterService().getEncounter(encounterId);
 		if(encounter == null)
-			return;
+			return;		
 
 		retrieveSessionValues(request);
 		clearSessionData(request,encounter.getForm().getFormId());
@@ -96,6 +96,10 @@ public class XformObsEdit {
 			String value = obs.getValueAsString(Context.getLocale());
 			if(concept.getDatatype().isCoded() && obs.getValueCoded() != null)
 				value = FormUtil.conceptToString(obs.getValueCoded(), Context.getLocale());
+			else if(concept.getDatatype().getHl7Abbreviation().equals(ConceptDatatype.DATETIME) &&
+					obs.getValueDatetime() != null){
+				value = XformsUtil.formDateTime2SubmitString(obs.getValueDatetime());
+			}
 
 			if("1".equals(node.getAttributeValue(null,"multiple"))){
 				Element multNode = XformBuilder.getElement(node, "xforms_value");
@@ -199,6 +203,11 @@ public class XformObsEdit {
 				if(valueNode != null){
 					String newValue = XformBuilder.getTextValue(valueNode);;
 					String oldValue = obs.getValueAsString(Context.getLocale());
+
+					if(concept.getDatatype().getHl7Abbreviation().equals(ConceptDatatype.DATETIME) &&
+							obs.getValueDatetime() != null){
+						oldValue = XformsUtil.formDateTime2SubmitString(obs.getValueDatetime());
+					}
 
 					//Deal with complex obs first
 					if(complexObs.contains(nodeName)){
@@ -371,6 +380,8 @@ public class XformObsEdit {
 			boolean booleanValue = value != null && !Boolean.FALSE.equals(value) && !"false".equals(value);
 			obs.setValueNumeric(booleanValue ? 1.0 : 0.0);
 		}
+		else if(dt.DATETIME.equals(dt.getHl7Abbreviation()))
+			obs.setValueDatetime(XformsUtil.fromSubmitString2DateTime(value));
 		else if (dt.isDate())
 			obs.setValueDatetime(XformsUtil.fromSubmitString2Date(value));
 		else if ("ZZ".equals(dt.getHl7Abbreviation())) {
@@ -554,12 +565,12 @@ public class XformObsEdit {
 
 		clearFormSessionData(request, formId.toString());
 	}
-	
+
 	public static void clearFormSessionData(HttpServletRequest request,String formId){
 		HttpSession session = request.getSession();
 		session.setAttribute(getFormKey(formId), null);
 	}
-	
+
 	public static String getFormKey(String formId){
 		return "MultidemiaData"+formId;
 	}
@@ -577,7 +588,7 @@ public class XformObsEdit {
 		for(int index = 0; index < patientNode.getChildCount(); index++){
 			if(patientNode.getType(index) != Element.ELEMENT)
 				continue;
-//Syste
+			//Syste
 			Element node = (Element)patientNode.getChild(index);
 			if(complexObs.contains(node.getName())){
 				String value = XformBuilder.getTextValue(node);

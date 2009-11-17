@@ -352,6 +352,16 @@ public class XformsUtil {
      	return dateFormat.parse(date);
     }
     
+    public static Date fromSubmitString2DateTime(String dateTime) throws ParseException {
+    	String pattern = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_TIME_SUBMIT_FORMAT,XformConstants.DEFAULT_DATE_TIME_SUBMIT_FORMAT);
+    	SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
+     	
+    	if("yyyy-MM-dd'T'HH:mm:ssZ".equals(pattern))
+    		dateTime = dateTime.substring(0, 22) + dateTime.substring(23);
+    	
+    	return dateFormat.parse(dateTime);
+    }
+    
     public static Date fromDisplayString2Date(String date) throws ParseException {
     	SimpleDateFormat dateFormat = new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_DISPLAY_FORMAT,XformConstants.DEFAULT_DATE_DISPLAY_FORMAT));
      	return dateFormat.parse(date);
@@ -378,8 +388,14 @@ public class XformsUtil {
     }
     
     public static String formDateTime2SubmitString(Date date) {
-    	SimpleDateFormat dateFormat = new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_TIME_SUBMIT_FORMAT,XformConstants.DEFAULT_DATE_TIME_SUBMIT_FORMAT));
-     	return dateFormat.format(date);
+    	String pattern = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_TIME_SUBMIT_FORMAT,XformConstants.DEFAULT_DATE_TIME_SUBMIT_FORMAT);
+    	SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
+     	String value = dateFormat.format(date);
+     	
+		if("yyyy-MM-dd'T'HH:mm:ssZ".equals(pattern))
+			value = value.substring(0, 22) + ":" + value.substring(22);
+
+     	return value;
     }
     
     public static String formTime2SubmitString(Date date) {

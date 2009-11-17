@@ -38,8 +38,8 @@
 
 <div id="appendEntityIdAfterSubmit" style="visibility:hidden;">1</div>
 
-<div id="timeSubmitFormat" style="visibility:hidden;">hh:mm:ss a</div>
-<div id="timeDisplayFormat" style="visibility:hidden;">hh:mm:ss a</div>
+<div id="timeSubmitFormat" style="visibility:hidden;">${timeSubmitFormat}</div>
+<div id="timeDisplayFormat" style="visibility:hidden;">${timeDisplayFormat}</div>
 
 <div id="showSubmitSuccessMsg" style="visibility:hidden;">${showSubmitSuccessMsg}</div>
 
@@ -311,7 +311,10 @@
        		loading: "<spring:message code="xforms.loading" />",
        		allQuestions: "<spring:message code="xforms.allQuestions" />",
        		selectedQuestions: "<spring:message code="xforms.selectedQuestions" />",
-       		otherQuestions: "<spring:message code="xforms.otherQuestions" />"
+       		otherQuestions: "<spring:message code="xforms.otherQuestions" />",
+       		wrongFormat: "<spring:message code="xforms.wrongFormat" />",
+       		timeWidget: "<spring:message code="xforms.timeWidget" />",
+			dateTimeWidget: "<spring:message code="xforms.dateTimeWidget" />"
 	};
 
 	function isUserAuthenticated(){

@@ -7,6 +7,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
@@ -2244,6 +2245,7 @@ public final class XformBuilder {
 		velocityEngine.setProperty(CommonsLogLogChute.LOGCHUTE_COMMONS_LOG_NAME, "xforms_velocity");
 		velocityEngine.init();
 		VelocityContext velocityContext = new VelocityContext();
+		velocityContext.put("calendar", Calendar.getInstance());
 		velocityContext.put("patient", patient);
 		velocityContext.put("form", form);
 		velocityContext.put("timestamp", new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_TIME_SUBMIT_FORMAT,XformConstants.DEFAULT_DATE_TIME_SUBMIT_FORMAT)));

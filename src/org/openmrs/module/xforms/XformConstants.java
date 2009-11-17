@@ -60,19 +60,19 @@ public class XformConstants {
 	public static final String DEFAULT_DATE_SUBMIT_FORMAT = "yyyy-MM-dd";//yyyy-mm-dd
 	
 	/** The default submit datetime format. */
-	public static final String DEFAULT_DATE_TIME_SUBMIT_FORMAT = "yyyy-MM-dd hh:mm:ss a";
+	public static final String DEFAULT_DATE_TIME_SUBMIT_FORMAT = "yyyy-MM-dd hh:mm a";
 	
 	/** The default submit time format. */
-	public static final String DEFAULT_TIME_SUBMIT_FORMAT = "hh:mm:ss a";
+	public static final String DEFAULT_TIME_SUBMIT_FORMAT = "hh:mm a";
 	
 	/** The default display date format. */
 	public static final String DEFAULT_DATE_DISPLAY_FORMAT = "dd-MM-yyyy";//yyyy-mm-dd
 	
 	/** The default display date format. */
-	public static final String DEFAULT_DATE_TIME_DISPLAY_FORMAT = "dd-MM-yyyy hh:mm:ss a";
+	public static final String DEFAULT_DATE_TIME_DISPLAY_FORMAT = "dd-MM-yyyy hh:mm a";
 	
 	/** The default display date format. */
-	public static final String DEFAULT_TIME_DISPLAY_FORMAT = "hh:mm:ss a";
+	public static final String DEFAULT_TIME_DISPLAY_FORMAT = "hh:mm a";
 	
 	/** The default flag to determine whether to display the submit success message or not. */
 	public static final String DEFAULT_SHOW_SUBMIT_SUCCESS_MSG = "false";
