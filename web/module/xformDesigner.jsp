@@ -14,6 +14,9 @@
     <openmrs:htmlInclude file="/moduleResources/xforms/formdesigner/FormDesigner.nocache.js"/>
   </head>
   <body>
+  
+  	<iframe src="javascript:''" id="__gwt_historyFrame" tabIndex='-1' style="position:absolute;width:0;height:0;border:0"></iframe>
+  
     <div id="purcformsdesigner"><div>
     <div id="title" style="visibility:hidden;">OpenMRS XForms Designer</div>
     <div id="rubberBand"></div>
