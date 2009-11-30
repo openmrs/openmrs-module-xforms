@@ -53,7 +53,6 @@ public class XformDesignerController extends SimpleFormController {
 			map.put("formId",-1);
 
 		map.put("allowBindEdit", allowBindEdit);
-		map.put("showLanguageTab", allowBindEdit);
 
 		map.put(XformConstants.FORM_DESIGNER_KEY_DATE_SUBMIT_FORMAT, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_SUBMIT_FORMAT,XformConstants.DEFAULT_DATE_SUBMIT_FORMAT));
 		map.put(XformConstants.FORM_DESIGNER_KEY_DATE_DISPLAY_FORMAT, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_DISPLAY_FORMAT,XformConstants.DEFAULT_DATE_DISPLAY_FORMAT));
@@ -67,6 +66,10 @@ public class XformDesignerController extends SimpleFormController {
 		map.put(XformConstants.FORM_DESIGNER_KEY_SHOW_SUBMIT_SUCCESS_MSG, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_SHOW_SUBMIT_SUCCESS_MSG,XformConstants.DEFAULT_SHOW_SUBMIT_SUCCESS_MSG));
 		map.put(XformConstants.FORM_DESIGNER_KEY_LOCALE_LIST, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_LOCALE_LIST,XformConstants.DEFAULT_LOCALE_LIST));
 
+		map.put("showLanguageTab", Context.getAdministrationService().getGlobalProperty("xforms.showLanguageTab","false"));
+		map.put("showXformsSourceTab", Context.getAdministrationService().getGlobalProperty("xforms.showXformsSourceTab","false"));
+		map.put("showLayoutXmlTab", Context.getAdministrationService().getGlobalProperty("xforms.showLayoutXmlTab","false"));
+		map.put("showModelXmlTab", Context.getAdministrationService().getGlobalProperty("xforms.showModelXmlTab","false"));
 
 		String url = request.getRequestURI();
 		url = url.substring(0, url.indexOf("module/xforms/xformDesigner.form"));

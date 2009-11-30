@@ -321,7 +321,11 @@
        		otherQuestions: "<spring:message code="xforms.otherQuestions" />",
        		wrongFormat: "<spring:message code="xforms.wrongFormat" />",
        		timeWidget: "<spring:message code="xforms.timeWidget" />",
-			dateTimeWidget: "<spring:message code="xforms.dateTimeWidget" />"
+			dateTimeWidget: "<spring:message code="xforms.dateTimeWidget" />",
+			lockWidgets: "<spring:message code="xforms.lockWidgets" />",
+			unLockWidgets: "<spring:message code="xforms.unLockWidgets" />",
+			changeWidgetH: "<spring:message code="xforms.changeWidgetH" />",
+			changeWidgetV: "<spring:message code="xforms.changeWidgetV" />"
 	};
 
 	function searchExternal(key,value,parentElement,textElement,valueElement){

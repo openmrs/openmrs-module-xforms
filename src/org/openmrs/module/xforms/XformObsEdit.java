@@ -77,7 +77,7 @@ public class XformObsEdit {
 		formNode.setAttribute(null, "encounterId", encounter.getEncounterId().toString());
 
 		XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_LOCATION_ID, encounter.getLocation().getLocationId().toString());
-		XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_ENCOUNTER_DATETIME, XformsUtil.formDate2SubmitString(encounter.getEncounterDatetime()));
+		XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_ENCOUNTER_DATETIME, XformsUtil.fromDate2SubmitString(encounter.getEncounterDatetime()));
 		XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_PROVIDER_ID, encounter.getProvider().getUserId().toString());
 
 		List<String> complexObs = DOMUtil.getXformComplexObsNodeNames(xml);
@@ -96,10 +96,10 @@ public class XformObsEdit {
 			String value = obs.getValueAsString(Context.getLocale());
 			if(concept.getDatatype().isCoded() && obs.getValueCoded() != null)
 				value = FormUtil.conceptToString(obs.getValueCoded(), Context.getLocale());
-			else if(concept.getDatatype().getHl7Abbreviation().equals(ConceptDatatype.DATETIME) &&
-					obs.getValueDatetime() != null){
-				value = XformsUtil.formDateTime2SubmitString(obs.getValueDatetime());
-			}
+			else if(concept.getDatatype().getHl7Abbreviation().equals(ConceptDatatype.DATETIME) && obs.getValueDatetime() != null)
+				value = XformsUtil.fromDateTime2SubmitString(obs.getValueDatetime());
+			else if(concept.getDatatype().getHl7Abbreviation().equals(ConceptDatatype.TIME) && obs.getValueDatetime() != null)
+				value = XformsUtil.fromTime2SubmitString(obs.getValueDatetime());
 
 			if("1".equals(node.getAttributeValue(null,"multiple"))){
 				Element multNode = XformBuilder.getElement(node, "xforms_value");
@@ -204,10 +204,10 @@ public class XformObsEdit {
 					String newValue = XformBuilder.getTextValue(valueNode);;
 					String oldValue = obs.getValueAsString(Context.getLocale());
 
-					if(concept.getDatatype().getHl7Abbreviation().equals(ConceptDatatype.DATETIME) &&
-							obs.getValueDatetime() != null){
-						oldValue = XformsUtil.formDateTime2SubmitString(obs.getValueDatetime());
-					}
+					if(concept.getDatatype().getHl7Abbreviation().equals(ConceptDatatype.DATETIME) && obs.getValueDatetime() != null)
+						oldValue = XformsUtil.fromDateTime2SubmitString(obs.getValueDatetime());
+					else if(concept.getDatatype().getHl7Abbreviation().equals(ConceptDatatype.TIME) && obs.getValueDatetime() != null)
+						oldValue = XformsUtil.fromTime2SubmitString(obs.getValueDatetime());
 
 					//Deal with complex obs first
 					if(complexObs.contains(nodeName)){
@@ -380,6 +380,8 @@ public class XformObsEdit {
 			boolean booleanValue = value != null && !Boolean.FALSE.equals(value) && !"false".equals(value);
 			obs.setValueNumeric(booleanValue ? 1.0 : 0.0);
 		}
+		else if(dt.TIME.equals(dt.getHl7Abbreviation()))
+			obs.setValueDatetime(XformsUtil.fromSubmitString2Time(value));
 		else if(dt.DATETIME.equals(dt.getHl7Abbreviation()))
 			obs.setValueDatetime(XformsUtil.fromSubmitString2DateTime(value));
 		else if (dt.isDate())

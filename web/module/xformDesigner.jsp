@@ -49,6 +49,9 @@
     <div id="showSubmitSuccessMsg" style="visibility:hidden;">${showSubmitSuccessMsg}</div>
     
     <div id="showLanguageTab" style="visibility:hidden;">${showLanguageTab}</div>
+    <div id="showXformsSourceTab" style="visibility:hidden;">${showXformsSourceTab}</div>
+    <div id="showLayoutXmlTab" style="visibility:hidden;">${showLayoutXmlTab}</div>
+    <div id="showModelXmlTab" style="visibility:hidden;">${showModelXmlTab}</div>
     
     <div id="localeList" style="visibility:hidden;">${localeList}</div>
     
@@ -320,7 +323,11 @@
            		otherQuestions: "<spring:message code="xforms.otherQuestions" />",
            		wrongFormat: "<spring:message code="xforms.wrongFormat" />",
            		timeWidget: "<spring:message code="xforms.timeWidget" />",
-    			dateTimeWidget: "<spring:message code="xforms.dateTimeWidget" />"
+    			dateTimeWidget: "<spring:message code="xforms.dateTimeWidget" />",
+    			lockWidgets: "<spring:message code="xforms.lockWidgets" />",
+    			unLockWidgets: "<spring:message code="xforms.unLockWidgets" />",
+    			changeWidgetH: "<spring:message code="xforms.changeWidgetH" />",
+    			changeWidgetV: "<spring:message code="xforms.changeWidgetV" />"
     	};
 
     	function isUserAuthenticated(){

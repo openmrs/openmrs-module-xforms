@@ -366,7 +366,7 @@ public class XformDownloadServlet extends HttpServlet {
 
 		Date d = patient.getBirthdate();
 		if(d != null)
-			XformBuilder.setNodeValue(doc, NODE_PATIENT_BIRTH_DATE, XformsUtil.formDate2SubmitString(d));
+			XformBuilder.setNodeValue(doc, NODE_PATIENT_BIRTH_DATE, XformsUtil.fromDate2SubmitString(d));
 
 		PatientIdentifier identifier = patient.getPatientIdentifier();
 

@@ -382,7 +382,7 @@ public class FormSmsParser {
 					date = new Date();
 				else
 					date = XformsUtil.fromDisplayString2Date(questionData.getAnswer().toString());
-				questionData.setTextAnswer(XformsUtil.formDate2SubmitString(date));
+				questionData.setTextAnswer(XformsUtil.fromDate2SubmitString(date));
 				return null;
 			}
 			catch(Exception ex){
@@ -395,7 +395,7 @@ public class FormSmsParser {
 					date = new Date();
 				else
 					date = XformsUtil.fromDisplayString2DateTime(questionData.getAnswer().toString());
-				questionData.setTextAnswer(XformsUtil.formDateTime2SubmitString(date));
+				questionData.setTextAnswer(XformsUtil.fromDateTime2SubmitString(date));
 				return null;
 			}
 			catch(Exception ex){
@@ -408,7 +408,7 @@ public class FormSmsParser {
 					date = new Date();
 				else
 					date = XformsUtil.fromDisplayString2Time(questionData.getAnswer().toString());
-				questionData.setTextAnswer(XformsUtil.formTime2SubmitString(date));
+				questionData.setTextAnswer(XformsUtil.fromTime2SubmitString(date));
 				return null;
 			}
 			catch(Exception ex){

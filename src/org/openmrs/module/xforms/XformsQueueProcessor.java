@@ -341,8 +341,8 @@ public class XformsQueueProcessor {
 		saveComplexObs(root.getOwnerDocument(),false);
 		
 		// look for person attributes in the xml doc and save to person
-		PersonService personService = Context.getPersonService();
-		for (PersonAttributeType type : personService.getPersonAttributeTypes(PERSON_TYPE.PERSON, null)) {
+		List<PersonAttributeType> personAttributeTypes = Context.getPersonService().getPersonAttributeTypes(PERSON_TYPE.PERSON, null);
+		for (PersonAttributeType type : personAttributeTypes) {
 			NodeList nodes = root.getElementsByTagName("person_attribute"+type.getPersonAttributeTypeId());
 
 			if(nodes == null || nodes.getLength() == 0)
