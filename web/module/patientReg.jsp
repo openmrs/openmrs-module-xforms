@@ -135,6 +135,7 @@
 	    	isGreaterThan: "<spring:message code="xforms.isGreaterThan" />",
 	    	isGreaterThanOrEqual: "<spring:message code="xforms.isGreaterThanOrEqual" />",
 	    	isNull: "<spring:message code="xforms.isNull" />",
+	    	isNotNull: "<spring:message code="xforms.isNotNull" />",
 	    	isInList: "<spring:message code="xforms.isInList" />",
 	    	isNotInList: "<spring:message code="xforms.isNotInList" />",
 	    	startsWith: "<spring:message code="xforms.startsWith" />",
