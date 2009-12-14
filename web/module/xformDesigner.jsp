@@ -8,13 +8,63 @@
 	var djConfig = {debugAtAllCosts: false, isDebug: false };
 </script>
 
+
 <html>
   <head>
     <title>OpenMRS XForms Designer</title>
+    
+    <openmrs:htmlInclude file="/openmrs.js" />
     <openmrs:htmlInclude file="/moduleResources/xforms/formdesigner/FormDesigner.nocache.js"/>
+		
   </head>
   <body>
   
+  <style type="text/css">
+	body {
+		font-size: 12px;
+	}
+
+	.popupSearchForm {
+		width: 500px;
+		height: 390px;
+		padding: 2px;
+		background-color: whitesmoke;
+		border: 1px solid gray;
+		position: absolute;
+		display: block;
+		z-index: 10;
+		margin: 5px;
+		overflow-y: auto;
+	}
+
+	.smallButton {
+		font-size: .7em;
+		border: 0px solid lightgrey;
+		cursor: pointer;
+		width: 0px;
+		height: 0px;
+		margin: 0px;
+	}
+
+	.description {
+		font-size: .9em;
+		padding-left: 10px;
+		color: gray;
+	}
+
+	.closeButton {
+		border: 1px solid gray;
+		background-color: lightpink;
+		font-size: .6em;
+		color: black;
+		float: right;
+		margin: 2px;
+		padding: 1px;
+		cursor: pointer;
+	}
+
+</style>
+
   	<iframe src="javascript:''" id="__gwt_historyFrame" tabIndex='-1' style="position:absolute;width:0;height:0;border:0"></iframe>
   
     <div id="purcformsdesigner"><div>
@@ -54,6 +104,10 @@
     <div id="showModelXmlTab" style="visibility:hidden;">${showModelXmlTab}</div>
     
     <div id="localeList" style="visibility:hidden;">${localeList}</div>
+        
+    
+    <div id="searchConcepts" style="height:0px;width:"><openmrs_tag:conceptField formFieldName="conceptId" searchLabel="Search Concept" initialValue="" /></div>
+    
     
    <script language="javascript">
     	var PurcformsText = {
@@ -343,36 +397,81 @@
     		authenticationCallback(isLoggedIn);
     	}
 
-    	function searchExternal(key,parentElement,textElement,valueElement){
-    	
+    	function initialize(){
+    		//var selectionWidget = dojo.widget.manager.getWidgetById("conceptId_selection");
+
+    		//window.alert(selectionWidget.domNode.innerHTML);
+    		
+    		
+    		//selectionWidget.changeButton.style.width = "0px";
+    		//selectionWidget.changeButton.style.height = "0px";
+    		
+    		//selectionWidget.domNode.parentNode.style.display = "none";
+    		//selectionWidget.domNode.style.display = "none";
+
+    		//window.alert(selectionWidget.domNode.innerHTML);
+    		//window.alert(selectionWidget.domNode.parentNode.innerHTML);
+    		
+    		dojo.addOnLoad( function() {
+    			dojo.event.topic.subscribe("conceptId_search/select", 
+    				function(msg) {
+    					if (msg) {
+    						var concept = msg.objs[0];
+    						var conceptPopup = dojo.widget.manager.getWidgetById("conceptId_selection");
+    						conceptPopup.displayNode.innerHTML = concept.conceptId;
+    						conceptPopup.hiddenInputNode.value = concept.name;						
+    						conceptPopup.hiddenInputNode.focus();
+    					}
+    				}
+    			);
+    		})	
     	}
 
-    	function initialize(){
-
-		}
+    	function searchExternal(key,value,parentElement,textElement,valueElement){
+    		var searchWidget = dojo.widget.manager.getWidgetById("conceptId_search");
     	
-    </script>
-    
-  </body>
-</html>
-
-<!--
-	var searchWidget = dojo.widget.manager.getWidgetById("conceptId_search");
-    		
-    		var link = searchWidget.domNode.parentNode;
-    		parentElement.appendChild(link);
-   				
     		var selectionWidget = dojo.widget.manager.getWidgetById("conceptId_selection");
-      
-    		selectionWidget.changeButton.style.display = "none";
-  		
-    		if(textElement)
-    			selectionWidget.displayNode = textElement;
 
-    		if(valueElement)
-    			selectionWidget.hiddenInputNode = valueElement;
+    		//selectionWidget.domNode.parentNode.style.position = "relative";
+    		
+    		//selectionWidget.domNode.parentNode.style.display = "";
+    		//selectionWidget.domNode.style.display = "";
+    		
+    		//window.alert(selectionWidget.domNode.parentNode.innerHTML);
+    		
+    		//selectionWidget.domNode.style.display = "";
+
+    		//window.alert(selectionWidget.domNode.parentNode.innerHTML);
+    		
+     		selectionWidget.displayNode = textElement;
+
+    		selectionWidget.hiddenInputNode = valueElement;
     		
     		searchWidget.clearSearch();
     		searchWidget.toggleShowing();
+
+
+    		var left = dojo.style.totalOffsetLeft(parentElement.parentNode, false) + dojo.style.getBorderBoxWidth(parentElement.parentNode) + 10;
+    		if (left + dojo.style.getBorderBoxWidth(searchWidget.domNode) > dojo.html.getViewportWidth())
+    			left = dojo.html.getViewportWidth() - dojo.style.getBorderBoxWidth(searchWidget.domNode) - 10 + dojo.html.getScrollLeft();
+    		
+    		var top = dojo.style.totalOffsetTop(parentElement.parentNode, true);
+    		var scrollTop = dojo.html.getScrollTop();
+    		var boxHeight = dojo.style.getBorderBoxHeight(searchWidget.domNode);
+    		var viewportHeight = dojo.html.getViewportHeight();
+    		if ((top + boxHeight - scrollTop) > viewportHeight - 5)
+    			top = viewportHeight - boxHeight + scrollTop - 10;
+    	
+    		dojo.style.setPositivePixelValue(searchWidget.domNode, "top", top);
+
+    		dojo.style.setPositivePixelValue(searchWidget.domNode, "left", left);
+    		
     		searchWidget.inputNode.select();
--->
+    		searchWidget.inputNode.value = value;
+    	}
+    	
+    </script>
+    
+    
+  </body>
+</html>

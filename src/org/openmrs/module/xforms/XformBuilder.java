@@ -1031,6 +1031,19 @@ public final class XformBuilder {
 		//remove the _type_restricted_type part. e.g from above the name is weight_kg
 		if(name.indexOf(SIMPLE_TYPE_NAME_POSTFIX) != -1)
 			return name.substring(0, name.length() - SIMPLE_TYPE_NAME_POSTFIX.length());
+		else if(name.contains("_restricted_type") && name.contains("_type_")){
+			//eg weight_kg_type_1_restricted_type  for duplicate weight_kg
+			String s = name;
+			name = s.substring(0, s.indexOf("_type_"));
+			return name + s.substring(name.length() + 5, s.indexOf("_restricted_type"));
+		}
+		else if(name.contains("_type_")){
+			//we are looking for something like weight_kg_type_1
+			int pos = name.indexOf("_type_");
+			String suffix = name.substring(pos+5);
+			if(isNumeric(suffix.substring(1)))
+				return name.substring(0, pos) + suffix;
+		}
 
 		//Now we are only dealing with names ending with _type. e.g. education_level_type
 		//Openmrs appends the _type to the name when creating xml types for each concept
@@ -1045,6 +1058,15 @@ public final class XformBuilder {
 		//remove the _type part. e.g from above the name is education_level
 		name = name.substring(0, name.length() - COMPLEX_TYPE_NAME_POSTFIX.length());
 		return name;
+	}
+	
+	private static boolean isNumeric(String value){
+		try{
+			Integer.parseInt(value);
+			return true;
+		}catch(Exception ex){}
+		
+		return false;
 	}
 
 	/**

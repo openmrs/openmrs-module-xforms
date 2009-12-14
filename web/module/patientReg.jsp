@@ -10,6 +10,45 @@
 	body {
 		font-size: 12px;
 	}
+	
+	.popupSearchForm {
+		width: 500px;
+		height: 390px;
+		padding: 2px;
+		background-color: whitesmoke;
+		border: 1px solid gray;
+		position: absolute;
+		display: block;
+		z-index: 10;
+		margin: 5px;
+		overflow-y: auto;
+	}
+
+	.smallButton {
+		font-size: .7em;
+		border: 0px solid lightgrey;
+		cursor: pointer;
+		width: 0px;
+		height: 0px;
+		margin: 0px;
+	}
+
+	.description {
+		font-size: .9em;
+		padding-left: 10px;
+		color: gray;
+	}
+
+	.closeButton {
+		border: 1px solid gray;
+		background-color: lightpink;
+		font-size: .6em;
+		color: black;
+		float: right;
+		margin: 2px;
+		padding: 1px;
+		cursor: pointer;
+	}
 </style>
 
 <openmrs:htmlInclude file="/moduleResources/xforms/formrunner/FormRunner.nocache.js"/>
@@ -45,7 +84,7 @@
 
 <div id="showSubmitSuccessMsg" style="visibility:hidden;">${showSubmitSuccessMsg}</div>
 
-<div id="searchConcepts"><openmrs_tag:conceptField formFieldName="conceptId" searchLabel="Search Concept" initialValue="" /></div>
+<div id="searchConcepts" style="height:0px;width:0px;"><openmrs_tag:conceptField formFieldName="conceptId" searchLabel="Search Concept" initialValue="" /></div>
 
 
 <script language="javascript">
@@ -337,9 +376,8 @@
 	}
 
 	function initialize(){
-		var selectionWidget = dojo.widget.manager.getWidgetById("conceptId_selection");
-		selectionWidget.changeButton.style.display = "none";
-
+		//var selectionWidget = dojo.widget.manager.getWidgetById("conceptId_selection");
+		//selectionWidget.changeButton.style.display = "none";
 
 		dojo.addOnLoad( function() {
 			dojo.event.topic.subscribe("conceptId_search/select", 
@@ -348,10 +386,8 @@
 						var concept = msg.objs[0];
 						var conceptPopup = dojo.widget.manager.getWidgetById("conceptId_selection");
 						conceptPopup.displayNode.innerHTML = concept.conceptId;
-						conceptPopup.hiddenInputNode.value = concept.name;
-						dojo.debug("Before adding if statement");
-						
-						
+						conceptPopup.hiddenInputNode.value = concept.name;						
+						conceptPopup.hiddenInputNode.focus();
 					}
 				}
 			);
@@ -360,7 +396,6 @@
 
 	function searchExternal(key,value,parentElement,textElement,valueElement){
 		var searchWidget = dojo.widget.manager.getWidgetById("conceptId_search");
-		parentElement.appendChild(searchWidget.domNode.parentNode);
 	
 		var selectionWidget = dojo.widget.manager.getWidgetById("conceptId_selection");
  		selectionWidget.displayNode = textElement;
@@ -369,6 +404,23 @@
 		
 		searchWidget.clearSearch();
 		searchWidget.toggleShowing();
+
+
+		var left = dojo.style.totalOffsetLeft(parentElement.parentNode, false) + dojo.style.getBorderBoxWidth(parentElement.parentNode) + 10;
+		if (left + dojo.style.getBorderBoxWidth(searchWidget.domNode) > dojo.html.getViewportWidth())
+			left = dojo.html.getViewportWidth() - dojo.style.getBorderBoxWidth(searchWidget.domNode) - 10 + dojo.html.getScrollLeft();
+		
+		var top = dojo.style.totalOffsetTop(parentElement.parentNode, true);
+		var scrollTop = dojo.html.getScrollTop();
+		var boxHeight = dojo.style.getBorderBoxHeight(searchWidget.domNode);
+		var viewportHeight = dojo.html.getViewportHeight();
+		if ((top + boxHeight - scrollTop) > viewportHeight - 5)
+			top = viewportHeight - boxHeight + scrollTop - 10;
+	
+		dojo.style.setPositivePixelValue(searchWidget.domNode, "top", top);
+
+		dojo.style.setPositivePixelValue(searchWidget.domNode, "left", left);
+		
 		searchWidget.inputNode.select();
 		searchWidget.inputNode.value = value;
 	}
