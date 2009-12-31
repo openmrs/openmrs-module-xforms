@@ -61,6 +61,10 @@ public class XformObsEdit {
 	private static List<String> dirtyComplexData;
 
 
+	public static String getMultSelObsNodeName(Element parent, Obs obs){
+		return XformBuilder.getElementByAttributePrefix(parent, "openmrs_concept",obs.getValueCoded().getConceptId()+"^").getName();
+	}
+
 	public static void fillObs(HttpServletRequest request,Document doc, Integer encounterId, String xml)throws Exception{
 
 		Element formNode = XformBuilder.getElement(doc.getRootElement(),"form");
@@ -82,16 +86,47 @@ public class XformObsEdit {
 
 		List<String> complexObs = DOMUtil.getXformComplexObsNodeNames(xml);
 
+		HashMap<String,Element> obsGroupNodes = new HashMap<String,Element>();
+
 		Set<Obs> observations = encounter.getObs();
 		for(Obs obs : observations){
 			Concept concept = obs.getConcept();
 
+			//Obs obsGroup = obs.getObsGroup();
+			String obsGroupId = obs.getObsGroup() == null ? null : obs.getObsGroup().getObsId().toString();
+
 			//TODO This needs to do a better job by searching for an attribute that starts with
 			//a concept id of the concept and hence remove the name dependency as the concept name
 			//could change or may be different in a different locale.
-			Element node = XformBuilder.getElement(formNode,FormUtil.getXmlToken(concept.getDisplayString()),"openmrs_concept",concept.getConceptId()+"^");
+			Element node = XformBuilder.getElementByAttributePrefix(formNode,"openmrs_concept",concept.getConceptId()+"^");
 			if(node == null)
 				continue;
+
+			//check if this is a repeating obs.
+			if(obsGroupId != null){
+				Element parentNode = (Element)node.getParent();
+				String nodeGroupId = parentNode.getAttributeValue(null, "obsGroupId");
+
+				//if this is first time to get a node of this parent.
+				if(nodeGroupId == null || nodeGroupId.trim().length() == 0){
+					parentNode.setAttribute(null, "obsGroupId", obsGroupId); //new group processing
+					obsGroupNodes.put(obsGroupId, parentNode);
+				}
+				else{
+					if(!nodeGroupId.equals(obsGroupId)){
+						Element groupNode = obsGroupNodes.get(obsGroupId);
+						if(groupNode == null){//new group
+							groupNode = XformBuilder.createCopy(parentNode);
+							groupNode.setAttribute(null, "obsGroupId", obsGroupId);
+							obsGroupNodes.put(obsGroupId, groupNode);
+						}//else a kid of some other group which we processed but not necessarily being the first one.
+
+						node = XformBuilder.getElementByAttributePrefix(groupNode,"openmrs_concept",concept.getConceptId()+"^");
+						if(node == null)
+							continue;
+					}//else another kid of an already processed group.
+				}
+			}
 
 			String value = obs.getValueAsString(Context.getLocale());
 			if(concept.getDatatype().isCoded() && obs.getValueCoded() != null)
@@ -110,9 +145,12 @@ public class XformObsEdit {
 					else
 						value = "";
 
-					String xmlToken = FormUtil.getXmlToken(obs.getValueAsString(Context.getLocale()));
+					//TODO This may fail when locale changes from the one in which the form was designed.
+					//String xmlToken = FormUtil.getXmlToken(obs.getValueAsString(Context.getLocale()));
+					String xmlToken = getMultSelObsNodeName((Element)multNode.getParent(), obs);
 					XformBuilder.setNodeValue(node, "xforms_value", value + xmlToken);
 
+					//TODO May need to use getElementWithAttributePrefix()
 					Element valueNode = XformBuilder.getElement(node, xmlToken);
 					if(valueNode != null){
 						XformBuilder.setNodeValue(valueNode,"true");
@@ -130,6 +168,9 @@ public class XformObsEdit {
 
 					XformBuilder.setNodeValue(valueNode,value);
 					valueNode.setAttribute(null, "obsId", obs.getObsId().toString());
+
+					if(obsGroupId != null)
+						valueNode.setAttribute(null, "default", "false()");
 				}
 
 				node.setAttribute(null, "obsId", obs.getObsId().toString());
@@ -183,13 +224,22 @@ public class XformObsEdit {
 		Hashtable<String,String[]> multipleSelValues = new Hashtable<String,String[]>();
 
 		Set<Obs> observations = encounter.getObs();
+
 		for(Obs obs : observations){
 			Concept concept = obs.getConcept();
 
 			String nodeName = FormUtil.getXmlToken(concept.getDisplayString());
-			Element node = XformBuilder.getElement(formNode,nodeName);
-			if(node == null)
+			Element node = XformBuilder.getElementByAttributeValue(formNode,"obsId",obs.getObsId().toString());
+			if(node == null){
+				if(obs.getObsGroup() != null)
+					voidObs(obs.getObsGroup(),datetime,obs2Void);
+				
+				voidObs(obs,datetime,obs2Void);
 				continue;
+			}
+
+			if(isMultipleSelNode((Element)node.getParent()))
+				node = (Element)node.getParent();
 
 			if(isMultipleSelNode(node)){
 				String xmlToken = FormUtil.getXmlToken(obs.getValueAsString(Context.getLocale()));
@@ -200,6 +250,7 @@ public class XformObsEdit {
 			}
 			else{
 				Element valueNode = XformBuilder.getElement(node, "value");
+
 				if(valueNode != null){
 					String newValue = XformBuilder.getTextValue(valueNode);;
 					String oldValue = obs.getValueAsString(Context.getLocale());
@@ -243,7 +294,7 @@ public class XformObsEdit {
 					//obs.setDateChanged(datetime);
 					//obs.setChangedBy(Context.getAuthenticatedUser());
 
-					encounter.addObs(createObs(concept,newValue,datetime));
+					encounter.addObs(createObs(concept,obs.getObsGroup(),newValue,datetime));
 				}
 				else
 					throw new IllegalArgumentException("cannot locate node for concept: " + concept.getDisplayString());
@@ -251,7 +302,7 @@ public class XformObsEdit {
 			}
 		}
 
-		addNewObs(formNode,complexObs,encounter,XformBuilder.getElement(formNode,"obs"),datetime);
+		addNewObs(formNode,complexObs,encounter,XformBuilder.getElement(formNode,"obs"),datetime,null);
 
 		return encounter;
 	}
@@ -271,7 +322,7 @@ public class XformObsEdit {
 		encounter.setEncounterDatetime(XformsUtil.fromSubmitString2Date(XformBuilder.getNodeValue(formNode, XformBuilder.NODE_ENCOUNTER_ENCOUNTER_DATETIME)));
 	}
 
-	private static void addNewObs(Element formNode, List<String> complexObs,Encounter encounter, Element obsNode, Date datetime) throws Exception{
+	private static void addNewObs(Element formNode, List<String> complexObs,Encounter encounter, Element obsNode, Date datetime, Obs obsGroup) throws Exception{
 		if(obsNode == null)
 			return;
 
@@ -280,6 +331,7 @@ public class XformObsEdit {
 				continue;
 
 			Element node = (Element)obsNode.getChild(i);
+
 			String conceptStr = node.getAttributeValue(null, "openmrs_concept");
 			if(conceptStr == null || conceptStr.trim().length() == 0)
 				continue;
@@ -293,8 +345,21 @@ public class XformObsEdit {
 				String value = XformBuilder.getTextValue(valueNode);
 
 				String obsId = node.getAttributeValue(null, "obsId");
-				if(obsId != null && obsId.trim().length() > 0)
-					continue; //new obs cant have an obs id
+				String obsGroupId = node.getAttributeValue(null, "obsGroupId");
+
+				if((obsId != null && obsId.trim().length() > 0) ||
+						obsGroupId != null && obsGroupId.trim().length() > 0){
+					
+					if(!"true()".equals(valueNode.getAttributeValue(null, "new")))
+						continue; //new obs cant have an obs id
+				}
+
+				if(obsGroupId != null && obsGroupId.trim().length() > 0){		
+					Obs group = createObs(concept,obsGroup,value,datetime);
+					encounter.addObs(group);
+					addNewObs(formNode,complexObs,encounter,node,datetime,group);
+					continue; //new obs cant have an obsGroupId
+				}
 
 				if(valueNode == null)
 					continue;
@@ -307,8 +372,11 @@ public class XformObsEdit {
 				if(complexObs.contains(nodeName))
 					value = saveComplexObs(nodeName,value,formNode);
 
-				Obs obs = createObs(concept,value,datetime);
+				Obs obs = createObs(concept,obsGroup,value,datetime);
 				encounter.addObs(obs);
+				
+				if(concept.isSet())
+					addNewObs(node,complexObs,encounter,node,datetime,obs);
 			}
 		}
 	}
@@ -331,8 +399,14 @@ public class XformObsEdit {
 			Element valueNode = (Element)node.getChild(i);
 
 			String obsId = valueNode.getAttributeValue(null, "obsId");
-			if(obsId != null && obsId.trim().length() > 0)
-				continue; //new obs cant have an obs id
+			if(obsId != null && obsId.trim().length() > 0){
+				if(!"true()".equals(valueNode.getAttributeValue(null, "new")))
+					continue; //new obs cant have an obs id
+			}
+
+			String obsGroupId = valueNode.getAttributeValue(null, "obsGroupId");
+			if(obsGroupId != null && obsGroupId.trim().length() > 0)
+				continue; //new obs cant have an obsGroupId
 
 			String conceptStr = valueNode.getAttributeValue(null, "openmrs_concept");
 			if(conceptStr == null || conceptStr.trim().length() == 0)
@@ -341,7 +415,7 @@ public class XformObsEdit {
 			if(!contains(valueNode.getName(),valueArray))
 				continue; //name must be in the xforms_value
 
-			Obs obs = createObs(concept,conceptStr,datetime);
+			Obs obs = createObs(concept,null,conceptStr,datetime);
 			encounter.addObs(obs);
 		}
 	}
@@ -387,7 +461,7 @@ public class XformObsEdit {
 		else if (dt.isDate())
 			obs.setValueDatetime(XformsUtil.fromSubmitString2Date(value));
 		else if ("ZZ".equals(dt.getHl7Abbreviation())) {
-			// don't set a value
+			// don't set a value. eg  could be a set
 		}else
 			throw new IllegalArgumentException("concept datatype not yet implemented: " + dt.getName() + " with Hl7 Abbreviation: " + dt.getHl7Abbreviation());
 
@@ -430,9 +504,10 @@ public class XformObsEdit {
 		}
 	}
 
-	private static Obs createObs(Concept concept, String value, Date datetime) throws Exception{
+	private static Obs createObs(Concept concept,Obs obsGroup, String value, Date datetime) throws Exception{
 		Obs obs = new Obs();
 		obs.setConcept(concept);
+		obs.setObsGroup(obsGroup);
 		setObsValue(obs,value);
 
 		if (datetime != null)

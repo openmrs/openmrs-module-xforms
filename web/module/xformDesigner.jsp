@@ -88,7 +88,9 @@
     <div id="formDefRefreshUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/xformDownload?target=xformrefresh&contentType=xml&</div>
     <div id="externalSourceUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/widgetValueDownload?</div>
     <div id="multimediaUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/multimediaDownload</div>
-   
+    <div id="fileOpenUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/fileOpen</div>
+    <div id="fileSaveUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/fileSave</div>
+    
     <div id="defaultFontFamily" style="visibility:hidden;">${defaultFontFamily}</div>
     
     <div id="timeSubmitFormat" style="visibility:hidden;">${timeSubmitFormat}</div>
@@ -107,7 +109,6 @@
         
     
     <div id="searchConcepts" style="height:0px;width:"><openmrs_tag:conceptField formFieldName="conceptId" searchLabel="Search Concept" initialValue="" /></div>
-    
     
    <script language="javascript">
     	var PurcformsText = {
@@ -382,7 +383,9 @@
     			lockWidgets: "<spring:message code="xforms.lockWidgets" />",
     			unLockWidgets: "<spring:message code="xforms.unLockWidgets" />",
     			changeWidgetH: "<spring:message code="xforms.changeWidgetH" />",
-    			changeWidgetV: "<spring:message code="xforms.changeWidgetV" />"
+    			changeWidgetV: "<spring:message code="xforms.changeWidgetV" />",
+    			saveAsPurcForm: "<spring:message code="xforms.saveAsPurcForm" />",
+    			localeChangePrompt: "<spring:message code="xforms.localeChangePrompt" />"
     	};
 
     	function isUserAuthenticated(){
@@ -398,20 +401,7 @@
     	}
 
     	function initialize(){
-    		//var selectionWidget = dojo.widget.manager.getWidgetById("conceptId_selection");
-
-    		//window.alert(selectionWidget.domNode.innerHTML);
-    		
-    		
-    		//selectionWidget.changeButton.style.width = "0px";
-    		//selectionWidget.changeButton.style.height = "0px";
-    		
-    		//selectionWidget.domNode.parentNode.style.display = "none";
-    		//selectionWidget.domNode.style.display = "none";
-
-    		//window.alert(selectionWidget.domNode.innerHTML);
-    		//window.alert(selectionWidget.domNode.parentNode.innerHTML);
-    		
+     		
     		dojo.addOnLoad( function() {
     			dojo.event.topic.subscribe("conceptId_search/select", 
     				function(msg) {
@@ -425,23 +415,12 @@
     				}
     			);
     		})	
-    	}
+      	}
 
     	function searchExternal(key,value,parentElement,textElement,valueElement){
     		var searchWidget = dojo.widget.manager.getWidgetById("conceptId_search");
     	
     		var selectionWidget = dojo.widget.manager.getWidgetById("conceptId_selection");
-
-    		//selectionWidget.domNode.parentNode.style.position = "relative";
-    		
-    		//selectionWidget.domNode.parentNode.style.display = "";
-    		//selectionWidget.domNode.style.display = "";
-    		
-    		//window.alert(selectionWidget.domNode.parentNode.innerHTML);
-    		
-    		//selectionWidget.domNode.style.display = "";
-
-    		//window.alert(selectionWidget.domNode.parentNode.innerHTML);
     		
      		selectionWidget.displayNode = textElement;
 

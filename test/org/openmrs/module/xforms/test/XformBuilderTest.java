@@ -27,12 +27,27 @@ public class XformBuilderTest extends BaseModuleContextSensitiveTest{
 	}
 	
 	public void testBuildXformFromFixedFiles() throws Exception {
+		
+		/*Locale locale = Locale.getDefault();
+		System.out.println(locale.getLanguage());
+		System.out.println(locale.getDisplayName());
+		System.out.println(locale.getCountry());
+		System.out.println(locale.getISO3Country());
+		System.out.println(locale.getISO3Language());
+		System.out.println(locale.getDisplayCountry());
+		System.out.println(locale.getDisplayLanguage());
+		//System.out.println(locale.setDefault(newLocale));*/
+		
 		String templateXml = getFileAsString(new File("template.xml"));
 		String schemaXml = getFileAsString(new File("FormEntry.xml"));
 
 		try{
-			String xform = XformBuilder.getXform4mStrings(schemaXml, templateXml);
-			System.out.println(xform);
+			org.kxml2.kdom.Document doc = XformBuilder.getDocument(getFileAsString(new File("xml.xml")));
+			XformBuilder.createCopy(doc.getRootElement());
+			System.out.println(XformBuilder.fromDoc2String(doc));
+			
+			//String xform = XformBuilder.getXform4mStrings(schemaXml, templateXml);
+			//System.out.println(xform);
 		}
 		catch(Exception ex){
 			ex.printStackTrace();

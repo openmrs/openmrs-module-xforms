@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>xforms</id>
 	<name>XForms</name>
-	<version>3.7.5</version>
+	<version>3.7.6</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Daniel Kayiwa</author>
 	<description>
@@ -178,7 +178,7 @@
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.localeList</property>
-		<defaultValue>en:English,fr:French,gr:German,swa:Swahili</defaultValue>
+		<defaultValue>en:English,fr:French,es:Spanish,it:Italian,pt:Portuguese</defaultValue>
 		<description>The list of locales supported by the form designer.</description>
 	</globalProperty>
 	<globalProperty>
@@ -248,6 +248,14 @@
 	<servlet>
 		<servlet-name>multimediaDownload</servlet-name>
 		<servlet-class>@MODULE_PACKAGE@.web.MultimediaServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>fileOpen</servlet-name>
+		<servlet-class>@MODULE_PACKAGE@.web.FileOpenServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>fileSave</servlet-name>
+		<servlet-class>@MODULE_PACKAGE@.web.FileSaveServlet</servlet-class>
 	</servlet>
 	
 	<!-- Internationalization -->

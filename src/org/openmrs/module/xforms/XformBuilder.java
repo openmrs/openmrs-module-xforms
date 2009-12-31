@@ -131,6 +131,7 @@ public final class XformBuilder {
 	public static final String ATTRIBUTE_READONLY = "readonly";
 	public static final String ATTRIBUTE_LOCKED = "locked";
 	public static final String ATTRIBUTE_REQUIRED = "required";
+	public static final String ATTRIBUTE_VISIBLE = "visible";
 	public static final String ATTRIBUTE_DESCRIPTION_TEMPLATE = "description-template";
 	public static final String ATTRIBUTE_BASE = "base";	
 	public static final String ATTRIBUTE_XSI_NILL = "xsi:nil";
@@ -141,6 +142,7 @@ public final class XformBuilder {
 	public static final String ATTRIBUTE_VALUE = "value";
 
 	public static final String XPATH_VALUE_TRUE = "true()";
+	public static final String XPATH_VALUE_FALSE = "false()";
 	public static final String XPATH_VALUE_LAST = "last()";
 	public static final String VALUE_TRUE = "true";
 	public static final String VALUE_FALSE = "false";
@@ -360,34 +362,90 @@ public final class XformBuilder {
 	
 	
 	/**
-	 * Gets a child element of a parent node with a given name or a given attribute prefix.
+	 * Gets a child element of a parent node with a given attribute prefix.
 	 * 
 	 * @param parent - the parent element
-	 * @param name - the name of the child.
 	 * @param attributeName - the name of the attribute.
-	 * @param attributeValue - the prefix of the attribute.
+	 * @param attributePrefix - the prefix of the attribute.
 	 * @return - the child element.
 	 */
-	public static Element getElement(Element parent, String name, String attributeName, String attributeValue){
+	public static Element getElementByAttributePrefix(Element parent, String attributeName, String attributePrefix){
 		for(int i=0; i<parent.getChildCount(); i++){
 			if(parent.getType(i) != Element.ELEMENT)
 				continue;
 
 			Element child = (Element)parent.getChild(i);
-			if(child.getName().equalsIgnoreCase(name))
-				return child; //TODO May need to only check the attribute prefix
 			
+			//Node name may not match due to change of concept name
+			//and hence we only check for attribute value of concept id
 			String value = child.getAttributeValue(null, attributeName);
-			if(value != null && value.startsWith(attributeValue))
+			if(value != null && value.startsWith(attributePrefix))
 				return child;
 			
-			child = getElement(child,name,attributeName,attributeValue);
+			child = getElementByAttributePrefix(child,attributeName,attributePrefix);
 			if(child != null)
 				return child;
 		}
 
 		return null;
 	}
+	
+	
+	/**
+	 * Gets a child element of a parent node with a given attribute value.
+	 * 
+	 * @param parent - the parent element
+	 * @param attributeName - the name of the attribute.
+	 * @param attributeValue - the value of the attribute.
+	 * @return - the child element.
+	 */
+	public static Element getElementByAttributeValue(Element parent, String attributeName, String attributeValue){
+		for(int i=0; i<parent.getChildCount(); i++){
+			if(parent.getType(i) != Element.ELEMENT)
+				continue;
+
+			Element child = (Element)parent.getChild(i);
+			
+			//Node name may not match due to change of concept name
+			//and hence we only check for attribute value of concept id
+			String value = child.getAttributeValue(null, attributeName);
+			if(value != null && value.equalsIgnoreCase(attributeValue))
+				return child;
+			
+			child = getElementByAttributeValue(child,attributeName,attributeValue);
+			if(child != null)
+				return child;
+		}
+
+		return null;
+	}
+	
+	
+	/**
+	 * Gets a child element of a parent node with a given name.
+	 * 
+	 * @param parent - the parent element
+	 * @param name - the name of the child.
+	 * @return - the child element.
+	 */
+	public static Element getElementEx(Element parent, String name, String attributeName, String attributeValue){
+		for(int i=0; i<parent.getChildCount(); i++){
+			if(parent.getType(i) != Element.ELEMENT)
+				continue;
+
+			Element child = (Element)parent.getChild(i);
+			if(child.getName().equalsIgnoreCase(name) && 
+					attributeValue.equalsIgnoreCase(child.getAttributeValue(null, attributeName)))
+				return child;
+
+			child = getElementEx(child,name,attributeName,attributeValue);
+			if(child != null)
+				return child;
+		}
+
+		return null;
+	}
+	
 
 	/**
 	 * Builds an Xfrom from an openmrs schema and template document.
@@ -717,7 +775,8 @@ public final class XformBuilder {
 		else if(name.equalsIgnoreCase(NODE_PATIENT_PATIENT_ID)){
 			bindNode.setAttribute(null, ATTRIBUTE_REQUIRED, XPATH_VALUE_TRUE);
 			//bindNode.setAttribute(null, ATTRIBUTE_READONLY, XPATH_VALUE_TRUE);
-			bindNode.setAttribute(null, ATTRIBUTE_LOCKED, XPATH_VALUE_TRUE);
+			//bindNode.setAttribute(null, ATTRIBUTE_LOCKED, XPATH_VALUE_TRUE);
+			bindNode.setAttribute(null, ATTRIBUTE_VISIBLE, XPATH_VALUE_FALSE);
 		}
 		else{
 			//all table field are readonly on forms since they cant be populated in their tables 
@@ -2262,6 +2321,9 @@ public final class XformBuilder {
 	}
 
 	public static void setPatientFieldValues(Patient patient, Form form,Element parentNode, XformsService xformsService) throws Exception {
+		//EasyFactoryConfiguration config = new EasyFactoryConfiguration();
+
+	
 		VelocityEngine velocityEngine = new VelocityEngine();
 		velocityEngine.setProperty( RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.runtime.log.CommonsLogLogChute" );
 		velocityEngine.setProperty(CommonsLogLogChute.LOGCHUTE_COMMONS_LOG_NAME, "xforms_velocity");
@@ -2273,12 +2335,48 @@ public final class XformBuilder {
 		velocityContext.put("timestamp", new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_TIME_SUBMIT_FORMAT,XformConstants.DEFAULT_DATE_TIME_SUBMIT_FORMAT)));
 		velocityContext.put("date", new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_SUBMIT_FORMAT,XformConstants.DEFAULT_DATE_SUBMIT_FORMAT)));
 		velocityContext.put("time", new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_TIME_SUBMIT_FORMAT,XformConstants.DEFAULT_TIME_SUBMIT_FORMAT)));
-
+		
 		// add the error handler
 		EventCartridge eventCartridge = new EventCartridge();
 		eventCartridge.addEventHandler(new VelocityExceptionHandler());
 		velocityContext.attachEventCartridge(eventCartridge);
 
 		setPatientTableFieldValues(form.getFormId(),parentNode,xformsService,velocityEngine,velocityContext);
+	}
+	
+	
+	public static Element createCopy(Element element){
+		Element copy = element.getParent().createElement(null, null);
+		copy.setName(element.getName());
+		element.getParent().addChild(Element.ELEMENT,copy);
+		
+		copyAttributes(element,copy);
+		copyChildren(element,copy);
+		
+		return copy;
+	}
+	
+	private static void copyChildren(Element srcNode, Element dstNode){
+			
+		for(int index = 0; index < srcNode.getChildCount(); index++){
+			if(srcNode.getType(index) != Element.ELEMENT)
+				continue;
+			
+			Element child = (Element)srcNode.getChild(index);
+			
+			Element newChild = dstNode.createElement(null, null);
+			newChild.setName(child.getName());
+			dstNode.addChild(Element.ELEMENT,newChild);
+			
+			copyAttributes(child,newChild);
+			copyChildren(child,newChild);
+		}
+	}
+	
+	private static void copyAttributes(Element srcNode, Element dstNode){
+		for(int index = 0; index < srcNode.getAttributeCount(); index++){
+			String name = srcNode.getAttributeName(index);
+			dstNode.setAttribute(null, name, srcNode.getAttributeValue(null, name));
+		}
 	}
 }

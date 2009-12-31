@@ -209,4 +209,16 @@
 		</sql>
 	</diff>
 	
+	<diff>
+		<version>3.7.6</version>
+		<author>Daniel Kayiwa</author>
+		<date>December 20th 2009</date>
+		<description>
+			Adding locale_xml field to the xform table.
+		</description>
+		<sql>
+			ALTER TABLE xforms_xform ADD locale_xml longtext;	
+		</sql>
+	</diff>
+	
 </sqldiff>

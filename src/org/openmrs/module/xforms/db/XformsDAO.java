@@ -100,4 +100,6 @@ public interface XformsDAO {
 	public void createFormEntryError(FormEntryError formEntryError);
 
 	public List<GlobalProperty> getXFormsGlobalProperties();
+	
+	public List<Object[]> getXformsList();
 }

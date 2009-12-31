@@ -360,7 +360,9 @@
 			lockWidgets: "<spring:message code="xforms.lockWidgets" />",
 			unLockWidgets: "<spring:message code="xforms.unLockWidgets" />",
 			changeWidgetH: "<spring:message code="xforms.changeWidgetH" />",
-			changeWidgetV: "<spring:message code="xforms.changeWidgetV" />"
+			changeWidgetV: "<spring:message code="xforms.changeWidgetV" />",
+			saveAsPurcForm: "<spring:message code="xforms.saveAsPurcForm" />",
+			localeChangePrompt: "<spring:message code="xforms.localeChangePrompt" />"
 	};
 
 	function isUserAuthenticated(){

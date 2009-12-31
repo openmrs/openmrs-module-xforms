@@ -19,9 +19,12 @@ public class Xform {
     
     /** The form layout xml. */
     private String layoutXml;
+    
+    /** The form locale xml. */
+    private String localeXml;
 	
 	/** The formId of the form that this XForms represents. */
-	private int formId = 0;
+	private int formId = -1;
 	
 	/** The user who submitted this XForm to the database. */
 	private User creator;
@@ -62,9 +65,12 @@ public class Xform {
 	 * @param formId - the form id.
 	 * @param xformXml - xml of the xform.
      * @param layoutXml - xml layout of the form.
+     * @param localeXml - xml for form localization.
 	 */
-	public Xform(Integer formId, String xformXml, String layoutXml) {
+	public Xform(Integer formId, String xformXml, String layoutXml, String localeXml) {
         this(formId,xformXml);
+        setLayoutXml(layoutXml);
+        setLocaleXml(localeXml);
 		setCreator(Context.getAuthenticatedUser());
 	}
 	
@@ -190,4 +196,12 @@ public class Xform {
     public void setXformXml(String xformXml) {
         this.xformXml = xformXml;
     }
+
+	public String getLocaleXml() {
+		return localeXml;
+	}
+
+	public void setLocaleXml(String localeXml) {
+		this.localeXml = localeXml;
+	}
 }

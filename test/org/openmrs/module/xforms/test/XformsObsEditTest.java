@@ -44,15 +44,16 @@ public class XformsObsEditTest extends BaseModuleContextSensitiveTest{
         executeDataSet("org/openmrs/module/xforms/test/include/XformsObsEditTest.xml");
 	}*/
 
-	public void testVelocityEvaluation() throws Exception{
+	public void tVelocityEvaluation() throws Exception{
 		
 		/*select name,default_value from form_field ff inner join field f
 		where ff.field_id=f.field_id
 		and ff.form_id=15
 		and length(default_value) > 0*/
-		
+		Calendar.getInstance().getTimeInMillis();
 		int k = Calendar.getInstance().getTime().getYear();
-		
+		//Math.round(a)
+
 		k = 0;
 		
 		authenticate();

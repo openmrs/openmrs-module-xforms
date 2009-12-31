@@ -107,6 +107,9 @@ public class XformDataUploadController extends SimpleFormController{
 	private void processXformEdit(HttpServletRequest request,String xml) throws Exception{
 		Document doc = XformBuilder.getDocument(xml);
 		
+		//System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+		//System.out.println(xml);
+		
 		if(XformPatientEdit.isPatientElement(doc.getRootElement())){
 			Patient patient = XformPatientEdit.getEditedPatient(doc.getRootElement());			
 			Context.getPatientService().savePatient(patient);

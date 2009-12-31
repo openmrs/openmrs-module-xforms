@@ -251,6 +251,9 @@ public class XformConstants {
 	/** The xforms request parameter. */
 	public static final String REQUEST_PARAM_XFORMS = "xforms";
 	
+	/** The xforms list request parameter. */
+	public static final String REQUEST_PARAM_XFORMS_LIST = "xformslist";
+	
 	/** The xform request parameter. */
 	public static final String REQUEST_PARAM_XFORM = "xform";
     
@@ -300,4 +303,6 @@ public class XformConstants {
 	public static final String XFORM_DATA_UPLOAD_RELATIVE_URL = "/moduleServlet/xforms/xformDataUpload";
 
     public static final String PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR = " PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR ";
+    
+    public static final String PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR = " PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR ";
 }

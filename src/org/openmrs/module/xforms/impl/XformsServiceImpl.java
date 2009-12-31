@@ -70,8 +70,6 @@ public class XformsServiceImpl implements XformsService {
      * @see org.openmrs.module.xforms.XformsService#saveXform(org.openmrs.module.xforms.Xform)
      */
     public void saveXform(Xform xform) {
-        xform.setCreator(Context.getAuthenticatedUser());
-        xform.setDateCreated(new Date());
         getXformsDAO().saveXform(xform);
     }
 
@@ -222,5 +220,9 @@ public class XformsServiceImpl implements XformsService {
 	public List<GlobalProperty> getXFormsGlobalProperties() {
 		return getXformsDAO().getXFormsGlobalProperties();
 		//return null;
+	}
+	
+	public List<Object[]> getXformsList(){
+		return getXformsDAO().getXformsList();
 	}
 }

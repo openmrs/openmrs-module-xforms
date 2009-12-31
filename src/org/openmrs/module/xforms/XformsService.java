@@ -73,6 +73,14 @@ public interface XformsService {
 	public List<Xform> getXforms();
 	
 	/**
+	 * Gets a list of XForms id and name
+	 * 
+	 * @return List of XForms id and name
+	 */
+	@Transactional(readOnly=true)
+	public List<Object[]> getXformsList();
+	
+	/**
 	 * Get the XForm for the given form
 	 * 
 	 * @param formId id of the form that owns the XForm to retrieve

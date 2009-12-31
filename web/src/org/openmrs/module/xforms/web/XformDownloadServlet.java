@@ -33,7 +33,7 @@ import org.openmrs.module.xforms.XformsServer;
 import org.openmrs.module.xforms.XformsService;
 import org.openmrs.module.xforms.download.XformDownloadManager;
 import org.openmrs.module.xforms.formentry.FormEntryWrapper;
-import org.openmrs.module.xforms.util.DOMUtil;
+import org.openmrs.module.xforms.util.LanguageUtil;
 import org.openmrs.module.xforms.util.XformsUtil;
 import org.openmrs.util.FormUtil;
 import org.openmrs.web.controller.user.UserFormController;
@@ -97,13 +97,35 @@ public class XformDownloadServlet extends HttpServlet {
 					if (!XformsUtil.isAuthenticated(request,response,null))
 						return;
 				}
+				
+				XformsService xformsService = (XformsService)Context.getService(XformsService.class);
+				FormService formService = (FormService)Context.getService(FormService.class);
+				
+				if(XformConstants.REQUEST_PARAM_XFORMS_LIST.equals(target)){
+
+					String xml = "<?xml version='1.0' encoding='UTF-8' ?>";
+					xml += "\n<xforms>";
+
+					List<Object[]> xformList = xformsService.getXformsList();
+					if(xformList != null){
+						for(Object[] item : xformList){
+							xml += "\n  <xform>";
+							xml += "\n    <id>" + item[0] + "</id>";
+							xml += "\n    <name>" + item[1] + "</name>";
+							xml += "\n  </xform>";
+						}
+					}
+
+					xml += "\n</xforms>";
+
+					response.setContentType(XformConstants.HTTP_HEADER_CONTENT_TYPE_XML); 
+					response.getOutputStream().print(xml);
+					return;
+				}
 
 				boolean attachment = true;
 				if(XformConstants.REQUEST_PARAM_CONTENT_TYPE_VALUE_XML.equals(request.getParameter(XformConstants.REQUEST_PARAM_CONTENT_TYPE)))
 					attachment = false;
-
-				XformsService xformsService = (XformsService)Context.getService(XformsService.class);
-				FormService formService = (FormService)Context.getService(FormService.class);
 
 				String useStoredXform = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_USER_STORED_XFORMS);
 				boolean createNew = false;
@@ -180,12 +202,16 @@ public class XformDownloadServlet extends HttpServlet {
 
 		String xformXml = XformDownloadManager.getXform(formService,xformsService,form.getFormId(),createNew);
 
-		if(!attachment){
+		if(!attachment && !"true".equals(request.getParameter("excludeLayout"))){
 			Xform xform = xformsService.getXform(form.getFormId());
 			if(xform != null){
 				String xml = xform.getLayoutXml();
 				if(xml != null && xml.length() > 0)
 					xformXml += XformConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR + xml;
+
+				xml = xform.getLocaleXml();
+				if(xml != null && xml.length() > 0)
+					xformXml += XformConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR + xml;
 			}
 		}
 
@@ -199,9 +225,14 @@ public class XformDownloadServlet extends HttpServlet {
 			xml = XformBuilder.getNewPatientXform();
 		else{
 			xml = xform.getXformXml();
+
 			String layout = xform.getLayoutXml();
 			if(layout != null && layout.length() > 0)
 				xml += XformConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR + layout;
+
+			String localeXml = xform.getLocaleXml();
+			if(localeXml != null && localeXml.length() > 0)
+				xml += XformConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR + localeXml;
 		}
 
 		response.setHeader(XformConstants.HTTP_HEADER_CONTENT_TYPE, XformConstants.HTTP_HEADER_CONTENT_TYPE_XML);
@@ -297,13 +328,30 @@ public class XformDownloadServlet extends HttpServlet {
 		if(request.getParameter("encounterId") != null)
 			XformObsEdit.fillObs(request,doc,Integer.parseInt(request.getParameter("encounterId")),xformXml);
 
-		String xml = XformBuilder.fromDoc2String(doc);        
+		String xml = XformBuilder.fromDoc2String(doc);  
+
+		//System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+		//System.out.println(xml);
+
 		Xform xform = xformsService.getXform(form.getFormId());
 
 		if(xform != null){
+
+			org.w3c.dom.Element languageTextNode = null;
+			String localeXml = xform.getLocaleXml();
+			if(localeXml != null && localeXml.trim().length() > 0){
+				languageTextNode = LanguageUtil.getLocaleTextNode(localeXml, Context.getLocale().getLanguage());
+				if(languageTextNode != null)
+					xml = LanguageUtil.translateXformXml(xml,languageTextNode);
+			}
+
 			String layoutXml = xform.getLayoutXml();
-			if(layoutXml != null && layoutXml.length() > 0)
+			if(layoutXml != null && layoutXml.length() > 0){
+				if(languageTextNode != null)
+					layoutXml = LanguageUtil.translateLayoutXml(layoutXml,languageTextNode);
+
 				xml += XformConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR + layoutXml;
+			}
 		}
 
 		//request.getRequestDispatcher("/xform.jsp").forward(request, response);
@@ -373,24 +421,38 @@ public class XformDownloadServlet extends HttpServlet {
 		if(identifier !=  null){
 			XformBuilder.setNodeValue(doc,"identifier",identifier.getIdentifier());
 			XformBuilder.setNodeValue(doc,"patient_identifier_type_id",identifier.getIdentifierType().getPatientIdentifierTypeId().toString());
-		
+
 			fillPersonAttributes(patient,doc);
 
 			XformObsEdit.fillPatientComplexObs(request, doc, xformXml);
 		}
 		//else must be new patient.  
-		
-		String xml = XformBuilder.fromDoc2String(doc); 
+
+		String xml = XformBuilder.fromDoc2String(doc);
+
+		org.w3c.dom.Element languageTextNode = null;
+		String localeXml = xform.getLocaleXml();
+		if(localeXml != null && localeXml.trim().length() > 0){
+			languageTextNode = LanguageUtil.getLocaleTextNode(localeXml, Context.getLocale().getLanguage());
+			if(languageTextNode != null)
+				xml = LanguageUtil.translateXformXml(xml,languageTextNode);
+		}
 
 		if(xform != null){
 			String layoutXml = xform.getLayoutXml();
-			if(layoutXml != null && layoutXml.length() > 0)
+			if(layoutXml != null && layoutXml.length() > 0){
+				if(languageTextNode != null)
+					layoutXml = LanguageUtil.translateLayoutXml(layoutXml,languageTextNode);
+
 				xml += XformConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR + layoutXml;
+			}
 		}
 
 		//request.getRequestDispatcher("/xform.jsp").forward(request, response);
 		response.setHeader(XformConstants.HTTP_HEADER_CONTENT_TYPE, XformConstants.HTTP_HEADER_CONTENT_TYPE_XML);
 		response.getOutputStream().print(xml);
+
+		//request.getLocale().;
 
 		//TODO New model we need to get formdef or xform and layout xml to send client
 		//formRunner.loadForm(formDef,layoutXml);

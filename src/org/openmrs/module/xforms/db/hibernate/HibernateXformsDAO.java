@@ -14,6 +14,7 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.openmrs.GlobalProperty;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.module.xforms.MedicalHistoryField;
 import org.openmrs.module.xforms.Xform;
@@ -77,7 +78,8 @@ public class HibernateXformsDAO implements XformsDAO {
 	 */
 	public void saveXform(Xform xform) {
 		// sessionFactory.getCurrentSession().saveOrUpdate(xform);
-		deleteXform(xform.getFormId());
+		//deleteXform(xform.getFormId());
+		//Context.evictFromSession(xform);
 		sessionFactory.getCurrentSession().save(xform);
 	}
 
@@ -392,6 +394,17 @@ public class HibernateXformsDAO implements XformsDAO {
 	public List<GlobalProperty> getXFormsGlobalProperties() {
 		String sql = "select * from global_property gp where gp.property like 'xforms%'";
 		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		
+		return query.list();
+	}
+	
+	public List<Object[]> getXformsList(){
+		String sql = "select f.form_id, f.name from xforms_xform xf inner join form f " +
+					 "on xf.form_id=f.form_id";
+		
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		query.addScalar("form_id", Hibernate.INTEGER);
+		query.addScalar("name", Hibernate.STRING);
 		
 		return query.list();
 	}
