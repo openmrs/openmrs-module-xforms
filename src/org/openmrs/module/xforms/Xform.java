@@ -23,6 +23,9 @@ public class Xform {
     /** The form locale xml. */
     private String localeXml;
 	
+    /** The form javascript scource. */
+    private String javaScriptSrc;
+    
 	/** The formId of the form that this XForms represents. */
 	private int formId = -1;
 	
@@ -67,10 +70,11 @@ public class Xform {
      * @param layoutXml - xml layout of the form.
      * @param localeXml - xml for form localization.
 	 */
-	public Xform(Integer formId, String xformXml, String layoutXml, String localeXml) {
+	public Xform(Integer formId, String xformXml, String layoutXml, String localeXml, String javaScriptSrc) {
         this(formId,xformXml);
         setLayoutXml(layoutXml);
         setLocaleXml(localeXml);
+        setJavaScriptSrc(javaScriptSrc);
 		setCreator(Context.getAuthenticatedUser());
 	}
 	
@@ -203,5 +207,13 @@ public class Xform {
 
 	public void setLocaleXml(String localeXml) {
 		this.localeXml = localeXml;
+	}
+
+	public String getJavaScriptSrc() {
+		return javaScriptSrc;
+	}
+
+	public void setJavaScriptSrc(String javaScriptSrc) {
+		this.javaScriptSrc = javaScriptSrc;
 	}
 }

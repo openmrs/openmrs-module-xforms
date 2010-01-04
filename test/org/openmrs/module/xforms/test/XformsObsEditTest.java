@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.StringWriter;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -37,6 +36,70 @@ public class XformsObsEditTest extends BaseModuleContextSensitiveTest{
 		return false;
 	}
 
+	public void testThis(){
+		String xformXml = null, layoutXml = null, localeXml = null, javaScriptSrc = null;
+
+		/*int pos = xml.indexOf(PurcConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR);
+		if(pos > 0){
+			xformXml = xml.substring(0,pos);
+			layoutXml = FormUtil.formatXml(xml.substring(pos+PurcConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR.length(), xml.length()));
+		}
+		else
+			xformXml = xml;*/
+		
+		final String PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR = "LAYOUT";
+		final String PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR = "LOCALE";
+		final String PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR = "JAVASCRIPT";
+		
+		String xml = "11245LAYOUT678JAVASCRIPT13-404";
+		int pos = xml.indexOf(PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR);
+		int pos2 = xml.indexOf(PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR);
+		if(pos > 0){
+			xformXml = xml.substring(0,pos);
+			layoutXml = xml.substring(pos+PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR.length(), pos2 > 0 ? pos2 : xml.length());
+			
+			if(pos2 > 0)
+				javaScriptSrc = xml.substring(pos2+PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR.length(), xml.length());
+		}
+
+		//String xml = "11245LAYOUT678LOCALE910234JAVASCRIPT13-404";
+		//String xml = "11245LAYOUT678LOCALE910234";
+		//String xml = "11245LOCALE910234";
+		/*String xml = "11245LOCALE910234JAVASCRIPT13-404";
+		
+		int pos = xml.indexOf(PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR);
+		int pos2 = xml.indexOf(PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR);
+		int pos3 = xml.indexOf(PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR);
+		if(pos > 0){
+			xformXml = xml.substring(0,pos);
+			layoutXml = xml.substring(pos+PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR.length(), (pos2 > 0 ? pos2 : (pos3 > 0 ? pos3 : xml.length())));
+
+			if(pos2 > 0)
+				localeXml = xml.substring(pos2+PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR.length(), pos3 > 0 ? pos3 : xml.length());
+		
+			if(pos3 > 0)
+				javaScriptSrc = xml.substring(pos3+PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR.length(), xml.length());
+		}
+		else if(pos2 > 0){
+			xformXml = xml.substring(0,pos2);
+			localeXml = xml.substring(pos2+PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR.length(), pos3 > 0 ? pos3 : xml.length());
+			
+			if(pos3 > 0)
+				javaScriptSrc = xml.substring(pos3+PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR.length(), xml.length());
+		}
+		else if(pos3 > 0){
+			xformXml = xml.substring(0,pos3);
+			javaScriptSrc = xml.substring(pos3+PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR.length(), xml.length());
+		}
+		else
+			xformXml = xml;*/
+		
+		System.out.println(xformXml);
+		System.out.println(layoutXml);
+		System.out.println(localeXml);
+		System.out.println(javaScriptSrc);
+	}
+	
 	/*public void testGetEditedEncounter() throws Exception {
 
 		initializeInMemoryDatabase();

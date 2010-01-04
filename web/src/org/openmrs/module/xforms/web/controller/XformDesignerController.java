@@ -70,7 +70,8 @@ public class XformDesignerController extends SimpleFormController {
 		map.put("showXformsSourceTab", Context.getAdministrationService().getGlobalProperty("xforms.showXformsSourceTab","false"));
 		map.put("showLayoutXmlTab", Context.getAdministrationService().getGlobalProperty("xforms.showLayoutXmlTab","false"));
 		map.put("showModelXmlTab", Context.getAdministrationService().getGlobalProperty("xforms.showModelXmlTab","false"));
-
+		map.put("showJavaScriptTab", Context.getAdministrationService().getGlobalProperty("xforms.showJavaScriptTab","false"));
+		
 		String url = request.getRequestURI();
 		url = url.substring(0, url.indexOf("module/xforms/xformDesigner.form"));
 

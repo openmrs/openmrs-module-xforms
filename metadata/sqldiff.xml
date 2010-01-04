@@ -221,4 +221,16 @@
 		</sql>
 	</diff>
 	
+	<diff>
+		<version>3.7.7</version>
+		<author>Daniel Kayiwa</author>
+		<date>December 31th 2009</date>
+		<description>
+			Adding javascript_src field to the xform table.
+		</description>
+		<sql>
+			ALTER TABLE xforms_xform ADD javascript_src longtext;	
+		</sql>
+	</diff>
+	
 </sqldiff>

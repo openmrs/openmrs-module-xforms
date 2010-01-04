@@ -4,9 +4,6 @@
 <script type="text/javascript" src='${pageContext.request.contextPath}/dwr/util.js'></script>
 <script type="text/javascript" src='${pageContext.request.contextPath}/dwr/interface/DWRXformsService.js'></script>
 
-<script type="text/javascript">
-	var djConfig = {debugAtAllCosts: false, isDebug: false };
-</script>
 
 
 <html>
@@ -104,11 +101,22 @@
     <div id="showXformsSourceTab" style="visibility:hidden;">${showXformsSourceTab}</div>
     <div id="showLayoutXmlTab" style="visibility:hidden;">${showLayoutXmlTab}</div>
     <div id="showModelXmlTab" style="visibility:hidden;">${showModelXmlTab}</div>
+     <div id="showJavaScriptTab" style="visibility:hidden;">${showJavaScriptTab}</div>
     
     <div id="localeList" style="visibility:hidden;">${localeList}</div>
         
     
     <div id="searchConcepts" style="height:0px;width:"><openmrs_tag:conceptField formFieldName="conceptId" searchLabel="Search Concept" initialValue="" /></div>
+    
+    
+    
+    
+    
+    <!--   <div id="searchProvider"><openmrs_tag:userField formFieldName="joe" roles="System Developer;" /></div> -->
+    
+    
+    
+    
     
    <script language="javascript">
     	var PurcformsText = {
@@ -385,7 +393,10 @@
     			changeWidgetH: "<spring:message code="xforms.changeWidgetH" />",
     			changeWidgetV: "<spring:message code="xforms.changeWidgetV" />",
     			saveAsPurcForm: "<spring:message code="xforms.saveAsPurcForm" />",
-    			localeChangePrompt: "<spring:message code="xforms.localeChangePrompt" />"
+    			localeChangePrompt: "<spring:message code="xforms.localeChangePrompt" />",
+    			javaScriptSource: "<spring:message code="xforms.javaScriptSource" />",
+           		calculation: "<spring:message code="xforms.calculation" />",
+           		id: "<spring:message code="xforms.id" />"
     	};
 
     	function isUserAuthenticated(){

@@ -212,9 +212,13 @@ public class XformDownloadServlet extends HttpServlet {
 				xml = xform.getLocaleXml();
 				if(xml != null && xml.length() > 0)
 					xformXml += XformConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR + xml;
+				
+				xml = xform.getJavaScriptSrc();
+				if(xml != null && xml.length() > 0)
+					xformXml += XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR + xml;
 			}
 		}
-
+		
 		response.getOutputStream().print(xformXml);
 	}
 
@@ -233,6 +237,10 @@ public class XformDownloadServlet extends HttpServlet {
 			String localeXml = xform.getLocaleXml();
 			if(localeXml != null && localeXml.length() > 0)
 				xml += XformConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR + localeXml;
+			
+			String javaScriptSrc = xform.getJavaScriptSrc();
+			if(javaScriptSrc != null && javaScriptSrc.length() > 0)
+				xml += XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR + javaScriptSrc;
 		}
 
 		response.setHeader(XformConstants.HTTP_HEADER_CONTENT_TYPE, XformConstants.HTTP_HEADER_CONTENT_TYPE_XML);
@@ -352,6 +360,10 @@ public class XformDownloadServlet extends HttpServlet {
 
 				xml += XformConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR + layoutXml;
 			}
+			
+			String javaScriptSrc = xform.getJavaScriptSrc();
+			if(javaScriptSrc != null && javaScriptSrc.length() > 0)
+				xml += XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR + javaScriptSrc;
 		}
 
 		//request.getRequestDispatcher("/xform.jsp").forward(request, response);
@@ -446,6 +458,10 @@ public class XformDownloadServlet extends HttpServlet {
 
 				xml += XformConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR + layoutXml;
 			}
+			
+			String javaScriptSrc = xform.getJavaScriptSrc();
+			if(javaScriptSrc != null && javaScriptSrc.length() > 0)
+				xml += XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR + javaScriptSrc;
 		}
 
 		//request.getRequestDispatcher("/xform.jsp").forward(request, response);

@@ -366,7 +366,10 @@
 			changeWidgetH: "<spring:message code="xforms.changeWidgetH" />",
 			changeWidgetV: "<spring:message code="xforms.changeWidgetV" />",
 			saveAsPurcForm: "<spring:message code="xforms.saveAsPurcForm" />",
-			localeChangePrompt: "<spring:message code="xforms.localeChangePrompt" />"
+			localeChangePrompt: "<spring:message code="xforms.localeChangePrompt" />",
+			javaScriptSource: "<spring:message code="xforms.javaScriptSource" />",
+       		calculation: "<spring:message code="xforms.calculation" />",
+       		id: "<spring:message code="xforms.id" />"
 	};
 
 	function searchExternal(key,value,parentElement,textElement,valueElement){

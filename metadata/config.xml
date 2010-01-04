@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>xforms</id>
 	<name>XForms</name>
-	<version>3.7.6</version>
+	<version>3.7.8</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Daniel Kayiwa</author>
 	<description>
@@ -200,6 +200,11 @@
 		<property>@MODULE_ID@.showModelXmlTab</property>
 		<defaultValue>false</defaultValue>
 		<description>Set to true if you want to display the model xml tab of the form designer.</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.showJavaScriptTab</property>
+		<defaultValue>false</defaultValue>
+		<description>Set to true if you want to display the JavaScript tab of the form designer.</description>
 	</globalProperty>
 	<!-- /Required Global Properties -->
 

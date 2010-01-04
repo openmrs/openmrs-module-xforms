@@ -82,9 +82,9 @@ public class XformUploadController extends SimpleFormController{
 			if("true".equals(request.getParameter("localeXml")))
 				xform.setLocaleXml(xml);
 			else{
-				String xformXml, layoutXml = null, localeXml = null;
+				String xformXml, layoutXml = null, localeXml = null, javaScriptSrc = null;
 
-				int pos = xml.indexOf(XformConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR);
+				/*int pos = xml.indexOf(XformConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR);
 				int pos2 = xml.indexOf(XformConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR);
 				if(pos > 0){
 					xformXml = xml.substring(0,pos);
@@ -98,11 +98,39 @@ public class XformUploadController extends SimpleFormController{
 					localeXml = xml.substring(pos2+XformConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR.length(), xml.length());
 				}
 				else
-					xformXml = xml;
+					xformXml = xml;*/
+				
+				int pos = xml.indexOf(XformConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR);
+				int pos2 = xml.indexOf(XformConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR);
+				int pos3 = xml.indexOf(XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR);
+				if(pos > 0){
+					xformXml = xml.substring(0,pos);
+					layoutXml = xml.substring(pos+XformConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR.length(), (pos2 > 0 ? pos2 : (pos3 > 0 ? pos3 : xml.length())));
 
+					if(pos2 > 0)
+						localeXml = xml.substring(pos2+XformConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR.length(), pos3 > 0 ? pos3 : xml.length());
+				
+					if(pos3 > 0)
+						javaScriptSrc = xml.substring(pos3+XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR.length(), xml.length());
+				}
+				else if(pos2 > 0){
+					xformXml = xml.substring(0,pos2);
+					localeXml = xml.substring(pos2+XformConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR.length(), pos3 > 0 ? pos3 : xml.length());
+					
+					if(pos3 > 0)
+						javaScriptSrc = xml.substring(pos3+XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR.length(), xml.length());
+				}
+				else if(pos3 > 0){
+					xformXml = xml.substring(0,pos3);
+					javaScriptSrc = xml.substring(pos3+XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR.length(), xml.length());
+				}
+				else
+					xformXml = xml;
+				
 				xform.setXformXml(xformXml);
 				xform.setLayoutXml(layoutXml);
 				xform.setLocaleXml(localeXml);
+				xform.setJavaScriptSrc(javaScriptSrc);
 			}
 
 			xformsService.saveXform(xform);
@@ -141,7 +169,7 @@ public class XformUploadController extends SimpleFormController{
 	}
 
 	private String getRequestAsString(HttpServletRequest request) throws java.io.IOException {
-		BufferedReader requestData = new BufferedReader(new InputStreamReader(request.getInputStream()));
+		/*BufferedReader requestData = new BufferedReader(new InputStreamReader(request.getInputStream()));
 		StringBuffer stringBuffer = new StringBuffer();
 		String line;
 		try{
@@ -150,7 +178,10 @@ public class XformUploadController extends SimpleFormController{
 		} 
 		catch (Exception e){e.printStackTrace();}
 
-		return stringBuffer.toString();
-		//return IOUtils.toString(request.getInputStream());
+		return stringBuffer.toString();*/
+		
+		//We have commented out the above because we want to preserver new lines for formatting
+		//purposes. e.g the javascript attached to xforms becomes troublesome when the javascript is lost.
+		return IOUtils.toString(request.getInputStream());
 	}
 }
