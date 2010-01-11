@@ -681,6 +681,6 @@ public class XformsQueueProcessor {
 		else
 			element.setTextContent(file.getAbsolutePath());
 		
-		System.out.println("complex obs value = " + file.getAbsolutePath());
+		//System.out.println("complex obs value = " + file.getAbsolutePath());
 	}
 }

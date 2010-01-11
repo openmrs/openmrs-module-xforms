@@ -1,7 +1,5 @@
 package org.openmrs.module.xforms.web.controller;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;

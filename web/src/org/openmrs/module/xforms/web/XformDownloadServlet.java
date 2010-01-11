@@ -22,6 +22,7 @@ import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
+import org.openmrs.User;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
@@ -36,6 +37,7 @@ import org.openmrs.module.xforms.formentry.FormEntryWrapper;
 import org.openmrs.module.xforms.util.LanguageUtil;
 import org.openmrs.module.xforms.util.XformsUtil;
 import org.openmrs.util.FormUtil;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.controller.user.UserFormController;
 
 /**
@@ -97,10 +99,10 @@ public class XformDownloadServlet extends HttpServlet {
 					if (!XformsUtil.isAuthenticated(request,response,null))
 						return;
 				}
-				
+
 				XformsService xformsService = (XformsService)Context.getService(XformsService.class);
 				FormService formService = (FormService)Context.getService(FormService.class);
-				
+
 				if(XformConstants.REQUEST_PARAM_XFORMS_LIST.equals(target)){
 
 					String xml = "<?xml version='1.0' encoding='UTF-8' ?>";
@@ -212,13 +214,13 @@ public class XformDownloadServlet extends HttpServlet {
 				xml = xform.getLocaleXml();
 				if(xml != null && xml.length() > 0)
 					xformXml += XformConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR + xml;
-				
+
 				xml = xform.getJavaScriptSrc();
 				if(xml != null && xml.length() > 0)
 					xformXml += XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR + xml;
 			}
 		}
-		
+
 		response.getOutputStream().print(xformXml);
 	}
 
@@ -237,7 +239,7 @@ public class XformDownloadServlet extends HttpServlet {
 			String localeXml = xform.getLocaleXml();
 			if(localeXml != null && localeXml.length() > 0)
 				xml += XformConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR + localeXml;
-			
+
 			String javaScriptSrc = xform.getJavaScriptSrc();
 			if(javaScriptSrc != null && javaScriptSrc.length() > 0)
 				xml += XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR + javaScriptSrc;
@@ -304,6 +306,27 @@ public class XformDownloadServlet extends HttpServlet {
 		XformBuilder.setNodeValue(doc, XformConstants.NODE_DATE_ENTERED, FormUtil.dateToString(new java.util.Date()));
 		XformBuilder.setNodeValue(doc, XformConstants.NODE_ENTERER, XformsUtil.getEnterer());
 
+		User user = Context.getAuthenticatedUser();
+
+		if("true".equals(Context.getAdministrationService().getGlobalProperty("xforms.setDefaultProvider", "false"))){
+			//Set default provider to the logged on user of no default value is already set in the xform.
+			if(user.hasRole(OpenmrsConstants.PROVIDER_ROLE)){
+				String providerId = XformBuilder.getNodeValue(doc.getRootElement(), XformBuilder.NODE_ENCOUNTER_PROVIDER_ID);
+				if(providerId == null || providerId.trim().length() == 0)
+					XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_PROVIDER_ID, user.getUserId().toString());
+			}
+		}
+
+		if("true".equals(Context.getAdministrationService().getGlobalProperty("xforms.setDefaultLocation", "false"))){
+			//Set default location to that of the logged on user if no default value is already set in the xform.
+			String locationId = XformBuilder.getNodeValue(doc.getRootElement(), XformBuilder.NODE_ENCOUNTER_LOCATION_ID);
+			if(locationId == null || locationId.trim().length() == 0){
+				locationId = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION);
+				if(locationId != null && locationId.trim().length() > 0)
+					XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_LOCATION_ID, locationId);
+			}
+		}
+
 		String patientParam = "";
 		String patientIdParam = request.getParameter(XformConstants.REQUEST_PARAM_PATIENT_ID);
 		if(patientIdParam != null){
@@ -360,7 +383,7 @@ public class XformDownloadServlet extends HttpServlet {
 
 				xml += XformConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR + layoutXml;
 			}
-			
+
 			String javaScriptSrc = xform.getJavaScriptSrc();
 			if(javaScriptSrc != null && javaScriptSrc.length() > 0)
 				xml += XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR + javaScriptSrc;
@@ -458,7 +481,7 @@ public class XformDownloadServlet extends HttpServlet {
 
 				xml += XformConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR + layoutXml;
 			}
-			
+
 			String javaScriptSrc = xform.getJavaScriptSrc();
 			if(javaScriptSrc != null && javaScriptSrc.length() > 0)
 				xml += XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR + javaScriptSrc;

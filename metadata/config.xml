@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>xforms</id>
 	<name>XForms</name>
-	<version>3.7.8</version>
+	<version>3.7.9</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Daniel Kayiwa</author>
 	<description>
@@ -205,6 +205,16 @@
 		<property>@MODULE_ID@.showJavaScriptTab</property>
 		<defaultValue>false</defaultValue>
 		<description>Set to true if you want to display the JavaScript tab of the form designer.</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.setDefaultProvider</property>
+		<defaultValue>false</defaultValue>
+		<description>Set to true if you want to set the default provider to the logged on user, if he or she has the provider role.</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.setDefaultLocation</property>
+		<defaultValue>false</defaultValue>
+		<description>Set to true if you want to set the default location to that of the logged on user.</description>
 	</globalProperty>
 	<!-- /Required Global Properties -->
 

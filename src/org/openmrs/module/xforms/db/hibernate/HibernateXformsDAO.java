@@ -14,7 +14,6 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.openmrs.GlobalProperty;
-import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.module.xforms.MedicalHistoryField;
 import org.openmrs.module.xforms.Xform;
