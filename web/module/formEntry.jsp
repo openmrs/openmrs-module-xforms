@@ -80,6 +80,7 @@
 <div id="multimediaUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/multimediaDownload</div>
 
 <div id="defaultFontFamily" style="visibility:hidden;">${defaultFontFamily}</div>
+<div id="defaultFontSize" style="visibility:hidden;">${defaultFontSize}</div>
 
 <div id="appendEntityIdAfterSubmit" style="visibility:hidden;">1</div>
 

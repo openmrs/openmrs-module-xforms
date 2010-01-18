@@ -15,6 +15,7 @@ import org.openmrs.module.xforms.XformBuilder;
 import org.openmrs.module.xforms.formentry.FormEntryWrapper;
 import org.openmrs.module.xforms.util.XformsUtil;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
+import org.openmrs.util.OpenmrsClassLoader;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -37,17 +38,17 @@ public class XformBuilderTest extends BaseModuleContextSensitiveTest{
 		System.out.println(locale.getDisplayCountry());
 		System.out.println(locale.getDisplayLanguage());
 		//System.out.println(locale.setDefault(newLocale));*/
-		
+				
 		String templateXml = getFileAsString(new File("template.xml"));
 		String schemaXml = getFileAsString(new File("FormEntry.xml"));
 
 		try{
+			String xform = XformBuilder.getXform4mStrings(schemaXml, templateXml);
+			System.out.println(xform);
+			
 			org.kxml2.kdom.Document doc = XformBuilder.getDocument(getFileAsString(new File("xml.xml")));
 			XformBuilder.createCopy(doc.getRootElement());
 			System.out.println(XformBuilder.fromDoc2String(doc));
-			
-			//String xform = XformBuilder.getXform4mStrings(schemaXml, templateXml);
-			//System.out.println(xform);
 		}
 		catch(Exception ex){
 			ex.printStackTrace();

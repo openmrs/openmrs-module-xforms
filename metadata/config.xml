@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>xforms</id>
 	<name>XForms</name>
-	<version>3.7.9</version>
+	<version>3.8.0</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Daniel Kayiwa</author>
 	<description>
@@ -134,7 +134,7 @@
 	<globalProperty>
 		<property>@MODULE_ID@.defaultFontFamily</property>
 		<defaultValue>Verdana, 'Lucida Grande', 'Trebuchet MS', Arial, Sans-Serif</defaultValue>
-		<description>The default font family used by the xforms module.</description>
+		<description>The default font family used by the form designer.</description>
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.rejectExistingPatientCreation</property>
@@ -216,6 +216,17 @@
 		<defaultValue>false</defaultValue>
 		<description>Set to true if you want to set the default location to that of the logged on user.</description>
 	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.defaultFontSize</property>
+		<defaultValue>16</defaultValue>
+		<description>The default font size used by the form designer.</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.showOfflineFormDesigner</property>
+		<defaultValue>false</defaultValue>
+		<description>Set to true if you want to show the form designer in off line mode.</description>
+	</globalProperty>
+	
 	<!-- /Required Global Properties -->
 
 	<!-- /Xforms Module Properties -->

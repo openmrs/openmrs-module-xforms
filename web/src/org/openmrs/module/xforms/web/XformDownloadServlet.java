@@ -121,7 +121,8 @@ public class XformDownloadServlet extends HttpServlet {
 					xml += "\n</xforms>";
 
 					response.setContentType(XformConstants.HTTP_HEADER_CONTENT_TYPE_XML); 
-					response.getOutputStream().print(xml);
+					response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
+					response.getWriter().print(xml);
 					return;
 				}
 
@@ -170,8 +171,9 @@ public class XformDownloadServlet extends HttpServlet {
 						xml = XformBuilder.getNewPatientXform();
 					else
 						xml = xformsService.getNewXform(formId).getXformXml();
-
-					response.getOutputStream().print(xml);
+					
+					response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
+					response.getWriter().print(xml);
 				}
 			}
 		}
@@ -220,8 +222,9 @@ public class XformDownloadServlet extends HttpServlet {
 					xformXml += XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR + xml;
 			}
 		}
-
-		response.getOutputStream().print(xformXml);
+		
+		response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
+		response.getWriter().print(xformXml);
 	}
 
 	private void doPatientXformGet(HttpServletRequest request, HttpServletResponse response, XformsService xformsService, Integer formId) throws ServletException, IOException{
@@ -246,7 +249,8 @@ public class XformDownloadServlet extends HttpServlet {
 		}
 
 		response.setHeader(XformConstants.HTTP_HEADER_CONTENT_TYPE, XformConstants.HTTP_HEADER_CONTENT_TYPE_XML);
-		response.getOutputStream().print(xml);
+		response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
+		response.getWriter().print(xml);
 	}
 
 	/**
@@ -269,14 +273,16 @@ public class XformDownloadServlet extends HttpServlet {
 		response.setHeader(XformConstants.HTTP_HEADER_CONTENT_DISPOSITION, XformConstants.HTTP_HEADER_CONTENT_DISPOSITION_VALUE + filename);
 
 		String xslt= XformDownloadManager.getXslt(xformsService,form.getFormId(),false);
-		response.getOutputStream().print(xslt);
+		response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
+		response.getWriter().print(xslt);
 	}
 
 	protected void doLayoutGet(HttpServletResponse response, Form form,XformsService xformsService) throws ServletException, IOException {
 		response.setHeader(XformConstants.HTTP_HEADER_CONTENT_TYPE, XformConstants.HTTP_HEADER_CONTENT_TYPE_XML);
 
 		String xslt= XformDownloadManager.getXslt(xformsService,form.getFormId(),false);
-		response.getOutputStream().print(xslt);
+		response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
+		response.getWriter().print(xslt);
 	}
 
 	/**
@@ -391,8 +397,8 @@ public class XformDownloadServlet extends HttpServlet {
 
 		//request.getRequestDispatcher("/xform.jsp").forward(request, response);
 		response.setHeader(XformConstants.HTTP_HEADER_CONTENT_TYPE, XformConstants.HTTP_HEADER_CONTENT_TYPE_XHTML_XML);
-
-		response.getOutputStream().print(xml);
+		response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
+		response.getWriter().print(xml);
 
 		//TODO New model we need to get formdef or xform and layout xml to send client
 		//formRunner.loadForm(formDef,layoutXml);
@@ -489,7 +495,8 @@ public class XformDownloadServlet extends HttpServlet {
 
 		//request.getRequestDispatcher("/xform.jsp").forward(request, response);
 		response.setHeader(XformConstants.HTTP_HEADER_CONTENT_TYPE, XformConstants.HTTP_HEADER_CONTENT_TYPE_XML);
-		response.getOutputStream().print(xml);
+		response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
+		response.getWriter().print(xml);
 
 		//request.getLocale().;
 

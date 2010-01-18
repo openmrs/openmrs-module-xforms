@@ -57,7 +57,8 @@ public class XformDataUploadServlet extends HttpServlet{
 					XformDataUploadManager.processXform(IOUtils.toString(request.getInputStream()),request.getSession().getId(),XformsUtil.getEnterer());
 					//setSingleEntryResponse(request, response);
 					response.setStatus(HttpServletResponse.SC_OK);
-					response.getOutputStream().println("Data submitted successfully");
+					response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
+					response.getWriter().println("Data submitted successfully");
 				} 
 			}
 		}
@@ -89,7 +90,8 @@ public class XformDataUploadServlet extends HttpServlet{
 			//We are using an iframe to display the xform within the page.
 			//So this response just tells the iframe parent document to go to either the
 			//patient dashboard, or to the search patient screen, depending on the user's settings.
-			response.getOutputStream().println("<html>" + "<head>"
+			response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
+			response.getWriter().println("<html>" + "<head>"
 					+"<script type='text/javascript'> window.onload=function() {self.parent.location.href='" + url + "';}; </script>"
 					+"</head>" + "</html>");
 		}

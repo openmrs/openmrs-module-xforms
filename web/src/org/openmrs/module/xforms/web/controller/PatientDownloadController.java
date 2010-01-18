@@ -21,7 +21,6 @@ import org.openmrs.module.xforms.XformBuilder;
 import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformsServer;
 import org.openmrs.module.xforms.XformsService;
-import org.openmrs.module.xforms.download.PatientDownloadManager;
 import org.openmrs.module.xforms.util.XformsUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.validation.BindException;
@@ -31,9 +30,6 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
-
-import com.jcraft.jzlib.JZlib;
-import com.jcraft.jzlib.ZOutputStream;
 
 //TODO This class may need to be refactored out of the XForms module.
 
@@ -107,7 +103,8 @@ public class PatientDownloadController extends SimpleFormController{
 			else if(request.getParameter(XformConstants.REQUEST_PARAM_DOWNLOAD_PATIENT_XFORM) != null){
 				String filename = XformConstants.PATIENT_XFORM_FORM_ID+XformConstants.XML_FILE_EXTENSION;
 				response.setHeader(XformConstants.HTTP_HEADER_CONTENT_DISPOSITION, XformConstants.HTTP_HEADER_CONTENT_DISPOSITION_VALUE + filename);
-				response.getOutputStream().print(XformBuilder.getNewPatientXform());
+				response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
+				response.getWriter().print(XformBuilder.getNewPatientXform());
 			}
 		}
 

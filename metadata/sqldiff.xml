@@ -33,30 +33,6 @@
 			  CONSTRAINT `User who created XForm` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 			
-		insert into scheduler_task_config (name,description,schedulable_class, repeat_interval,start_time,created_by)
-		values ('Process XForms Queue','Processes the XForms queue.','org.openmrs.module.xforms.ProcessXformsQueueTask',30,now(),(select min(user_id) from users));
-		
-		insert into scheduler_task_config (name,description,schedulable_class, repeat_interval,start_time,created_by)
-		values ('XForms Bluetooth Task','Processes Bluetooth connection requests for XForms together with the corresponding user and patient downloads.','org.openmrs.module.xforms.bluetooth.XformsBluetoothTask',86400,now(),(select min(user_id) from users));
-		
-		insert into scheduler_task_config_property (name,value,task_config_id)
-		values ('ServiceName','OpenMRS XForms Bluetooth Server',(select max(task_config_id) from scheduler_task_config) );
-		
-		insert into scheduler_task_config_property (name,value,task_config_id)
-		values ('ServerUUID','F0E0D0C0B0A000908070605040301111',(select max(task_config_id) from scheduler_task_config) );
-		
-		insert into scheduler_task_config_property (name,value,task_config_id)
-		values ('ServerIP','localhost',(select max(task_config_id) from scheduler_task_config) );
-		
-		insert into scheduler_task_config (name,description,schedulable_class, repeat_interval,start_time,created_by)
-		values ('XForms SMS Task','Processes SMS connection requests for XForms together with the corresponding user and patient downloads.','org.openmrs.module.xforms.sms.XformsSMSTask',86400,now(),(select min(user_id) from users));
-
-		insert into scheduler_task_config_property (name,value,task_config_id)
-		values ('ModemPort','COM1',(select max(task_config_id) from scheduler_task_config) );
-		
-		insert into scheduler_task_config_property (name,value,task_config_id)
-		values ('ServerPort','1234',(select max(task_config_id) from scheduler_task_config) );
-		
 		</sql>
 	</diff>
 	
@@ -69,38 +45,6 @@
 		</description>
 		<sql>
 			alter table xform add column xslt mediumtext;	
-		</sql>
-	</diff>
-	
-	<diff>
-		<version>1.2</version>
-		<author>Daniel Kayiwa</author>
-		<date>Jan 22nd 2008</date>
-		<description>
-			Adding more sms task config parameters.
-		</description>
-		<sql>
-			
-			insert into scheduler_task_config_property (name,value,task_config_id)
-			values ('MsgSrcPort','1234',(select max(task_config_id) from scheduler_task_config) );
-	
-			insert into scheduler_task_config_property (name,value,task_config_id)
-			values ('MsgDestPort','1234',(select max(task_config_id) from scheduler_task_config) );
-	
-			insert into scheduler_task_config_property (name,value,task_config_id)
-			values ('ModemBaudRate','9600',(select max(task_config_id) from scheduler_task_config) );
-	
-			insert into scheduler_task_config_property (name,value,task_config_id)
-			values ('ModemManufacturer','Nokia',(select max(task_config_id) from scheduler_task_config) );
-	
-			insert into scheduler_task_config_property (name,value,task_config_id)
-			values ('ModemModel','6020',(select max(task_config_id) from scheduler_task_config) );
-	
-			insert into scheduler_task_config_property (name,value,task_config_id)
-			values ('ModemId','OpenMRS SMS Gateway',(select max(task_config_id) from scheduler_task_config) );
-	
-			delete from scheduler_task_config_property where name='ServerPort';
-			
 		</sql>
 	</diff>
 	

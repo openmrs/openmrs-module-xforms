@@ -2,6 +2,8 @@ package org.openmrs.module.xforms.extension.html;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import org.openmrs.api.context.Context;
 import org.openmrs.module.Extension;
 import org.openmrs.module.web.extension.AdministrationSectionExt;
 
@@ -36,7 +38,9 @@ public class XformsAdminExt extends AdministrationSectionExt {
 	public Map<String, String> getLinks() {
 		Map<String, String> map = new HashMap<String, String>();
 		
-		map.put("module/xforms/xformDesigner.form", "xforms.designer");
+		if("true".equals(Context.getAdministrationService().getGlobalProperty("xforms.showOfflineFormDesigner", "false")))
+			map.put("module/xforms/xformDesigner.form", "xforms.designer");
+		
 		map.put("module/xforms/xformDesigner.form?formId=0", "xforms.designPatientXform");
 		map.put("module/xforms/medicalHistoryFields.form?formId=-1", "xforms.medicalHistoryFields");
 		map.put("module/xforms/xformProperties.form", "xforms properties");

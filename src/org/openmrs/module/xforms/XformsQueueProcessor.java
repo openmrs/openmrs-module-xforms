@@ -22,7 +22,6 @@ import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.PatientService;
-import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.hl7.HL7InQueue;
 import org.openmrs.hl7.HL7InQueueProcessor;
@@ -118,15 +117,17 @@ public class XformsQueueProcessor {
 			Document doc = db.parse(IOUtils.toInputStream(xml));
 			Element root = doc.getDocumentElement();
 
+			//Check if new patient doc
 			if(DOMUtil.isPatientDoc(doc)){
 				if(saveNewPatient(root,getCreator(doc)) == null)
 					saveFormInError(xml,pathName);
 				else
 					saveFormInArchive(xml,pathName);
-			}
+			} //Check if encounter doc
 			else if(DOMUtil.isEncounterDoc(doc))
 				submitXForm(doc,xml,pathName,true);
 			else{
+				//Must be combined doc (new patient and encounter) where doc node is openmrs_data
 				Integer patientId = null;
 
 				NodeList list = doc.getDocumentElement().getChildNodes();

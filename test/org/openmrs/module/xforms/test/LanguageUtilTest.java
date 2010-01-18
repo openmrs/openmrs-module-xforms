@@ -4,7 +4,11 @@ import java.io.File;
 
 import junit.framework.TestCase;
 
+import org.kxml2.kdom.Document;
+import org.kxml2.kdom.Element;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.xforms.XformBuilder;
+import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.util.LanguageUtil;
 
 

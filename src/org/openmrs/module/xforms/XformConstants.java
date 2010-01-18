@@ -80,6 +80,9 @@ public class XformConstants {
 	/** The default font family. */
 	public static final String DEFAULT_FONT_FAMILY = "Verdana, 'Lucida Grande', 'Trebuchet MS', Arial, Sans-Serif";
 	
+	/** The default font size. */
+	public static final String DEFAULT_FONT_SIZE = "16";
+		
 	/** The default locale list. */
 	public static final String DEFAULT_LOCALE_LIST = "en:English,fr:French,gr:German,swa:Swahili";
 	
@@ -113,6 +116,9 @@ public class XformConstants {
 	/** The global property key for the default font family.*/
 	public static final String GLOBAL_PROP_KEY_DEFAULT_FONT_FAMILY = "xforms.defaultFontFamily";
 	
+	/** The global property key for the default font size.*/
+	public static final String GLOBAL_PROP_KEY_DEFAULT_FONT_SIZE = "xforms.defaultFontSize";
+	
 	/** The global property key for the list of locales.*/
 	public static final String GLOBAL_PROP_KEY_LOCALE_LIST = "xforms.localeList";
 	
@@ -139,6 +145,9 @@ public class XformConstants {
 	
 	/** The form designer key for the default font family.*/
 	public static final String FORM_DESIGNER_KEY_DEFAULT_FONT_FAMILY = "defaultFontFamily";
+	
+	/** The form designer key for the default font size.*/
+	public static final String FORM_DESIGNER_KEY_DEFAULT_FONT_SIZE = "defaultFontSize";
 	
 	/** The form designer key for the list of locales.*/
 	public static final String FORM_DESIGNER_KEY_LOCALE_LIST = "localeList";

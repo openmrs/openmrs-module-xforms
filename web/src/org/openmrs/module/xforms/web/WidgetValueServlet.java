@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformsService;
 import org.openmrs.module.xforms.util.XformsUtil;
 
@@ -83,7 +84,8 @@ public class WidgetValueServlet extends HttpServlet {
         response.setHeader("Cache-Control", "no-store");
         
  		response.setContentType("text/plain; charset=UTF-8");
-		response.getOutputStream().print(result);
+ 		response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
+		response.getWriter().print(result);
 	}
 
 }

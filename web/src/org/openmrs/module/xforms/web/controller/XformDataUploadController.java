@@ -146,12 +146,13 @@ public class XformDataUploadController extends SimpleFormController{
 
 		response.setStatus(HttpServletResponse.SC_OK);
 		response.setContentType("text/html;charset=utf-8");
-
+		response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
+		
 		try{
 			//We are using an iframe to display the xform within the page.
 			//So this response just tells the iframe parent document to go to either the
 			//patient dashboard, or to the search patient screen, depending on the user's settings.
-			response.getOutputStream().println("<html>" + "<head>"
+			response.getWriter().println("<html>" + "<head>"
 					+"<script type='text/javascript'> window.onload=function() {self.parent.location.href='" + url + "';}; </script>"
 					+"</head>" + "</html>");
 		}

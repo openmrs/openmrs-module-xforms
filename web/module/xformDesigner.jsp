@@ -89,6 +89,7 @@
     <div id="fileSaveUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/fileSave</div>
     
     <div id="defaultFontFamily" style="visibility:hidden;">${defaultFontFamily}</div>
+    <div id="defaultFontSize" style="visibility:hidden;">${defaultFontSize}</div>
     
     <div id="timeSubmitFormat" style="visibility:hidden;">${timeSubmitFormat}</div>
     <div id="timeDisplayFormat" style="visibility:hidden;">${timeDisplayFormat}</div>
