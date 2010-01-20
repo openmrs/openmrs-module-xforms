@@ -180,6 +180,7 @@ public class XformUploadController extends SimpleFormController{
 		
 		//We have commented out the above because we want to preserver new lines for formatting
 		//purposes. e.g the javascript attached to xforms becomes troublesome when the javascript is lost.
+		
 		return IOUtils.toString(request.getInputStream());
 	}
 }
