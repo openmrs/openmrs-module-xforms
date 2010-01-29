@@ -159,7 +159,8 @@ public final class XformBuilder {
 	public static final String NODE_PATIENT_BIRTH_DATE = "patient.birthdate";
 	public static final String NODE_PATIENT_GENDER = "patient.sex";
 	public static final String NODE_PATIENT_IDENTIFIER_TYPE= "patient_identifier.identifier_type";
-
+	public static final String NODE_PATIENT_IDENTIFIER_TYPE_ID= "patient_identifier.identifier_type_id";
+	
 	public static final String NODE_PATIENT_ID = "patient_id";
 	public static final String NODE_FAMILY_NAME = "family_name";
 	public static final String NODE_MIDDLE_NAME = "middle_name";

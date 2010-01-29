@@ -56,23 +56,23 @@ public class XformsQueueProcessor {
 	private static final Log log = LogFactory.getLog(XformsQueueProcessor.class);
 	private static Boolean isRunning = false; // allow only one running
 	private static final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-	
+
 	private DocumentBuilder db;
-	
+
 	// Instance of form entry processor
 	private FormEntryQueueProcessor formEntryProcessor = null;
-	
+
 	// Instance of hl7 processor
 	private static HL7InQueueProcessor hl7Processor = null;
-	
-	
+
+
 	public XformsQueueProcessor(){
 		if (formEntryProcessor == null)
 			formEntryProcessor = new FormEntryQueueProcessor();
-		
+
 		if (hl7Processor == null) 
 			hl7Processor = new HL7InQueueProcessor();
-		
+
 		try{
 			db = dbf.newDocumentBuilder();
 		}
@@ -199,15 +199,15 @@ public class XformsQueueProcessor {
 			saveComplexObs(doc,true);
 			setMultipleSelectValues(doc.getDocumentElement());
 			xml = XformsUtil.doc2String(doc);
-			
+
 			//FormEntryWrapper.createFormEntryQueue(xml);
-			
+
 			FormEntryQueue formEntryQueue = new FormEntryQueue();
 			formEntryQueue.setCreator(Context.getAuthenticatedUser());
 			formEntryQueue.setDateCreated(new Date());
 			formEntryQueue.setFormData(xml);
 			formEntryQueue.setFileSystemUrl(pathName);
-			
+
 			HL7InQueue hl7InQueue = formEntryProcessor.transformFormEntryQueue(formEntryQueue);
 			hl7Processor.processHL7InQueue(hl7InQueue);
 
@@ -340,7 +340,7 @@ public class XformsQueueProcessor {
 	private void addPersonAttributes(Patient pt, Element root,XformsService xformsService) throws Exception{
 		//First translate complex obs to file pointers;
 		saveComplexObs(root.getOwnerDocument(),false);
-		
+
 		// look for person attributes in the xml doc and save to person
 		List<PersonAttributeType> personAttributeTypes = Context.getPersonService().getPersonAttributeTypes(PERSON_TYPE.PERSON, null);
 		for (PersonAttributeType type : personAttributeTypes) {
@@ -556,6 +556,7 @@ public class XformsQueueProcessor {
 		return multipSelect;
 	}
 
+
 	private void fillPatientIdIfMissing(Document doc) throws Exception{
 		String patientid = DOMUtil.getElementValue(doc,XformBuilder.NODE_PATIENT_PATIENT_ID);
 		if(patientid != null && patientid.trim().length() > 0)
@@ -577,8 +578,11 @@ public class XformsQueueProcessor {
 
 		//Check if patient identifier type is filled
 		String identifierType = DOMUtil.getElementValue(doc, XformBuilder.NODE_PATIENT_IDENTIFIER_TYPE);
-		if(identifierType == null || identifierType.trim().length() == 0)
-			throw new Exception("Expected patient identifier type value");
+		if(identifierType == null || identifierType.trim().length() == 0){
+			identifierType = DOMUtil.getElementValue(doc, XformBuilder.NODE_PATIENT_IDENTIFIER_TYPE_ID);
+			if(identifierType == null || identifierType.trim().length() == 0)
+				throw new Exception("Expected patient identifier type value");
+		}
 
 		//Check if family name is filled.
 		String familyName = DOMUtil.getElementValue(doc, XformBuilder.NODE_PATIENT_FAMILY_NAME);
@@ -662,14 +666,14 @@ public class XformsQueueProcessor {
 			value = DOMUtil.getElementValue(element, "value");
 		else
 			value = element.getTextContent();
-		
+
 		if(value == null || value.trim().length() == 0)
 			return;
 
 		byte[] bytes = Base64.decode(value);
 
 		String path = element.getOwnerDocument().getDocumentElement().getAttribute("name");
-		
+
 		path += File.separatorChar + element.getNodeName();
 
 		File file = OpenmrsUtil.getOutFile(XformsUtil.getXformsComplexObsDir(path), new Date(), Context.getAuthenticatedUser());
@@ -681,7 +685,7 @@ public class XformsQueueProcessor {
 			DOMUtil.setElementValue(element, "value", file.getAbsolutePath());
 		else
 			element.setTextContent(file.getAbsolutePath());
-		
+
 		//System.out.println("complex obs value = " + file.getAbsolutePath());
 	}
 }

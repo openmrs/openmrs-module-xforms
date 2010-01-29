@@ -223,6 +223,15 @@ public class XformDownloadServlet extends HttpServlet {
 			}
 		}
 		
+		if("xhtml".equalsIgnoreCase(request.getParameter("contentType"))){
+			try{
+				xformXml = XformsUtil.fromXform2Xhtml(xformXml, XformsUtil.getPlainDefaultXSLT());
+			}
+			catch(Exception ex){
+				log.error(ex.getMessage(), ex);
+			}
+		}
+			
 		response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
 		response.getWriter().print(xformXml);
 	}

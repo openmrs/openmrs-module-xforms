@@ -24,10 +24,12 @@
 			<select id="formSelect" name="formId">
 				<option value="" selected></option>
 				<c:forEach items="${forms}" var="form">
-					<option value="${form.formId}">
-						${form.name} (v.${form.version})
-						<c:if test="${form.published == false}"><i>(<spring:message code="formentry.unpublished"/>)</i></c:if>
-					</option>
+					<c:if test="${form.retired == false}">
+						<option value="${form.formId}">
+							${form.name} (v.${form.version})
+							<c:if test="${form.published == false}"><i>(<spring:message code="formentry.unpublished"/>)</i></c:if>
+						</option>
+					</c:if>
 				</c:forEach>
 			</select>
 			<input type="hidden" name="target" value="xformentry"/>

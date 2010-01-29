@@ -211,6 +211,44 @@ public class XformsUtil {
 			"</xsl:stylesheet> ";
 	}
 	
+	
+	/**
+	 * Gets the default plain (without JavaScript and css) XSLT for transforming an XForm into an XHTML document.
+	 * 
+	 * @return the XSLT text
+	 */
+	public static String getPlainDefaultXSLT(){
+		return "<?xml version='1.0' encoding='UTF-8'?> "+
+			"<xsl:stylesheet version='2.0' "+
+			"xmlns:xsl='http://www.w3.org/1999/XSL/Transform' "+
+			"xmlns:fn='http://www.w3.org/2005/xpath-functions' "+
+			"xmlns:xf='http://www.w3.org/2002/xforms'> "+
+			"<xsl:output method='xml' version='1.0' encoding='UTF-8'/> "+
+			"<xsl:template match='/'> "+
+			" <html xmlns='http://www.w3.org/1999/xhtml' "+
+			"       xmlns:xf='http://www.w3.org/2002/xforms' "+
+			"       xmlns:xsd='http://www.w3.org/2001/XMLSchema' "+
+			"       xmlns:xs='http://www.w3.org/2001/XMLSchema' "+
+			"       xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' "+
+			"       xmlns:ev='http://www.w3.org/2001/xml-events' "+
+			"       xmlns:openmrstype='http://localhost:8080/openmrs/moduleServlet/formentry/forms/customtypes/schema/4-109' "+
+			" > " +
+			" <head> "+
+			" 	<xsl:copy-of select='/xf:xforms/xf:model' /> "+
+			" </head> "+
+			" <body> "+
+			" 	<xsl:for-each select='/xf:xforms/*'> "+
+			"   	<xsl:if test='local-name() != \"model\"'> "+
+			" 			<xsl:copy-of select='.' /> "+
+			"       </xsl:if> "+
+			" 	</xsl:for-each> "+
+			" </body> "+
+			" </html> "+
+			"</xsl:template> "+
+			"</xsl:stylesheet> ";
+	}
+	
+	
 	/**
 	 * Gets the javascript needed during the xforms processsing in the browser.
 	 * For now the javascript we have deals with deleting of xform repeat items.
