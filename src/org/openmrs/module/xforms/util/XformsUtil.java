@@ -195,6 +195,9 @@ public class XformsUtil {
 			"       xmlns:openmrstype='http://localhost:8080/openmrs/moduleServlet/formentry/forms/customtypes/schema/4-109' "+
 			" > " +
 			" <head> "+
+			" 	<title> "+
+			" 		<xsl:value-of select='/xf:xforms/xf:model/xf:instance/form/@name' /> "+
+			"   </title> "+
 			"	<style> "+ getDefaultStyle() + " </style> "+
 			"   <script type='text/javascript'> <![CDATA[ "+ getJavaStriptNode() + " ]]> </script> "+
 			" 	<xsl:copy-of select='/xf:xforms/xf:model' /> "+
@@ -234,6 +237,9 @@ public class XformsUtil {
 			"       xmlns:openmrstype='http://localhost:8080/openmrs/moduleServlet/formentry/forms/customtypes/schema/4-109' "+
 			" > " +
 			" <head> "+
+			" 	<title> "+
+			" 		<xsl:value-of select='/xf:xforms/xf:model/xf:instance/form/@name' /> "+
+			"   </title> "+
 			" 	<xsl:copy-of select='/xf:xforms/xf:model' /> "+
 			" </head> "+
 			" <body> "+

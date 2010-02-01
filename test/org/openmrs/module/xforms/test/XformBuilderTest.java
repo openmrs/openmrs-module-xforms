@@ -15,7 +15,6 @@ import org.openmrs.module.xforms.XformBuilder;
 import org.openmrs.module.xforms.formentry.FormEntryWrapper;
 import org.openmrs.module.xforms.util.XformsUtil;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
-import org.openmrs.util.OpenmrsClassLoader;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -38,6 +37,30 @@ public class XformBuilderTest extends BaseModuleContextSensitiveTest{
 		System.out.println(locale.getDisplayCountry());
 		System.out.println(locale.getDisplayLanguage());
 		//System.out.println(locale.setDefault(newLocale));*/
+		
+		String classpath = getFileAsString(new File("classpath.xml"));
+		org.kxml2.kdom.Document doc2 = XformBuilder.getDocument(classpath);
+		org.kxml2.kdom.Element root = doc2.getRootElement();
+		for(int index = 0; index < root.getChildCount(); index++){
+			if(root.getType(index) != org.kxml2.kdom.Element.ELEMENT)
+				continue;
+			
+			org.kxml2.kdom.Element node = (org.kxml2.kdom.Element)root.getChild(index);
+			String path = node.getAttributeValue(null, "path");
+			if(!path.contains("M2_REPO"))
+				continue;
+			
+			int pos = path.lastIndexOf('/');
+			if(pos < 0)
+				continue;
+			
+			path = path.substring(pos);
+			path = "M2_REPO" + path;
+			node.setAttribute(null, "path", path);
+		}
+		
+		System.out.println(XformBuilder.fromDoc2String(doc2));
+		
 				
 		String templateXml = getFileAsString(new File("template.xml"));
 		String schemaXml = getFileAsString(new File("FormEntry.xml"));
