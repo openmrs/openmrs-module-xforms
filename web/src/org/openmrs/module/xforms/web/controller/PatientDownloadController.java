@@ -21,6 +21,9 @@ import org.openmrs.module.xforms.XformBuilder;
 import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformsServer;
 import org.openmrs.module.xforms.XformsService;
+import org.openmrs.module.xforms.download.PatientDownloadManager;
+import org.openmrs.module.xforms.serialization.DefaultCohortSerializer;
+import org.openmrs.module.xforms.serialization.DefaultPatientSerializer;
 import org.openmrs.module.xforms.util.XformsUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.validation.BindException;
@@ -61,8 +64,20 @@ public class PatientDownloadController extends SimpleFormController{
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object object, BindException exceptions) throws Exception {						
 
 		if(request.getParameter(XformConstants.REQUEST_PARAM_DOWNLOAD_COHORTS) != null ||
-				request.getParameter(XformConstants.REQUEST_PARAM_DOWNLOAD_PATIENTS) != null)
-			new XformsServer().processConnection(new DataInputStream((InputStream)request.getInputStream()), new DataOutputStream((OutputStream)response.getOutputStream()));
+				request.getParameter(XformConstants.REQUEST_PARAM_DOWNLOAD_PATIENTS) != null){
+
+			String serializerKey = request.getParameter("serializerKey");
+
+			if(serializerKey == null || serializerKey.trim().length() == 0){
+				new XformsServer().processConnection(new DataInputStream((InputStream)request.getInputStream()), new DataOutputStream((OutputStream)response.getOutputStream()));
+			}
+			else{
+				if(request.getParameter(XformConstants.REQUEST_PARAM_DOWNLOAD_COHORTS) != null)
+					PatientDownloadManager.downloadCohorts(response.getOutputStream(),serializerKey);
+				else
+					PatientDownloadManager.downloadPatients(request.getParameter("cohortId"), response.getOutputStream(), serializerKey);
+			}
+		}
 		else{
 			//try to authenticate users who logon inline (with the request).
 			XformsUtil.authenticateInlineUser(request);

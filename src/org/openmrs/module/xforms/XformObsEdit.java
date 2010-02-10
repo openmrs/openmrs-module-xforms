@@ -147,14 +147,20 @@ public class XformObsEdit {
 
 					//TODO This may fail when locale changes from the one in which the form was designed.
 					//String xmlToken = FormUtil.getXmlToken(obs.getValueAsString(Context.getLocale()));
-					String xmlToken = getMultSelObsNodeName((Element)multNode.getParent(), obs);
-					XformBuilder.setNodeValue(node, "xforms_value", value + xmlToken);
+					try{
+						String xmlToken = getMultSelObsNodeName((Element)multNode.getParent(), obs);
+						XformBuilder.setNodeValue(node, "xforms_value", value + xmlToken);
 
-					//TODO May need to use getElementWithAttributePrefix()
-					Element valueNode = XformBuilder.getElement(node, xmlToken);
-					if(valueNode != null){
-						XformBuilder.setNodeValue(valueNode,"true");
-						valueNode.setAttribute(null, "obsId", obs.getObsId().toString());
+						//TODO May need to use getElementWithAttributePrefix()
+						Element valueNode = XformBuilder.getElement(node, xmlToken);
+						if(valueNode != null){
+							XformBuilder.setNodeValue(valueNode,"true");
+							valueNode.setAttribute(null, "obsId", obs.getObsId().toString());
+						}
+					}catch(Exception ex){
+						System.out.println("VALUE="+value);
+						System.out.println("OBSID="+obs.getObsId().toString());
+						ex.printStackTrace();
 					}
 				}
 			}
@@ -233,7 +239,7 @@ public class XformObsEdit {
 			if(node == null){
 				if(obs.getObsGroup() != null)
 					voidObs(obs.getObsGroup(),datetime,obs2Void);
-				
+
 				voidObs(obs,datetime,obs2Void);
 				continue;
 			}
@@ -349,7 +355,7 @@ public class XformObsEdit {
 
 				if((obsId != null && obsId.trim().length() > 0) ||
 						obsGroupId != null && obsGroupId.trim().length() > 0){
-					
+
 					if(!"true()".equals(valueNode.getAttributeValue(null, "new")))
 						continue; //new obs cant have an obs id
 				}
@@ -374,7 +380,7 @@ public class XformObsEdit {
 
 				Obs obs = createObs(concept,obsGroup,value,datetime);
 				encounter.addObs(obs);
-				
+
 				if(concept.isSet())
 					addNewObs(node,complexObs,encounter,node,datetime,obs);
 			}

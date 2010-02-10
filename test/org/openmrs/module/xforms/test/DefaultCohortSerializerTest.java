@@ -23,7 +23,7 @@ public class DefaultCohortSerializerTest extends BaseModuleContextSensitiveTest{
          
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream  dos = new DataOutputStream(baos);
-        PatientDownloadManager.downloadCohorts(dos);
+        PatientDownloadManager.downloadCohorts(dos,null);
         
         /*DataInputStream dis = new DataInputStream(new ByteArrayInputStream(baos.toByteArray()));
         byte size = dis.readByte();

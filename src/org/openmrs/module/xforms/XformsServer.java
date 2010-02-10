@@ -105,7 +105,7 @@ public class XformsServer {
 				if (action == ACTION_DOWNLOAD_PATIENTS)
 					downloadPatients(String.valueOf(dis.readInt()), dosTemp,null);
 				else if(action == ACTION_DOWNLOAD_COHORTS)
-					PatientDownloadManager.downloadCohorts(dosTemp);
+					PatientDownloadManager.downloadCohorts(dosTemp,null);
 				else if (action == ACTION_DOWNLOAD_FORMS)
 					XformDownloadManager.downloadXforms(dosTemp,serializerKey);
 				else if (action == ACTION_UPLOAD_FORMS)

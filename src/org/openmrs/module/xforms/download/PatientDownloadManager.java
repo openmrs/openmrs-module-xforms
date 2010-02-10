@@ -134,7 +134,10 @@ public class PatientDownloadManager {
 		return patients;
 	}
     
-	public static void downloadCohorts(OutputStream os) throws Exception{
-        XformsUtil.invokeSerializationMethod("serialize",os, XformConstants.GLOBAL_PROP_KEY_COHORT_SERIALIZER, XformConstants.DEFAULT_COHORT_SERIALIZER, Context.getCohortService().getCohorts());
+	public static void downloadCohorts(OutputStream os, String serializerKey) throws Exception{
+		if(serializerKey == null)
+        	serializerKey = XformConstants.GLOBAL_PROP_KEY_COHORT_SERIALIZER;
+		
+        XformsUtil.invokeSerializationMethod("serialize",os, serializerKey, XformConstants.DEFAULT_COHORT_SERIALIZER, Context.getCohortService().getCohorts());
      }
 }

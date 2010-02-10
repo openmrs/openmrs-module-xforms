@@ -2,8 +2,9 @@ package org.openmrs.module.xforms.test;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.InputStreamReader;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -37,6 +38,13 @@ public class XformBuilderTest extends BaseModuleContextSensitiveTest{
 		System.out.println(locale.getDisplayCountry());
 		System.out.println(locale.getDisplayLanguage());
 		//System.out.println(locale.setDefault(newLocale));*/
+		
+		
+		
+		String res = getFileAsString(new File("result.xml"));
+		System.out.println(res.length());
+		System.out.println(res);
+		
 		
 		String classpath = getFileAsString(new File("classpath.xml"));
 		org.kxml2.kdom.Document doc2 = XformBuilder.getDocument(classpath);
@@ -160,7 +168,9 @@ public class XformBuilderTest extends BaseModuleContextSensitiveTest{
 	public static String getFileAsString(File file) {
 		try{
 			StringBuffer fileData = new StringBuffer(1000);
-			BufferedReader reader = new BufferedReader(new FileReader(file));
+			//BufferedReader reader = new BufferedReader(new FileReader(file));
+			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file),"UTF-8"));
+
 			char[] buf = new char[1024];
 			int numRead = 0;
 			while ((numRead = reader.read(buf)) != -1) {

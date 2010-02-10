@@ -524,8 +524,8 @@ public class XformsUtil {
         Object obj = OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
         
         if(methodName.equals("serializeForms")){
-        	Method method = obj.getClass().getMethod(methodName, new Class[]{OutputStream.class,Object.class,Integer.class,String.class});
-        	method.invoke(obj, new Object[]{os, data,new Integer(1),""});
+        	Method method = obj.getClass().getMethod(methodName, new Class[]{OutputStream.class,Object.class,Integer.class,String.class,String.class});
+        	method.invoke(obj, new Object[]{os, data,new Integer(1),"",""});
         }
         else
         {
