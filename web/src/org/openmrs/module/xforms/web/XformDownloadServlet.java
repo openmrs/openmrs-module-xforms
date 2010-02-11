@@ -58,6 +58,7 @@ public class XformDownloadServlet extends HttpServlet {
 	public static final String NODE_PATIENT_MIDDLE_NAME = "middle_name";
 	public static final String NODE_PATIENT_GIVEN_NAME = "given_name";
 	public static final String NODE_PATIENT_BIRTH_DATE = "birth_date";
+	public static final String NODE_PATIENT_BIRTH_DATE_ESTIMATED = "birth_date_estimated";
 	public static final String NODE_PATIENT_GENDER = "gender";
 	public static final String NODE_ENTERER = "enterer";
 	public static final String NODE_LOCATION_ID = "location_id";
@@ -466,6 +467,8 @@ public class XformDownloadServlet extends HttpServlet {
 		if(d != null)
 			XformBuilder.setNodeValue(doc, NODE_PATIENT_BIRTH_DATE, XformsUtil.fromDate2SubmitString(d));
 
+		XformBuilder.setNodeValue(doc, NODE_PATIENT_BIRTH_DATE_ESTIMATED, patient.getBirthdateEstimated() ? "true" : "false");
+		
 		PatientIdentifier identifier = patient.getPatientIdentifier();
 
 		if(identifier !=  null){

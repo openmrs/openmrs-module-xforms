@@ -157,6 +157,7 @@ public final class XformBuilder {
 	public static final String NODE_PATIENT_MIDDLE_NAME = "patient.middle_name";
 	public static final String NODE_PATIENT_GIVEN_NAME = "patient.given_name";
 	public static final String NODE_PATIENT_BIRTH_DATE = "patient.birthdate";
+	public static final String NODE_PATIENT_BIRTH_DATE_ESTIMATED = "patient.birthdate_estimated";
 	public static final String NODE_PATIENT_GENDER = "patient.sex";
 	public static final String NODE_PATIENT_IDENTIFIER_TYPE= "patient_identifier.identifier_type";
 	public static final String NODE_PATIENT_IDENTIFIER_TYPE_ID= "patient_identifier.identifier_type_id";
@@ -168,6 +169,7 @@ public final class XformBuilder {
 	public static final String NODE_GENDER = "gender";
 	public static final String NODE_IDENTIFIER = "identifier";
 	public static final String NODE_BIRTH_DATE = "birth_date";
+	public static final String NODE_BIRTH_DATE_ESTIMATED = "birth_date_estimated";
 	public static final String NODE_LOCATION_ID = "location_id";
 	public static final String NODE_PROVIDER_ID = "provider_id";
 	public static final String NODE_IDENTIFIER_TYPE_ID = "patient_identifier_type_id";
@@ -205,6 +207,7 @@ public final class XformBuilder {
 	public static final String BINDING_MIDDLE_NAME = "/form/patient/patient.middle_name";
 	public static final String BINDING_GENDER = "/form/patient/patient.sex";
 	public static final String BINDING_BIRTH_DATE = "/form/patient/patient.birthdate";
+	public static final String BINDING_BIRTH_DATE_ESTIMATED = "/form/patient/patient.birthdate_estimated";
 	public static final String BINDING_IDENTIFIER_TYPE = "/form/patient/patient_identifier.identifier_type";
 
 	/**
@@ -801,6 +804,8 @@ public final class XformBuilder {
 
 		if(name.equalsIgnoreCase(NODE_PATIENT_BIRTH_DATE))
 			bindNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_DATE);
+		else if(name.equalsIgnoreCase(NODE_PATIENT_BIRTH_DATE_ESTIMATED))
+			bindNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_BOOLEAN);
 	}
 
 	private static void setTableFieldDefaultValue(String name, Element formElement){
@@ -1950,6 +1955,7 @@ public final class XformBuilder {
 		addPatientNode(formNode,modelNode,groupNode,NODE_MIDDLE_NAME,DATA_TYPE_TEXT,"Middle Name","The patient middle name",false,false,CONTROL_INPUT,null,null);
 		addPatientNode(formNode,modelNode,groupNode,NODE_GIVEN_NAME,DATA_TYPE_TEXT,"Given Name","The patient given name",false,false,CONTROL_INPUT,null,null);
 		addPatientNode(formNode,modelNode,groupNode,NODE_BIRTH_DATE,DATA_TYPE_DATE,"Birth Date","The patient birth date",false,false,CONTROL_INPUT,null,null);
+		addPatientNode(formNode,modelNode,groupNode,NODE_BIRTH_DATE_ESTIMATED,DATA_TYPE_BOOLEAN,"Birth Date Estimated","Is the patient birth date estimated?",false,false,CONTROL_INPUT,null,null);
 		addPatientNode(formNode,modelNode,groupNode,NODE_IDENTIFIER,DATA_TYPE_TEXT,"Identifier","The patient identifier",true,false,CONTROL_INPUT,null,null);
 		addPatientNode(formNode,modelNode,groupNode,NODE_PATIENT_ID,DATA_TYPE_INT,"Patient ID","The patient ID",false,true,CONTROL_INPUT,null,null);
 

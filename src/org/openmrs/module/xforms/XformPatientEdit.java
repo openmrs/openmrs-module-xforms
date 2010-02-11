@@ -54,6 +54,8 @@ public class XformPatientEdit {
 			patient.setBirthdate(XformsUtil.fromSubmitString2Date(val)); 
 		} catch(Exception e){log.error(val,e); }
 				
+		patient.setBirthdateEstimated("true".equals(XformBuilder.getNodeValue(rootNode, XformBuilder.NODE_BIRTH_DATE_ESTIMATED)));
+		
 		patient.setGender(XformBuilder.getNodeValue(rootNode, XformBuilder.NODE_GENDER));
 		patient.setDateChanged(new Date());
 		patient.setChangedBy(Context.getAuthenticatedUser());

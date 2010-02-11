@@ -301,6 +301,8 @@ public class XformsQueueProcessor {
 		pn.setDateCreated(new Date());
 		pt.addName(pn);
 
+		pt.setBirthdateEstimated("true".equals(DOMUtil.getElementValue(root, XformBuilder.NODE_BIRTH_DATE_ESTIMATED)));
+		
 		String val = DOMUtil.getElementValue(root,XformBuilder.NODE_BIRTH_DATE);
 		if(val != null && val.length() > 0)
 			try{ pt.setBirthdate(XformsUtil.fromSubmitString2Date(val)); } catch(Exception e){log.error(val,e); }
@@ -627,6 +629,7 @@ public class XformsQueueProcessor {
 		patient.addIdentifier(identifier);
 
 		patient.setBirthdate(XformsUtil.fromSubmitString2Date(birthDate.toString()));
+		patient.setBirthdateEstimated("true".equals(DOMUtil.getElementValue(doc, XformBuilder.NODE_PATIENT_BIRTH_DATE_ESTIMATED)));
 
 		Context.getPatientService().savePatient(patient);
 		DOMUtil.setElementValue(doc.getDocumentElement(), XformBuilder.NODE_PATIENT_PATIENT_ID, patient.getPatientId().toString());

@@ -70,6 +70,13 @@ public class PatientDownloadController extends SimpleFormController{
 				new XformsServer().processConnection(new DataInputStream((InputStream)request.getInputStream()), new DataOutputStream((OutputStream)response.getOutputStream()));
 			}
 			else{
+				//try to authenticate users who logon inline (with the request).
+				XformsUtil.authenticateInlineUser(request);
+
+				//check if user is authenticated
+				if (!XformsUtil.isAuthenticated(request,response,"/module/xforms/patientDownload.form"))
+					return null;
+
 				if(request.getParameter(XformConstants.REQUEST_PARAM_DOWNLOAD_COHORTS) != null)
 					PatientDownloadManager.downloadCohorts(response.getOutputStream(),serializerKey);
 				else
@@ -128,17 +135,4 @@ public class PatientDownloadController extends SimpleFormController{
 	protected Object formBackingObject(HttpServletRequest request) throws Exception { 
 		return "";
 	}
-
-	/*private String getCohortName(int id){
-		String name = Integer.toString(id);
-		if(cohorts == null)
-			cohorts = Context.getCohortService().getCohorts();
-
-		for(Cohort cohort : cohorts){
-			if(cohort.getCohortId() == id)
-				name = cohort.getName();
-		}
-
-		return name.replace(" ", "_");
-	}*/
 }
