@@ -303,8 +303,8 @@ public class XformsUtil {
 	public static String fromXform2Xhtml(String xform, String xsl) throws Exception{
 		if(xsl == null) xsl = getDefaultXSLT();
 		StringWriter outWriter = new StringWriter();
-		Source source = new StreamSource(IOUtils.toInputStream(xform));
-		Source xslt = new StreamSource(IOUtils.toInputStream(xsl));
+		Source source = new StreamSource(IOUtils.toInputStream(xform,"UTF-8"));
+		Source xslt = new StreamSource(IOUtils.toInputStream(xsl,"UTF-8"));
 		Result result = new StreamResult(outWriter);
 
 		System.setProperty("javax.xml.transform.TransformerFactory",
@@ -563,6 +563,6 @@ public class XformsUtil {
 	}*/
     
     public static Document fromString2Doc(String xml) throws Exception{
-		return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(IOUtils.toInputStream(xml));
+		return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(IOUtils.toInputStream(xml,"UTF-8"));
 	}
 }

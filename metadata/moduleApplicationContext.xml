@@ -16,7 +16,7 @@
 	           <prop key="module/@MODULE_ID@/xformDelete.form">xformDelete</prop>
 	           <prop key="module/@MODULE_ID@/formEntry.form">formEntry</prop>
 	           <prop key="module/@MODULE_ID@/patientDownload.form">patientDownload</prop>
-	           <prop key="module/@MODULE_ID@/xformProperties.form">xformProperties</prop>
+	           <!-- <prop key="module/@MODULE_ID@/xformProperties.form">xformProperties</prop> -->
 	           <prop key="module/@MODULE_ID@/xformDesigner.form">xformDesigner</prop>
 	           <prop key="module/@MODULE_ID@/medicalHistoryFields.form">medicalHistoryFields</prop>
 	           <!-- <prop key="admin/patients/newPatient.form">xformDesigner</prop> -->
@@ -99,12 +99,12 @@
 	<property name="successView"><value>patientDownload.form</value></property>
     </bean>
     
+    <!-- 
     <bean id="xformProperties" class="@MODULE_PACKAGE@.web.controller.XformPropertiesController">
 	<property name="commandName"><value>xformProperties</value></property>
 	<property name="formView"><value>/module/@MODULE_ID@/xformProperties</value></property>
 	<property name="successView"><value>xformProperties.form</value></property>
-	
-    </bean>
+    </bean>  -->
     
     <bean id="medicalHistoryFields" class="@MODULE_PACKAGE@.web.controller.MedicalHistoryFieldsController">
 		<property name="commandName"><value>form</value></property>

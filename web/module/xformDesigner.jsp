@@ -397,7 +397,8 @@
     			localeChangePrompt: "<spring:message code="xforms.localeChangePrompt" />",
     			javaScriptSource: "<spring:message code="xforms.javaScriptSource" />",
            		calculation: "<spring:message code="xforms.calculation" />",
-           		id: "<spring:message code="xforms.id" />"
+           		id: "<spring:message code="xforms.id" />",
+           		formKey: "<spring:message code="xforms.formKey" />"
     	};
 
     	function isUserAuthenticated(){

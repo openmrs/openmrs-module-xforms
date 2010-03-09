@@ -43,7 +43,9 @@ public class XformsAdminExt extends AdministrationSectionExt {
 		
 		map.put("module/xforms/xformDesigner.form?formId=0", "xforms.designPatientXform");
 		map.put("module/xforms/medicalHistoryFields.form?formId=-1", "xforms.medicalHistoryFields");
-		map.put("module/xforms/xformProperties.form", "xforms properties");
+		
+		//TODO Very very buggy as it clears all global properties.
+		//map.put("module/xforms/xformProperties.form", "xforms properties");
 		
 		return map;
 	}

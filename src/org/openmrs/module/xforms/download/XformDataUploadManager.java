@@ -89,7 +89,7 @@ public class XformDataUploadManager {
 	 */
 	public static void processXform(String xml, String sessionId, String enterer) throws Exception{
 		DocumentBuilder db = dbf.newDocumentBuilder();
-		Document doc = db.parse(IOUtils.toInputStream(xml));
+		Document doc = db.parse(IOUtils.toInputStream(xml,"UTF-8"));
 		setHeaderValues(doc,sessionId,enterer);
 		queueForm(XformsUtil.doc2String(doc));
 	}
@@ -121,7 +121,7 @@ public class XformDataUploadManager {
 		//docs collected for the new patient keyed by the patient id.
 		for(String xml : xforms){
 			//Create Document from xml text
-			Document doc = db.parse(IOUtils.toInputStream(xml));
+			Document doc = db.parse(IOUtils.toInputStream(xml,"UTF-8"));
 
 			//Set the openmrs form header values.
 			setHeaderValues(doc,sessionId,enterer);
@@ -270,7 +270,7 @@ public class XformDataUploadManager {
 	 * 
 	 * @return - the xforms map.
 	 */
-	private static Map<Integer,String> getXforms(){
+	private static Map<Integer,String> getXforms() throws Exception {
 
 		String useStoredXform = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_USER_STORED_XFORMS);
 		boolean createNew = false;

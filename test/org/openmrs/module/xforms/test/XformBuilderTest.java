@@ -115,8 +115,8 @@ public class XformBuilderTest extends BaseModuleContextSensitiveTest{
 
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
-			Document docPatient = db.parse(IOUtils.toInputStream(patient));
-			Document docEncounter = db.parse(IOUtils.toInputStream(encounter));
+			Document docPatient = db.parse(IOUtils.toInputStream(patient,"UTF-8"));
+			Document docEncounter = db.parse(IOUtils.toInputStream(encounter,"UTF-8"));
 			
 			Document doc = db.newDocument();
 			Element root = (Element) doc.createElement("openmrs_data");

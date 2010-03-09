@@ -174,7 +174,15 @@ public class XformsServiceImpl implements XformsService {
         String schemaXml = XformsUtil.getSchema(form);
         String templateXml = FormEntryWrapper.getFormTemplate(form); // new
                                                                         // FormXmlTemplateBuilder(form,FormEntryUtil.getFormAbsoluteUrl(form)).getXmlTemplate(false);
-        return new Xform(formId, XformBuilder.getXform4mStrings(schemaXml,templateXml));
+        
+        try{
+        	return new Xform(formId, XformBuilder.getXform4mStrings(schemaXml,templateXml));
+        }
+        catch(Exception ex){
+        	log.error(ex.getMessage(),ex);
+        }
+        
+        return null;
     }
     
 	public List<PersonRepeatAttribute> getPersonRepeatAttributes(Integer personId, Integer personAttributeId){

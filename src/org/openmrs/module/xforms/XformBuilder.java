@@ -217,7 +217,7 @@ public final class XformBuilder {
 	 * @param templateXml - the template xml.
 	 * @return - the built xform's xml.
 	 */
-	public static String getXform4mStrings(String schemaXml, String templateXml){
+	public static String getXform4mStrings(String schemaXml, String templateXml) throws Exception {
 		return getXform4mDocuments(getDocument(new StringReader(schemaXml)),getDocument(new StringReader(templateXml)));
 	}
 
@@ -458,7 +458,7 @@ public final class XformBuilder {
 	 * @param templateDoc - the template document.
 	 * @return - the built xform's xml.
 	 */
-	public static String getXform4mDocuments(Document schemaDoc, Document templateDoc){
+	public static String getXform4mDocuments(Document schemaDoc, Document templateDoc) throws Exception {
 		Element formNode = (Element)templateDoc.getRootElement();
 
 		Document doc = new Document();
@@ -1752,8 +1752,27 @@ public final class XformBuilder {
 	 * @param doc - the document.
 	 * @return the xml string in in the document.
 	 */
-	public static String fromDoc2String(Document doc){
+	public static String fromDoc2String(Document doc) throws Exception {
+		
 		KXmlSerializer serializer = new KXmlSerializer();
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		DataOutputStream dos = new DataOutputStream(bos);
+
+		try{
+			serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
+			serializer.setOutput(dos,"UTF-8");
+			doc.write(serializer);
+			serializer.flush();
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+
+		return new String(bos.toByteArray(),"UTF-8");
+		
+		
+		/*KXmlSerializer serializer = new KXmlSerializer();
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		DataOutputStream dos = new DataOutputStream(bos);
 
@@ -1773,7 +1792,7 @@ public final class XformBuilder {
 		for(int i=0; i<byteArr.length; i++)
 			charArray[i] = (char)byteArr[i];
 
-		return String.valueOf(charArray);
+		return String.valueOf(charArray);*/
 	}
 
 	/**
@@ -1910,7 +1929,7 @@ public final class XformBuilder {
 	 * @param xformAction - the url to post the xform data to.
 	 * @return - the xml of the new patient xform.
 	 */
-	public static String getNewPatientXform(){			
+	public static String getNewPatientXform()throws Exception {			
 		Document doc = new Document();
 		doc.setEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
 		

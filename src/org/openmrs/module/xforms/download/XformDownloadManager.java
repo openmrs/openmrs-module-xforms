@@ -106,7 +106,7 @@ public class XformDownloadManager {
 	 * @param formId - the form id.
 	 * @return - the created xml form.
 	 */
-	public static String createNewXform(FormService formService, Integer formId){
+	public static String createNewXform(FormService formService, Integer formId) throws Exception {
 		Form form = formService.getForm(formId);
 		return createNewXform(formService, form);
 	}
@@ -121,7 +121,7 @@ public class XformDownloadManager {
 	 * @param form - the form object.
 	 * @return - the xml content of the xform.
 	 */
-	public static String createNewXform(FormService formService, Form form){
+	public static String createNewXform(FormService formService, Form form) throws Exception {
 		String schemaXml = XformsUtil.getSchema(form);
 		String templateXml = FormEntryWrapper.getFormTemplate(form);//new FormXmlTemplateBuilder(form,FormEntryUtil.getFormAbsoluteUrl(form)).getXmlTemplate(false);
 		return XformBuilder.getXform4mStrings(schemaXml, templateXml);

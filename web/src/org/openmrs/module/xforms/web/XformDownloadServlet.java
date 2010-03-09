@@ -237,7 +237,7 @@ public class XformDownloadServlet extends HttpServlet {
 		response.getWriter().print(xformXml);
 	}
 
-	private void doPatientXformGet(HttpServletRequest request, HttpServletResponse response, XformsService xformsService, Integer formId) throws ServletException, IOException{
+	private void doPatientXformGet(HttpServletRequest request, HttpServletResponse response, XformsService xformsService, Integer formId) throws ServletException, Exception{
 		String xml = null;
 		Xform xform = xformsService.getXform(formId);
 		if(xform == null)

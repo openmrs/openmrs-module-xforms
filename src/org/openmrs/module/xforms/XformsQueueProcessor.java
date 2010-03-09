@@ -114,7 +114,7 @@ public class XformsQueueProcessor {
 	public void processXForm(String xml, String pathName){
 		String xmlOriginal = xml;
 		try{	
-			Document doc = db.parse(IOUtils.toInputStream(xml));
+			Document doc = db.parse(IOUtils.toInputStream(xml,"UTF-8"));
 			Element root = doc.getDocumentElement();
 
 			//Check if new patient doc
