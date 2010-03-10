@@ -110,6 +110,9 @@ public class XformPropertiesController  extends SimpleFormController{
 				// the list we'll save to the database
 				List<GlobalProperty> globalPropList = new ArrayList<GlobalProperty>();
 				
+				globalPropList = as.getAllGlobalProperties();
+				
+				
 				String[] keys = request.getParameterValues(PROP_NAME);
 				String[] values = request.getParameterValues(PROP_VAL_NAME);
 				String[] descriptions = request.getParameterValues(PROP_DESC_NAME);
