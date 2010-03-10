@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Form;
+import org.openmrs.module.xforms.XformConstants;
 
 /**
  * Convenience class for generating various fragments of an XML template for
@@ -60,7 +61,7 @@ public class FormXmlTemplateFragment {
 	private static String encodeURL(String s) {
 		String encodedString = s;
 		try {
-			java.net.URLEncoder.encode(s, "UTF-8");
+			java.net.URLEncoder.encode(s, XformConstants.DEFAULT_CHARACTER_ENCODING);
 		} catch (UnsupportedEncodingException e) {
 			log.error("Failed to recognize UTF-8 when encoding string: '" + s
 					+ "'");

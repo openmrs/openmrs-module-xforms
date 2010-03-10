@@ -70,16 +70,11 @@ public class XformDataUploadManager {
 			serializerKey = XformConstants.GLOBAL_PROP_KEY_XFORM_SERIALIZER;
 		
 		String enterer = XformsUtil.getEnterer();
-		DocumentBuilder db = dbf.newDocumentBuilder();
-
 		List<String> xforms = (List<String>)XformsUtil.invokeDeserializationMethod(is, serializerKey,XformConstants.DEFAULT_XFORM_SERIALIZER,getXforms());
-		/*for(String xml : xforms)
-            processXform(xml,sessionId,enterer);*/
-
 		List<Document> docs  = mergeNewPatientsWithEncounters(xforms,sessionId,enterer);
 
 		for(Document doc : docs)
-			queueForm(XformsUtil.doc2String(doc));
+			queueForm(XformsUtil.doc2String(doc),false);
 	}
 	
 	/**
@@ -87,11 +82,11 @@ public class XformDataUploadManager {
 	 * 
 	 * @param xml - the xforms model.
 	 */
-	public static void processXform(String xml, String sessionId, String enterer) throws Exception{
+	public static void processXform(String xml, String sessionId, String enterer, boolean propagateErrors) throws Exception{
 		DocumentBuilder db = dbf.newDocumentBuilder();
-		Document doc = db.parse(IOUtils.toInputStream(xml,"UTF-8"));
+		Document doc = db.parse(IOUtils.toInputStream(xml,XformConstants.DEFAULT_CHARACTER_ENCODING));
 		setHeaderValues(doc,sessionId,enterer);
-		queueForm(XformsUtil.doc2String(doc));
+		queueForm(XformsUtil.doc2String(doc),propagateErrors);
 	}
 
 	/**
@@ -121,7 +116,7 @@ public class XformDataUploadManager {
 		//docs collected for the new patient keyed by the patient id.
 		for(String xml : xforms){
 			//Create Document from xml text
-			Document doc = db.parse(IOUtils.toInputStream(xml,"UTF-8"));
+			Document doc = db.parse(IOUtils.toInputStream(xml,XformConstants.DEFAULT_CHARACTER_ENCODING));
 
 			//Set the openmrs form header values.
 			setHeaderValues(doc,sessionId,enterer);
@@ -223,12 +218,12 @@ public class XformDataUploadManager {
 	 * 
 	 * @param xml - the xforms model.
 	 */
-	public static void queueForm(String xml) throws Exception{
+	public static void queueForm(String xml, boolean propagateErrors) throws Exception{
 		if (processor == null)
 			processor = new XformsQueueProcessor();
 		
 		File file = OpenmrsUtil.getOutFile(XformsUtil.getXformsQueueDir(), new Date(), Context.getAuthenticatedUser());
-		processor.processXForm(xml, file.getAbsolutePath());
+		processor.processXForm(xml, file.getAbsolutePath(), propagateErrors);
 		
 		//We are not queing forms any more because the user wants to see data immediately.
 		//But the xforms processor queue will still run for the sake of those who my dump

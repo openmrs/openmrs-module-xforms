@@ -24,9 +24,9 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.hl7.HL7InQueue;
-import org.openmrs.hl7.HL7InQueueProcessor;
 import org.openmrs.module.xforms.formentry.FormEntryQueue;
 import org.openmrs.module.xforms.formentry.FormEntryQueueProcessor;
+import org.openmrs.module.xforms.formentry.HL7InQueueProcessor;
 import org.openmrs.module.xforms.model.PersonRepeatAttribute;
 import org.openmrs.module.xforms.util.DOMUtil;
 import org.openmrs.module.xforms.util.XformsUtil;
@@ -95,7 +95,7 @@ public class XformsQueueProcessor {
 		try {			
 			File queueDir = XformsUtil.getXformsQueueDir();
 			for (File file : queueDir.listFiles()) 
-				processXForm(XformsUtil.readFile(file.getAbsolutePath()),file.getAbsolutePath());
+				processXForm(XformsUtil.readFile(file.getAbsolutePath()),file.getAbsolutePath(),false);
 		}
 		catch(Exception e){
 			log.error("Problem occured while processing Xforms queue", e);
@@ -111,10 +111,10 @@ public class XformsQueueProcessor {
 	 * @param xml the xml of the xforms model.
 	 * @param pathName the full path and name of file form which this xform model has been read. null can be passed if the form does not come from a file.
 	 */
-	public void processXForm(String xml, String pathName){
+	public void processXForm(String xml, String pathName, boolean propagateErrors) throws Exception {
 		String xmlOriginal = xml;
 		try{	
-			Document doc = db.parse(IOUtils.toInputStream(xml,"UTF-8"));
+			Document doc = db.parse(IOUtils.toInputStream(xml,XformConstants.DEFAULT_CHARACTER_ENCODING));
 			Element root = doc.getDocumentElement();
 
 			//Check if new patient doc
@@ -125,7 +125,7 @@ public class XformsQueueProcessor {
 					saveFormInArchive(xml,pathName);
 			} //Check if encounter doc
 			else if(DOMUtil.isEncounterDoc(doc))
-				submitXForm(doc,xml,pathName,true);
+				submitXForm(doc,xml,pathName,true,propagateErrors);
 			else{
 				//Must be combined doc (new patient and encounter) where doc node is openmrs_data
 				Integer patientId = null;
@@ -147,7 +147,7 @@ public class XformsQueueProcessor {
 						setNewPatientId((Element)node,patientId);
 						Document encounterDoc = createNewDocFromNode(db,(Element)node);
 						xml = XformsUtil.doc2String(encounterDoc);
-						submitXForm(encounterDoc,xml,pathName,false);
+						submitXForm(encounterDoc,xml,pathName,false,propagateErrors);
 					}
 				}
 
@@ -155,7 +155,11 @@ public class XformsQueueProcessor {
 			}
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			saveFormInError(xmlOriginal,pathName);
+			
+			if(!propagateErrors)
+				saveFormInError(xmlOriginal,pathName);
+			else
+				throw e;
 		}
 	}
 
@@ -192,7 +196,7 @@ public class XformsQueueProcessor {
 	 * @param pathName
 	 * @param archive
 	 */
-	private void submitXForm(Document doc, String xml, String pathName, boolean archive){
+	private void submitXForm(Document doc, String xml, String pathName, boolean archive, boolean propagateErrors) throws Exception {
 		String xmlOriginal = xml;
 		try{
 			fillPatientIdIfMissing(doc);
@@ -209,14 +213,20 @@ public class XformsQueueProcessor {
 			formEntryQueue.setFileSystemUrl(pathName);
 
 			HL7InQueue hl7InQueue = formEntryProcessor.transformFormEntryQueue(formEntryQueue);
-			hl7Processor.processHL7InQueue(hl7InQueue);
+			hl7Processor.processHL7InQueue(hl7InQueue,propagateErrors);
+
 
 			if(archive)
 				saveFormInArchive(xmlOriginal,pathName);
 
 		} catch (Exception e) {
+			
 			log.error(e.getMessage(), e);
-			saveFormInError(xmlOriginal,pathName);
+			
+			if(!propagateErrors)
+				saveFormInError(xmlOriginal,pathName);
+			else
+				throw e;
 		}
 	}
 
@@ -302,7 +312,7 @@ public class XformsQueueProcessor {
 		pt.addName(pn);
 
 		pt.setBirthdateEstimated("true".equals(DOMUtil.getElementValue(root, XformBuilder.NODE_BIRTH_DATE_ESTIMATED)));
-		
+
 		String val = DOMUtil.getElementValue(root,XformBuilder.NODE_BIRTH_DATE);
 		if(val != null && val.length() > 0)
 			try{ pt.setBirthdate(XformsUtil.fromSubmitString2Date(val)); } catch(Exception e){log.error(val,e); }

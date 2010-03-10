@@ -110,7 +110,7 @@ public class PatientDownloadController extends SimpleFormController{
 				MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
 				MultipartFile xformFile = multipartRequest.getFile(XformConstants.REQUEST_PARAM_PATIENT_XFORM_FILE);
 				if (xformFile != null && !xformFile.isEmpty()) {
-					String xml = IOUtils.toString(xformFile.getInputStream());
+					String xml = IOUtils.toString(xformFile.getInputStream(),XformConstants.DEFAULT_CHARACTER_ENCODING);
 					Xform xform = new Xform();
 					xform.setFormId(XformConstants.PATIENT_XFORM_FORM_ID);
 					xform.setXformXml(xml);

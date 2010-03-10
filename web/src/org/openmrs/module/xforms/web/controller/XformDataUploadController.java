@@ -67,6 +67,7 @@ public class XformDataUploadController extends SimpleFormController{
 			response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
 
 			//check if external client sending multiple filled forms.
+			//These are normally mobile clients.
 			if(XformConstants.TRUE_TEXT_VALUE.equalsIgnoreCase(request.getParameter(XformConstants.REQUEST_PARAM_BATCH_ENTRY))){            
 				try{
 					String serializerKey = request.getParameter("serializer");
@@ -82,18 +83,26 @@ public class XformDataUploadController extends SimpleFormController{
 				}
 			}
 			else{ //else single form filled from browser.
-				String xml = IOUtils.toString(request.getInputStream());
-				if("edit".equals(request.getParameter("mode")))
-					processXformEdit(request,xml);
-				else
-					XformDataUploadManager.processXform(xml,request.getSession().getId(),XformsUtil.getEnterer());
+				String xml = IOUtils.toString(request.getInputStream(),XformConstants.DEFAULT_CHARACTER_ENCODING);
 
-				setSingleEntryResponse(request, response);
+				try{
+					if("edit".equals(request.getParameter("mode")))
+						processXformEdit(request,xml);
+					else
+						XformDataUploadManager.processXform(xml,request.getSession().getId(),XformsUtil.getEnterer(),true);
+					
+					response.setStatus(HttpServletResponse.SC_OK);
+				}
+				catch(Exception ex){
+					response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+					ex.printStackTrace(response.getWriter());
+					log.error(ex.getMessage(), ex);
+				}
 			}
 		}
 
 		if(status != XformsServer.STATUS_NULL){
-			//GZIPOutputStream gzip = new GZIPOutputStream(response.getOutputStream());
+			//send compressed response for mobile device.
 			ZOutputStream gzip = new ZOutputStream(response.getOutputStream(),JZlib.Z_BEST_COMPRESSION);
 			DataOutputStream dos = new DataOutputStream(gzip);
 			dos.writeByte(status);
@@ -106,10 +115,7 @@ public class XformDataUploadController extends SimpleFormController{
 
 	private void processXformEdit(HttpServletRequest request,String xml) throws Exception{
 		Document doc = XformBuilder.getDocument(xml);
-		
-		//System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-		//System.out.println(xml);
-		
+
 		if(XformPatientEdit.isPatientElement(doc.getRootElement())){
 			Patient patient = XformPatientEdit.getEditedPatient(doc.getRootElement());			
 			Context.getPatientService().savePatient(patient);
@@ -147,7 +153,7 @@ public class XformDataUploadController extends SimpleFormController{
 		response.setStatus(HttpServletResponse.SC_OK);
 		response.setContentType("text/html;charset=utf-8");
 		response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
-		
+
 		try{
 			//We are using an iframe to display the xform within the page.
 			//So this response just tells the iframe parent document to go to either the

@@ -27,6 +27,7 @@ import org.openmrs.User;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.hl7.HL7InQueue;
+import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformsService;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -107,7 +108,7 @@ public class FormEntryQueueProcessor {
 		String xsltDoc = form.getXslt();
 
 		StringWriter outWriter = new StringWriter();
-		Source source = new StreamSource(new StringReader(formData), "UTF-8");
+		Source source = new StreamSource(new StringReader(formData), XformConstants.DEFAULT_CHARACTER_ENCODING);
 		Source xslt = new StreamSource(IOUtils.toInputStream(xsltDoc));
 		Result result = new StreamResult(outWriter);
 

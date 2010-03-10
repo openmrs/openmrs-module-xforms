@@ -1760,7 +1760,7 @@ public final class XformBuilder {
 
 		try{
 			serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
-			serializer.setOutput(dos,"UTF-8");
+			serializer.setOutput(dos,XformConstants.DEFAULT_CHARACTER_ENCODING);
 			doc.write(serializer);
 			serializer.flush();
 		}
@@ -1769,7 +1769,7 @@ public final class XformBuilder {
 			return null;
 		}
 
-		return new String(bos.toByteArray(),"UTF-8");
+		return new String(bos.toByteArray(),XformConstants.DEFAULT_CHARACTER_ENCODING);
 		
 		
 		/*KXmlSerializer serializer = new KXmlSerializer();

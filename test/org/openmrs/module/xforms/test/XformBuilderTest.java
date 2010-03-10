@@ -13,6 +13,7 @@ import org.apache.commons.io.IOUtils;
 import org.openmrs.Form;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.XformBuilder;
+import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.formentry.FormEntryWrapper;
 import org.openmrs.module.xforms.util.XformsUtil;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
@@ -115,8 +116,8 @@ public class XformBuilderTest extends BaseModuleContextSensitiveTest{
 
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
-			Document docPatient = db.parse(IOUtils.toInputStream(patient,"UTF-8"));
-			Document docEncounter = db.parse(IOUtils.toInputStream(encounter,"UTF-8"));
+			Document docPatient = db.parse(IOUtils.toInputStream(patient,XformConstants.DEFAULT_CHARACTER_ENCODING));
+			Document docEncounter = db.parse(IOUtils.toInputStream(encounter,XformConstants.DEFAULT_CHARACTER_ENCODING));
 			
 			Document doc = db.newDocument();
 			Element root = (Element) doc.createElement("openmrs_data");
@@ -169,7 +170,7 @@ public class XformBuilderTest extends BaseModuleContextSensitiveTest{
 		try{
 			StringBuffer fileData = new StringBuffer(1000);
 			//BufferedReader reader = new BufferedReader(new FileReader(file));
-			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file),"UTF-8"));
+			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file),XformConstants.DEFAULT_CHARACTER_ENCODING));
 
 			char[] buf = new char[1024];
 			int numRead = 0;

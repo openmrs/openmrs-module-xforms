@@ -21,6 +21,7 @@ import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.propertyeditor.EncounterTypeEditor;
 import org.openmrs.util.FormUtil;
 import org.openmrs.web.WebConstants;
@@ -89,7 +90,7 @@ public class MedicalHistoryFieldsController  extends SimpleFormController{
 									.getFile("xslt_file");
 							if (xsltFile != null && !xsltFile.isEmpty()) {
 								String xslt = IOUtils.toString(xsltFile
-										.getInputStream());
+										.getInputStream(),XformConstants.DEFAULT_CHARACTER_ENCODING);
 								form.setXslt(xslt);
 							}
 						}

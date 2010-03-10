@@ -74,7 +74,7 @@ public class XformsSMSServer  implements SMSServerListener{
 
 			loadSettings();
 			
-			XformDataUploadManager.queueForm(formsSmsParser.sms2FormXml(sender, text));
+			XformDataUploadManager.queueForm(formsSmsParser.sms2FormXml(sender, text),true);
 
 			/*FormSmsArchive formSmsArchive = new FormSmsArchive(new FormDataArchive(formData));
 			formSmsArchive.setSender(sender);

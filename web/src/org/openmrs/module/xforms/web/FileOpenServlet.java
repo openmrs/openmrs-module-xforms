@@ -45,7 +45,7 @@ public class FileOpenServlet extends HttpServlet{
 				MultipartHttpServletRequest multipartRequest = multipartResover.resolveMultipart(request);
 				MultipartFile uploadedFile = multipartRequest.getFile("filecontents");
 				if (uploadedFile != null && !uploadedFile.isEmpty()) 
-					request.getSession().setAttribute(KEY_FILE_CONTENTS,IOUtils.toString(uploadedFile.getInputStream()));
+					request.getSession().setAttribute(KEY_FILE_CONTENTS,IOUtils.toString(uploadedFile.getInputStream(),XformConstants.DEFAULT_CHARACTER_ENCODING));
 			}
 		}
 		catch(Exception ex){

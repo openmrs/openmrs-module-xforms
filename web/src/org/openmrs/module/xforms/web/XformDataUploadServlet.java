@@ -54,7 +54,7 @@ public class XformDataUploadServlet extends HttpServlet{
 					response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
 
 					///else single form filled from browser.
-					XformDataUploadManager.processXform(IOUtils.toString(request.getInputStream()),request.getSession().getId(),XformsUtil.getEnterer());
+					XformDataUploadManager.processXform(IOUtils.toString(request.getInputStream(),XformConstants.DEFAULT_CHARACTER_ENCODING),request.getSession().getId(),XformsUtil.getEnterer(),true);
 					//setSingleEntryResponse(request, response);
 					response.setStatus(HttpServletResponse.SC_OK);
 					response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
@@ -63,7 +63,9 @@ public class XformDataUploadServlet extends HttpServlet{
 			}
 		}
 		catch(Exception e){
-			log.error(e.getMessage(),e);
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			e.printStackTrace(response.getWriter());
+			log.error(e.getMessage(), e);
 		}
 	}
 
