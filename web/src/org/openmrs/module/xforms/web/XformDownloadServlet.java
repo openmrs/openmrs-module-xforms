@@ -5,7 +5,11 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Set;
 
@@ -20,6 +24,7 @@ import org.kxml2.kdom.Document;
 import org.openmrs.Form;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
+import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.User;
@@ -179,7 +184,7 @@ public class XformDownloadServlet extends HttpServlet {
 			}
 		}
 		catch(Exception ex){
-			log.error(ex.getMessage(), ex);
+			XformsUtil.reportDataUploadError(ex, request, response);
 		}
 	}
 
@@ -192,7 +197,7 @@ public class XformDownloadServlet extends HttpServlet {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	protected void doXformGet(HttpServletRequest request, HttpServletResponse response, Form form,FormService formService,XformsService xformsService,boolean createNew, boolean attachment) throws ServletException, IOException {
+	protected void doXformGet(HttpServletRequest request, HttpServletResponse response, Form form,FormService formService,XformsService xformsService,boolean createNew, boolean attachment) throws Exception {
 
 		String filename = FormUtil.getFormUriWithoutExtension(form) + XformConstants.XFORM_FILE_EXTENSION;
 
@@ -304,7 +309,7 @@ public class XformDownloadServlet extends HttpServlet {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	protected void doXformEntryGet(HttpServletRequest request, HttpServletResponse response, Form form,FormService formService,XformsService xformsService, boolean createNew) throws ServletException, Exception {			
+	protected void doXformEntryGet(HttpServletRequest request, HttpServletResponse response, Form form,FormService formService,XformsService xformsService, boolean createNew) throws Exception {			
 		String xformXml = XformDownloadManager.getXform(formService,xformsService,form.getFormId(),createNew);
 
 		/*try{
@@ -377,9 +382,6 @@ public class XformDownloadServlet extends HttpServlet {
 
 		String xml = XformBuilder.fromDoc2String(doc);  
 
-		//System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-		//System.out.println(xml);
-
 		Xform xform = xformsService.getXform(form.getFormId());
 
 		if(xform != null){
@@ -444,7 +446,7 @@ public class XformDownloadServlet extends HttpServlet {
 
 		if(patient == null){
 			patient = new Patient();
-			UserFormController.getMiniPerson(patient, request.getParameter("addName"), request.getParameter("addGender"), request.getParameter("addBirthdate"), request.getParameter("addAge"));
+			getMiniPerson(patient, request.getParameter("addName"), request.getParameter("addGender"), request.getParameter("addBirthdate"), request.getParameter("addAge"));
 		}
 
 		String s = patient.getFamilyName();
@@ -534,6 +536,63 @@ public class XformDownloadServlet extends HttpServlet {
 				XformBuilder.setNodeValue(doc, "person_attribute"+attributeType.getPersonAttributeTypeId(), value);
 		}
 	}
+	
+	/**
+	 * Add the given name, gender, and birthdate/age to the given Person
+	 * 
+	 * @param <P> Should be a Patient or User object
+	 * @param person
+	 * @param name
+	 * @param gender
+	 * @param date birthdate
+	 * @param age
+	 */
+	public <P extends Person> void getMiniPerson(P person, String name, String gender, String date, String age) {
+		
+		person.addName(Context.getPersonService().parsePersonName(name));
+		
+		person.setGender(gender);
+		Date birthdate = null;
+		boolean birthdateEstimated = false;
+		if (date != null && !date.equals("")) {
+			try {
+				// only a year was passed as parameter
+				if (date.length() < 5) {
+					Calendar c = new GregorianCalendar();
+					c.set(Calendar.YEAR, Integer.valueOf(date));
+					c.set(Calendar.MONTH, 0);
+					c.set(Calendar.DATE, 1);
+					birthdate = c.getTime();
+					birthdateEstimated = true;
+				}
+				// a full birthdate was passed as a parameter
+				else {
+					birthdate = Context.getDateFormat().parse(date);
+					birthdateEstimated = false;
+				}
+			}
+			catch (ParseException e) {
+				log.debug("Error getting date from birthdate", e);
+			}
+		} else if (age != null && !age.equals("")) {
+			Calendar c = Calendar.getInstance();
+			c.setTime(new Date());
+			Integer d = c.get(Calendar.YEAR);
+			d = d - Integer.parseInt(age);
+			try {
+				birthdate = DateFormat.getDateInstance(DateFormat.SHORT).parse("01/01/" + d);
+				birthdateEstimated = true;
+			}
+			catch (ParseException e) {
+				log.debug("Error getting date from age", e);
+			}
+		}
+		if (birthdate != null)
+			person.setBirthdate(birthdate);
+		person.setBirthdateEstimated(birthdateEstimated);
+		
+	}
+
 
 }//ROOM NO 303
 //		<form id="selectFormForm" method="get" action="<%= request.getContextPath() %>/module/xforms/xformEntry.form">

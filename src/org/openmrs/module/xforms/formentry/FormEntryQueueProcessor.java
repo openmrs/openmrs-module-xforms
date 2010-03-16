@@ -41,13 +41,13 @@ import org.xml.sax.InputSource;
  *
  */
 public class FormEntryQueueProcessor {
-	
+
 	private static final Log log = LogFactory.getLog(FormEntryQueueProcessor.class);
-	
+
 	private DocumentBuilderFactory documentBuilderFactory;
 	private XPathFactory xPathFactory;
 	private TransformerFactory transformerFactory;
-	
+
 	/**
 	 * Transform a FormEntryQueue entry (converts the XML data into HL7 and
 	 * places it into the HL7 inbound queue for further processing). Once
@@ -61,7 +61,7 @@ public class FormEntryQueueProcessor {
 	 * @param formEntryQueue
 	 *            entry to be transformed
 	 */
-	public HL7InQueue transformFormEntryQueue(FormEntryQueue formEntryQueue) {
+	public HL7InQueue transformFormEntryQueue(FormEntryQueue formEntryQueue, boolean propagateErrors) throws Exception {
 		log.debug("Transforming form entry queue");
 		String formData = formEntryQueue.getFormData();
 		FormService formService = Context.getFormService();
@@ -78,24 +78,35 @@ public class FormEntryQueueProcessor {
 			XPath xp = xpf.newXPath();
 			Document doc = db.parse(new InputSource(new StringReader(formData)));
 			formId = Integer.parseInt(xp.evaluate("/form/@id", doc));
-			hl7SourceKey = xp.evaluate("/form/header/uid", doc);
+			hl7SourceKey = xp.evaluate("/form/header/uid", doc);			
 		} catch (Exception e) {
 			errorDetails = e.getMessage();
 			log.error("Error while parsing formentry ("+ formEntryQueue.getFormEntryQueueId() + ")", e);
-			setFatalError(formEntryQueue, "Error while parsing the formentry xml", errorDetails);
+			setFatalError(formEntryQueue, "Error while parsing the formentry xml", errorDetails,propagateErrors);
+		
+			if(propagateErrors)
+				throw e;
 		}
 
 		// If we failed to obtain the formId, move the queue entry into the
 		// error bin and abort
 		if (formId == null) {
-			setFatalError(formEntryQueue, "Error retrieving form ID from data", errorDetails);
+			setFatalError(formEntryQueue, "Error retrieving form ID from data", errorDetails,propagateErrors);
+			
+			if(propagateErrors)
+				throw new Exception("Error retrieving form ID from data");
+			
 			return null;
 		}
-		
+
 		// If we can't get a form object for this formId, throw this to the error bin
 		Form form = formService.getForm(formId);
 		if (form == null) {
-			setFatalError(formEntryQueue, "The form id: " + formId + " does not exist in the form table!", errorDetails);
+			setFatalError(formEntryQueue, "The form id: " + formId + " does not exist in the form table!", errorDetails,propagateErrors);
+			
+			if(propagateErrors)
+				throw new Exception("The form id: " + formId + "does not exist in the form table!");
+			
 			return null;
 		}
 
@@ -122,18 +133,29 @@ public class FormEntryQueueProcessor {
 		} catch (TransformerConfigurationException e) {
 			errorDetails = e.getMessage();
 			log.error(errorDetails, e);
+			
+			if(propagateErrors)
+				throw e;
+			
 		} catch (TransformerException e) {
 			errorDetails = e.getMessage();
 			log.error(errorDetails, e);
+			
+			if(propagateErrors)
+				throw e;
 		}
 
 		// If the transform failed, move the queue entry into the error bin
 		// and exit
 		if (out == null) {
-			setFatalError(formEntryQueue, "Unable to transform to HL7", errorDetails);
+			setFatalError(formEntryQueue, "Unable to transform to HL7", errorDetails,propagateErrors);
+			
+			if(propagateErrors)
+				throw new Exception("Unable to transform to HL7");
+			
 			return null;
 		}
-		
+
 		// At this point, we have successfully transformed the XML data into
 		// HL7. Create a new entry in the HL7 inbound queue and move the
 		// current FormEntry queue item into the archive.
@@ -150,10 +172,10 @@ public class FormEntryQueueProcessor {
 
 		// clean up memory
 		garbageCollect();
-		
+
 		return hl7InQueue;
 	}
-	
+
 	/**
 	 * @return DocumentBuilderFactory to be used for parsing XML
 	 */
@@ -178,7 +200,7 @@ public class FormEntryQueueProcessor {
 	private TransformerFactory getTransformerFactory() {
 		if (transformerFactory == null) {
 			System.setProperty("javax.xml.transform.TransformerFactory",
-				"net.sf.saxon.TransformerFactoryImpl");
+			"net.sf.saxon.TransformerFactoryImpl");
 			transformerFactory = TransformerFactory.newInstance();
 		}
 		return transformerFactory;
@@ -197,39 +219,43 @@ public class FormEntryQueueProcessor {
 	 *            specifics for the fatal error
 	 */
 	private void setFatalError(FormEntryQueue formEntryQueue, String error,
-			String errorDetails) {
-		FormEntryError formEntryError = new FormEntryError();
-		formEntryError.setFormData(formEntryQueue.getFormData());
-		formEntryError.setError(error);
-		formEntryError.setErrorDetails(errorDetails);
-		createFormEntryError(formEntryError);
+			String errorDetails, boolean propagateErrors) {
+
+		if(!propagateErrors){
+			FormEntryError formEntryError = new FormEntryError();
+			formEntryError.setFormData(formEntryQueue.getFormData());
+			formEntryError.setError(error);
+			formEntryError.setErrorDetails(errorDetails);
+			createFormEntryError(formEntryError);
+		}
+
 		deleteFormEntryQueue(formEntryQueue);
 	}
-	
+
 	public void createFormEntryError(FormEntryError formEntryError) {
 		formEntryError.setCreator(Context.getAuthenticatedUser());
 		formEntryError.setDateCreated(new Date());
 		((XformsService)Context.getService(XformsService.class)).createFormEntryError(formEntryError);
 	}
-	
+
 	public void deleteFormEntryQueue(FormEntryQueue formEntryQueue) {
 		if (formEntryQueue == null || formEntryQueue.getFileSystemUrl() == null)
 			throw new FormEntryException("Unable to load formEntryQueue with empty file system url");
-		
+
 		File file = new File(formEntryQueue.getFileSystemUrl());
-		
+
 		if (file.exists()) {
 			file.delete();
 		}
 	}
-	
+
 	public void createFormEntryArchive(FormEntryArchive formEntryArchive) {
 		User creator = Context.getAuthenticatedUser();
-		
+
 		File queueDir = FormEntryUtil.getFormEntryArchiveDir(formEntryArchive.getDateCreated());
-		
+
 		File outFile = FormEntryUtil.getOutFile(queueDir, formEntryArchive.getDateCreated(), creator);
-		
+
 		// write the queue's data to the file
 		try {
 			FormEntryUtil.stringToFile(formEntryArchive.getFormData(), outFile);
@@ -237,9 +263,9 @@ public class FormEntryQueueProcessor {
 		catch (IOException io) {
 			throw new FormEntryException("Unable to save formentry archive", io);
 		}
-		
+
 	}
-	
+
 	public void garbageCollect() {
 		Context.clearSession();
 	}

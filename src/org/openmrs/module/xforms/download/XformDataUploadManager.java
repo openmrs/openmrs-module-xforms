@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -74,7 +75,7 @@ public class XformDataUploadManager {
 		List<Document> docs  = mergeNewPatientsWithEncounters(xforms,sessionId,enterer);
 
 		for(Document doc : docs)
-			queueForm(XformsUtil.doc2String(doc),false);
+			queueForm(XformsUtil.doc2String(doc),false,null);
 	}
 	
 	/**
@@ -82,11 +83,11 @@ public class XformDataUploadManager {
 	 * 
 	 * @param xml - the xforms model.
 	 */
-	public static void processXform(String xml, String sessionId, String enterer, boolean propagateErrors) throws Exception{
+	public static void processXform(String xml, String sessionId, String enterer, boolean propagateErrors,HttpServletRequest request) throws Exception{
 		DocumentBuilder db = dbf.newDocumentBuilder();
 		Document doc = db.parse(IOUtils.toInputStream(xml,XformConstants.DEFAULT_CHARACTER_ENCODING));
 		setHeaderValues(doc,sessionId,enterer);
-		queueForm(XformsUtil.doc2String(doc),propagateErrors);
+		queueForm(XformsUtil.doc2String(doc),propagateErrors,request);
 	}
 
 	/**
@@ -218,12 +219,12 @@ public class XformDataUploadManager {
 	 * 
 	 * @param xml - the xforms model.
 	 */
-	public static void queueForm(String xml, boolean propagateErrors) throws Exception{
+	public static void queueForm(String xml, boolean propagateErrors,HttpServletRequest request) throws Exception{
 		if (processor == null)
 			processor = new XformsQueueProcessor();
 		
 		File file = OpenmrsUtil.getOutFile(XformsUtil.getXformsQueueDir(), new Date(), Context.getAuthenticatedUser());
-		processor.processXForm(xml, file.getAbsolutePath(), propagateErrors);
+		processor.processXForm(xml, file.getAbsolutePath(), propagateErrors,request);
 		
 		//We are not queing forms any more because the user wants to see data immediately.
 		//But the xforms processor queue will still run for the sake of those who my dump

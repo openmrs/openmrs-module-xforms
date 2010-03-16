@@ -82,7 +82,7 @@ public class XformObsEdit {
 
 		XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_LOCATION_ID, encounter.getLocation().getLocationId().toString());
 		XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_ENCOUNTER_DATETIME, XformsUtil.fromDate2SubmitString(encounter.getEncounterDatetime()));
-		XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_PROVIDER_ID, encounter.getProvider().getUserId().toString());
+		XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_PROVIDER_ID, XformsUtil.getProviderId(encounter).toString());
 
 		List<String> complexObs = DOMUtil.getXformComplexObsNodeNames(xml);
 

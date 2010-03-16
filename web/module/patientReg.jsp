@@ -71,7 +71,7 @@
     
 <div id="entityFormDefDownloadUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/xformDownload?target=xformentry&contentType=xml${patientParams}&</div>
 <div id="formDataUploadUrlSuffix" style="visibility:hidden;">${formDataUploadUrlSuffix}</div>
-<div id="afterSubmitUrlSuffix" style="visibility:hidden;">findPatient.htm?</div>
+<div id="afterSubmitUrlSuffix" style="visibility:hidden;">patientDashboard.form?</div>
 <div id="externalSourceUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/widgetValueDownload?</div>
 <div id="multimediaUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/multimediaDownload</div>
 
@@ -367,7 +367,8 @@
 			javaScriptSource: "<spring:message code="xforms.javaScriptSource" />",
        		calculation: "<spring:message code="xforms.calculation" />",
        		id: "<spring:message code="xforms.id" />",
-       		formKey: "<spring:message code="xforms.formKey" />"
+       		formKey: "<spring:message code="xforms.formKey" />",
+       		filterField: "<spring:message code="xforms.filterField" />"
 	};
 
 	function isUserAuthenticated(){
@@ -401,8 +402,9 @@
 		})	
 	}
 
-	function searchExternal(key,value,parentElement,textElement,valueElement){
+	function searchExternal(key,value,parentElement,textElement,valueElement,filterField){
 		var searchWidget = dojo.widget.manager.getWidgetById("conceptId_search");
+		searchWidget.includeClasses = (filterField == null ? [] : filterField.split(","));
 	
 		var selectionWidget = dojo.widget.manager.getWidgetById("conceptId_selection");
  		selectionWidget.displayNode = textElement;

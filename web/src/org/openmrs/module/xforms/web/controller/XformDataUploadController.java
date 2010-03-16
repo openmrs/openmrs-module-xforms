@@ -86,17 +86,22 @@ public class XformDataUploadController extends SimpleFormController{
 				String xml = IOUtils.toString(request.getInputStream(),XformConstants.DEFAULT_CHARACTER_ENCODING);
 
 				try{
+					request.setAttribute(XformConstants.REQUEST_ATTRIBUTE_ID_ERROR_MESSAGE, null);
+					request.setAttribute(XformConstants.REQUEST_ATTRIBUTE_ID_PATIENT_ID, null);
+					
 					if("edit".equals(request.getParameter("mode")))
 						processXformEdit(request,xml);
 					else
-						XformDataUploadManager.processXform(xml,request.getSession().getId(),XformsUtil.getEnterer(),true);
+						XformDataUploadManager.processXform(xml,request.getSession().getId(),XformsUtil.getEnterer(),true,request);
+					
+					Object id = request.getAttribute(XformConstants.REQUEST_ATTRIBUTE_ID_PATIENT_ID);
+					if(id != null)
+						response.getWriter().print(id.toString());
 					
 					response.setStatus(HttpServletResponse.SC_OK);
 				}
-				catch(Exception ex){
-					response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-					ex.printStackTrace(response.getWriter());
-					log.error(ex.getMessage(), ex);
+				catch(Exception ex){//HttpServletRequest request
+					XformsUtil.reportDataUploadError(ex, request, response);
 				}
 			}
 		}

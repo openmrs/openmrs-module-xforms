@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -95,7 +96,7 @@ public class XformsQueueProcessor {
 		try {			
 			File queueDir = XformsUtil.getXformsQueueDir();
 			for (File file : queueDir.listFiles()) 
-				processXForm(XformsUtil.readFile(file.getAbsolutePath()),file.getAbsolutePath(),false);
+				processXForm(XformsUtil.readFile(file.getAbsolutePath()),file.getAbsolutePath(),false,null);
 		}
 		catch(Exception e){
 			log.error("Problem occured while processing Xforms queue", e);
@@ -111,7 +112,7 @@ public class XformsQueueProcessor {
 	 * @param xml the xml of the xforms model.
 	 * @param pathName the full path and name of file form which this xform model has been read. null can be passed if the form does not come from a file.
 	 */
-	public void processXForm(String xml, String pathName, boolean propagateErrors) throws Exception {
+	public void processXForm(String xml, String pathName, boolean propagateErrors,HttpServletRequest request) throws Exception {
 		String xmlOriginal = xml;
 		try{	
 			Document doc = db.parse(IOUtils.toInputStream(xml,XformConstants.DEFAULT_CHARACTER_ENCODING));
@@ -119,7 +120,7 @@ public class XformsQueueProcessor {
 
 			//Check if new patient doc
 			if(DOMUtil.isPatientDoc(doc)){
-				if(saveNewPatient(root,getCreator(doc)) == null)
+				if(saveNewPatient(root,getCreator(doc),propagateErrors,request) == null)
 					saveFormInError(xml,pathName);
 				else
 					saveFormInArchive(xml,pathName);
@@ -137,7 +138,7 @@ public class XformsQueueProcessor {
 						continue;
 
 					if(DOMUtil.isPatientElementDoc((Element)node)){
-						patientId = saveNewPatient((Element)node,getCreator(doc));
+						patientId = saveNewPatient((Element)node,getCreator(doc),propagateErrors,request);
 						if(patientId == null){
 							saveFormInError(xml,pathName);
 							return;
@@ -212,9 +213,8 @@ public class XformsQueueProcessor {
 			formEntryQueue.setFormData(xml);
 			formEntryQueue.setFileSystemUrl(pathName);
 
-			HL7InQueue hl7InQueue = formEntryProcessor.transformFormEntryQueue(formEntryQueue);
+			HL7InQueue hl7InQueue = formEntryProcessor.transformFormEntryQueue(formEntryQueue, propagateErrors);
 			hl7Processor.processHL7InQueue(hl7InQueue,propagateErrors);
-
 
 			if(archive)
 				saveFormInArchive(xmlOriginal,pathName);
@@ -297,7 +297,7 @@ public class XformsQueueProcessor {
 	 * @param creator - the logged on user.
 	 * @return - true if the patient is created successfully, else false.
 	 */
-	private Integer saveNewPatient(Element root, User creator) throws Exception{		
+	private Integer saveNewPatient(Element root, User creator, boolean propagateErrors, HttpServletRequest request) throws Exception{		
 		PatientService patientService = Context.getPatientService();
 		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
 
@@ -337,14 +337,34 @@ public class XformsQueueProcessor {
 			if(pt2 == null){
 				pt = patientService.savePatient(pt);
 				addPersonRepeatAttributes(pt,root,xformsService);
+				
+				if(request != null)
+					request.setAttribute(XformConstants.REQUEST_ATTRIBUTE_ID_PATIENT_ID, pt.getPatientId().toString());
+
 				return pt.getPatientId();
 			}
 			else if(rejectExistingPatientCreation()){
-				log.error("Tried to create patient who already exists with the identifier:"+identifier.getIdentifier()+" REJECTED.");
+				String message = "Tried to create patient who already exists with the identifier:"+identifier.getIdentifier()+" REJECTED.";
+				log.error(message);
+			
+				if(request != null)
+					request.setAttribute(XformConstants.REQUEST_ATTRIBUTE_ID_ERROR_MESSAGE, message);
+
+				if(propagateErrors)
+					throw new Exception(message);
+				
 				return null;
 			}
 			else{
-				log.warn("Tried to create patient who already exists with the identifier:"+identifier.getIdentifier()+" ACCEPTED.");
+				String message = "Tried to create patient who already exists with the identifier:"+identifier.getIdentifier()+" ACCEPTED.";
+				log.warn(message);
+				
+				if(request != null)
+					request.setAttribute(XformConstants.REQUEST_ATTRIBUTE_ID_ERROR_MESSAGE, message);
+				
+				if(propagateErrors)
+					throw new Exception(message);
+				
 				return pt.getPatientId();
 			}
 	}

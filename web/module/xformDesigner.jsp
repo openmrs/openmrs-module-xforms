@@ -398,7 +398,8 @@
     			javaScriptSource: "<spring:message code="xforms.javaScriptSource" />",
            		calculation: "<spring:message code="xforms.calculation" />",
            		id: "<spring:message code="xforms.id" />",
-           		formKey: "<spring:message code="xforms.formKey" />"
+           		formKey: "<spring:message code="xforms.formKey" />",
+           		filterField: "<spring:message code="xforms.filterField" />"
     	};
 
     	function isUserAuthenticated(){
@@ -430,9 +431,10 @@
     		})	
       	}
 
-    	function searchExternal(key,value,parentElement,textElement,valueElement){
+    	function searchExternal(key,value,parentElement,textElement,valueElement,filterField){
     		var searchWidget = dojo.widget.manager.getWidgetById("conceptId_search");
-    	
+    		searchWidget.includeClasses = (filterField == null ? [] : filterField.split(","));
+    		
     		var selectionWidget = dojo.widget.manager.getWidgetById("conceptId_selection");
     		
      		selectionWidget.displayNode = textElement;

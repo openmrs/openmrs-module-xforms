@@ -136,11 +136,11 @@ public class XformDownloadManager {
 	 * @param createNew - true if you want
 	 * @return - the xml content of the xform.
 	 */
-	public static String getXform(FormService formService,XformsService xformsService,Integer formId,boolean createNew){
+	public static String getXform(FormService formService,XformsService xformsService,Integer formId,boolean createNew) throws Exception {
 		
 		String xformXml = null;
 		
-        try{
+        //try{ //we want exception to propagate to the ui
     		if(!createNew){
     			Xform xform = xformsService.getXform(formId);
     			if(xform != null)
@@ -149,10 +149,10 @@ public class XformDownloadManager {
     		
     		if(xformXml == null)
     			xformXml = createNewXform(formService, formId);
-        }
+        /*}
         catch(Exception e){
             log.error(e.getMessage(),e);
-        }
+        }*/
 		
 		return xformXml;
 	}

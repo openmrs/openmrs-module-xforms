@@ -317,4 +317,10 @@ public class XformConstants {
 
     /** The separator between the xforms xml and javascript source in a combined xml document for a form. */
 	public static final String PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR = " PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR ";
+
+	public static final String HEADER_PURCFORMS_ERROR_MESSAGE = "PURCFORMS-ERROR-MESSAGE";
+	
+	public static final String REQUEST_ATTRIBUTE_ID_ERROR_MESSAGE = "ERROR_MESSAGE";
+	
+	public static final String REQUEST_ATTRIBUTE_ID_PATIENT_ID = "PATIENT_ID";
 }

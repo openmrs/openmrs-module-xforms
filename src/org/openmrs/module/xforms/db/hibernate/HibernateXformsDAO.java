@@ -79,8 +79,6 @@ public class HibernateXformsDAO implements XformsDAO {
 		// sessionFactory.getCurrentSession().saveOrUpdate(xform);
 		//deleteXform(xform.getFormId());
 		//Context.evictFromSession(xform);
-		System.out.println("aaaaaaaaaaaaaaaaaaa");
-		System.out.println(xform.getXformXml());
 		sessionFactory.getCurrentSession().save(xform);
 	}
 

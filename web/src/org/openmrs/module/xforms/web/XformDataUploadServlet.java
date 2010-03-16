@@ -53,9 +53,17 @@ public class XformDataUploadServlet extends HttpServlet{
 				if (XformsUtil.isAuthenticated(request,response,"/moduleServlet/xforms/xformDataUpload")){
 					response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
 
+					request.setAttribute(XformConstants.REQUEST_ATTRIBUTE_ID_ERROR_MESSAGE, null);
+					request.setAttribute(XformConstants.REQUEST_ATTRIBUTE_ID_PATIENT_ID, null);
+
 					///else single form filled from browser.
-					XformDataUploadManager.processXform(IOUtils.toString(request.getInputStream(),XformConstants.DEFAULT_CHARACTER_ENCODING),request.getSession().getId(),XformsUtil.getEnterer(),true);
+					XformDataUploadManager.processXform(IOUtils.toString(request.getInputStream(),XformConstants.DEFAULT_CHARACTER_ENCODING),request.getSession().getId(),XformsUtil.getEnterer(),true, request);
 					//setSingleEntryResponse(request, response);
+					
+					Object id = request.getAttribute(XformConstants.REQUEST_ATTRIBUTE_ID_PATIENT_ID);
+					if(id != null)
+						response.getWriter().print(id.toString());
+					
 					response.setStatus(HttpServletResponse.SC_OK);
 					response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
 					response.getWriter().println("Data submitted successfully");
@@ -63,9 +71,7 @@ public class XformDataUploadServlet extends HttpServlet{
 			}
 		}
 		catch(Exception e){
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			e.printStackTrace(response.getWriter());
-			log.error(e.getMessage(), e);
+			XformsUtil.reportDataUploadError(e, request, response);
 		}
 	}
 

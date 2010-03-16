@@ -6,7 +6,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.hl7.HL7InArchive;
 import org.openmrs.hl7.HL7InError;
 import org.openmrs.hl7.HL7InQueue;
-import org.openmrs.hl7.HL7Receiver;
 import org.springframework.transaction.annotation.Transactional;
 
 import ca.uhn.hl7v2.HL7Exception;
