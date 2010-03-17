@@ -43,7 +43,6 @@ import org.openmrs.module.xforms.util.LanguageUtil;
 import org.openmrs.module.xforms.util.XformsUtil;
 import org.openmrs.util.FormUtil;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.web.controller.user.UserFormController;
 
 /**
  * Provides Xform download services.

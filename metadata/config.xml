@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>xforms</id>
 	<name>XForms</name>
-	<version>3.8.5</version>
+	<version>3.8.6</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Daniel Kayiwa</author>
 	<description>
@@ -282,6 +282,10 @@
 	<servlet>
 		<servlet-name>fileSave</servlet-name>
 		<servlet-class>@MODULE_PACKAGE@.web.FileSaveServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>userValidator</servlet-name>
+		<servlet-class>@MODULE_PACKAGE@.web.UserValidatorServlet</servlet-class>
 	</servlet>
 	
 	<!-- Internationalization -->
