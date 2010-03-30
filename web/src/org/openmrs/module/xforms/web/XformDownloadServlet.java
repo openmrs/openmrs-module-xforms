@@ -176,7 +176,7 @@ public class XformDownloadServlet extends HttpServlet {
 						xml = XformBuilder.getNewPatientXform();
 					else
 						xml = xformsService.getNewXform(formId).getXformXml();
-					
+
 					response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
 					response.getWriter().print(xml);
 				}
@@ -227,16 +227,14 @@ public class XformDownloadServlet extends HttpServlet {
 					xformXml += XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR + xml;
 			}
 		}
-		
-		if("xhtml".equalsIgnoreCase(request.getParameter("contentType"))){
-			try{
-				xformXml = XformsUtil.fromXform2Xhtml(xformXml, XformsUtil.getPlainDefaultXSLT());
-			}
-			catch(Exception ex){
-				log.error(ex.getMessage(), ex);
-			}
-		}
-			
+
+		if("xhtml".equalsIgnoreCase(request.getParameter("contentType")))
+			xformXml = XformsUtil.fromXform2Xhtml(xformXml, XformsUtil.getPlainDefaultXSLT());
+
+		String xsltKey = request.getParameter("xsltKey");
+		if(xsltKey != null)
+			xformXml = XformsUtil.transformDocument(xformXml, Context.getAdministrationService().getGlobalProperty(xsltKey, null));
+
 		response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
 		response.getWriter().print(xformXml);
 	}
@@ -469,7 +467,7 @@ public class XformDownloadServlet extends HttpServlet {
 			XformBuilder.setNodeValue(doc, NODE_PATIENT_BIRTH_DATE, XformsUtil.fromDate2SubmitString(d));
 
 		XformBuilder.setNodeValue(doc, NODE_PATIENT_BIRTH_DATE_ESTIMATED, patient.getBirthdateEstimated() ? "true" : "false");
-		
+
 		PatientIdentifier identifier = patient.getPatientIdentifier();
 
 		if(identifier !=  null){
@@ -535,7 +533,7 @@ public class XformDownloadServlet extends HttpServlet {
 				XformBuilder.setNodeValue(doc, "person_attribute"+attributeType.getPersonAttributeTypeId(), value);
 		}
 	}
-	
+
 	/**
 	 * Add the given name, gender, and birthdate/age to the given Person
 	 * 
@@ -547,9 +545,9 @@ public class XformDownloadServlet extends HttpServlet {
 	 * @param age
 	 */
 	public <P extends Person> void getMiniPerson(P person, String name, String gender, String date, String age) {
-		
+
 		person.addName(Context.getPersonService().parsePersonName(name));
-		
+
 		person.setGender(gender);
 		Date birthdate = null;
 		boolean birthdateEstimated = false;
@@ -589,7 +587,7 @@ public class XformDownloadServlet extends HttpServlet {
 		if (birthdate != null)
 			person.setBirthdate(birthdate);
 		person.setBirthdateEstimated(birthdateEstimated);
-		
+
 	}
 
 

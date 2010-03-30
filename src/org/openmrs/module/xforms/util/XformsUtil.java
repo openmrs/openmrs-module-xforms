@@ -303,9 +303,39 @@ public class XformsUtil {
 	 * @return the xhtml representation of the xform.
 	 */
 	public static String fromXform2Xhtml(String xform, String xsl) throws Exception{
-		if(xsl == null) xsl = getDefaultXSLT();
-		StringWriter outWriter = new StringWriter();
+		if(xsl == null) 
+			xsl = getDefaultXSLT();
+		
+		return transformDocument(xform,xsl);
+		
+		/*StringWriter outWriter = new StringWriter();
 		Source source = new StreamSource(IOUtils.toInputStream(xform,XformConstants.DEFAULT_CHARACTER_ENCODING));
+		Source xslt = new StreamSource(IOUtils.toInputStream(xsl,XformConstants.DEFAULT_CHARACTER_ENCODING));
+		Result result = new StreamResult(outWriter);
+
+		System.setProperty("javax.xml.transform.TransformerFactory",
+		"net.sf.saxon.TransformerFactoryImpl");
+
+		TransformerFactory tf = TransformerFactory.newInstance();
+
+		Transformer t = tf.newTransformer(xslt);
+		t.transform(source, result);
+		return outWriter.toString();*/
+	}
+	
+	/**
+	 * Converts an xform to an xhtml document.
+	 * 
+	 * @param xform the xform
+	 * @param xsl the xslt
+	 * @return the xhtml representation of the xform.
+	 */
+	public static String transformDocument(String xml, String xsl) throws Exception{
+		if(xsl == null || xsl.trim().length() == 0) 
+			return xml;
+		
+		StringWriter outWriter = new StringWriter();
+		Source source = new StreamSource(IOUtils.toInputStream(xml,XformConstants.DEFAULT_CHARACTER_ENCODING));
 		Source xslt = new StreamSource(IOUtils.toInputStream(xsl,XformConstants.DEFAULT_CHARACTER_ENCODING));
 		Result result = new StreamResult(outWriter);
 

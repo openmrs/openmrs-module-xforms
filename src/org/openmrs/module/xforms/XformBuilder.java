@@ -748,7 +748,7 @@ public final class XformBuilder {
 	private static void setTableFieldDataType(String name, Element bindNode){
 		if(name.equalsIgnoreCase(NODE_ENCOUNTER_ENCOUNTER_DATETIME)){
 			bindNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_DATE);
-			bindNode.setAttribute(null, ATTRIBUTE_CONSTRAINT, ". &lt;= 'today()'");
+			bindNode.setAttribute(null, ATTRIBUTE_CONSTRAINT, ". &lt;= today()");
 			bindNode.setAttribute(null, ATTRIBUTE_MESSAGE,"Encounter date cannot be after today");
 		}
 		else if(name.equalsIgnoreCase(NODE_ENCOUNTER_LOCATION_ID))

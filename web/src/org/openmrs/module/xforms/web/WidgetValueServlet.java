@@ -47,14 +47,29 @@ public class WidgetValueServlet extends HttpServlet {
 		String source = request.getParameter("ExternalSource");
 		String displayField = request.getParameter("DisplayField");
 		String valueField = request.getParameter("ValueField");
+		String filterField = request.getParameter("FilterField");
+		String filterValue = request.getParameter("FilterValue");
 		
 		String sql = source;
 		if(!sql.startsWith("select"))
 			sql = "select " + displayField + "," + valueField + " from " + source + 
 			" where " + displayField + " is not null and " + valueField + " is not null ";
 		
+		if((filterField != null && filterField.trim().length() > 0) &&
+				filterValue != null && filterValue.trim().length() > 0){
+			
+			sql += " and " + filterField;
+			
+			if(filterValue.equalsIgnoreCase("IS NULL"))
+				 sql += " is null ";
+			else
+				sql += "='" + filterValue + "'";
+		}
+		
 		if(source.equalsIgnoreCase("concept"))
 			return; //sql = "select name, concat(concept_id,concat(concat('^',name),'^99DCT')) as id from concept_name where locale='"+ Context.getLocale().getLanguage()+"'";
+		
+		sql += " order by " + displayField;
 		
 		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
 		List<Object[]> list = xformsService.getList(sql, displayField, valueField);
