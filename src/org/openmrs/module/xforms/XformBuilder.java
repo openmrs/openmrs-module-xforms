@@ -667,7 +667,7 @@ public final class XformBuilder {
 	 * @param controlNode - the UI control node.
 	 */
 	private static void populateLocations(Element controlNode){
-		List<Location> locations = Context.getLocationService().getAllLocations();
+		List<Location> locations = Context.getLocationService().getAllLocations(false);
 		for(Location loc : locations){
 			Element itemNode = /*bodyNode*/controlNode.createElement(NAMESPACE_XFORMS, null);
 			itemNode.setName(NODE_ITEM);
@@ -1981,7 +1981,7 @@ public final class XformBuilder {
 		addPatientNode(formNode,modelNode,groupNode,NODE_GENDER,DATA_TYPE_TEXT,"Gender","The patient's sex",false,false,CONTROL_SELECT1,new String[]{"Male","Female"},new String[]{"M","F"});
 
 		String[] items, itemValues; int i=0;
-		List<Location> locations = Context.getLocationService().getAllLocations();
+		List<Location> locations = Context.getLocationService().getAllLocations(false);
 		if(locations != null){
 			items = new String[locations.size()];
 			itemValues = new String[locations.size()];
