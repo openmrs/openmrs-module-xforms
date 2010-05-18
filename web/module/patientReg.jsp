@@ -327,6 +327,7 @@
     		cancel: "<spring:message code="xforms.cancel" />",
     		clickToAddNewCondition: "<spring:message code="xforms.clickToAddNewCondition" />",
     		qtnTypeGPS: "<spring:message code="xforms.qtnTypeGPS" />",
+    		qtnTypeBarcode: "<spring:message code="xforms.qtnTypeBarcode" />",
     		palette: "<spring:message code="xforms.palette" />",
     		saveAsXhtml: "<spring:message code="xforms.saveAsXhtml" />",
     		groupWidgets: "<spring:message code="xforms.groupWidgets" />",
