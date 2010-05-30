@@ -81,7 +81,7 @@ public class XformObsEdit {
 		formNode.setAttribute(null, "encounterId", encounter.getEncounterId().toString());
 
 		XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_LOCATION_ID, encounter.getLocation().getLocationId().toString());
-		XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_ENCOUNTER_DATETIME, XformsUtil.fromDate2SubmitString(encounter.getEncounterDatetime()));
+		XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_ENCOUNTER_DATETIME, XformsUtil.encounterDateIncludesTime() ? XformsUtil.fromDateTime2SubmitString(encounter.getEncounterDatetime()) : XformsUtil.fromDate2SubmitString(encounter.getEncounterDatetime()));
 		XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_PROVIDER_ID, XformsUtil.getProviderId(encounter).toString());
 
 		List<String> complexObs = DOMUtil.getXformComplexObsNodeNames(xml);
@@ -325,7 +325,12 @@ public class XformObsEdit {
 	private static void setEncounterHeader(Encounter encounter, Element formNode) throws Exception{
 		encounter.setLocation(Context.getLocationService().getLocation(Integer.valueOf(XformBuilder.getNodeValue(formNode, XformBuilder.NODE_ENCOUNTER_LOCATION_ID))));
 		encounter.setProvider(Context.getUserService().getUser(Integer.valueOf(XformBuilder.getNodeValue(formNode, XformBuilder.NODE_ENCOUNTER_PROVIDER_ID))));
-		encounter.setEncounterDatetime(XformsUtil.fromSubmitString2Date(XformBuilder.getNodeValue(formNode, XformBuilder.NODE_ENCOUNTER_ENCOUNTER_DATETIME)));
+		
+		String submitString = XformBuilder.getNodeValue(formNode, XformBuilder.NODE_ENCOUNTER_ENCOUNTER_DATETIME);
+		Date date = XformsUtil.fromSubmitString2Date(submitString);
+		if(XformsUtil.encounterDateIncludesTime())
+			date = XformsUtil.fromSubmitString2DateTime(submitString);
+		encounter.setEncounterDatetime(date);
 	}
 
 	private static void addNewObs(Element formNode, List<String> complexObs,Encounter encounter, Element obsNode, Date datetime, Obs obsGroup) throws Exception{

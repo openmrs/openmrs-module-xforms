@@ -228,8 +228,8 @@ public class XformDownloadServlet extends HttpServlet {
 			}
 		}
 
-		if("xhtml".equalsIgnoreCase(request.getParameter("contentType")))
-			xformXml = XformsUtil.fromXform2Xhtml(xformXml, XformsUtil.getPlainDefaultXSLT());
+		//if("xhtml".equalsIgnoreCase(request.getParameter("contentType")))
+		//	xformXml = XformsUtil.fromXform2Xhtml(xformXml, XformsUtil.getPlainDefaultXSLT());
 
 		String xsltKey = request.getParameter("xsltKey");
 		if(xsltKey != null)

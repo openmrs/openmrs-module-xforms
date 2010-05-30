@@ -634,4 +634,8 @@ public class XformsUtil {
 			return ((Person)method.invoke(encounter, null)).getPersonId();
 		}
 	}
+	
+	public static boolean encounterDateIncludesTime(){
+		return "true".equalsIgnoreCase(Context.getAdministrationService().getGlobalProperty("xforms.encounterDateIncludesTime", "false"));
+	}
 }

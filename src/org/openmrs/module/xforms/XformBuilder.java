@@ -33,6 +33,7 @@ import org.openmrs.PersonAttributeType;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.xforms.util.XformsUtil;
 import org.openmrs.reporting.export.DataExportUtil.VelocityExceptionHandler;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.xmlpull.v1.XmlPullParser;
@@ -747,7 +748,7 @@ public final class XformBuilder {
 	 */
 	private static void setTableFieldDataType(String name, Element bindNode){
 		if(name.equalsIgnoreCase(NODE_ENCOUNTER_ENCOUNTER_DATETIME)){
-			bindNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_DATE);
+			bindNode.setAttribute(null, ATTRIBUTE_TYPE, XformsUtil.encounterDateIncludesTime() ? DATA_TYPE_DATETIME : DATA_TYPE_DATE);
 			bindNode.setAttribute(null, ATTRIBUTE_CONSTRAINT, ". &lt;= today()");
 			bindNode.setAttribute(null, ATTRIBUTE_MESSAGE,"Encounter date cannot be after today");
 		}
