@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>xforms</id>
 	<name>XForms</name>
-	<version>3.8.7</version>
+	<version>3.8.8</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Daniel Kayiwa</author>
 	<description>
@@ -225,6 +225,11 @@
 		<property>@MODULE_ID@.showOfflineFormDesigner</property>
 		<defaultValue>false</defaultValue>
 		<description>Set to true if you want to show the form designer in off line mode.</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.encounterDateIncludesTime</property>
+		<defaultValue>false</defaultValue>
+		<description>Set to true if the encounter date should include time.</description>
 	</globalProperty>
 	
 	<!-- /Required Global Properties -->
