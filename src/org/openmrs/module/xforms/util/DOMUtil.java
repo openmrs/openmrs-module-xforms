@@ -101,6 +101,10 @@ public class DOMUtil {
 	
 	public static List<String> getModelComplexObsNodeNames(int id) throws Exception{
 		Xform xform = ((XformsService)Context.getService(XformsService.class)).getXform(id);
+		
+		if(xform == null)
+			return new ArrayList<String>(); //could be dealing with patient xform which may not be saved yet.
+		
 		Document doc = XformsUtil.fromString2Doc(xform.getXformXml());
 
 		return getXformComplexObsNodeNames(doc.getDocumentElement());
