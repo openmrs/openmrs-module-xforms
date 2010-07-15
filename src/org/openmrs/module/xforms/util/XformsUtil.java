@@ -632,6 +632,11 @@ public class XformsUtil {
 		catch(NoSuchMethodError ex){
 			Method method = encounter.getClass().getMethod("getProvider", null);
 			return ((Person)method.invoke(encounter, null)).getPersonId();
+			
+			/*List<User>  users = Context.getUserService().getUsersByPerson(encounter.getProvider(), false);
+            // deal with multiples by tossing exceptions if you like
+            if (!users.isEmpty())
+                return users.get(0).getUserId();*/
 		}
 	}
 	

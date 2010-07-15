@@ -103,7 +103,7 @@ public class DOMUtil {
 		Xform xform = ((XformsService)Context.getService(XformsService.class)).getXform(id);
 		
 		if(xform == null)
-			return new ArrayList<String>(); //could be dealing with patient xform which may not be saved yet.
+			return new ArrayList<String>(); //could be a new patient xform which may not be saved yet.
 		
 		Document doc = XformsUtil.fromString2Doc(xform.getXformXml());
 
