@@ -480,7 +480,11 @@ public class XformObsEdit {
 	}
 
 	private static String getConceptId(String conceptStr){
-		return conceptStr.substring(0, conceptStr.indexOf('^'));
+		int pos = conceptStr.indexOf('^');
+		if(pos < 1)
+			return conceptStr; //must be a number already.
+		
+		return conceptStr.substring(0, pos);
 	}
 
 	private static Object convertToType(String val, Class<?> clazz) {
