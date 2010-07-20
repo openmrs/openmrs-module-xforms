@@ -89,6 +89,9 @@ public class XformConstants {
 	/** The default value for rejecting forms for patients considered new when they already exist, by virture of patient identifier. */
 	public static final String DEFAULT_REJECT_EXIST_PATIENT_CREATE = "true";
 	
+	/** The default value for allowing bind editing. */
+	public static final String DEFAULT_ALLOW_BIND_EDIT = "false";
+	
 	/** The global property key for rejecting forms for patients considered new when they already exist, by virture of patient identifier. */
 	public static final String GLOBAL_PROP_KEY_REJECT_EXIST_PATIENT_CREATE = "xforms.rejectExistingPatientCreation";
 	
@@ -121,6 +124,9 @@ public class XformConstants {
 	
 	/** The global property key for the list of locales.*/
 	public static final String GLOBAL_PROP_KEY_LOCALE_LIST = "xforms.localeList";
+	
+	/** The global property key for allowing editing of bindings.*/
+	public static final String GLOBAL_PROP_KEY_ALLOW_BIND_EDIT = "xforms.allowBindEdit";
 	
 	/** The form designer key for the date submit format.*/
 	public static final String FORM_DESIGNER_KEY_DATE_SUBMIT_FORMAT = "dateSubmitFormat";

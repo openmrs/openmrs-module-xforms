@@ -47,7 +47,7 @@ public class XformDesignerController extends SimpleFormController {
 		String allowBindEdit = "1";
 		if(formId != null && formId.trim().length() > 0){
 			map.put("formId",Integer.parseInt(formId));
-			allowBindEdit = "0";
+			allowBindEdit = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_ALLOW_BIND_EDIT,XformConstants.DEFAULT_ALLOW_BIND_EDIT);
 		}
 		else
 			map.put("formId",-1);

@@ -231,6 +231,11 @@
 		<defaultValue>false</defaultValue>
 		<description>Set to true if the encounter date should include time.</description>
 	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.allowBindEdit</property>
+		<defaultValue>false</defaultValue>
+		<description>Set to true if you want to allow editing of question bindings when designing forms.</description>
+	</globalProperty>
 	
 	<!-- /Required Global Properties -->
 

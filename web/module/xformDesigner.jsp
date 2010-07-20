@@ -423,7 +423,7 @@
     					if (msg) {
     						var concept = msg.objs[0];
     						var conceptPopup = dojo.widget.manager.getWidgetById("conceptId_selection");
-    						conceptPopup.displayNode.innerHTML = concept.conceptId;
+    						conceptPopup.displayNode.innerHTML = concept.conceptId + "^" + concept.name + "^99DCT";
     						conceptPopup.hiddenInputNode.value = concept.name;						
     						conceptPopup.hiddenInputNode.focus();
     					}

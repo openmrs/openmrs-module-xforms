@@ -162,7 +162,7 @@ public final class XformBuilder {
 	public static final String NODE_PATIENT_GENDER = "patient.sex";
 	public static final String NODE_PATIENT_IDENTIFIER_TYPE= "patient_identifier.identifier_type";
 	public static final String NODE_PATIENT_IDENTIFIER_TYPE_ID= "patient_identifier.identifier_type_id";
-	
+
 	public static final String NODE_PATIENT_ID = "patient_id";
 	public static final String NODE_FAMILY_NAME = "family_name";
 	public static final String NODE_MIDDLE_NAME = "middle_name";
@@ -364,8 +364,8 @@ public final class XformBuilder {
 
 		return null;
 	}
-	
-	
+
+
 	/**
 	 * Gets a child element of a parent node with a given attribute prefix.
 	 * 
@@ -380,13 +380,13 @@ public final class XformBuilder {
 				continue;
 
 			Element child = (Element)parent.getChild(i);
-			
+
 			//Node name may not match due to change of concept name
 			//and hence we only check for attribute value of concept id
 			String value = child.getAttributeValue(null, attributeName);
 			if(value != null && value.startsWith(attributePrefix))
 				return child;
-			
+
 			child = getElementByAttributePrefix(child,attributeName,attributePrefix);
 			if(child != null)
 				return child;
@@ -394,8 +394,8 @@ public final class XformBuilder {
 
 		return null;
 	}
-	
-	
+
+
 	/**
 	 * Gets a child element of a parent node with a given attribute value.
 	 * 
@@ -410,13 +410,13 @@ public final class XformBuilder {
 				continue;
 
 			Element child = (Element)parent.getChild(i);
-			
+
 			//Node name may not match due to change of concept name
 			//and hence we only check for attribute value of concept id
 			String value = child.getAttributeValue(null, attributeName);
 			if(value != null && value.equalsIgnoreCase(attributeValue))
 				return child;
-			
+
 			child = getElementByAttributeValue(child,attributeName,attributeValue);
 			if(child != null)
 				return child;
@@ -424,8 +424,8 @@ public final class XformBuilder {
 
 		return null;
 	}
-	
-	
+
+
 	/**
 	 * Gets a child element of a parent node with a given name.
 	 * 
@@ -450,7 +450,7 @@ public final class XformBuilder {
 
 		return null;
 	}
-	
+
 
 	/**
 	 * Builds an Xfrom from an openmrs schema and template document.
@@ -952,8 +952,10 @@ public final class XformBuilder {
 			return;
 
 		Element labelNode = null, bindNode = (Element)bindings.get(name);
-		if(bindNode == null)
+		if(bindNode == null){
+			addProblemListItems(name, complexTypeNode, bodyNode);
 			return; //could be a section like problem_list_section
+		}
 
 		boolean repeatItem = false;
 		Element lblNode = null;
@@ -983,6 +985,58 @@ public final class XformBuilder {
 	}
 
 
+	private static void addProblemListItems(String name, Element complexTypeNode, Element bodyNode){
+		for(int i=0; i<complexTypeNode.getChildCount(); i++){
+			if(complexTypeNode.isText(i))             
+				continue; //ignore text.
+
+			Element node = (Element)complexTypeNode.getChild(i);
+			if(node.getName().equalsIgnoreCase(NODE_SEQUENCE)){
+				for(int j=0; j<node.getChildCount(); j++){
+					if(node.isText(j))
+						continue; //ignore text.
+
+					Element nd = (Element)node.getChild(j);
+					String itemName = nd.getAttributeValue(null, ATTRIBUTE_NAME);
+					String type = nd.getAttributeValue(null, ATTRIBUTE_TYPE);
+					type = type.substring(0, type.length() - 5);
+					if(type.equals(itemName))
+						continue;
+					
+					addProblemListItem(itemName, bodyNode);
+				}
+			}
+		}
+	}
+	
+	
+	private static void addProblemListItem(String name, Element bodyNode){
+		Element select1Node =  bodyNode.createElement(NAMESPACE_XFORMS,null);
+		select1Node.setName(CONTROL_SELECT1);
+		select1Node.setAttribute(null, ATTRIBUTE_REF, "problem_list/" + name + "/value");
+		bodyNode.addChild(Element.ELEMENT,select1Node);
+		
+		Element labelNode =  select1Node.createElement(NAMESPACE_XFORMS,null);
+		labelNode.setName(NODE_LABEL);
+		labelNode.addChild(Element.TEXT, name);
+		select1Node.addChild(Element.ELEMENT,labelNode);
+
+		Element itemLabelNode = select1Node.createElement(NAMESPACE_XFORMS, null);
+		itemLabelNode.setName(NODE_LABEL);	
+		itemLabelNode.addChild(Element.TEXT, "Value");
+
+		Element itemValNode = select1Node.createElement(NAMESPACE_XFORMS, null);
+		itemValNode.setName(NODE_VALUE);	
+		itemValNode.addChild(Element.TEXT, "value");
+
+		Element itemNode = select1Node.createElement(NAMESPACE_XFORMS, null);
+		itemNode.setName(NODE_ITEM);
+		itemNode.addChild(Element.ELEMENT, itemLabelNode);
+		itemNode.addChild(Element.ELEMENT, itemValNode);
+
+		select1Node.addChild(Element.ELEMENT, itemNode);
+	}
+	
 	/**
 	 * Checks if the xforms data type is set to any value other than text.
 	 * 
@@ -1125,13 +1179,13 @@ public final class XformBuilder {
 		name = name.substring(0, name.length() - COMPLEX_TYPE_NAME_POSTFIX.length());
 		return name;
 	}
-	
+
 	private static boolean isNumeric(String value){
 		try{
 			Integer.parseInt(value);
 			return true;
 		}catch(Exception ex){}
-		
+
 		return false;
 	}
 
@@ -1364,7 +1418,7 @@ public final class XformBuilder {
 	 */
 	private static Element parseSequenceValueNode(String name,Element node, Element labelNode, Element bodyNode,Element bindingNode, Hashtable<String,String> problemList, Hashtable<String,String> problemListItems,Hashtable<String,Element> repeatControls){
 		String type = node.getAttributeValue(null, ATTRIBUTE_TYPE);
-		
+
 		if(type != null)
 			labelNode = buildSequenceInputControlNode(name,node,type,labelNode,bindingNode,bodyNode,problemList,problemListItems,repeatControls);
 		else{
@@ -1479,11 +1533,11 @@ public final class XformBuilder {
 		if(controlNode.getChildCount() == 0){
 			//controlNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
 			controlNode.setName(CONTROL_SELECT);
-			
+
 			//For repeat kids, we set ref instead of bind
 			if(!(problemList.containsKey(name) || problemListItems.containsKey(name)))
 				controlNode.setAttribute(null, ATTRIBUTE_BIND, name);
-			
+
 			controlNode.setAttribute(null, ATTRIBUTE_APPEARANCE, Context.getAdministrationService().getGlobalProperty("xforms.multiSelectAppearance"));
 
 			labelNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
@@ -1572,7 +1626,7 @@ public final class XformBuilder {
 		String valueNodeName = NODE_VALUE;
 		if(controlName.equals(CONTROL_SELECT))
 			valueNodeName = NODE_XFORMS_VALUE;
-		
+
 		if(!controlName.equalsIgnoreCase(CONTROL_INPUT))
 			controlNode.setAttribute(null, ATTRIBUTE_APPEARANCE, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_SINGLE_SELECT_APPEARANCE));
 
@@ -1646,8 +1700,25 @@ public final class XformBuilder {
 
 		if(controlNode != null)
 			repeatControl.addChild(Element.ELEMENT, controlNode);
+		else
+			addDefaultProblemListChild(repeatControl);
 
 		return repeatControl;
+	}
+
+	private static void addDefaultProblemListChild(Element repeatControl){
+		//add the input node.
+		Element controlNode = repeatControl.createElement(NAMESPACE_XFORMS, null);
+		controlNode.setName(CONTROL_INPUT);
+		controlNode.setAttribute(null, ATTRIBUTE_REF, "problem_list/" + repeatControl.getAttributeValue(null, ATTRIBUTE_BIND)+"/value");
+		controlNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_TEXT);
+		repeatControl.addChild(Element.ELEMENT, controlNode);
+
+		//add the label.
+		Element labelNode = controlNode.createElement(NAMESPACE_XFORMS, null);
+		labelNode.setName(NODE_LABEL);
+		labelNode.addChild(Element.TEXT, "Value");
+		controlNode.addChild(Element.ELEMENT, labelNode);
 	}
 
 	/**
@@ -1754,7 +1825,7 @@ public final class XformBuilder {
 	 * @return the xml string in in the document.
 	 */
 	public static String fromDoc2String(Document doc) throws Exception {
-		
+
 		KXmlSerializer serializer = new KXmlSerializer();
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		DataOutputStream dos = new DataOutputStream(bos);
@@ -1771,8 +1842,8 @@ public final class XformBuilder {
 		}
 
 		return new String(bos.toByteArray(),XformConstants.DEFAULT_CHARACTER_ENCODING);
-		
-		
+
+
 		/*KXmlSerializer serializer = new KXmlSerializer();
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		DataOutputStream dos = new DataOutputStream(bos);
@@ -1933,7 +2004,7 @@ public final class XformBuilder {
 	public static String getNewPatientXform()throws Exception {			
 		Document doc = new Document();
 		doc.setEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
-		
+
 		Element xformsNode = doc.createElement(NAMESPACE_XFORMS, null);
 		xformsNode.setName(NODE_XFORMS);
 		xformsNode.setPrefix(PREFIX_XFORMS, NAMESPACE_XFORMS);
@@ -2350,7 +2421,7 @@ public final class XformBuilder {
 	public static void setPatientFieldValues(Patient patient, Form form,Element parentNode, XformsService xformsService) throws Exception {
 		//EasyFactoryConfiguration config = new EasyFactoryConfiguration();
 
-	
+
 		VelocityEngine velocityEngine = new VelocityEngine();
 		velocityEngine.setProperty( RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.runtime.log.CommonsLogLogChute" );
 		velocityEngine.setProperty(CommonsLogLogChute.LOGCHUTE_COMMONS_LOG_NAME, "xforms_velocity");
@@ -2362,7 +2433,7 @@ public final class XformBuilder {
 		velocityContext.put("timestamp", new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_TIME_SUBMIT_FORMAT,XformConstants.DEFAULT_DATE_TIME_SUBMIT_FORMAT)));
 		velocityContext.put("date", new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_SUBMIT_FORMAT,XformConstants.DEFAULT_DATE_SUBMIT_FORMAT)));
 		velocityContext.put("time", new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_TIME_SUBMIT_FORMAT,XformConstants.DEFAULT_TIME_SUBMIT_FORMAT)));
-		
+
 		// add the error handler
 		EventCartridge eventCartridge = new EventCartridge();
 		eventCartridge.addEventHandler(new VelocityExceptionHandler());
@@ -2370,36 +2441,36 @@ public final class XformBuilder {
 
 		setPatientTableFieldValues(form.getFormId(),parentNode,xformsService,velocityEngine,velocityContext);
 	}
-	
-	
+
+
 	public static Element createCopy(Element element){
 		Element copy = element.getParent().createElement(null, null);
 		copy.setName(element.getName());
 		element.getParent().addChild(Element.ELEMENT,copy);
-		
+
 		copyAttributes(element,copy);
 		copyChildren(element,copy);
-		
+
 		return copy;
 	}
-	
+
 	private static void copyChildren(Element srcNode, Element dstNode){
-			
+
 		for(int index = 0; index < srcNode.getChildCount(); index++){
 			if(srcNode.getType(index) != Element.ELEMENT)
 				continue;
-			
+
 			Element child = (Element)srcNode.getChild(index);
-			
+
 			Element newChild = dstNode.createElement(null, null);
 			newChild.setName(child.getName());
 			dstNode.addChild(Element.ELEMENT,newChild);
-			
+
 			copyAttributes(child,newChild);
 			copyChildren(child,newChild);
 		}
 	}
-	
+
 	private static void copyAttributes(Element srcNode, Element dstNode){
 		for(int index = 0; index < srcNode.getAttributeCount(); index++){
 			String name = srcNode.getAttributeName(index);

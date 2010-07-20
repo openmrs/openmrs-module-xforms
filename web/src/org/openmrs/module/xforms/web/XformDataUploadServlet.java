@@ -11,13 +11,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformsServer;
 import org.openmrs.module.xforms.download.XformDataUploadManager;
+import org.openmrs.module.xforms.util.ServletFileUploadUtil;
 import org.openmrs.module.xforms.util.XformsUtil;
 
 
@@ -55,56 +56,32 @@ public class XformDataUploadServlet extends HttpServlet{
 
 					request.setAttribute(XformConstants.REQUEST_ATTRIBUTE_ID_ERROR_MESSAGE, null);
 					request.setAttribute(XformConstants.REQUEST_ATTRIBUTE_ID_PATIENT_ID, null);
+					
+					String xml = null;
+					
+					// check if request has multipart content
+					if(ServletFileUpload.isMultipartContent(request)) 
+						xml = ServletFileUploadUtil.getXformsInstanceData(request, response);
+					else{
+						xml = IOUtils.toString(request.getInputStream(),XformConstants.DEFAULT_CHARACTER_ENCODING);
+						
+						Object id = request.getAttribute(XformConstants.REQUEST_ATTRIBUTE_ID_PATIENT_ID);
+						if(id != null)
+							response.getWriter().print(id.toString());
+						
+						response.setStatus(HttpServletResponse.SC_OK);
+						response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
+						response.getWriter().println("Data submitted successfully");
+					}
 
+					
 					///else single form filled from browser.
-					XformDataUploadManager.processXform(IOUtils.toString(request.getInputStream(),XformConstants.DEFAULT_CHARACTER_ENCODING),request.getSession().getId(),XformsUtil.getEnterer(),true, request);
-					//setSingleEntryResponse(request, response);
-					
-					Object id = request.getAttribute(XformConstants.REQUEST_ATTRIBUTE_ID_PATIENT_ID);
-					if(id != null)
-						response.getWriter().print(id.toString());
-					
-					response.setStatus(HttpServletResponse.SC_OK);
-					response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
-					response.getWriter().println("Data submitted successfully");
+					XformDataUploadManager.processXform(xml,request.getSession().getId(),XformsUtil.getEnterer(),true, request);
 				} 
 			}
 		}
 		catch(Exception e){
 			XformsUtil.reportDataUploadError(e, request, response);
-		}
-	}
-
-	/**
-	 * Write the response after processing an xform submitted from the browser.
-	 * 
-	 * @param request - the request.
-	 * @param response - the response.
-	 */
-	private void setSingleEntryResponse(HttpServletRequest request, HttpServletResponse response){
-
-		String searchNew = Context.getAdministrationService().getGlobalProperty("xforms.searchNewPatientAfterFormSubmission");
-		String url = "/findPatient.htm";
-		if(XformConstants.FALSE_TEXT_VALUE.equalsIgnoreCase(searchNew)){
-			String patientId = request.getParameter(XformConstants.REQUEST_PARAM_PATIENT_ID);
-			url = "/patientDashboard.form?patientId="+patientId;
-		}
-		url = request.getContextPath() + url;
-
-		response.setStatus(HttpServletResponse.SC_OK);
-		response.setContentType("text/html;charset=utf-8");
-
-		try{
-			//We are using an iframe to display the xform within the page.
-			//So this response just tells the iframe parent document to go to either the
-			//patient dashboard, or to the search patient screen, depending on the user's settings.
-			response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
-			response.getWriter().println("<html>" + "<head>"
-					+"<script type='text/javascript'> window.onload=function() {self.parent.location.href='" + url + "';}; </script>"
-					+"</head>" + "</html>");
-		}
-		catch(IOException e){
-			log.error(e.getMessage(),e);
 		}
 	}
 }
