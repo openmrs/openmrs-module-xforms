@@ -1023,7 +1023,7 @@ public final class XformBuilder {
 
 		Element itemLabelNode = select1Node.createElement(NAMESPACE_XFORMS, null);
 		itemLabelNode.setName(NODE_LABEL);	
-		itemLabelNode.addChild(Element.TEXT, "Value");
+		itemLabelNode.addChild(Element.TEXT, name + " value");
 
 		Element itemValNode = select1Node.createElement(NAMESPACE_XFORMS, null);
 		itemValNode.setName(NODE_VALUE);	
@@ -1701,23 +1701,23 @@ public final class XformBuilder {
 		if(controlNode != null)
 			repeatControl.addChild(Element.ELEMENT, controlNode);
 		else
-			addDefaultProblemListChild(repeatControl);
+			addDefaultProblemListChild(name, repeatControl);
 
 		return repeatControl;
 	}
 
-	private static void addDefaultProblemListChild(Element repeatControl){
+	private static void addDefaultProblemListChild(String name, Element repeatControl){
 		//add the input node.
 		Element controlNode = repeatControl.createElement(NAMESPACE_XFORMS, null);
 		controlNode.setName(CONTROL_INPUT);
-		controlNode.setAttribute(null, ATTRIBUTE_REF, "problem_list/" + repeatControl.getAttributeValue(null, ATTRIBUTE_BIND)+"/value");
+		controlNode.setAttribute(null, ATTRIBUTE_REF, "problem_list/" + name +"/value");
 		controlNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_TEXT);
 		repeatControl.addChild(Element.ELEMENT, controlNode);
 
 		//add the label.
 		Element labelNode = controlNode.createElement(NAMESPACE_XFORMS, null);
 		labelNode.setName(NODE_LABEL);
-		labelNode.addChild(Element.TEXT, "Value");
+		labelNode.addChild(Element.TEXT, name + " value");
 		controlNode.addChild(Element.ELEMENT, labelNode);
 	}
 
