@@ -61,8 +61,8 @@ public class XformObsEdit {
 	private static List<String> dirtyComplexData;
 
 
-	public static String getMultSelObsNodeName(Element parent, Obs obs){
-		return XformBuilder.getElementByAttributePrefix(parent, "openmrs_concept",obs.getValueCoded().getConceptId()+"^").getName();
+	public static String getMultSelObsNodeName(Element parent, Obs obs, List<String> nonCopyAttributes){
+		return XformBuilder.getElementByAttributePrefix(parent, "openmrs_concept",obs.getValueCoded().getConceptId()+"^", false, "obsId", true, nonCopyAttributes).getName();
 	}
 
 	public static void fillObs(HttpServletRequest request,Document doc, Integer encounterId, String xml)throws Exception{
@@ -87,45 +87,49 @@ public class XformObsEdit {
 		List<String> complexObs = DOMUtil.getXformComplexObsNodeNames(xml);
 
 		HashMap<String,Element> obsGroupNodes = new HashMap<String,Element>();
-
+		List<String> nonCopyAttributes = new ArrayList<String>();
+		nonCopyAttributes.add("obsId");
+		nonCopyAttributes.add("obsGroupId");
+		
 		Set<Obs> observations = encounter.getObs();
 		for(Obs obs : observations){
 			Concept concept = obs.getConcept();
 
 			//Obs obsGroup = obs.getObsGroup();
 			String obsGroupId = obs.getObsGroup() == null ? null : obs.getObsGroup().getObsId().toString();
-
+			
 			//TODO This needs to do a better job by searching for an attribute that starts with
 			//a concept id of the concept and hence remove the name dependency as the concept name
 			//could change or may be different in a different locale.
-			Element node = XformBuilder.getElementByAttributePrefix(formNode,"openmrs_concept",concept.getConceptId()+"^");
+			Element node = XformBuilder.getElementByAttributePrefix(formNode,"openmrs_concept", (obsGroupId == null ? concept.getConceptId() : obs.getObsGroup().getConcept()) +"^", (obsGroupId == null ? false : true), (obsGroupId == null ? "obsId" : "obsGroupId"), true, nonCopyAttributes);
 			if(node == null)
 				continue;
 
 			//check if this is a repeating obs.
 			if(obsGroupId != null){
-				Element parentNode = (Element)node.getParent();
-				String nodeGroupId = parentNode.getAttributeValue(null, "obsGroupId");
+				String nodeGroupId = node.getAttributeValue(null, "obsGroupId");
 
 				//if this is first time to get a node of this parent.
 				if(nodeGroupId == null || nodeGroupId.trim().length() == 0){
-					parentNode.setAttribute(null, "obsGroupId", obsGroupId); //new group processing
-					obsGroupNodes.put(obsGroupId, parentNode);
+					node.setAttribute(null, "obsGroupId", obsGroupId); //new group processing
+					obsGroupNodes.put(obsGroupId, node);
 				}
 				else{
 					if(!nodeGroupId.equals(obsGroupId)){
 						Element groupNode = obsGroupNodes.get(obsGroupId);
 						if(groupNode == null){//new group
-							groupNode = XformBuilder.createCopy(parentNode);
-							groupNode.setAttribute(null, "obsGroupId", obsGroupId);
-							obsGroupNodes.put(obsGroupId, groupNode);
+							node = XformBuilder.createCopy(node, nonCopyAttributes);
+							node.setAttribute(null, "obsGroupId", obsGroupId);
+							obsGroupNodes.put(obsGroupId, node);
 						}//else a kid of some other group which we processed but not necessarily being the first one.
-
-						node = XformBuilder.getElementByAttributePrefix(groupNode,"openmrs_concept",concept.getConceptId()+"^");
-						if(node == null)
-							continue;
+						else
+							node = groupNode;
 					}//else another kid of an already processed group.
 				}
+				
+				node = XformBuilder.getElementByAttributePrefix(node,"openmrs_concept",concept.getConceptId()+"^", false, "obsId", false, nonCopyAttributes);
+				if(node == null)
+					continue;
 			}
 
 			String value = obs.getValueAsString(Context.getLocale());
@@ -148,7 +152,7 @@ public class XformObsEdit {
 					//TODO This may fail when locale changes from the one in which the form was designed.
 					//String xmlToken = FormUtil.getXmlToken(obs.getValueAsString(Context.getLocale()));
 					try{
-						String xmlToken = getMultSelObsNodeName((Element)multNode.getParent(), obs);
+						String xmlToken = getMultSelObsNodeName((Element)multNode.getParent(), obs, nonCopyAttributes);
 						XformBuilder.setNodeValue(node, "xforms_value", value + xmlToken);
 
 						//TODO May need to use getElementWithAttributePrefix()
@@ -158,8 +162,6 @@ public class XformObsEdit {
 							valueNode.setAttribute(null, "obsId", obs.getObsId().toString());
 						}
 					}catch(Exception ex){
-						System.out.println("VALUE="+value);
-						System.out.println("OBSID="+obs.getObsId().toString());
 						ex.printStackTrace();
 					}
 				}
@@ -174,6 +176,9 @@ public class XformObsEdit {
 
 					XformBuilder.setNodeValue(valueNode,value);
 					valueNode.setAttribute(null, "obsId", obs.getObsId().toString());
+					
+					if(concept.getDatatype().isCoded() && obs.getValueCoded() != null)
+						valueNode.setAttribute(null, "displayValue", obs.getValueCoded().getName().getName());
 
 					if(obsGroupId != null)
 						valueNode.setAttribute(null, "default", "false()");

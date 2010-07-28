@@ -1,8 +1,12 @@
 package org.openmrs.module.xforms;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -211,6 +215,7 @@ public final class XformBuilder {
 	public static final String BINDING_BIRTH_DATE_ESTIMATED = "/form/patient/patient.birthdate_estimated";
 	public static final String BINDING_IDENTIFIER_TYPE = "/form/patient/patient_identifier.identifier_type";
 
+
 	/**
 	 * Builds an Xform from an openmrs schema and template xml.
 	 * 
@@ -374,7 +379,7 @@ public final class XformBuilder {
 	 * @param attributePrefix - the prefix of the attribute.
 	 * @return - the child element.
 	 */
-	public static Element getElementByAttributePrefix(Element parent, String attributeName, String attributePrefix){
+	public static Element getElementByAttributePrefix(Element parent, String attributeName, String attributePrefix, boolean includeAttribute, String includeAttributeName, boolean copyIfNotExists, List<String> nonCopyAttributes){
 		for(int i=0; i<parent.getChildCount(); i++){
 			if(parent.getType(i) != Element.ELEMENT)
 				continue;
@@ -384,10 +389,15 @@ public final class XformBuilder {
 			//Node name may not match due to change of concept name
 			//and hence we only check for attribute value of concept id
 			String value = child.getAttributeValue(null, attributeName);
-			if(value != null && value.startsWith(attributePrefix))
-				return child;
+			if(value != null && value.startsWith(attributePrefix)){
+				String attributeValue = child.getAttributeValue(null, includeAttributeName); //if obs id is already filled, the just look for another node (Problem lists are normally more than one)
+				if(attributeValue == null || includeAttribute)
+					return child;
+				else if(copyIfNotExists && attributeValue != null)
+					return createCopy(child, nonCopyAttributes);
+			}
 
-			child = getElementByAttributePrefix(child,attributeName,attributePrefix);
+			child = getElementByAttributePrefix(child,attributeName,attributePrefix, includeAttribute, includeAttributeName, copyIfNotExists, nonCopyAttributes);
 			if(child != null)
 				return child;
 		}
@@ -1001,21 +1011,21 @@ public final class XformBuilder {
 					String type = nd.getAttributeValue(null, ATTRIBUTE_TYPE);
 					type = type.substring(0, type.length() - 5);
 					if(type.equals(itemName))
-						continue;
-					
+						continue; //eg medication_orders and medication_orders_type. But if medication_orders_type is missing, then we shall never have a ui for medication_orders
+
 					addProblemListItem(itemName, bodyNode);
 				}
 			}
 		}
 	}
-	
-	
+
+
 	private static void addProblemListItem(String name, Element bodyNode){
 		Element select1Node =  bodyNode.createElement(NAMESPACE_XFORMS,null);
 		select1Node.setName(CONTROL_SELECT1);
 		select1Node.setAttribute(null, ATTRIBUTE_REF, "problem_list/" + name + "/value");
 		bodyNode.addChild(Element.ELEMENT,select1Node);
-		
+
 		Element labelNode =  select1Node.createElement(NAMESPACE_XFORMS,null);
 		labelNode.setName(NODE_LABEL);
 		labelNode.addChild(Element.TEXT, name);
@@ -1036,7 +1046,7 @@ public final class XformBuilder {
 
 		select1Node.addChild(Element.ELEMENT, itemNode);
 	}
-	
+
 	/**
 	 * Checks if the xforms data type is set to any value other than text.
 	 * 
@@ -1303,7 +1313,8 @@ public final class XformBuilder {
 			//for each possible select option.
 			if(!itemName.equalsIgnoreCase(NODE_VALUE)){
 				//Assuming sections (those that end with _section) don't have this attribute.
-				if(node.getAttributeValue(null, "type"/*"minOccurs"*/) != null && !repeatItem){
+				String type = node.getAttributeValue(null, "type"/*"minOccurs"*/);
+				if(type != null && !repeatItem){
 					if(problemList.containsKey(name))
 						//if(problemListItems.containsKey(name))
 						return addProblemListSection(name,bodyNode,repeatControls);
@@ -1700,7 +1711,7 @@ public final class XformBuilder {
 
 		if(controlNode != null)
 			repeatControl.addChild(Element.ELEMENT, controlNode);
-		else
+		else if(name.contains("problem_added") || name.contains("problem_resolved"))
 			addDefaultProblemListChild(name, repeatControl);
 
 		return repeatControl;
@@ -2443,18 +2454,18 @@ public final class XformBuilder {
 	}
 
 
-	public static Element createCopy(Element element){
+	public static Element createCopy(Element element, List<String> nonCopyAttributes){
 		Element copy = element.getParent().createElement(null, null);
 		copy.setName(element.getName());
 		element.getParent().addChild(Element.ELEMENT,copy);
 
-		copyAttributes(element,copy);
-		copyChildren(element,copy);
+		copyAttributes(element,copy, nonCopyAttributes);
+		copyChildren(element,copy, nonCopyAttributes);
 
 		return copy;
 	}
 
-	private static void copyChildren(Element srcNode, Element dstNode){
+	private static void copyChildren(Element srcNode, Element dstNode, List<String> nonCopyAttributes){
 
 		for(int index = 0; index < srcNode.getChildCount(); index++){
 			if(srcNode.getType(index) != Element.ELEMENT)
@@ -2466,15 +2477,16 @@ public final class XformBuilder {
 			newChild.setName(child.getName());
 			dstNode.addChild(Element.ELEMENT,newChild);
 
-			copyAttributes(child,newChild);
-			copyChildren(child,newChild);
+			copyAttributes(child,newChild, nonCopyAttributes);
+			copyChildren(child,newChild, nonCopyAttributes);
 		}
 	}
 
-	private static void copyAttributes(Element srcNode, Element dstNode){
+	private static void copyAttributes(Element srcNode, Element dstNode, List<String> nonCopyAttributes){
 		for(int index = 0; index < srcNode.getAttributeCount(); index++){
 			String name = srcNode.getAttributeName(index);
-			dstNode.setAttribute(null, name, srcNode.getAttributeValue(null, name));
+			if(!nonCopyAttributes.contains(name))
+				dstNode.setAttribute(null, name, srcNode.getAttributeValue(null, name));
 		}
 	}
 }

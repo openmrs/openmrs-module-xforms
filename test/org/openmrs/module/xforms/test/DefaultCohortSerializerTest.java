@@ -1,8 +1,6 @@
 package org.openmrs.module.xforms.test;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 
 import org.openmrs.module.xforms.download.PatientDownloadManager;

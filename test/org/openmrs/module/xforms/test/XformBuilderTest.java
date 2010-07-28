@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -26,6 +27,24 @@ public class XformBuilderTest extends BaseModuleContextSensitiveTest{
 
 	public Boolean useInMemoryDatabase() {
 		return false;
+	}
+	
+	public void testBuildXform() throws Exception {
+		authenticate();
+
+		//Load OpenMRS form
+		Form form = Context.getFormService().getForm(25);
+		System.out.println("form = " + form.getName());
+
+		String schemaXml = XformsUtil.getSchema(form);
+		String templateXml = FormEntryWrapper.getFormTemplate(form);//new FormXmlTemplateBuilder(form,FormEntryUtil.getFormAbsoluteUrl(form)).getXmlTemplate(false);
+		String xform = XformBuilder.getXform4mStrings(schemaXml, templateXml);
+
+		System.out.println("XForm: \n" + xform);
+		File outFile = new File("c:\\xformbuildertest.xml");
+		FileWriter out = new FileWriter(outFile);
+		out.write(xform);
+		out.close();
 	}
 	
 	public void testBuildXformFromFixedFiles() throws Exception {
@@ -79,30 +98,12 @@ public class XformBuilderTest extends BaseModuleContextSensitiveTest{
 			System.out.println(xform);
 			
 			org.kxml2.kdom.Document doc = XformBuilder.getDocument(getFileAsString(new File("xml.xml")));
-			XformBuilder.createCopy(doc.getRootElement());
+			XformBuilder.createCopy(doc.getRootElement(), new ArrayList<String>());
 			System.out.println(XformBuilder.fromDoc2String(doc));
 		}
 		catch(Exception ex){
 			ex.printStackTrace();
 		}
-	}
-	
-	public void testBuildXform() throws Exception {
-		authenticate();
-
-		//Load OpenMRS form
-		Form form = Context.getFormService().getForm(25);
-		System.out.println("form = " + form.getName());
-
-		String schemaXml = XformsUtil.getSchema(form);
-		String templateXml = FormEntryWrapper.getFormTemplate(form);//new FormXmlTemplateBuilder(form,FormEntryUtil.getFormAbsoluteUrl(form)).getXmlTemplate(false);
-		String xform = XformBuilder.getXform4mStrings(schemaXml, templateXml);
-
-		System.out.println("XForm: \n" + xform);
-		File outFile = new File("c:\\xformbuildertest.xml");
-		FileWriter out = new FileWriter(outFile);
-		out.write(xform);
-		out.close();
 	}
 
 	public void testMergForms(){

@@ -71,8 +71,17 @@ public class FormSchemaBuilder {
 			ComplexType ct = ComplexType.getComplexType(formStructure,
 					schemaSections, section, sectionTag + "_section", tagList);
 			String sectionTypeTag = ct.getToken();
+			
+			String fieldName = section.getField().getName();
+			String hl7Value  = fieldName;
+			Concept concept = section.getField().getConcept();
+			if(concept != null)
+				hl7Value = FormUtil.conceptToString(concept, Context.getLocale());
+			
 			schema.append("      <xs:element name=\"" + sectionTag
-					+ "\" type=\"" + sectionTypeTag + "\" />\n");
+					+ "\" type=\"" + sectionTypeTag 
+					+ "\" fieldName=\"" + fieldName
+					+ "\" hl7Value=\"" + hl7Value + "\" />\n");
 		}
 		schema
 				.append("      <xs:element name=\"other\" type=\"_other_section\" />\n");
