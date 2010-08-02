@@ -1,12 +1,8 @@
 package org.openmrs.module.xforms;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -963,8 +959,11 @@ public final class XformBuilder {
 
 		Element labelNode = null, bindNode = (Element)bindings.get(name);
 		if(bindNode == null){
-			addProblemListItems(name, complexTypeNode, bodyNode);
-			return; //could be a section like problem_list_section
+			//could be a section like problem_list_section
+			if(name.equals("problem_list"))
+				addProblemListItems(name, complexTypeNode, bodyNode);
+			
+			return; 
 		}
 
 		boolean repeatItem = false;
