@@ -43,13 +43,13 @@ public class DefaultCohortSerializer {
         	DataOutputStream dos = new DataOutputStream(os);
         	
         	if(data == null){
-        		dos.writeByte(0);
+        		dos.writeInt(0);
         		return;
         	}
         	
             List<Cohort> cohorts = (List<Cohort>) data;
 
-            dos.writeByte(cohorts.size());
+            dos.writeInt(cohorts.size());
             for (Cohort cohort : cohorts)
                 serialize(cohort, dos);
 
