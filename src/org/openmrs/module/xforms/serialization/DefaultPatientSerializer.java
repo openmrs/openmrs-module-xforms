@@ -51,6 +51,12 @@ public class DefaultPatientSerializer {
 	 *            the stream to write to.
 	 */
 	protected void serialize(Patient patient, DataOutputStream dos) {
+
+		if (patient.getPersonName() == null || patient.getPatientIdentifier() == null) {
+			log.error("Patient " + patient.getPatientId() + " is missing a PersonName or PatientIdentifier.");
+			return;
+		}
+		
 		try {			
 			SerializationUtils.writeInteger(dos, patient.getPatientId());
 

@@ -62,7 +62,7 @@ public class PatientDownloadManager {
 			if(cohort != null){
 				Set<Integer> patientIds = cohort.getMemberIds();
 				if(patientIds != null && patientIds.size() > 0){
-					patientData.setPatients(getPantients(patientIds));
+					patientData.setPatients(getPatients(patientIds));
 					List<PatientTableField> fields = PatientTableFieldBuilder.getPatientTableFields(xformsService);
 					if(fields != null && fields.size() > 0){
 						patientData.setFields(fields);
@@ -126,7 +126,7 @@ public class PatientDownloadManager {
 		return null;
 	}
 
-	private static List<Patient> getPantients(Collection<Integer> patientIds){
+	private static List<Patient> getPatients(Collection<Integer> patientIds){
 		List<Patient> patients = new ArrayList<Patient>();
 
 		PatientService patientService = Context.getPatientService();
