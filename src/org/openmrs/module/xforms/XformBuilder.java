@@ -32,7 +32,9 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.xforms.formentry.FormEntryWrapper;
 import org.openmrs.module.xforms.util.XformsUtil;
 import org.openmrs.reporting.export.DataExportUtil.VelocityExceptionHandler;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
@@ -962,7 +964,7 @@ public final class XformBuilder {
 			//could be a section like problem_list_section
 			if(name.equals("problem_list"))
 				addProblemListItems(name, complexTypeNode, bodyNode);
-			
+
 			return; 
 		}
 
@@ -2088,6 +2090,8 @@ public final class XformBuilder {
 
 		addPersonAttributes(formNode,modelNode,groupNode);
 
+		addEncounterForm(doc,formNode,modelNode,groupNode);
+
 		return XformBuilder.fromDoc2String(doc);
 	}
 
@@ -2486,6 +2490,97 @@ public final class XformBuilder {
 			String name = srcNode.getAttributeName(index);
 			if(!nonCopyAttributes.contains(name))
 				dstNode.setAttribute(null, name, srcNode.getAttributeValue(null, name));
+		}
+	}
+
+
+	/**
+	 * Adds and encounter section to the patient registration form for entering obs during new patient registration.
+	 * 
+	 * @param doc
+	 * @param formNode
+	 * @param modelNode
+	 * @param groupNode
+	 */
+	private static void addEncounterForm(Document doc, Element formNode, Element modelNode, Element groupNode){
+		String formId = Context.getAdministrationService().getGlobalProperty("xforms.patientRegEncounterFormId", "0");
+		if("0".equals(formId))
+			return;
+
+		FormService formService = (FormService) Context.getService(FormService.class);
+		Form form = formService.getForm(Integer.parseInt(formId));
+		if(form == null)
+			return;
+		
+		String templateXml = FormEntryWrapper.getFormTemplate(form);
+		Document templateDoc = XformBuilder.getDocument(templateXml);
+		Element rootNode = templateDoc.getRootElement();
+		for(int index = 0; index < rootNode.getChildCount(); index++){
+			if(rootNode.getType(index) != Element.ELEMENT)
+				continue;
+			
+			Element child = (Element)rootNode.getChild(index);
+			if(child.getName().equalsIgnoreCase("patient")){
+				removeNonUsedPatientChildNodes(child);
+				break;
+			}
+		}
+		formNode.addChild(org.kxml2.kdom.Element.ELEMENT, rootNode);
+		
+		Document xformSchemaDoc = new Document();
+		xformSchemaDoc.setEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
+		Element xformSchemaNode = doc.createElement(NAMESPACE_XML_SCHEMA, null);
+		xformSchemaNode.setName(NODE_SCHEMA);
+		xformSchemaDoc.addChild(org.kxml2.kdom.Element.ELEMENT, xformSchemaNode);
+
+		Hashtable bindings = new Hashtable();
+		Hashtable<String,String> problemList = new Hashtable<String,String>();
+		Hashtable<String,String> problemListItems = new Hashtable<String,String>();
+		parseTemplate(modelNode,formNode,formNode,bindings,groupNode,problemList,problemListItems);
+		
+		Document schemaDoc = XformBuilder.getDocument(XformsUtil.getSchema(form));
+		parseSchema(schemaDoc.getRootElement(),groupNode,modelNode,xformSchemaNode,bindings,problemList,problemListItems);
+	
+		removeNonUsedUINodes(groupNode);
+	}
+	
+	
+	/**
+	 * Removes data nodes that are kids of the patient node for obs entry on a patient registration form.
+	 * 
+	 * @param patientNode the patient node.
+	 */
+	private static void removeNonUsedPatientChildNodes(Element patientNode){
+		for(int index = 0; index < patientNode.getChildCount(); index++){
+			if(patientNode.getType(index) != Element.ELEMENT)
+				continue;
+			
+			Element child = (Element)patientNode.getChild(index);
+			if(!child.getName().equalsIgnoreCase("patient.patient_id")){
+				patientNode.removeChild(index);
+				index -= 1;
+			}
+		}
+	}
+	
+	
+	/**
+	 * 
+	 * Removes ui nodes that are not necessary for obs entry on a patient registration form.
+	 * 
+	 * @param groupNode the group node having the ui nodes.
+	 */
+	private static void removeNonUsedUINodes(Element groupNode){
+		for(int index = 0; index < groupNode.getChildCount(); index++){
+			if(groupNode.getType(index) != Element.ELEMENT)
+				continue;
+			
+			Element child = (Element)groupNode.getChild(index);
+			String value = child.getAttributeValue(null, "bind");
+			if("encounter.location_id".equalsIgnoreCase(value) || "patient.patient_id".equalsIgnoreCase(value)){
+				groupNode.removeChild(index);
+				index -= 1;
+			}
 		}
 	}
 }

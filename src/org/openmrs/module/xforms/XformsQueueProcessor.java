@@ -105,6 +105,34 @@ public class XformsQueueProcessor {
 			isRunning = false;
 		}
 	}
+	
+	
+	/**
+	 * Saves obs entered during new patient registration (if any).
+	 * 
+	 * @param patient the patient whose obs to save.
+	 * @param root
+	 * @param pathName
+	 * @param propagateErrors
+	 * @throws Exception
+	 */
+	private void saveNewPatientEncounterIfAny(Patient patient, Element root, String pathName, boolean propagateErrors) throws Exception {
+		NodeList elemList = root.getElementsByTagName("form");
+		if (!(elemList != null && elemList.getLength() > 0)) 
+			return;
+
+		Element formNode = (Element)elemList.item(0);
+		String id = formNode.getAttribute("id");
+		String name = formNode.getAttribute("name");
+		if(!(id != null && name != null && id.trim().length() > 0 && name.trim().length() > 0))
+			return;
+			
+		setNodeValue(formNode, XformBuilder.NODE_PATIENT_PATIENT_ID, patient.getPatientId().toString());
+		setNodeValue(formNode, XformBuilder.NODE_ENCOUNTER_LOCATION_ID, patient.getIdentifiers().iterator().next().getLocation().getLocationId().toString());
+	
+		String xml = XformsUtil.doc2String(formNode);
+		processDoc(xml, pathName, propagateErrors);
+	}
 
 	/**
 	 * Processes an xforms model.
@@ -120,16 +148,28 @@ public class XformsQueueProcessor {
 
 			//Check if new patient doc
 			if(DOMUtil.isPatientDoc(doc)){
-				if(saveNewPatient(root,getCreator(doc),propagateErrors,request) == null)
+				Patient patient = saveNewPatient(root,getCreator(doc),propagateErrors,request);
+				if(patient == null)
 					saveFormInError(xml,pathName);
-				else
+				else{
+					saveNewPatientEncounterIfAny(patient, root, pathName, propagateErrors);
 					saveFormInArchive(xml,pathName);
+				}
 			} //Check if encounter doc
 			else if(DOMUtil.isEncounterDoc(doc))
 				submitXForm(doc,xml,pathName,true,propagateErrors);
 			else{
 				//Must be combined doc (new patient and encounter) where doc node is openmrs_data
-				Integer patientId = null;
+				
+				//<?xml version="1.0" encoding="UTF-8" ?>
+				//<openmrs_data>
+				//   <patient/>
+				//   <form/>
+				//   <form/>
+				//  < etc.../>
+				//</openmrs_data>
+				
+				Patient patient = null;
 
 				NodeList list = doc.getDocumentElement().getChildNodes();
 				for(int index = 0; index < list.getLength(); index++){
@@ -137,15 +177,16 @@ public class XformsQueueProcessor {
 					if(node.getNodeType() != Node.ELEMENT_NODE)
 						continue;
 
+					//Assuming patient node is the first in the combined document, such that we get the patient id.
 					if(DOMUtil.isPatientElementDoc((Element)node)){
-						patientId = saveNewPatient((Element)node,getCreator(doc),propagateErrors,request);
-						if(patientId == null){
+						patient = saveNewPatient((Element)node,getCreator(doc),propagateErrors,request);
+						if(patient == null){
 							saveFormInError(xml,pathName);
 							return;
 						}	
 					}
 					else{
-						setNewPatientId((Element)node,patientId);
+						setNewPatientId((Element)node,patient.getPatientId());
 						Document encounterDoc = createNewDocFromNode(db,(Element)node);
 						xml = XformsUtil.doc2String(encounterDoc);
 						submitXForm(encounterDoc,xml,pathName,false,propagateErrors);
@@ -177,12 +218,27 @@ public class XformsQueueProcessor {
 	 * @return - true if set, else false.
 	 */
 	private void setNewPatientId(Element root, Integer patientId){
-		try{
+		/*try{
 			NodeList elemList = root.getElementsByTagName(XformBuilder.NODE_PATIENT_PATIENT_ID);
 			if (!(elemList != null && elemList.getLength() > 0)) 
 				return;
 
 			elemList.item(0).setTextContent(patientId.toString());
+		}
+		catch(Exception e){
+			log.error(e.getMessage(),e);
+		}*/
+		
+		setNodeValue(root, XformBuilder.NODE_PATIENT_PATIENT_ID, patientId.toString());
+	}
+	
+	private void setNodeValue(Element root, String name, String value){
+		try{
+			NodeList elemList = root.getElementsByTagName(name);
+			if (!(elemList != null && elemList.getLength() > 0)) 
+				return;
+
+			elemList.item(0).setTextContent(value);
 		}
 		catch(Exception e){
 			log.error(e.getMessage(),e);
@@ -207,14 +263,7 @@ public class XformsQueueProcessor {
 
 			//FormEntryWrapper.createFormEntryQueue(xml);
 
-			FormEntryQueue formEntryQueue = new FormEntryQueue();
-			formEntryQueue.setCreator(Context.getAuthenticatedUser());
-			formEntryQueue.setDateCreated(new Date());
-			formEntryQueue.setFormData(xml);
-			formEntryQueue.setFileSystemUrl(pathName);
-
-			HL7InQueue hl7InQueue = formEntryProcessor.transformFormEntryQueue(formEntryQueue, propagateErrors);
-			hl7Processor.processHL7InQueue(hl7InQueue,propagateErrors);
+			processDoc(xml, pathName, propagateErrors);
 
 			if(archive)
 				saveFormInArchive(xmlOriginal,pathName);
@@ -229,6 +278,18 @@ public class XformsQueueProcessor {
 				throw e;
 		}
 	}
+	
+	private void processDoc(String xml, String pathName, boolean propagateErrors) throws Exception {
+		FormEntryQueue formEntryQueue = new FormEntryQueue();
+		formEntryQueue.setCreator(Context.getAuthenticatedUser());
+		formEntryQueue.setDateCreated(new Date());
+		formEntryQueue.setFormData(xml);
+		formEntryQueue.setFileSystemUrl(pathName);
+
+		HL7InQueue hl7InQueue = formEntryProcessor.transformFormEntryQueue(formEntryQueue, propagateErrors);
+		hl7Processor.processHL7InQueue(hl7InQueue,propagateErrors);
+	}
+	
 
 	/**
 	 * Archives a submitted form after processing.
@@ -297,7 +358,7 @@ public class XformsQueueProcessor {
 	 * @param creator - the logged on user.
 	 * @return - true if the patient is created successfully, else false.
 	 */
-	private Integer saveNewPatient(Element root, User creator, boolean propagateErrors, HttpServletRequest request) throws Exception{		
+	private Patient saveNewPatient(Element root, User creator, boolean propagateErrors, HttpServletRequest request) throws Exception{		
 		PatientService patientService = Context.getPatientService();
 		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
 
@@ -341,7 +402,7 @@ public class XformsQueueProcessor {
 				if(request != null)
 					request.setAttribute(XformConstants.REQUEST_ATTRIBUTE_ID_PATIENT_ID, pt.getPatientId().toString());
 
-				return pt.getPatientId();
+				return pt;
 			}
 			else if(rejectExistingPatientCreation()){
 				String message = "Tried to create patient who already exists with the identifier:"+identifier.getIdentifier()+" REJECTED.";
@@ -365,7 +426,7 @@ public class XformsQueueProcessor {
 				if(propagateErrors)
 					throw new Exception(message);
 				
-				return pt.getPatientId();
+				return pt;
 			}
 	}
 

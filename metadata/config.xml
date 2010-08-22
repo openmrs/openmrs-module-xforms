@@ -236,6 +236,11 @@
 		<defaultValue>false</defaultValue>
 		<description>Set to true if you want to allow editing of question bindings when designing forms.</description>
 	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.patientRegEncounterFormId</property>
+		<defaultValue>0</defaultValue>
+		<description>The id of the encounter form which will be combined with the patient registration form.</description>
+	</globalProperty>
 	
 	<!-- /Required Global Properties -->
 

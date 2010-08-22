@@ -42,6 +42,7 @@ import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 /**
  * Provides utilities needed when processing xforms.
@@ -115,7 +116,7 @@ public class XformsUtil {
 	 * @param doc - the document.
 	 * @return - the text representation of the document.
 	 */
-	public static String doc2String(Document doc){
+	public static String doc2String(Node doc){
 		try{
 			TransformerFactory tFactory = TransformerFactory.newInstance();
 			Transformer transformer = tFactory.newTransformer();
