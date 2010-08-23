@@ -17,6 +17,7 @@ import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
@@ -105,8 +106,8 @@ public class XformsQueueProcessor {
 			isRunning = false;
 		}
 	}
-	
-	
+
+
 	/**
 	 * Saves obs entered during new patient registration (if any).
 	 * 
@@ -126,10 +127,10 @@ public class XformsQueueProcessor {
 		String name = formNode.getAttribute("name");
 		if(!(id != null && name != null && id.trim().length() > 0 && name.trim().length() > 0))
 			return;
-			
+
 		setNodeValue(formNode, XformBuilder.NODE_PATIENT_PATIENT_ID, patient.getPatientId().toString());
 		setNodeValue(formNode, XformBuilder.NODE_ENCOUNTER_LOCATION_ID, patient.getIdentifiers().iterator().next().getLocation().getLocationId().toString());
-	
+
 		String xml = XformsUtil.doc2String(formNode);
 		processDoc(xml, pathName, propagateErrors);
 	}
@@ -160,7 +161,7 @@ public class XformsQueueProcessor {
 				submitXForm(doc,xml,pathName,true,propagateErrors);
 			else{
 				//Must be combined doc (new patient and encounter) where doc node is openmrs_data
-				
+
 				//<?xml version="1.0" encoding="UTF-8" ?>
 				//<openmrs_data>
 				//   <patient/>
@@ -168,7 +169,7 @@ public class XformsQueueProcessor {
 				//   <form/>
 				//  < etc.../>
 				//</openmrs_data>
-				
+
 				Patient patient = null;
 
 				NodeList list = doc.getDocumentElement().getChildNodes();
@@ -197,7 +198,7 @@ public class XformsQueueProcessor {
 			}
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			
+
 			if(!propagateErrors)
 				saveFormInError(xmlOriginal,pathName);
 			else
@@ -228,10 +229,10 @@ public class XformsQueueProcessor {
 		catch(Exception e){
 			log.error(e.getMessage(),e);
 		}*/
-		
+
 		setNodeValue(root, XformBuilder.NODE_PATIENT_PATIENT_ID, patientId.toString());
 	}
-	
+
 	private void setNodeValue(Element root, String name, String value){
 		try{
 			NodeList elemList = root.getElementsByTagName(name);
@@ -269,16 +270,16 @@ public class XformsQueueProcessor {
 				saveFormInArchive(xmlOriginal,pathName);
 
 		} catch (Exception e) {
-			
+
 			log.error(e.getMessage(), e);
-			
+
 			if(!propagateErrors)
 				saveFormInError(xmlOriginal,pathName);
 			else
 				throw e;
 		}
 	}
-	
+
 	private void processDoc(String xml, String pathName, boolean propagateErrors) throws Exception {
 		FormEntryQueue formEntryQueue = new FormEntryQueue();
 		formEntryQueue.setCreator(Context.getAuthenticatedUser());
@@ -289,7 +290,7 @@ public class XformsQueueProcessor {
 		HL7InQueue hl7InQueue = formEntryProcessor.transformFormEntryQueue(formEntryQueue, propagateErrors);
 		hl7Processor.processHL7InQueue(hl7InQueue,propagateErrors);
 	}
-	
+
 
 	/**
 	 * Archives a submitted form after processing.
@@ -394,11 +395,13 @@ public class XformsQueueProcessor {
 
 			addPersonAttributes(pt,root,xformsService);
 
+			addPersonAddresses(pt, root, creator);
+
 			Patient pt2 = patientService.identifierInUse(identifier.getIdentifier(),identifier.getIdentifierType(),pt);
 			if(pt2 == null){
 				pt = patientService.savePatient(pt);
 				addPersonRepeatAttributes(pt,root,xformsService);
-				
+
 				if(request != null)
 					request.setAttribute(XformConstants.REQUEST_ATTRIBUTE_ID_PATIENT_ID, pt.getPatientId().toString());
 
@@ -407,25 +410,25 @@ public class XformsQueueProcessor {
 			else if(rejectExistingPatientCreation()){
 				String message = "Tried to create patient who already exists with the identifier:"+identifier.getIdentifier()+" REJECTED.";
 				log.error(message);
-			
+
 				if(request != null)
 					request.setAttribute(XformConstants.REQUEST_ATTRIBUTE_ID_ERROR_MESSAGE, message);
 
 				if(propagateErrors)
 					throw new Exception(message);
-				
+
 				return null;
 			}
 			else{
 				String message = "Tried to create patient who already exists with the identifier:"+identifier.getIdentifier()+" ACCEPTED.";
 				log.warn(message);
-				
+
 				if(request != null)
 					request.setAttribute(XformConstants.REQUEST_ATTRIBUTE_ID_ERROR_MESSAGE, message);
-				
+
 				if(propagateErrors)
 					throw new Exception(message);
-				
+
 				return pt;
 			}
 	}
@@ -448,6 +451,66 @@ public class XformsQueueProcessor {
 
 			pt.addAttribute(new PersonAttribute(type, value));
 		}
+	}
+
+	private void addPersonAddresses(Patient pt, Element root, User creator) throws Exception{
+		PersonAddress pa = new PersonAddress();
+		pa.setCreator(creator);
+		pa.setDateCreated(new Date());
+		pa.setPreferred(true);
+		
+		addPersonAddressValue(XformBuilder.NODE_NAME_ADDRESS1, pa, root);
+		addPersonAddressValue(XformBuilder.NODE_NAME_ADDRESS2, pa, root);
+		addPersonAddressValue(XformBuilder.NODE_NAME_CITY_VILLAGE, pa, root);
+		addPersonAddressValue(XformBuilder.NODE_NAME_STATE_PROVINCE, pa, root);
+		addPersonAddressValue(XformBuilder.NODE_NAME_POSTAL_CODE, pa, root);
+		addPersonAddressValue(XformBuilder.NODE_NAME_COUNTRY, pa, root);
+		addPersonAddressValue(XformBuilder.NODE_NAME_LATITUDE, pa, root);
+		addPersonAddressValue(XformBuilder.NODE_NAME_LONGITUDE, pa, root);
+		addPersonAddressValue(XformBuilder.NODE_NAME_COUNTY_DISTRICT, pa, root);
+		addPersonAddressValue(XformBuilder.NODE_NAME_NEIGHBORHOOD_CELL, pa, root);
+		addPersonAddressValue(XformBuilder.NODE_NAME_REGION, pa, root);
+		addPersonAddressValue(XformBuilder.NODE_NAME_SUBREGION, pa, root);
+		addPersonAddressValue(XformBuilder.NODE_NAME_TOWNSHIP_DIVISION, pa, root);
+		
+		pt.addAddress(pa);
+	}
+
+	private void addPersonAddressValue(String name, PersonAddress pa, Element root) throws Exception{
+		NodeList nodes = root.getElementsByTagName(XformBuilder.NODE_NAME_PREFIX_PERSON_ADDRESS + name);
+		if(nodes == null || nodes.getLength() == 0)
+			return;
+
+		String value = ((Element)nodes.item(0)).getTextContent();
+		if(value == null || value.length() == 0)
+			return;
+
+		if(name.equals(XformBuilder.NODE_NAME_ADDRESS1))
+			pa.setAddress1(value);
+		else if(name.equals(XformBuilder.NODE_NAME_ADDRESS2))
+			pa.setAddress2(value);
+		else if(name.equals(XformBuilder.NODE_NAME_CITY_VILLAGE))
+			pa.setCityVillage(value);
+		else if(name.equals(XformBuilder.NODE_NAME_STATE_PROVINCE))
+			pa.setStateProvince(value);
+		else if(name.equals(XformBuilder.NODE_NAME_POSTAL_CODE))
+			pa.setPostalCode(value);
+		else if(name.equals(XformBuilder.NODE_NAME_COUNTRY))
+			pa.setCountry(value);
+		else if(name.equals(XformBuilder.NODE_NAME_LATITUDE))
+			pa.setLatitude(value);
+		else if(name.equals(XformBuilder.NODE_NAME_LONGITUDE))
+			pa.setLongitude(value);
+		else if(name.equals(XformBuilder.NODE_NAME_COUNTY_DISTRICT))
+			pa.setCountyDistrict(value);
+		else if(name.equals(XformBuilder.NODE_NAME_NEIGHBORHOOD_CELL))
+			pa.setNeighborhoodCell(value);
+		else if(name.equals(XformBuilder.NODE_NAME_REGION))
+			pa.setRegion(value);
+		else if(name.equals(XformBuilder.NODE_NAME_SUBREGION))
+			pa.setSubregion(value);
+		else if(name.equals(XformBuilder.NODE_NAME_TOWNSHIP_DIVISION))
+			pa.setTownshipDivision(value);
 	}
 
 	private void addPersonRepeatAttributes(Patient pt, Element root,XformsService xformsService){

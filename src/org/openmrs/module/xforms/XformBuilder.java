@@ -212,6 +212,23 @@ public final class XformBuilder {
 	public static final String BINDING_BIRTH_DATE = "/form/patient/patient.birthdate";
 	public static final String BINDING_BIRTH_DATE_ESTIMATED = "/form/patient/patient.birthdate_estimated";
 	public static final String BINDING_IDENTIFIER_TYPE = "/form/patient/patient_identifier.identifier_type";
+	
+	public static final String NODE_NAME_PERSON_ADDRESSES = "person_addresses";
+	public static final String NODE_NAME_PREFERRED = "preferred";
+	public static final String NODE_NAME_ADDRESS1 = "address1";
+	public static final String NODE_NAME_ADDRESS2 = "address2";
+	public static final String NODE_NAME_CITY_VILLAGE = "city_village";
+	public static final String NODE_NAME_STATE_PROVINCE = "state_province";
+	public static final String NODE_NAME_POSTAL_CODE = "postal_code";
+	public static final String NODE_NAME_COUNTRY = "country";
+	public static final String NODE_NAME_LATITUDE = "latitude";
+	public static final String NODE_NAME_LONGITUDE = "longitude";
+	public static final String NODE_NAME_COUNTY_DISTRICT = "county_district";
+	public static final String NODE_NAME_NEIGHBORHOOD_CELL = "neighborhood_cell";
+	public static final String NODE_NAME_REGION = "region";
+	public static final String NODE_NAME_SUBREGION = "subregion";
+	public static final String NODE_NAME_TOWNSHIP_DIVISION = "township_division";
+	public static final String NODE_NAME_PREFIX_PERSON_ADDRESS = "person_address_";
 
 
 	/**
@@ -2054,15 +2071,15 @@ public final class XformBuilder {
 		groupNode.addChild(Element.ELEMENT,labelNode);
 		xformsNode.addChild(Element.ELEMENT,groupNode);
 
-		addPatientNode(formNode,modelNode,groupNode,NODE_FAMILY_NAME,DATA_TYPE_TEXT,"Family Name","The patient family name",true,false,CONTROL_INPUT,null,null);
-		addPatientNode(formNode,modelNode,groupNode,NODE_MIDDLE_NAME,DATA_TYPE_TEXT,"Middle Name","The patient middle name",false,false,CONTROL_INPUT,null,null);
-		addPatientNode(formNode,modelNode,groupNode,NODE_GIVEN_NAME,DATA_TYPE_TEXT,"Given Name","The patient given name",false,false,CONTROL_INPUT,null,null);
-		addPatientNode(formNode,modelNode,groupNode,NODE_BIRTH_DATE,DATA_TYPE_DATE,"Birth Date","The patient birth date",false,false,CONTROL_INPUT,null,null);
-		addPatientNode(formNode,modelNode,groupNode,NODE_BIRTH_DATE_ESTIMATED,DATA_TYPE_BOOLEAN,"Birth Date Estimated","Is the patient birth date estimated?",false,false,CONTROL_INPUT,null,null);
-		addPatientNode(formNode,modelNode,groupNode,NODE_IDENTIFIER,DATA_TYPE_TEXT,"Identifier","The patient identifier",true,false,CONTROL_INPUT,null,null);
-		addPatientNode(formNode,modelNode,groupNode,NODE_PATIENT_ID,DATA_TYPE_INT,"Patient ID","The patient ID",false,true,CONTROL_INPUT,null,null);
+		addPatientNode(formNode,modelNode,groupNode,NODE_FAMILY_NAME,DATA_TYPE_TEXT,"Family Name","The patient family name",true,false,CONTROL_INPUT,null,null,true);
+		addPatientNode(formNode,modelNode,groupNode,NODE_MIDDLE_NAME,DATA_TYPE_TEXT,"Middle Name","The patient middle name",false,false,CONTROL_INPUT,null,null,true);
+		addPatientNode(formNode,modelNode,groupNode,NODE_GIVEN_NAME,DATA_TYPE_TEXT,"Given Name","The patient given name",false,false,CONTROL_INPUT,null,null,true);
+		addPatientNode(formNode,modelNode,groupNode,NODE_BIRTH_DATE,DATA_TYPE_DATE,"Birth Date","The patient birth date",false,false,CONTROL_INPUT,null,null,true);
+		addPatientNode(formNode,modelNode,groupNode,NODE_BIRTH_DATE_ESTIMATED,DATA_TYPE_BOOLEAN,"Birth Date Estimated","Is the patient birth date estimated?",false,false,CONTROL_INPUT,null,null,true);
+		addPatientNode(formNode,modelNode,groupNode,NODE_IDENTIFIER,DATA_TYPE_TEXT,"Identifier","The patient identifier",true,false,CONTROL_INPUT,null,null,true);
+		addPatientNode(formNode,modelNode,groupNode,NODE_PATIENT_ID,DATA_TYPE_INT,"Patient ID","The patient ID",false,true,CONTROL_INPUT,null,null,false);
 
-		addPatientNode(formNode,modelNode,groupNode,NODE_GENDER,DATA_TYPE_TEXT,"Gender","The patient's sex",false,false,CONTROL_SELECT1,new String[]{"Male","Female"},new String[]{"M","F"});
+		addPatientNode(formNode,modelNode,groupNode,NODE_GENDER,DATA_TYPE_TEXT,"Gender","The patient's sex",false,false,CONTROL_SELECT1,new String[]{"Male","Female"},new String[]{"M","F"},true);
 
 		String[] items, itemValues; int i=0;
 		List<Location> locations = Context.getLocationService().getAllLocations(false);
@@ -2073,7 +2090,7 @@ public final class XformBuilder {
 				items[i] = loc.getName();
 				itemValues[i++] = loc.getLocationId().toString();
 			}
-			addPatientNode(formNode,modelNode,groupNode,NODE_LOCATION_ID,DATA_TYPE_INT,"Location","The patient's location",true,false,CONTROL_SELECT1,items,itemValues);
+			addPatientNode(formNode,modelNode,groupNode,NODE_LOCATION_ID,DATA_TYPE_INT,"Location","The patient's location",true,false,CONTROL_SELECT1,items,itemValues,true);
 		}
 
 		List<PatientIdentifierType> identifierTypes = Context.getPatientService().getAllPatientIdentifierTypes();
@@ -2085,10 +2102,12 @@ public final class XformBuilder {
 				items[i] = identifierType.getName();
 				itemValues[i++] = identifierType.getPatientIdentifierTypeId().toString();
 			}
-			addPatientNode(formNode,modelNode,groupNode,"patient_identifier_type_id",DATA_TYPE_INT,"Identifier Type","The patient's identifier type",true,false,CONTROL_SELECT1,items,itemValues);
+			addPatientNode(formNode,modelNode,groupNode,"patient_identifier_type_id",DATA_TYPE_INT,"Identifier Type","The patient's identifier type",true,false,CONTROL_SELECT1,items,itemValues,true);
 		}
 
 		addPersonAttributes(formNode,modelNode,groupNode);
+
+		addPersonAddresses(formNode,modelNode,groupNode);
 
 		addEncounterForm(doc,formNode,modelNode,groupNode);
 
@@ -2111,7 +2130,7 @@ public final class XformBuilder {
 	 * @param items
 	 * @param itemValues
 	 */
-	private static void addPatientNode(Element formNode,Element modelNode,Element bodyNode,String name,String type,String label, String hint,boolean required, boolean readonly, String controlType, String[] items, String[] itemValues){
+	private static void addPatientNode(Element formNode,Element modelNode,Element bodyNode,String name,String type,String label, String hint,boolean required, boolean readonly, String controlType, String[] items, String[] itemValues, boolean visible){
 		//add the model node
 		Element element = formNode.createElement(null, null);
 		element.setName(name);
@@ -2130,6 +2149,8 @@ public final class XformBuilder {
 			element.setAttribute(null, ATTRIBUTE_READONLY, XPATH_VALUE_TRUE);
 		if(required)
 			element.setAttribute(null, ATTRIBUTE_REQUIRED, XPATH_VALUE_TRUE);
+		if(!visible)
+			element.setAttribute(null, ATTRIBUTE_VISIBLE, XPATH_VALUE_FALSE);
 		modelNode.addChild(Element.ELEMENT, element);
 
 		//add the control
@@ -2188,6 +2209,68 @@ public final class XformBuilder {
 
 		for(PersonAttributeType attribute : attributeTypes)
 			addPatientAttributeNode(attribute,formDataNode,modelNode,xformsNode);
+	}
+
+	private static void addPersonAddresses(Element formNode, Element modelNode, Element groupNode){
+		
+		/*Element dataNode = formNode.createElement(null, null);
+		dataNode.setName(NODE_NAME_PERSON_ADDRESSES);
+		formNode.addChild(Element.ELEMENT, dataNode);*/
+		
+		Element dataNode = formNode;
+			
+		//addPersonAddress(NODE_NAME_PREFERRED, "Preferred", dataNode, modelNode, groupNode);
+		addPersonAddress(NODE_NAME_ADDRESS1, "Address 1", dataNode, modelNode, groupNode);
+		addPersonAddress(NODE_NAME_ADDRESS2, "Address 2", dataNode, modelNode, groupNode);
+		addPersonAddress(NODE_NAME_CITY_VILLAGE, "City/Village", dataNode, modelNode, groupNode);
+		addPersonAddress(NODE_NAME_STATE_PROVINCE, "State/Province", dataNode, modelNode, groupNode);
+		addPersonAddress(NODE_NAME_POSTAL_CODE, "Postal Code", dataNode, modelNode, groupNode);
+		addPersonAddress(NODE_NAME_COUNTRY, "Country", dataNode, modelNode, groupNode);
+		addPersonAddress(NODE_NAME_LATITUDE, "Latitude", dataNode, modelNode, groupNode);
+		addPersonAddress(NODE_NAME_LONGITUDE, "Longitude", dataNode, modelNode, groupNode);
+		addPersonAddress(NODE_NAME_COUNTY_DISTRICT, "County/District", dataNode, modelNode, groupNode);
+		addPersonAddress(NODE_NAME_NEIGHBORHOOD_CELL, "Neighborhood Cell", dataNode, modelNode, groupNode);
+		addPersonAddress(NODE_NAME_REGION, "Region", dataNode, modelNode, groupNode);
+		addPersonAddress(NODE_NAME_SUBREGION, "Sub Region", dataNode, modelNode, groupNode);
+		addPersonAddress(NODE_NAME_TOWNSHIP_DIVISION, "Township/Division", dataNode, modelNode, groupNode);
+	}
+	
+	
+	private static void addPersonAddress(String name, String text, Element formNode, Element modelNode, Element groupNode){
+
+		name = NODE_NAME_PREFIX_PERSON_ADDRESS + name;
+
+		//add the model node
+		Element dataNode = formNode.createElement(null, null);
+		dataNode.setName(name);
+		formNode.addChild(Element.ELEMENT, dataNode);
+
+		//add the model binding
+		Element bindingNode = modelNode.createElement(NAMESPACE_XFORMS, null);
+		bindingNode.setName(NODE_BIND);
+		bindingNode.setAttribute(null, ATTRIBUTE_ID, name);
+		bindingNode.setAttribute(null, ATTRIBUTE_NODESET, "/"+NODE_PATIENT+"/" /*+NODE_NAME_PERSON_ADDRESSES+"/"*/ +name);
+		bindingNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_TEXT);
+
+		modelNode.addChild(Element.ELEMENT, bindingNode);
+
+		//add the control
+		Element element = groupNode.createElement(NAMESPACE_XFORMS, null);
+		element.setName(CONTROL_INPUT);
+		element.setAttribute(null, ATTRIBUTE_BIND, name);
+		groupNode.addChild(Element.ELEMENT, element);
+
+		//add the label
+		Element child = element.createElement(NAMESPACE_XFORMS, null);
+		child.setName(NODE_LABEL);
+		child.addChild(Element.TEXT, text);
+		element.addChild(Element.ELEMENT, child);
+
+		//add the hint
+		/*child = element.createElement(NAMESPACE_XFORMS, null);
+		child.setName(NODE_HINT);
+		child.addChild(Element.TEXT, attribute.getDescription());
+		element.addChild(Element.ELEMENT, child);*/
 	}
 
 	private static void addPatientAttributeNode(PersonAttributeType attribute, Element formNode,Element modelNode,Element bodyNode){
@@ -2511,14 +2594,14 @@ public final class XformBuilder {
 		Form form = formService.getForm(Integer.parseInt(formId));
 		if(form == null)
 			return;
-		
+
 		String templateXml = FormEntryWrapper.getFormTemplate(form);
 		Document templateDoc = XformBuilder.getDocument(templateXml);
 		Element rootNode = templateDoc.getRootElement();
 		for(int index = 0; index < rootNode.getChildCount(); index++){
 			if(rootNode.getType(index) != Element.ELEMENT)
 				continue;
-			
+
 			Element child = (Element)rootNode.getChild(index);
 			if(child.getName().equalsIgnoreCase("patient")){
 				removeNonUsedPatientChildNodes(child);
@@ -2526,7 +2609,7 @@ public final class XformBuilder {
 			}
 		}
 		formNode.addChild(org.kxml2.kdom.Element.ELEMENT, rootNode);
-		
+
 		Document xformSchemaDoc = new Document();
 		xformSchemaDoc.setEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
 		Element xformSchemaNode = doc.createElement(NAMESPACE_XML_SCHEMA, null);
@@ -2537,14 +2620,14 @@ public final class XformBuilder {
 		Hashtable<String,String> problemList = new Hashtable<String,String>();
 		Hashtable<String,String> problemListItems = new Hashtable<String,String>();
 		parseTemplate(modelNode,formNode,formNode,bindings,groupNode,problemList,problemListItems);
-		
+
 		Document schemaDoc = XformBuilder.getDocument(XformsUtil.getSchema(form));
 		parseSchema(schemaDoc.getRootElement(),groupNode,modelNode,xformSchemaNode,bindings,problemList,problemListItems);
-	
+
 		removeNonUsedUINodes(groupNode);
 	}
-	
-	
+
+
 	/**
 	 * Removes data nodes that are kids of the patient node for obs entry on a patient registration form.
 	 * 
@@ -2554,7 +2637,7 @@ public final class XformBuilder {
 		for(int index = 0; index < patientNode.getChildCount(); index++){
 			if(patientNode.getType(index) != Element.ELEMENT)
 				continue;
-			
+
 			Element child = (Element)patientNode.getChild(index);
 			if(!child.getName().equalsIgnoreCase("patient.patient_id")){
 				patientNode.removeChild(index);
@@ -2562,8 +2645,8 @@ public final class XformBuilder {
 			}
 		}
 	}
-	
-	
+
+
 	/**
 	 * 
 	 * Removes ui nodes that are not necessary for obs entry on a patient registration form.
@@ -2574,7 +2657,7 @@ public final class XformBuilder {
 		for(int index = 0; index < groupNode.getChildCount(); index++){
 			if(groupNode.getType(index) != Element.ELEMENT)
 				continue;
-			
+
 			Element child = (Element)groupNode.getChild(index);
 			String value = child.getAttributeValue(null, "bind");
 			if("encounter.location_id".equalsIgnoreCase(value) || "patient.patient_id".equalsIgnoreCase(value)){
