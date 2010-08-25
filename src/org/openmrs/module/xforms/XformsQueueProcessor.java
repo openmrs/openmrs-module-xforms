@@ -364,13 +364,16 @@ public class XformsQueueProcessor {
 		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
 
 		Patient pt = new Patient();
+		pt.setCreator(creator);
+		pt.setDateCreated(new Date());	
+		
 		PersonName pn = new PersonName();
 		pn.setGivenName(DOMUtil.getElementValue(root,XformBuilder.NODE_GIVEN_NAME));
 		pn.setFamilyName(DOMUtil.getElementValue(root,XformBuilder.NODE_FAMILY_NAME));
 		pn.setMiddleName(DOMUtil.getElementValue(root,XformBuilder.NODE_MIDDLE_NAME));
 
 		pn.setCreator(creator);
-		pn.setDateCreated(new Date());
+		pn.setDateCreated(pt.getDateCreated());
 		pt.addName(pn);
 
 		pt.setBirthdateEstimated("true".equals(DOMUtil.getElementValue(root, XformBuilder.NODE_BIRTH_DATE_ESTIMATED)));
@@ -379,13 +382,11 @@ public class XformsQueueProcessor {
 		if(val != null && val.length() > 0)
 			try{ pt.setBirthdate(XformsUtil.fromSubmitString2Date(val)); } catch(Exception e){log.error(val,e); }
 
-			pt.setGender(DOMUtil.getElementValue(root,XformBuilder.NODE_GENDER));
-			pt.setCreator(creator);
-			pt.setDateCreated(new Date());		
+			pt.setGender(DOMUtil.getElementValue(root,XformBuilder.NODE_GENDER));	
 
 			PatientIdentifier identifier = new PatientIdentifier();
 			identifier.setCreator(creator);
-			identifier.setDateCreated(new Date());
+			identifier.setDateCreated(pt.getDateCreated());
 			identifier.setIdentifier(DOMUtil.getElementValue(root,XformBuilder.NODE_IDENTIFIER));
 			int id = Integer.parseInt(DOMUtil.getElementValue(root,XformBuilder.NODE_IDENTIFIER_TYPE_ID));
 			PatientIdentifierType identifierType = patientService.getPatientIdentifierType(id);
@@ -393,7 +394,7 @@ public class XformsQueueProcessor {
 			identifier.setLocation(getLocation(DOMUtil.getElementValue(root,XformBuilder.NODE_LOCATION_ID)));
 			pt.addIdentifier(identifier);
 
-			addPersonAttributes(pt,root,xformsService);
+			addPersonAttributes(pt,root,xformsService, creator);
 
 			addPersonAddresses(pt, root, creator);
 
@@ -433,7 +434,7 @@ public class XformsQueueProcessor {
 			}
 	}
 
-	private void addPersonAttributes(Patient pt, Element root,XformsService xformsService) throws Exception{
+	private void addPersonAttributes(Patient pt, Element root,XformsService xformsService, User creator) throws Exception{
 		//First translate complex obs to file pointers;
 		saveComplexObs(root.getOwnerDocument(),false);
 
@@ -449,14 +450,17 @@ public class XformsQueueProcessor {
 			if(value == null || value.length() == 0)
 				continue;
 
-			pt.addAttribute(new PersonAttribute(type, value));
+			PersonAttribute pa = new PersonAttribute(type, value);
+			pa.setCreator(creator);
+			pa.setDateCreated(pt.getDateCreated());
+			pt.addAttribute(pa);
 		}
 	}
 
 	private void addPersonAddresses(Patient pt, Element root, User creator) throws Exception{
 		PersonAddress pa = new PersonAddress();
 		pa.setCreator(creator);
-		pa.setDateCreated(new Date());
+		pa.setDateCreated(pt.getDateCreated());
 		pa.setPreferred(true);
 		
 		addPersonAddressValue(XformBuilder.NODE_NAME_ADDRESS1, pa, root);
@@ -564,7 +568,7 @@ public class XformsQueueProcessor {
 				PersonRepeatAttribute personRepeatAttribute = new PersonRepeatAttribute();
 				personRepeatAttribute.setPersonId(pt.getPersonId());
 				personRepeatAttribute.setCreator(Context.getAuthenticatedUser().getUserId());
-				personRepeatAttribute.setDateCreated(new Date());
+				personRepeatAttribute.setDateCreated(pt.getDateCreated());
 				personRepeatAttribute.setValue(node.getTextContent());
 				personRepeatAttribute.setValueId(Integer.parseInt(valueId));
 				personRepeatAttribute.setValueIdType(PersonRepeatAttribute.VALUE_ID_TYPE_CONCEPT);
