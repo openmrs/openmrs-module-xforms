@@ -3,6 +3,7 @@ package org.openmrs.module.xforms.web.controller;
 import javax.servlet.http.HttpServletRequest;
 
 import org.openmrs.Encounter;
+import org.openmrs.Form;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.Xform;
 import org.openmrs.module.xforms.XformConstants;
@@ -29,9 +30,12 @@ public class XformsUrlHandlerMapping extends SimpleUrlHandlerMapping{
 				//Make sure we are not from Admininstration/Manage Encounters/Add New Encounter
 				if(arg1.getParameter("encounterId") != null){
 					Encounter encounter = Context.getEncounterService().getEncounter(Integer.parseInt(arg1.getParameter("encounterId")));
-					Xform xform = ((XformsService)Context.getService(XformsService.class)).getXform(encounter.getForm());
-					if(xform != null && xform.getLayoutXml() != null)
-						return "formEntry";
+					Form form = encounter.getForm();
+					if(form != null){ //Some encounters may not have forms attached to them.
+						Xform xform = ((XformsService)Context.getService(XformsService.class)).getXform(form);
+						if(xform != null && xform.getLayoutXml() != null)
+							return "formEntry";
+					}
 				}
 			}
 		}
