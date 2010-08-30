@@ -136,6 +136,9 @@ public class HibernateXformsDAO implements XformsDAO {
 					&& tableName.equalsIgnoreCase("PATIENT_IDENTIFIER")
 					&& columnName.equalsIgnoreCase("IDENTIFIER"))
 				sql += " and identifier_type = " + filterValue;
+			else if(tableName.equalsIgnoreCase("PATIENT_IDENTIFIER"))
+				sql += " and preferred=1";
+			
 			return sessionFactory.getCurrentSession().createSQLQuery(sql)
 			.uniqueResult();
 		} catch (Exception e) {
