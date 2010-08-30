@@ -50,5 +50,7 @@
 	<classpathentry kind="lib" path="lib/sms-server.jar"/>
 	<classpathentry kind="lib" path="lib-common/velocity-1.6-beta2.jar"/>
 	<classpathentry kind="lib" path="lib-common/commons-lang-2.4.jar"/>
+	<classpathentry kind="lib" path="lib-common/commons-fileupload-1.2.1.jar"/>
+	<classpathentry kind="lib" path="lib-common/jdom.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
