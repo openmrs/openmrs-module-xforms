@@ -472,7 +472,8 @@ function save(target, formNotUsed) {
 			
 			// save the field to the database
 			selectedNode = target;
-			DWRXformsService.saveFormField(endSaveFormField(target), data.fieldId, data.fieldName, data.tabIndex, data.isNew);
+			//DWRXformsService.saveFormField(endSaveFormField(target), data.fieldId, data.fieldName, data.tabIndex, data.isNew);
+			DWRXformsService.saveFormField(data.fieldId, data.fieldName, data.tabIndex, data.isNew);
 			tree.isNewInput.value = false;
 			data.isNew = false;
 			
@@ -485,10 +486,13 @@ function save(target, formNotUsed) {
 			
 			//target.unMarkSelected();
 		}
-		else
-			tree.editDiv.style.display = "none";
+		//else
+		//	tree.editDiv.style.display = "none";
 
 	}
+	
+	tree.editDiv.style.display = "none";
+	
 	return false;
 }
 

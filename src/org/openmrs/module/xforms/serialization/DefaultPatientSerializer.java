@@ -74,7 +74,7 @@ public class DefaultPatientSerializer {
 				dos.writeBoolean(false);
 
 			dos.writeBoolean(false); // flag to tell whether this is a new patient or not.
-			
+
 		} catch (IOException e) {
 			log.error(e.getMessage(),e);
 		}
@@ -87,17 +87,17 @@ public class DefaultPatientSerializer {
 	public void serialize(OutputStream os, Object data) {
 		try {
 			DataOutputStream dos = new DataOutputStream(os);
-			
+
 			if (data == null)
 				return;
 			PatientData patientData = (PatientData) data; // data will always be a patient data.
 
 			List<Patient> patients = patientData.getPatients();
 			if (patients == null || patients.size() == 0){
-				dos.writeInt(0);
-				dos.writeInt(0);
-				dos.writeInt(0);
-				dos.writeInt(0);
+				dos.writeInt(0); //patients size
+				dos.writeInt(0); //patient table fields size
+				dos.writeInt(0); //patient table table field values size
+				dos.writeInt(0); //patient medical history size
 				return;
 			}
 
@@ -108,43 +108,44 @@ public class DefaultPatientSerializer {
 			//serialize table fields
 			List<PatientTableField> fields = patientData.getFields();
 			if (fields == null || fields.size() == 0){
-				dos.writeInt(0);
-				dos.writeInt(0);
-				dos.writeInt(0);
-				return;
+				dos.writeInt(0); //patient table fields size
+				dos.writeInt(0); //patient table table field values size
+				//dos.writeInt(0); //patient medical history size
+				//return;
 			}
-			
-			dos.writeByte(fields.size());
-			for (PatientTableField field : fields) {
-				dos.writeInt(field.getId());
-				dos.writeUTF(field.getName());
+			else{
+				dos.writeInt(fields.size());
+				for (PatientTableField field : fields) {
+					dos.writeInt(field.getId());
+					dos.writeUTF(field.getName());
+				}
+
+				//serialize patient table field values
+				List<PatientTableFieldValue> fieldVals = patientData.getFieldValues();
+				if (fieldVals == null || fieldVals.size() == 0){
+					dos.writeInt(0); //patient table field values size
+					//dos.writeInt(0); //patient medical history size
+					//return;
+				}
+				else{
+					dos.writeInt(fieldVals.size());
+					for (PatientTableFieldValue fieldVal : fieldVals) {
+						dos.writeInt(fieldVal.getFieldId());
+						dos.writeInt(fieldVal.getPatientId());
+						dos.writeUTF(fieldVal.getValue().toString());
+					}
+				}
 			}
 
-			//serialize patient table field values
-			List<PatientTableFieldValue> fieldVals = patientData.getFieldValues();
-			if (fieldVals == null || fieldVals.size() == 0){
-				dos.writeInt(0);
-				dos.writeInt(0);
-				return;
-			}
-			
-			dos.writeInt(fieldVals.size());
-			for (PatientTableFieldValue fieldVal : fieldVals) {
-				dos.writeInt(fieldVal.getFieldId());
-				dos.writeInt(fieldVal.getPatientId());
-				dos.writeUTF(fieldVal.getValue().toString());
-			}
-			
 			//serialize medical history
 			List<PatientMedicalHistory> medicalHistory = patientData.getMedicalHistory();
-			if (medicalHistory == null || medicalHistory.size() == 0){
-				dos.writeInt(0);
-				return;
+			if (medicalHistory == null || medicalHistory.size() == 0)
+				dos.writeInt(0); //medical history size
+			else{
+				dos.writeInt(medicalHistory.size());
+				for (PatientMedicalHistory history : medicalHistory)
+					history.write(dos);
 			}
-			
-			dos.writeInt(medicalHistory.size());
-			for (PatientMedicalHistory history : medicalHistory)
-				history.write(dos);
 
 		} catch (IOException e) {
 			log.error(e.getMessage(),e);
@@ -157,6 +158,6 @@ public class DefaultPatientSerializer {
 	 */
 	public Object deSerialize(InputStream is, Object data) {
 		return null; // not necessary for now because patients come back as
-						// xforms.
+		// xforms.
 	}
 }

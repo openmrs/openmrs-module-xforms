@@ -63,11 +63,13 @@ public class PatientDownloadManager {
 				Set<Integer> patientIds = cohort.getMemberIds();
 				if(patientIds != null && patientIds.size() > 0){
 					patientData.setPatients(getPatients(patientIds));
-					List<PatientTableField> fields = PatientTableFieldBuilder.getPatientTableFields(xformsService);
+					
+					//TODO We need to make this optional because it makes patient download too too slow.
+					/*List<PatientTableField> fields = PatientTableFieldBuilder.getPatientTableFields(xformsService);
 					if(fields != null && fields.size() > 0){
 						patientData.setFields(fields);
 						patientData.setFieldValues(PatientTableFieldBuilder.getPatientTableFieldValues(new ArrayList(patientIds), fields, xformsService));
-					}
+					}*/
 				}
 			}
 

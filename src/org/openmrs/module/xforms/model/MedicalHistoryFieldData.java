@@ -45,9 +45,9 @@ public class MedicalHistoryFieldData implements Persistent{
 		if(value == null)
 			return;
 		
-		if(values != null && appendSameDateValue(value))
+		/*if(values != null && appendSameDateValue(value))
 			return;
-		else if(values == null)
+		else*/ if(values == null)
 			values = new ArrayList<MedicalHistoryValue>();
 		
 		values.add(value);

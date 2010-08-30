@@ -16,23 +16,29 @@ import org.openmrs.module.xforms.serialization.Persistent;
  */
 public class MedicalHistoryValue implements Persistent{
 	
-	private String value;
+	public static final byte TYPE_STRING = 1;
+	public static final byte TYPE_INT = 2;
+	public static final byte TYPE_FLOAT = 3;
+	public static final byte TYPE_DATE = 4;
+	
+	private byte type = TYPE_STRING;
+	private Object value;
 	private Date valueDate;
 
 	public MedicalHistoryValue(){
 		
 	}
 	
-	public MedicalHistoryValue(String value, Date valueDate){
+	/*public MedicalHistoryValue(String value, Date valueDate){
 		this.value = value;
 		this.valueDate = valueDate;
-	}
+	}*/
 	
-	public String getValue() {
+	public Object getValue() {
 		return value;
 	}
 
-	public void setValue(String value) {
+	public void setValue(Object value) {
 		this.value = value;
 	}
 
@@ -44,13 +50,42 @@ public class MedicalHistoryValue implements Persistent{
 		this.valueDate = valueDate;
 	}
 
+	public byte getType() {
+		return type;
+	}
+
+	public void setType(byte type) {
+		this.type = type;
+	}
+
 	public void read(DataInputStream dis) throws IOException, InstantiationException, IllegalAccessException {
-		setValue(dis.readUTF());
+		setType(dis.readByte());
+		
+		if(type == TYPE_STRING)
+			setValue(dis.readUTF());
+		else if(type == TYPE_INT)
+			setValue(dis.readInt());
+		else if(type == TYPE_FLOAT)
+			setValue(dis.readFloat());
+		else if(type == TYPE_DATE)
+			setValue(new Date(dis.readLong()));
+		
 		setValueDate(new Date(dis.readLong()));
 	}
 	
 	public void write(DataOutputStream dos) throws IOException {
-		dos.writeUTF(getValue());
+		
+		dos.writeByte(type);
+		
+		if(type == TYPE_STRING)
+			dos.writeUTF((String)value);
+		else if(type == TYPE_INT)
+			dos.writeInt((Integer)value);
+		else if(type == TYPE_FLOAT)
+			dos.writeFloat((Float)value);
+		else if(type == TYPE_DATE)
+			dos.writeLong(((Date)value).getTime());
+		
 		dos.writeLong(getValueDate().getTime());
 	}
 }
