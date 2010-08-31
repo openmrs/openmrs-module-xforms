@@ -16,12 +16,16 @@ import org.openmrs.module.xforms.serialization.Persistent;
  */
 public class MedicalHistoryValue implements Persistent{
 	
+	//TODO Looks like these five lines below belong to MedicalHistoryFieldData where the field name is.
 	public static final byte TYPE_STRING = 1;
 	public static final byte TYPE_INT = 2;
 	public static final byte TYPE_FLOAT = 3;
 	public static final byte TYPE_DATE = 4;
 	
 	private byte type = TYPE_STRING;
+	
+	
+	
 	private Object value;
 	private Date valueDate;
 
