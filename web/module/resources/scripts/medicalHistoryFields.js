@@ -45,6 +45,7 @@ dojo.addOnLoad( function(){
 	fieldSearch = dojo.widget.manager.getWidgetById('fieldSearch');
 	//cSelection = dojo.widget.manager.getWidgetById('cSelection');
 	
+	tree.DNDAcceptTypes = ["*"];
 	DWRXformsService.getJSTree(evalTreeJS);
 	
 	dojo.event.topic.subscribe(tree.eventNames.moveTo, new nodeMoved(), "execute");
@@ -345,7 +346,7 @@ function createClicked(selNode) {
 
 	//this.controller = dojo.widget.manager.getWidgetById(controllerId);
 	var newChild = controller.createChild(selNode, 0, { suggestedTitle: "New node" });
-	//selectedNode = newChild;
+	selectedNode = newChild;
 	editClicked(newChild);
 	tree.fieldNameInput.focus();
 }

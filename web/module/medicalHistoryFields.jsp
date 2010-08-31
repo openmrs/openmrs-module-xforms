@@ -4,13 +4,9 @@
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
-<script type="text/javascript" src='${pageContext.request.contextPath}/dwr/engine.js'></script>
-<script type="text/javascript" src='${pageContext.request.contextPath}/dwr/util.js'></script>
-<script type="text/javascript" src='${pageContext.request.contextPath}/dwr/interface/DWRXformsService.js'></script>
-
-<script type="text/javascript">
-	var djConfig = {debugAtAllCosts: false, isDebug: false };
-</script>
+<openmrs:htmlInclude file="/dwr/engine.js"/>
+<openmrs:htmlInclude file="/dwr/util.js"/>
+<openmrs:htmlInclude file="/dwr/interface/DWRXformsService.js"/>
 
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 <openmrs:htmlInclude file="/moduleResources/xforms/scripts/medicalHistoryFields.js"/>
