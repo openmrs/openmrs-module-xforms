@@ -76,9 +76,7 @@ dojo.addOnLoad( function(){
 		
 	dojo.event.topic.subscribe("fieldSearch/objectsFound", 
 			function(msg) {
-				var link = '<a href="#newField" onclick="createClicked(); return false;">Add New Field</a>';
-				link += ' or ';
-				link += '<a href="../../dictionary/concept.form">Add New Concept</a>';
+				var link = '<a href="../../dictionary/concept.form">Add New Concept</a>';
 				msg.objs.push(link); //setup links for appending to the end
 			}
 		);
@@ -645,6 +643,7 @@ function getData(obj) {
 		data["label"] = "CONCEPT." + obj.name;
 		data.title = "Concept Id: " + obj.conceptId;
 		data.isSet = obj.isSet;
+		data.id = data["fieldId"] = obj.conceptId;
 	}
 	// or object is a fieldListItem
 	else if (obj.fieldId != null) {

@@ -119,7 +119,7 @@
 		</td>
 		<td valign="top" style="padding-left: 5px;" id="fieldSearch" width="40%">
 			<div id="fieldSearchDiv">
-				<div dojoType="FieldSearch" widgetId="fieldSearch" searchLabel='<spring:message code="Field.find" />' showHeaderRow="false" alsoSearchConcepts="true"></div>
+				<div dojoType="ConceptSearch" widgetId="fieldSearch" searchLabel='<spring:message code="Concept.find" />' showHeaderRow="false" ></div>
 			</div>
 		</td>
 	</tr>

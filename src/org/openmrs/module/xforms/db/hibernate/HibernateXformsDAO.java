@@ -391,8 +391,7 @@ public class HibernateXformsDAO implements XformsDAO {
 			"e.encounter_datetime " +
 			"from encounter e " +
 			"inner join obs o on o.encounter_id = e.encounter_id " +
-			"inner join field f on f.concept_id=o.concept_id " +
-			"inner join xforms_medical_history_field mhf on mhf.field_id=f.field_id " +
+			"inner join xforms_medical_history_field mhf on mhf.field_id=o.concept_id " +
 			"and o.person_id = e.patient_id " +
 			"where e.patient_id = " + patientId + " " +
 			"and value_coded is null and o.voided = 0 " +
@@ -401,8 +400,7 @@ public class HibernateXformsDAO implements XformsDAO {
 			"from encounter e " +
 			"inner join obs o on o.encounter_id = e.encounter_id " +
 			"inner join concept_name cn on cn.concept_id=o.value_coded " +
-			"inner join field f on f.concept_id=o.concept_id " +
-			"inner join xforms_medical_history_field mhf on mhf.field_id=f.field_id " +
+			"inner join xforms_medical_history_field mhf on mhf.field_id=o.concept_id " +
 			"and o.person_id = e.patient_id " +
 			"where e.patient_id = " + patientId + " " +
 			"and value_coded is not null and o.voided = 0 ) as t " +
