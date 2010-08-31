@@ -321,7 +321,7 @@ public class HibernateXformsDAO implements XformsDAO {
 		query.executeUpdate();
 	}
 	
-	public PatientMedicalHistory getPatientMedicalHistory(Integer patientId){
+	/*public PatientMedicalHistory getPatientMedicalHistory(Integer patientId){
 		String sql = "select * from (select mhf.tabIndex,mhf.name, " +
 			"cast(case when value_group_id is not null then value_group_id " +
 			"when value_boolean is not null then value_boolean " +
@@ -376,7 +376,107 @@ public class HibernateXformsDAO implements XformsDAO {
 		history.setPatientId(patientId);
 		
 		return history;
+	}*/
+	
+	
+	public PatientMedicalHistory getPatientMedicalHistory(Integer patientId){
+
+		String sql = "select * from (select mhf.tabIndex,mhf.name, " +
+			"value_group_id, " +
+			"value_boolean, " +
+			"value_drug, " +
+			"value_datetime, " +
+			"value_numeric, " +
+			"value_text, " +
+			"e.encounter_datetime " +
+			"from encounter e " +
+			"inner join obs o on o.encounter_id = e.encounter_id " +
+			"inner join field f on f.concept_id=o.concept_id " +
+			"inner join xforms_medical_history_field mhf on mhf.field_id=f.field_id " +
+			"and o.person_id = e.patient_id " +
+			"where e.patient_id = " + patientId + " " +
+			"and value_coded is null and o.voided = 0 " +
+			"UNION " +
+			"select mhf.tabIndex, mhf.name, null, null, null, null, null, cn.name, e.encounter_datetime " +
+			"from encounter e " +
+			"inner join obs o on o.encounter_id = e.encounter_id " +
+			"inner join concept_name cn on cn.concept_id=o.value_coded " +
+			"inner join field f on f.concept_id=o.concept_id " +
+			"inner join xforms_medical_history_field mhf on mhf.field_id=f.field_id " +
+			"and o.person_id = e.patient_id " +
+			"where e.patient_id = " + patientId + " " +
+			"and value_coded is not null and o.voided = 0 ) as t " +
+			"order by tabIndex,name,encounter_datetime";
+
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		query.addScalar("name", Hibernate.STRING);
+		//query.addScalar("value", Hibernate.STRING);
+		
+		query.addScalar("value_group_id", Hibernate.INTEGER);
+		query.addScalar("value_boolean", Hibernate.INTEGER);
+		query.addScalar("value_drug", Hibernate.INTEGER);
+		query.addScalar("value_datetime", Hibernate.DATE);
+		query.addScalar("value_numeric", Hibernate.FLOAT);
+		//query.addScalar("value_modifier", Hibernate.OBJECT);
+		query.addScalar("value_text", Hibernate.STRING);
+		
+		query.addScalar("encounter_datetime", Hibernate.DATE);
+
+		List<Object[]> list = query.list();
+		if(list == null || list.size() == 0)
+			return null;
+
+		PatientMedicalHistory history = new PatientMedicalHistory();
+		MedicalHistoryFieldData field = null;
+		String prevName = null;
+		for(Object[] item : list){
+			String name = (String)item[0];
+			if(!name.equals(prevName)){
+				field = new MedicalHistoryFieldData();
+				field.setFieldName(name);
+				history.addHistory(field);
+				prevName = name;
+			}
+			
+			MedicalHistoryValue mhv = new MedicalHistoryValue();
+			
+			if(item[1] != null){
+				mhv.setType(MedicalHistoryValue.TYPE_INT);
+				mhv.setValue(item[1]);
+			}
+			else if(item[2] != null){
+				mhv.setType(MedicalHistoryValue.TYPE_INT);
+				mhv.setValue(item[2]);
+			}
+			else if(item[3] != null){
+				mhv.setType(MedicalHistoryValue.TYPE_INT);
+				mhv.setValue(item[3]);
+			}
+			else if(item[4] != null){
+				mhv.setType(MedicalHistoryValue.TYPE_DATE);
+				mhv.setValue(item[4]);
+			}
+			else if(item[5] != null){
+				mhv.setType(MedicalHistoryValue.TYPE_FLOAT);
+				mhv.setValue(item[5]);
+			}
+			else if(item[6] != null){
+				mhv.setType(MedicalHistoryValue.TYPE_STRING);
+				mhv.setValue(item[6]);
+			}
+			else
+				continue;
+			
+			mhv.setValueDate((Date)item[7]);
+			
+			field.addValue(mhv /*new MedicalHistoryValue((String)item[1],(Date)item[2])*/);
+		}
+
+		history.setPatientId(patientId);
+
+		return history;
 	}
+	
 	
 	public String getFieldDefaultValue(Integer formId, String fieldName){
 		String sql = "select default_value from form_field ff inner join field f " +
