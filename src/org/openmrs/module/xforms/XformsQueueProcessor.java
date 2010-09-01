@@ -392,6 +392,7 @@ public class XformsQueueProcessor {
 			PatientIdentifierType identifierType = patientService.getPatientIdentifierType(id);
 			identifier.setIdentifierType(identifierType);
 			identifier.setLocation(getLocation(DOMUtil.getElementValue(root,XformBuilder.NODE_LOCATION_ID)));
+			identifier.setPreferred(true);
 			pt.addIdentifier(identifier);
 
 			addPersonAttributes(pt,root,xformsService, creator);
