@@ -30,6 +30,7 @@ import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonAttributeType;
+import org.openmrs.PersonName;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.FormService;
@@ -675,7 +676,8 @@ public final class XformBuilder {
 
 			Element node = itemNode.createElement(NAMESPACE_XFORMS, null);
 			node.setName(NODE_LABEL);
-			node.addChild(Element.TEXT, provider.getPersonName().toString());
+			PersonName personName = provider.getPersonName(); //This may be null for some users that have not last and first names.
+			node.addChild(Element.TEXT, personName != null ? personName.toString() : provider.getUsername());
 			itemNode.addChild(Element.ELEMENT, node);
 
 			node = itemNode.createElement(NAMESPACE_XFORMS, null);
