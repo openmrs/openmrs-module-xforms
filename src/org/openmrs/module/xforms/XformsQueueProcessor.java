@@ -371,7 +371,7 @@ public class XformsQueueProcessor {
 		pn.setGivenName(DOMUtil.getElementValue(root,XformBuilder.NODE_GIVEN_NAME));
 		pn.setFamilyName(DOMUtil.getElementValue(root,XformBuilder.NODE_FAMILY_NAME));
 		pn.setMiddleName(DOMUtil.getElementValue(root,XformBuilder.NODE_MIDDLE_NAME));
-
+        pn.setPreferred(true);
 		pn.setCreator(creator);
 		pn.setDateCreated(pt.getDateCreated());
 		pt.addName(pn);
