@@ -231,7 +231,10 @@ public final class XformBuilder {
 	public static final String NODE_NAME_TOWNSHIP_DIVISION = "township_division";
 	public static final String NODE_NAME_PREFIX_PERSON_ADDRESS = "person_address_";
 
-
+	private static Hashtable<String,String> obsRepeatItems;
+	private static Hashtable<String,String> nodesets;
+	
+	
 	/**
 	 * Builds an Xform from an openmrs schema and template xml.
 	 * 
@@ -486,6 +489,9 @@ public final class XformBuilder {
 	 * @return - the built xform's xml.
 	 */
 	public static String getXform4mDocuments(Document schemaDoc, Document templateDoc) throws Exception {
+		obsRepeatItems = new Hashtable<String,String>();
+		nodesets = new Hashtable<String,String>();
+		
 		Element formNode = (Element)templateDoc.getRootElement();
 
 		Document doc = new Document();
@@ -677,7 +683,7 @@ public final class XformBuilder {
 			Element node = itemNode.createElement(NAMESPACE_XFORMS, null);
 			node.setName(NODE_LABEL);
 			PersonName personName = provider.getPersonName(); //This may be null for some users that have not last and first names.
-			node.addChild(Element.TEXT, personName != null ? personName.toString() : provider.getUsername());
+			node.addChild(Element.TEXT, (personName != null ? personName.toString() : provider.getUsername())  + " [" + provider.getUserId() + "]");
 			itemNode.addChild(Element.ELEMENT, node);
 
 			node = itemNode.createElement(NAMESPACE_XFORMS, null);
@@ -702,7 +708,7 @@ public final class XformBuilder {
 
 			Element node = itemNode.createElement(NAMESPACE_XFORMS, null);
 			node.setName(NODE_LABEL);
-			node.addChild(Element.TEXT, loc.getName());
+			node.addChild(Element.TEXT, loc.getName() + " [" + loc.getLocationId() + "]");
 			itemNode.addChild(Element.ELEMENT, node);
 
 			node = itemNode.createElement(NAMESPACE_XFORMS, null);
@@ -749,6 +755,7 @@ public final class XformBuilder {
 
 		//store the binding node with the key being its id attribute.
 		bindings.put(name, bindNode);
+		nodesets.put(name, nodeset);
 		return bindNode;
 	}
 
@@ -928,12 +935,50 @@ public final class XformBuilder {
 				String nameAttribute = child.getAttributeValue(null, ATTRIBUTE_NAME);
 				if(name.equalsIgnoreCase(NODE_SIMPLETYPE) || (name.equalsIgnoreCase(NODE_COMPLEXTYPE) && nameAttribute != null && nameAttribute.startsWith("_") && !nameAttribute.contains("_section"))/*&& isUserDefinedSchemaElement(child)*/)
 					xformSchemaNode.addChild(0, Element.ELEMENT, child);
+				
+				if("obs_section".equalsIgnoreCase(nameAttribute))
+					parseObsSectionRepeats(child, bindings, problemList);
 			}
 
 			if(name.equalsIgnoreCase(NODE_SIMPLETYPE))
 				parseSimpleType(child,child.getAttributeValue(null, ATTRIBUTE_NAME),bindings);
 		}
 	}
+	
+	private static void parseObsSectionRepeats(Element complexTypeNode, Hashtable bindings, Hashtable<String,String> problemList){
+		for(int i=0; i<complexTypeNode.getChildCount(); i++){
+			if(complexTypeNode.isText(i))
+				continue; //ignore text.
+
+			Element child = (Element)complexTypeNode.getElement(i);
+			if(child.getName().equalsIgnoreCase(NODE_SEQUENCE)){
+				parseObsSectionSequenceRepeats(child, bindings, problemList);
+				return;
+			}
+		}
+	}
+	
+	private static void parseObsSectionSequenceRepeats(Element sequenceNode, Hashtable bindings, Hashtable<String,String> problemList){
+		for(int i=0; i<sequenceNode.getChildCount(); i++){
+			if(sequenceNode.isText(i))
+				continue; //ignore text.
+
+			Element child = (Element)sequenceNode.getElement(i);
+			if("unbounded".equalsIgnoreCase(child.getAttributeValue(null, ATTRIBUTE_MAXOCCURS))){
+				String name = child.getAttributeValue(null, ATTRIBUTE_NAME);
+				obsRepeatItems.put(name, name);
+				problemList.put(name, name);
+				
+				String nodeset = nodesets.get(name);
+				Element bindNode = (Element)bindings.get(name);
+				if(nodeset != null && bindNode != null){
+					if(nodeset.endsWith("/value"))
+						bindNode.setAttribute(null, ATTRIBUTE_NODESET, nodeset.substring(0, nodeset.length() - 6));
+				}
+			}
+		}
+	}
+
 
 	private static void parseSimpleType(Element simpleTypeNode, String name, Hashtable bindings){
 
@@ -1323,7 +1368,7 @@ public final class XformBuilder {
 
 			Element node = (Element)sequenceNode.getChild(i);
 			String itemName = node.getAttributeValue(null, ATTRIBUTE_NAME);
-
+//???????
 			if(repeatItem){
 				problemListItems.put(itemName, name);
 				removeChildNode(modelNode,itemName);
@@ -1732,16 +1777,18 @@ public final class XformBuilder {
 		if(controlNode != null)
 			repeatControl.addChild(Element.ELEMENT, controlNode);
 		else if(name.contains("problem_added") || name.contains("problem_resolved"))
-			addDefaultProblemListChild(name, repeatControl);
+			addDefaultProblemListChild(name, repeatControl, null);
+		else if(obsRepeatItems.contains(name))
+			addDefaultProblemListChild(name, repeatControl, "value" /*nodesets.get(name)*/);
 
 		return repeatControl;
 	}
 
-	private static void addDefaultProblemListChild(String name, Element repeatControl){
+	private static void addDefaultProblemListChild(String name, Element repeatControl, String nodeset){
 		//add the input node.
 		Element controlNode = repeatControl.createElement(NAMESPACE_XFORMS, null);
 		controlNode.setName(CONTROL_INPUT);
-		controlNode.setAttribute(null, ATTRIBUTE_REF, "problem_list/" + name +"/value");
+		controlNode.setAttribute(null, ATTRIBUTE_REF, nodeset == null ? "problem_list/" + name +"/value" : nodeset);
 		controlNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_TEXT);
 		repeatControl.addChild(Element.ELEMENT, controlNode);
 
