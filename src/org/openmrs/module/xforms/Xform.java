@@ -2,6 +2,7 @@ package org.openmrs.module.xforms;
 
 import java.util.Date;
 
+import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 
@@ -12,7 +13,7 @@ import org.openmrs.api.context.Context;
  * @author Daniel Kayiwa
  * 
  */
-public class Xform { 
+public class Xform extends BaseOpenmrsObject { 
 
 	/** The xml for the XForm. */
 	private String xformXml;
@@ -215,5 +216,16 @@ public class Xform {
 
 	public void setJavaScriptSrc(String javaScriptSrc) {
 		this.javaScriptSrc = javaScriptSrc;
+	}
+	
+
+	@Override
+	public Integer getId() {
+		return getFormId();
+	}
+
+	@Override
+	public void setId(Integer id) {
+		setFormId(id);
 	}
 }

@@ -1,5 +1,7 @@
 package org.openmrs.module.xforms.model;
 
+import org.openmrs.BaseOpenmrsObject;
+
 
 /**
  * An Xform remote user. This class provides a set of attributes for user downloads
@@ -11,7 +13,7 @@ package org.openmrs.module.xforms.model;
  * @author Daniel
  *
  */
-public class XformUser {
+public class XformUser extends BaseOpenmrsObject {
 
 	private int userId;
 	private String name;
@@ -63,5 +65,15 @@ public class XformUser {
 
 	public void setUserId(int userId) {
 		this.userId = userId;
+	}
+	
+	@Override
+	public Integer getId() {
+		return getUserId();
+	}
+
+	@Override
+	public void setId(Integer id) {
+		setUserId(id);
 	}
 }

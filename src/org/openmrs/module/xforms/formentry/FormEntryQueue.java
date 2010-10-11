@@ -6,10 +6,11 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.User;
 import org.openmrs.util.OpenmrsUtil;
 
-public class FormEntryQueue {
+public class FormEntryQueue  extends BaseOpenmrsObject {
 	
 	private Log log = LogFactory.getLog(this.getClass());
 	
@@ -123,5 +124,13 @@ public class FormEntryQueue {
     }
 	
 	
+    @Override
+	public Integer getId() {
+		return getFormEntryQueueId();
+	}
 
+	@Override
+	public void setId(Integer id) {
+		setFormEntryQueueId(id);
+	}
 }

@@ -2,9 +2,10 @@ package org.openmrs.module.xforms.formentry;
 
 import java.util.Date;
 
+import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.User;
 
-public class FormEntryError {
+public class FormEntryError  extends BaseOpenmrsObject {
 
 	private Integer formEntryErrorId;
 	private String formData;
@@ -103,4 +104,13 @@ public class FormEntryError {
 		this.formEntryErrorId = formEntryErrorId;
 	}
 
+	@Override
+	public Integer getId() {
+		return getFormEntryErrorId();
+	}
+
+	@Override
+	public void setId(Integer id) {
+		setFormEntryErrorId(id);
+	}
 }

@@ -19,8 +19,7 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Person;
-import org.openmrs.User;
+import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.api.context.Context;
 
 /**
@@ -39,7 +38,7 @@ import org.openmrs.api.context.Context;
  * @see org.openmrs.Attributable
  */
 
-public class PersonRepeatAttribute implements java.io.Serializable {
+public class PersonRepeatAttribute extends BaseOpenmrsObject implements java.io.Serializable {
 	
 	public static final int VALUE_ID_TYPE_ATTRIBUTE = 1;
 	public static final int VALUE_ID_TYPE_CONCEPT = 2;
@@ -396,5 +395,16 @@ public class PersonRepeatAttribute implements java.io.Serializable {
 		setVoided(true);
 		setVoidedBy(Context.getAuthenticatedUser().getUserId());
 		setVoidReason(reason);
+	}
+	
+
+	@Override
+	public Integer getId() {
+		return getPersonRepeatAttributeId();
+	}
+
+	@Override
+	public void setId(Integer id) {
+		setPersonRepeatAttributeId(id);
 	}
 }

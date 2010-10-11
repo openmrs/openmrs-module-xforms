@@ -1,5 +1,7 @@
 package org.openmrs.module.xforms;
 
+import org.openmrs.BaseOpenmrsObject;
+
 
 
 
@@ -8,7 +10,7 @@ package org.openmrs.module.xforms;
  * @author daniel
  *
  */
-public class MedicalHistoryField implements Comparable<MedicalHistoryField> {
+public class MedicalHistoryField extends BaseOpenmrsObject implements Comparable<MedicalHistoryField> {
 
 	public static final long serialVersionUID = 4454345322324L;
 
@@ -71,5 +73,16 @@ public class MedicalHistoryField implements Comparable<MedicalHistoryField> {
 			return -1;
 		
 		return 1;
+	}
+	
+
+	@Override
+	public Integer getId() {
+		return getFieldId();
+	}
+
+	@Override
+	public void setId(Integer id) {
+		setFieldId(id);
 	}
 }

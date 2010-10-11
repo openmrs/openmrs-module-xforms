@@ -1,12 +1,14 @@
 package org.openmrs.module.xforms.model;
 
+import org.openmrs.BaseOpenmrsObject;
+
 
 /**
  * 
  * @author daniel
  *
  */
-public class XformCohort {
+public class XformCohort extends BaseOpenmrsObject {
 
     private int cohortId;
     private String name;
@@ -36,4 +38,15 @@ public class XformCohort {
     public void setName(String name) {
         this.name = name;
     }
+    
+
+	@Override
+	public Integer getId() {
+		return getCohortId();
+	}
+
+	@Override
+	public void setId(Integer id) {
+		setCohortId(id);
+	}
  }

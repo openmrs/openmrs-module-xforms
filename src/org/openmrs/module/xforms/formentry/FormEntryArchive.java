@@ -6,10 +6,11 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.User;
 import org.openmrs.util.OpenmrsUtil;
 
-public class FormEntryArchive {
+public class FormEntryArchive  extends BaseOpenmrsObject {
 	private Log log = LogFactory.getLog(this.getClass());
 
 	private Integer formEntryArchiveId;
@@ -128,4 +129,13 @@ public class FormEntryArchive {
 		this.fileSystemUrl = fileSystemUrl;
 	}
 
+	@Override
+	public Integer getId() {
+		return getFormEntryArchiveId();
+	}
+
+	@Override
+	public void setId(Integer id) {
+		setFormEntryArchiveId(id);
+	}
 }

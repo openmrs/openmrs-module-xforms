@@ -1,18 +1,14 @@
 package org.openmrs.module.xforms.formentry;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Form;
-import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.xforms.XformsException;
 import org.openmrs.util.FormUtil;
 import org.openmrs.util.OpenmrsUtil;
 
