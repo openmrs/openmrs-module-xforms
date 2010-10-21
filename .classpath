@@ -43,14 +43,14 @@
 	<classpathentry kind="lib" path="lib-common/jcl-over-slf4j-1.5.6.jar"/>
 	<classpathentry kind="lib" path="lib-common/slf4j-api-1.5.6.jar"/>
 	<classpathentry kind="lib" path="lib-common/slf4j-log4j12-1.5.6.jar"/>
-	<classpathentry kind="lib" path="lib-common/openmrs-api-1.3.0.13.4954.jar" sourcepath="lib-common/openmrs-api-1.3.0.13.4954.jar"/>
-	<classpathentry kind="lib" path="lib-common/tests-openmrs-api-1.3.0.11.4649.jar" sourcepath="/openmrs-trunk"/>
-	<classpathentry kind="lib" path="lib-common/web-openmrs-api-1.3.0.13.4954.jar"/>
 	<classpathentry kind="lib" path="lib/epihandy-xforms-server.jar" sourcepath="H:/epihandy cldc 1.1"/>
 	<classpathentry kind="lib" path="lib/sms-server.jar"/>
 	<classpathentry kind="lib" path="lib-common/velocity-1.6-beta2.jar"/>
 	<classpathentry kind="lib" path="lib-common/commons-lang-2.4.jar"/>
 	<classpathentry kind="lib" path="lib-common/commons-fileupload-1.2.1.jar"/>
 	<classpathentry kind="lib" path="lib-common/jdom.jar"/>
+	<classpathentry kind="lib" path="lib-common/openmrs-api-1.5.1.10688-.jar"/>
+	<classpathentry kind="lib" path="lib-common/tests-openmrs-api-1.5.1.10688-.jar"/>
+	<classpathentry kind="lib" path="lib-common/web-openmrs-api-1.5.1.10688-.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
