@@ -464,6 +464,14 @@
     		searchWidget.inputNode.select();
     		searchWidget.inputNode.value = value;
     	}
+
+    	function getQuestionBinding(id, pos){
+			  return null;
+		}
+
+		function getOptionBinding(id, pos){
+			  return null;
+		}
     	
     </script>
     
