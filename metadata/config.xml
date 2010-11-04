@@ -312,6 +312,19 @@
 		<servlet-class>@MODULE_PACKAGE@.web.UserValidatorServlet</servlet-class>
 	</servlet>
 	
+	
+	<!-- Filter definitions -->
+	
+	<filter>
+		<filter-name>xformsFilter</filter-name> 
+		<filter-class>@MODULE_PACKAGE@.web.XformsFilter</filter-class> 
+	</filter>
+	<filter-mapping>
+		<filter-name>xformsFilter</filter-name> 
+		<url-pattern>/*</url-pattern> 
+	</filter-mapping>
+	
+	
 	<!-- Internationalization -->
 	<!-- All message codes should start with moduleId.* -->
 	<messages>
