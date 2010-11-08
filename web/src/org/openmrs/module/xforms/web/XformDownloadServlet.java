@@ -504,6 +504,10 @@ public class XformDownloadServlet extends HttpServlet {
 
 		String xml = XformBuilder.fromDoc2String(doc);
 		
+		//If the xform is in the JR format, then parse itext for the current locale.
+		if("javarosa".equalsIgnoreCase(Context.getAdministrationService().getGlobalProperty("xforms.saveFormat","purcforms")))
+				xml = ItextParser.parse(xml, Context.getLocale().getLanguage());
+		
 		if(xform != null){
 			
 			org.w3c.dom.Element languageTextNode = null;
