@@ -241,6 +241,11 @@
 		<defaultValue>0</defaultValue>
 		<description>The id of the encounter form which will be combined with the patient registration form.</description>
 	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.saveFormat</property>
+		<defaultValue>purcforms</defaultValue>
+		<description>The format in which the xforms will be saved. For now we support two formats: purcforms and javarosa</description>
+	</globalProperty>
 	
 	<!-- /Required Global Properties -->
 

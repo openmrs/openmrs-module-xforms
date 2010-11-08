@@ -40,6 +40,7 @@ import org.openmrs.module.xforms.XformsServer;
 import org.openmrs.module.xforms.XformsService;
 import org.openmrs.module.xforms.download.XformDownloadManager;
 import org.openmrs.module.xforms.formentry.FormEntryWrapper;
+import org.openmrs.module.xforms.util.ItextParser;
 import org.openmrs.module.xforms.util.LanguageUtil;
 import org.openmrs.module.xforms.util.XformsUtil;
 import org.openmrs.util.FormUtil;
@@ -310,14 +311,6 @@ public class XformDownloadServlet extends HttpServlet {
 	protected void doXformEntryGet(HttpServletRequest request, HttpServletResponse response, Form form,FormService formService,XformsService xformsService, boolean createNew) throws Exception {			
 		String xformXml = XformDownloadManager.getXform(formService,xformsService,form.getFormId(),createNew);
 
-		/*try{
-			xformXml = XformsUtil.fromXform2Xhtml(xformXml, xformsService.getXslt(form.getFormId()));
-		}catch(Exception e){
-			log.error(e.getMessage(), e);
-			response.getOutputStream().print(e.getMessage()); //possibly user xslt has errors.
-			return;
-		}*/
-
 		Document doc = XformBuilder.getDocument(xformXml);
 
 		XformBuilder.setNodeValue(doc, XformConstants.NODE_SESSION, request.getSession().getId());
@@ -378,8 +371,13 @@ public class XformDownloadServlet extends HttpServlet {
 		if(request.getParameter("encounterId") != null)
 			XformObsEdit.fillObs(request,doc,Integer.parseInt(request.getParameter("encounterId")),xformXml);
 
-		String xml = XformBuilder.fromDoc2String(doc);  
-
+		String xml = XformBuilder.fromDoc2String(doc);
+		
+		//If the xform is in the JR format, then parse itext for the current locale.
+		if("javarosa".equalsIgnoreCase(Context.getAdministrationService().getGlobalProperty("xforms.saveFormat","purcforms")))
+				xml = ItextParser.parse(xml, Context.getLocale().getLanguage());
+		
+		//Get the layout and JavaScript of the form, if any.
 		Xform xform = xformsService.getXform(form.getFormId());
 
 		if(xform != null){
@@ -661,79 +659,4 @@ public class XformDownloadServlet extends HttpServlet {
 		person.setBirthdateEstimated(birthdateEstimated);
 
 	}
-
-
-}//ROOM NO 303
-//		<form id="selectFormForm" method="get" action="<%= request.getContextPath() %>/module/xforms/xformEntry.form">
-
-
-/**
- * Handles a form which has been submitted 
- * 
- * @param request - the http request.
- * @param response - the http response.
- * @param formService - the form service.
- * @param xformsService - the xforms service.
- * @param createNew - true to create a new xform or false to load an existing. 
- * @param includeUsers - true to include users else not.
- * @throws ServletException
- * @throws IOException
- */
-/*protected void doXformsGet(HttpServletRequest request, HttpServletResponse response, FormService formService,XformsService xformsService,boolean createNew,boolean includeUsers) throws ServletException, IOException {
-
-	ZOutputStream gzip = new ZOutputStream(response.getOutputStream(),JZlib.Z_BEST_COMPRESSION);
-	DataOutputStream dos = new DataOutputStream(gzip);
-
-	byte responseStatus = ResponseStatus.STATUS_ERROR;
-
-	try
-	{		
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		DataInputStream dis = new DataInputStream(request.getInputStream());
-
-		String name = dis.readUTF();
-		String password = dis.readUTF();
-		String serializer = dis.readUTF();
-
-		byte action = dis.readByte();
-
-		try{
-			XformsUtil.authenticateInlineUser(request);
-		}catch(ContextAuthenticationException e){
-			log.error(e.getMessage(),e);
-			responseStatus = ResponseStatus.STATUS_ACCESS_DENIED;
-		}
-
-		if(responseStatus != ResponseStatus.STATUS_ACCESS_DENIED){
-			DataOutputStream dosTemp = new DataOutputStream(baos);
-
-			response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
-
-			if(includeUsers)
-				UserDownloadManager.downloadUsers(dosTemp);
-
-			XformDownloadManager.downloadXforms(dosTemp);
-
-			responseStatus = ResponseStatus.STATUS_SUCCESS;
-		}
-
-		dos.writeByte(responseStatus);
-
-		if(responseStatus == ResponseStatus.STATUS_SUCCESS)
-			dos.write(baos.toByteArray());
-
-		dos.flush();
-		gzip.finish();
-	}
-	catch(Exception ex){
-		log.error(ex.getMessage(),ex);
-		try{
-			dos.writeByte(responseStatus);
-			dos.flush();
-			gzip.finish();
-		}
-		catch(Exception e){
-			e.printStackTrace();
-		}
-	}
-}*/
+}
