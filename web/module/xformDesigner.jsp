@@ -102,8 +102,9 @@
     <div id="showXformsSourceTab" style="visibility:hidden;">${showXformsSourceTab}</div>
     <div id="showLayoutXmlTab" style="visibility:hidden;">${showLayoutXmlTab}</div>
     <div id="showModelXmlTab" style="visibility:hidden;">${showModelXmlTab}</div>
-     <div id="showJavaScriptTab" style="visibility:hidden;">${showJavaScriptTab}</div>
-    
+    <div id="showJavaScriptTab" style="visibility:hidden;">${showJavaScriptTab}</div>
+    <div id="saveFormat" style="visibility:hidden;">${saveFormat}</div>
+     
     <div id="localeList" style="visibility:hidden;">${localeList}</div>
         
     
