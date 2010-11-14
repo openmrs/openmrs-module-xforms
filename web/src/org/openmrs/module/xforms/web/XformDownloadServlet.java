@@ -372,11 +372,11 @@ public class XformDownloadServlet extends HttpServlet {
 			XformObsEdit.fillObs(request,doc,Integer.parseInt(request.getParameter("encounterId")),xformXml);
 
 		String xml = XformBuilder.fromDoc2String(doc);
-		
+
 		//If the xform is in the JR format, then parse itext for the current locale.
-		if("javarosa".equalsIgnoreCase(Context.getAdministrationService().getGlobalProperty("xforms.saveFormat","purcforms")))
-				xml = ItextParser.parse(xml, Context.getLocale().getLanguage());
-		
+		if(XformsUtil.isJavaRosaSaveFormat())
+			xml = ItextParser.parse(xml, Context.getLocale().getLanguage());
+
 		//Get the layout and JavaScript of the form, if any.
 		Xform xform = xformsService.getXform(form.getFormId());
 
@@ -436,8 +436,8 @@ public class XformDownloadServlet extends HttpServlet {
 				XformBuilder.setNodeValue(doc, XformBuilder.NODE_LOCATION_ID, patient.getPatientIdentifier().getLocation().getLocationId().toString());
 				XformBuilder.setNodeValue(doc, XformBuilder.NODE_PATIENT_ID, patient.getPatientId().toString());
 			}
-			
-			
+
+
 			User user = Context.getAuthenticatedUser();
 
 			if("true".equals(Context.getAdministrationService().getGlobalProperty("xforms.setDefaultProvider", "false"))){
@@ -503,13 +503,13 @@ public class XformDownloadServlet extends HttpServlet {
 		//else must be new patient.  
 
 		String xml = XformBuilder.fromDoc2String(doc);
-		
+
 		//If the xform is in the JR format, then parse itext for the current locale.
-		if("javarosa".equalsIgnoreCase(Context.getAdministrationService().getGlobalProperty("xforms.saveFormat","purcforms")))
-				xml = ItextParser.parse(xml, Context.getLocale().getLanguage());
-		
+		if(XformsUtil.isJavaRosaSaveFormat())
+			xml = ItextParser.parse(xml, Context.getLocale().getLanguage());
+
 		if(xform != null){
-			
+
 			org.w3c.dom.Element languageTextNode = null;
 			String localeXml = xform.getLocaleXml();
 			if(localeXml != null && localeXml.trim().length() > 0){
@@ -517,8 +517,8 @@ public class XformDownloadServlet extends HttpServlet {
 				if(languageTextNode != null)
 					xml = LanguageUtil.translateXformXml(xml,languageTextNode);
 			}
-			
-			
+
+
 			String layoutXml = xform.getLayoutXml();
 			if(layoutXml != null && layoutXml.length() > 0){
 				if(languageTextNode != null)

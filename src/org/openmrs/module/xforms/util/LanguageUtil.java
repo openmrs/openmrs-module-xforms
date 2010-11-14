@@ -132,11 +132,19 @@ public class LanguageUtil {
 	}
 
 	public static String translateXformXml(String xml, Element languageTextNode) throws Exception {
-		return translate(XformsUtil.fromString2Doc(xml),getXformsLocaleNode(languageTextNode));
+		Element node = getXformsLocaleNode(languageTextNode);
+		if(node == null)
+			return xml; //no text yet for this locale.
+		
+		return translate(XformsUtil.fromString2Doc(xml), node);
 	}
 
 	public static String translateLayoutXml(String xml, Element languageTextNode) throws Exception {
-		return translate(XformsUtil.fromString2Doc(xml),getLayoutLocaleNode(languageTextNode));
+		Element node = getLayoutLocaleNode(languageTextNode);
+		if(node == null)
+			return xml; //no text yet for this locale.
+		
+		return translate(XformsUtil.fromString2Doc(xml), node);
 	}
 
 

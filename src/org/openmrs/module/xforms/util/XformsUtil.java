@@ -644,4 +644,8 @@ public class XformsUtil {
 	public static boolean encounterDateIncludesTime(){
 		return "true".equalsIgnoreCase(Context.getAdministrationService().getGlobalProperty("xforms.encounterDateIncludesTime", "false"));
 	}
+	
+	public static boolean isJavaRosaSaveFormat(){
+		return "javarosa".equalsIgnoreCase(Context.getAdministrationService().getGlobalProperty("xforms.saveFormat","purcforms"));
+	}
 }

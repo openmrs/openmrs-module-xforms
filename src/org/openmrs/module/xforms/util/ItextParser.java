@@ -2,6 +2,8 @@ package org.openmrs.module.xforms.util;
 
 import java.util.HashMap;
 
+import org.openmrs.module.xforms.XformBuilder;
+import org.openmrs.module.xforms.XformConstants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -57,9 +59,10 @@ public class ItextParser {
 		}
 		
 		//TODO Need not rely on the xf prefix.
-		tranlateNodes("xf:label", doc, itextMap);
-		tranlateNodes("xf:hint", doc, itextMap);
-		tranlateNodes("xf:title", doc, itextMap);
+		translateNodes("xf:label", doc, itextMap);
+		translateNodes("xf:hint", doc, itextMap);
+		translateNodes("xf:title", doc, itextMap);
+		translateNodes("xf:bind", doc, itextMap);
 		
 		//We do not need the itext block any more since we have finished translating the form.
 		itextNode.getParentNode().removeChild(itextNode);
@@ -132,7 +135,7 @@ public class ItextParser {
 	 * @param doc the xforms document.
 	 * @param itextMap the id to itext map.
 	 */
-	private static void tranlateNodes(String name, Document doc, HashMap<String,String> itextMap){
+	private static void translateNodes(String name, Document doc, HashMap<String,String> itextMap){
 		NodeList nodes = doc.getElementsByTagName(name);
 		if(nodes == null || nodes.getLength() == 0)
 			return;
@@ -171,5 +174,10 @@ public class ItextParser {
 		
 		//Get the itext id which starts at the 11th character.
 		return ref.substring(10,ref.lastIndexOf("'"));
+	}
+	
+	private static boolean isBindNode(Element node){
+		return (node.getNodeName().equalsIgnoreCase("bind") ||
+				node.getNodeName().equalsIgnoreCase("xf:bind"));
 	}
 }

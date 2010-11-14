@@ -503,6 +503,10 @@ public final class XformBuilder {
 		xformsNode.setPrefix(PREFIX_XML_SCHEMA, NAMESPACE_XML_SCHEMA);
 		xformsNode.setPrefix(PREFIX_XML_SCHEMA2, NAMESPACE_XML_SCHEMA);
 		xformsNode.setPrefix(PREFIX_XML_INSTANCES, NAMESPACE_XML_INSTANCE);
+		
+		if(XformsUtil.isJavaRosaSaveFormat())
+			xformsNode.setPrefix("jr", "http://openrosa.org/javarosa");
+		
 		doc.addChild(org.kxml2.kdom.Element.ELEMENT, xformsNode);
 
 		Element modelNode =  doc.createElement(NAMESPACE_XFORMS, null);
@@ -784,7 +788,7 @@ public final class XformBuilder {
 		if(name.equalsIgnoreCase(NODE_ENCOUNTER_ENCOUNTER_DATETIME)){
 			bindNode.setAttribute(null, ATTRIBUTE_TYPE, XformsUtil.encounterDateIncludesTime() ? DATA_TYPE_DATETIME : DATA_TYPE_DATE);
 			bindNode.setAttribute(null, ATTRIBUTE_CONSTRAINT, ". &lt;= today()");
-			bindNode.setAttribute(null, ATTRIBUTE_MESSAGE,"Encounter date cannot be after today");
+			bindNode.setAttribute(null, (XformsUtil.isJavaRosaSaveFormat() ? "jr:constraintMsg" : ATTRIBUTE_MESSAGE),"Encounter date cannot be after today");
 		}
 		else if(name.equalsIgnoreCase(NODE_ENCOUNTER_LOCATION_ID))
 			bindNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_INT);
@@ -1757,7 +1761,7 @@ public final class XformBuilder {
 
 		if(upper != null && lower != null && upper.trim().length() > 0 && lower.trim().length() > 0){
 			bindingNode.setAttribute(null, ATTRIBUTE_CONSTRAINT, ". &gt;= " + lower + " and . &lt;= " +upper);
-			bindingNode.setAttribute(null, ATTRIBUTE_MESSAGE, "value should be between " + lower + " and " + upper + " inclusive");
+			bindingNode.setAttribute(null, (XformsUtil.isJavaRosaSaveFormat() ? "jr:constraintMsg" : ATTRIBUTE_MESSAGE), "value should be between " + lower + " and " + upper + " inclusive");
 		}
 	}
 
@@ -2086,6 +2090,10 @@ public final class XformBuilder {
 		Element xformsNode = doc.createElement(NAMESPACE_XFORMS, null);
 		xformsNode.setName(NODE_XFORMS);
 		xformsNode.setPrefix(PREFIX_XFORMS, NAMESPACE_XFORMS);
+		
+		if(XformsUtil.isJavaRosaSaveFormat())
+			xformsNode.setPrefix("jr", "http://openrosa.org/javarosa");
+		
 		xformsNode.setPrefix(PREFIX_XML_SCHEMA, NAMESPACE_XML_SCHEMA);
 		xformsNode.setPrefix(PREFIX_XML_SCHEMA2, NAMESPACE_XML_SCHEMA);
 		xformsNode.setPrefix(PREFIX_XML_INSTANCES, NAMESPACE_XML_INSTANCE);
