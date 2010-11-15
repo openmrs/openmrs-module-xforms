@@ -500,7 +500,7 @@ public class HibernateXformsDAO implements XformsDAO {
 	
 	public List<Object[]> getXformsList(){
 		String sql = "select f.form_id, f.name from xforms_xform xf inner join form f " +
-					 "on xf.form_id=f.form_id";
+					 "on xf.form_id=f.form_id where f.retired=0 ";
 		
 		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
 		query.addScalar("form_id", Hibernate.INTEGER);
