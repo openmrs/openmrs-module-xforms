@@ -213,7 +213,7 @@ public final class XformBuilder {
 	public static final String BINDING_BIRTH_DATE = "/form/patient/patient.birthdate";
 	public static final String BINDING_BIRTH_DATE_ESTIMATED = "/form/patient/patient.birthdate_estimated";
 	public static final String BINDING_IDENTIFIER_TYPE = "/form/patient/patient_identifier.identifier_type";
-	
+
 	public static final String NODE_NAME_PERSON_ADDRESSES = "person_addresses";
 	public static final String NODE_NAME_PREFERRED = "preferred";
 	public static final String NODE_NAME_ADDRESS1 = "address1";
@@ -234,7 +234,11 @@ public final class XformBuilder {
 	private static Hashtable<String,String> obsRepeatItems;
 	private static Hashtable<String,String> nodesets;
 	
-	
+	private static String ATTRIBUTE_PRELOAD = "jr:preload";
+	private static String ATTRIBUTE_PRELOAD_PARAMS = "jr:preloadParams";
+	private static String PRELOAD_PATIENT = "patient";
+
+
 	/**
 	 * Builds an Xform from an openmrs schema and template xml.
 	 * 
@@ -491,7 +495,7 @@ public final class XformBuilder {
 	public static String getXform4mDocuments(Document schemaDoc, Document templateDoc) throws Exception {
 		obsRepeatItems = new Hashtable<String,String>();
 		nodesets = new Hashtable<String,String>();
-		
+
 		Element formNode = (Element)templateDoc.getRootElement();
 
 		Document doc = new Document();
@@ -503,10 +507,10 @@ public final class XformBuilder {
 		xformsNode.setPrefix(PREFIX_XML_SCHEMA, NAMESPACE_XML_SCHEMA);
 		xformsNode.setPrefix(PREFIX_XML_SCHEMA2, NAMESPACE_XML_SCHEMA);
 		xformsNode.setPrefix(PREFIX_XML_INSTANCES, NAMESPACE_XML_INSTANCE);
-		
-		if(XformsUtil.isJavaRosaSaveFormat())
-			xformsNode.setPrefix("jr", "http://openrosa.org/javarosa");
-		
+
+		//if(XformsUtil.isJavaRosaSaveFormat())
+		xformsNode.setPrefix("jr", "http://openrosa.org/javarosa");
+
 		doc.addChild(org.kxml2.kdom.Element.ELEMENT, xformsNode);
 
 		Element modelNode =  doc.createElement(NAMESPACE_XFORMS, null);
@@ -621,6 +625,12 @@ public final class XformBuilder {
 						setTableFieldDataType(name,bindNode);
 						setTableFieldBindingAttributes(name,bindNode);
 						setTableFieldDefaultValue(name,formNode);
+						
+						if("identifier".equalsIgnoreCase(child.getAttributeValue(null, ATTRIBUTE_OPENMRS_ATTRIBUTE)) && 
+								"patient_identifier".equalsIgnoreCase(child.getAttributeValue(null, ATTRIBUTE_OPENMRS_TABLE))){
+							bindNode.setAttribute(null, ATTRIBUTE_PRELOAD, PRELOAD_PATIENT);
+							bindNode.setAttribute(null, ATTRIBUTE_PRELOAD_PARAMS, "patientIdentifier");
+						}
 					}
 				}
 			}
@@ -820,6 +830,9 @@ public final class XformBuilder {
 			//bindNode.setAttribute(null, ATTRIBUTE_READONLY, XPATH_VALUE_TRUE);
 			//bindNode.setAttribute(null, ATTRIBUTE_LOCKED, XPATH_VALUE_TRUE);
 			bindNode.setAttribute(null, ATTRIBUTE_VISIBLE, XPATH_VALUE_FALSE);
+
+			bindNode.setAttribute(null, ATTRIBUTE_PRELOAD, PRELOAD_PATIENT);
+			bindNode.setAttribute(null, ATTRIBUTE_PRELOAD_PARAMS, "patientId");
 		}
 		else{
 			//all table field are readonly on forms since they cant be populated in their tables 
@@ -841,10 +854,35 @@ public final class XformBuilder {
 			bindNode.setAttribute(null, ATTRIBUTE_LOCKED, XPATH_VALUE_TRUE);
 		}*/
 
-		if(name.equalsIgnoreCase(NODE_PATIENT_BIRTH_DATE))
+		//jr:preload="patient" jr:preloadParams="ID"
+
+		if(name.equalsIgnoreCase(NODE_PATIENT_BIRTH_DATE)){
 			bindNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_DATE);
+
+			bindNode.setAttribute(null, ATTRIBUTE_PRELOAD, PRELOAD_PATIENT);
+			bindNode.setAttribute(null, ATTRIBUTE_PRELOAD_PARAMS, "birthDate");
+		}
 		else if(name.equalsIgnoreCase(NODE_PATIENT_BIRTH_DATE_ESTIMATED))
 			bindNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_BOOLEAN);
+
+
+		//peloaders
+		if(name.equalsIgnoreCase(NODE_PATIENT_FAMILY_NAME)){
+			bindNode.setAttribute(null, ATTRIBUTE_PRELOAD, PRELOAD_PATIENT);
+			bindNode.setAttribute(null, ATTRIBUTE_PRELOAD_PARAMS, "familyName");
+		}
+		else if(name.equalsIgnoreCase(NODE_PATIENT_MIDDLE_NAME)){
+			bindNode.setAttribute(null, ATTRIBUTE_PRELOAD, PRELOAD_PATIENT);
+			bindNode.setAttribute(null, ATTRIBUTE_PRELOAD_PARAMS, "middleName");
+		}
+		else if(name.equalsIgnoreCase(NODE_PATIENT_GIVEN_NAME)){
+			bindNode.setAttribute(null, ATTRIBUTE_PRELOAD, PRELOAD_PATIENT);
+			bindNode.setAttribute(null, ATTRIBUTE_PRELOAD_PARAMS, "givenName");
+		}
+		else if(name.equalsIgnoreCase(NODE_PATIENT_GENDER)){
+			bindNode.setAttribute(null, ATTRIBUTE_PRELOAD, PRELOAD_PATIENT);
+			bindNode.setAttribute(null, ATTRIBUTE_PRELOAD_PARAMS, "sex");
+		}
 	}
 
 	private static void setTableFieldDefaultValue(String name, Element formElement){
@@ -939,7 +977,7 @@ public final class XformBuilder {
 				String nameAttribute = child.getAttributeValue(null, ATTRIBUTE_NAME);
 				if(name.equalsIgnoreCase(NODE_SIMPLETYPE) || (name.equalsIgnoreCase(NODE_COMPLEXTYPE) && nameAttribute != null && nameAttribute.startsWith("_") && !nameAttribute.contains("_section"))/*&& isUserDefinedSchemaElement(child)*/)
 					xformSchemaNode.addChild(0, Element.ELEMENT, child);
-				
+
 				if("obs_section".equalsIgnoreCase(nameAttribute))
 					parseObsSectionRepeats(child, bindings, problemList);
 			}
@@ -948,7 +986,7 @@ public final class XformBuilder {
 				parseSimpleType(child,child.getAttributeValue(null, ATTRIBUTE_NAME),bindings);
 		}
 	}
-	
+
 	private static void parseObsSectionRepeats(Element complexTypeNode, Hashtable bindings, Hashtable<String,String> problemList){
 		for(int i=0; i<complexTypeNode.getChildCount(); i++){
 			if(complexTypeNode.isText(i))
@@ -961,7 +999,7 @@ public final class XformBuilder {
 			}
 		}
 	}
-	
+
 	private static void parseObsSectionSequenceRepeats(Element sequenceNode, Hashtable bindings, Hashtable<String,String> problemList){
 		for(int i=0; i<sequenceNode.getChildCount(); i++){
 			if(sequenceNode.isText(i))
@@ -972,7 +1010,7 @@ public final class XformBuilder {
 				String name = child.getAttributeValue(null, ATTRIBUTE_NAME);
 				obsRepeatItems.put(name, name);
 				problemList.put(name, name);
-				
+
 				String nodeset = nodesets.get(name);
 				Element bindNode = (Element)bindings.get(name);
 				if(nodeset != null && bindNode != null){
@@ -1372,7 +1410,7 @@ public final class XformBuilder {
 
 			Element node = (Element)sequenceNode.getChild(i);
 			String itemName = node.getAttributeValue(null, ATTRIBUTE_NAME);
-//???????
+			//???????
 			if(repeatItem){
 				problemListItems.put(itemName, name);
 				removeChildNode(modelNode,itemName);
@@ -2090,10 +2128,10 @@ public final class XformBuilder {
 		Element xformsNode = doc.createElement(NAMESPACE_XFORMS, null);
 		xformsNode.setName(NODE_XFORMS);
 		xformsNode.setPrefix(PREFIX_XFORMS, NAMESPACE_XFORMS);
-		
-		if(XformsUtil.isJavaRosaSaveFormat())
-			xformsNode.setPrefix("jr", "http://openrosa.org/javarosa");
-		
+
+		//if(XformsUtil.isJavaRosaSaveFormat())
+		xformsNode.setPrefix("jr", "http://openrosa.org/javarosa");
+
 		xformsNode.setPrefix(PREFIX_XML_SCHEMA, NAMESPACE_XML_SCHEMA);
 		xformsNode.setPrefix(PREFIX_XML_SCHEMA2, NAMESPACE_XML_SCHEMA);
 		xformsNode.setPrefix(PREFIX_XML_INSTANCES, NAMESPACE_XML_INSTANCE);
@@ -2269,13 +2307,13 @@ public final class XformBuilder {
 	}
 
 	private static void addPersonAddresses(Element formNode, Element modelNode, Element groupNode){
-		
+
 		/*Element dataNode = formNode.createElement(null, null);
 		dataNode.setName(NODE_NAME_PERSON_ADDRESSES);
 		formNode.addChild(Element.ELEMENT, dataNode);*/
-		
+
 		Element dataNode = formNode;
-			
+
 		//addPersonAddress(NODE_NAME_PREFERRED, "Preferred", dataNode, modelNode, groupNode);
 		addPersonAddress(NODE_NAME_ADDRESS1, "Address 1", dataNode, modelNode, groupNode);
 		addPersonAddress(NODE_NAME_ADDRESS2, "Address 2", dataNode, modelNode, groupNode);
@@ -2291,8 +2329,8 @@ public final class XformBuilder {
 		addPersonAddress(NODE_NAME_SUBREGION, "Sub Region", dataNode, modelNode, groupNode);
 		addPersonAddress(NODE_NAME_TOWNSHIP_DIVISION, "Township/Division", dataNode, modelNode, groupNode);
 	}
-	
-	
+
+
 	private static void addPersonAddress(String name, String text, Element formNode, Element modelNode, Element groupNode){
 
 		name = NODE_NAME_PREFIX_PERSON_ADDRESS + name;
