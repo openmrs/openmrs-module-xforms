@@ -38,7 +38,7 @@ import com.jcraft.jzlib.ZOutputStream;
 //TODO This class is to be deleted as it functionality is now done by XformDataUploadServlet
 
 /**
- * Provides XForm data upload services.
+ * Provides XForm data upload services from the web interface.
  * 
  * @author Daniel
  *

@@ -81,11 +81,6 @@ public class LanguageUtil {
 				}
 				else if(result.size() == 0)
 					System.out.println("xforms module error: " + result.size()+"..........."+xpath+"............"+value);
-
-				/*if(result.size() == 2){
-					System.out.println("uuuuuuuuuuuuuuu="+result.get(0));
-					System.out.println("mmmmmmmmmmmmmmm="+result.get(1));
-				}*/
 				
 				for(int item = 0; item < result.size(); item++){
 					if(!(result.get(item) instanceof Element))

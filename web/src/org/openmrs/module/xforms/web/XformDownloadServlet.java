@@ -5,8 +5,10 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.CharacterIterator;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.StringCharacterIterator;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -113,19 +115,46 @@ public class XformDownloadServlet extends HttpServlet {
 				if(XformConstants.REQUEST_PARAM_XFORMS_LIST.equals(target)){
 
 					String xml = "<?xml version='1.0' encoding='UTF-8' ?>";
-					xml += "\n<xforms>";
-
 					List<Object[]> xformList = xformsService.getXformsList();
-					if(xformList != null){
-						for(Object[] item : xformList){
-							xml += "\n  <xform>";
-							xml += "\n    <id>" + item[0] + "</id>";
-							xml += "\n    <name>" + item[1] + "</name>";
-							xml += "\n  </xform>";
-						}
-					}
 
-					xml += "\n</xforms>";
+					if("withurl".equalsIgnoreCase(request.getParameter("format"))){
+
+						String url = "http://" + request.getServerName();
+						int port = request.getServerPort();
+						if (port != 80)
+							url += ":" + Integer.toString(port);
+
+						url += "/openmrs/moduleServlet/xforms/xformDownload?target=xform&contentType=xml&excludeLayout=true&formId=";
+
+						url = formatXml(url);
+						
+						xml += "\n<forms>";
+
+						if(xformList != null){
+							for(Object[] item : xformList)
+								xml += "\n  <form url='" + url + item[0] + "'>" + item[1] + "</form>";
+						}
+
+						xml += "\n</forms>";
+
+						//http://localhost:8081/openmrs/moduleServlet/xforms/xformDownload?target=xformslist
+
+					}
+					else{
+
+						xml += "\n<xforms>";
+
+						if(xformList != null){
+							for(Object[] item : xformList){
+								xml += "\n  <xform>";
+								xml += "\n    <id>" + item[0] + "</id>";
+								xml += "\n    <name>" + item[1] + "</name>";
+								xml += "\n  </xform>";
+							}
+						}
+
+						xml += "\n</xforms>";
+					}
 
 					response.setContentType(XformConstants.HTTP_HEADER_CONTENT_TYPE_XML); 
 					response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
@@ -325,7 +354,7 @@ public class XformDownloadServlet extends HttpServlet {
 			if(user.hasRole(OpenmrsConstants.PROVIDER_ROLE)){
 				String providerId = XformBuilder.getNodeValue(doc.getRootElement(), XformBuilder.NODE_ENCOUNTER_PROVIDER_ID);
 				if(providerId == null || providerId.trim().length() == 0)
-					XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_PROVIDER_ID, user.getUserId().toString());
+					XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_PROVIDER_ID, XformsUtil.getPersonId(user).toString());
 			}
 		}
 
@@ -376,7 +405,7 @@ public class XformDownloadServlet extends HttpServlet {
 		//If the xform is in the JR format, then parse itext for the current locale.
 		if(XformsUtil.isJavaRosaSaveFormat())
 			xml = ItextParser.parse(xml, Context.getLocale().getLanguage());
-
+		
 		//Get the layout and JavaScript of the form, if any.
 		Xform xform = xformsService.getXform(form.getFormId());
 
@@ -445,7 +474,7 @@ public class XformDownloadServlet extends HttpServlet {
 				if(user.hasRole(OpenmrsConstants.PROVIDER_ROLE)){
 					String providerId = XformBuilder.getNodeValue(doc.getRootElement(), XformBuilder.NODE_ENCOUNTER_PROVIDER_ID);
 					if(providerId == null || providerId.trim().length() == 0)
-						XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_PROVIDER_ID, user.getUserId().toString());
+						XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_PROVIDER_ID, XformsUtil.getPersonId(user).toString());
 				}
 			}
 
@@ -663,4 +692,35 @@ public class XformDownloadServlet extends HttpServlet {
 		person.setBirthdateEstimated(birthdateEstimated);
 
 	}
+
+	public String formatXml(String aText){
+		final StringBuilder result = new StringBuilder();
+		final StringCharacterIterator iterator = new StringCharacterIterator(aText);
+		char character =  iterator.current();
+		while (character != CharacterIterator.DONE ){
+			if (character == '<') {
+				result.append("&lt;");
+			}
+			else if (character == '>') {
+				result.append("&gt;");
+			}
+			else if (character == '\"') {
+				result.append("&quot;");
+			}
+			else if (character == '\'') {
+				result.append("&#039;");
+			}
+			else if (character == '&') {
+				result.append("&amp;");
+			}
+			else {
+				//the char is not a special one
+				//add it to the result as is
+				result.append(character);
+			}
+			character = iterator.next();
+		}
+		return result.toString();
+	}
+
 }

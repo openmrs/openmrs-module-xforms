@@ -243,6 +243,7 @@ public class XformObsEdit {
 
 			String nodeName = FormUtil.getXmlToken(concept.getDisplayString());
 			Element node = XformBuilder.getElementByAttributeValue(formNode,"obsId",obs.getObsId().toString());
+			
 			if(node == null){
 				if(obs.getObsGroup() != null)
 					voidObs(obs.getObsGroup(),datetime,obs2Void);
@@ -292,12 +293,12 @@ public class XformObsEdit {
 					else{
 						if(concept.getDatatype().isCoded() && obs.getValueCoded() != null)
 							oldValue = conceptToString(obs.getValueCoded(), Context.getLocale());
-
+						
 						if(oldValue.equals(newValue))
 							continue; //obs has not changed
-
+						
 						voidObs(obs,datetime,obs2Void);
-
+						
 						if(newValue == null || newValue.trim().length() == 0)
 							continue;
 					}
@@ -315,8 +316,23 @@ public class XformObsEdit {
 			}
 		}
 
-		addNewObs(formNode,complexObs,encounter,XformBuilder.getElement(formNode,"obs"),datetime,null);
+		//addNewObs(formNode,complexObs,encounter,XformBuilder.getElement(formNode,"obs"),datetime,null);
+		//addNewObs(formNode,complexObs,encounter,XformBuilder.getElement(formNode,"problem_list"),datetime,null);
+		
+		//Add new obs for all form sections
+		for(int i=0; i<formNode.getChildCount(); i++){
+			if(formNode.getType(i) != Element.ELEMENT)
+				continue;
 
+			Element child = (Element)formNode.getChild(i);
+			
+			String conceptStr = child.getAttributeValue(null, "openmrs_concept");
+			if(conceptStr == null || conceptStr.trim().length() == 0)
+				continue; //TODO Can't we have sections which are not concepts?
+			
+			addNewObs(formNode, complexObs, encounter, child, datetime, null);
+		}
+		
 		return encounter;
 	}
 
