@@ -120,7 +120,8 @@ public class DOMUtil {
 		if (elemList != null){
 			for(int index = 0; index < elemList.getLength(); index++){
 				Element node = (Element)elemList.item(index);
-				if("xsd:base64Binary".equalsIgnoreCase(node.getAttribute("type")))
+				if( "xsd:base64Binary".equalsIgnoreCase(node.getAttribute("type")) || 
+						"binary".equalsIgnoreCase(node.getAttribute("type")) )
 					names.add(node.getAttribute("id"));
 			}
 		}
