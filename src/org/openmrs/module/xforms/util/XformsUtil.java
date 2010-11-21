@@ -12,6 +12,7 @@ import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,6 +34,7 @@ import org.openmrs.Form;
 import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
+import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.module.xforms.XformBuilder;
@@ -306,9 +308,9 @@ public class XformsUtil {
 	public static String fromXform2Xhtml(String xform, String xsl) throws Exception{
 		if(xsl == null) 
 			xsl = getDefaultXSLT();
-		
+
 		return transformDocument(xform,xsl);
-		
+
 		/*StringWriter outWriter = new StringWriter();
 		Source source = new StreamSource(IOUtils.toInputStream(xform,XformConstants.DEFAULT_CHARACTER_ENCODING));
 		Source xslt = new StreamSource(IOUtils.toInputStream(xsl,XformConstants.DEFAULT_CHARACTER_ENCODING));
@@ -323,7 +325,7 @@ public class XformsUtil {
 		t.transform(source, result);
 		return outWriter.toString();*/
 	}
-	
+
 	/**
 	 * Converts an xform to an xhtml document.
 	 * 
@@ -334,7 +336,7 @@ public class XformsUtil {
 	public static String transformDocument(String xml, String xsl) throws Exception{
 		if(xsl == null || xsl.trim().length() == 0) 
 			return xml;
-		
+
 		StringWriter outWriter = new StringWriter();
 		Source source = new StreamSource(IOUtils.toInputStream(xml,XformConstants.DEFAULT_CHARACTER_ENCODING));
 		Source xslt = new StreamSource(IOUtils.toInputStream(xsl,XformConstants.DEFAULT_CHARACTER_ENCODING));
@@ -613,7 +615,7 @@ public class XformsUtil {
 		log.error(ex.getMessage(), ex);
 	}
 
-	
+
 	/**
 	 * Gets the id of the provider for a given encounter.
 	 * OpenMRS from version 1.6 changed the return type of encounter.getProvider()
@@ -633,18 +635,27 @@ public class XformsUtil {
 		catch(NoSuchMethodError ex){
 			Method method = encounter.getClass().getMethod("getProvider", null);
 			return ((Person)method.invoke(encounter, null)).getPersonId();
-			
+		}
 			/*List<User>  users = Context.getUserService().getUsersByPerson(encounter.getProvider(), false);
             // deal with multiples by tossing exceptions if you like
-            if (!users.isEmpty())
+            if (!users.isEmpty()).
                 return users.get(0).getUserId();*/
-		}
 	}
 	
+	public static Integer getPersonId(User user) throws Exception {
+		try{
+			return user.getPersonId();
+		}
+		catch(NoSuchMethodError ex){
+			Method method = user.getClass().getMethod("getPerson", null);
+			return ((Person)method.invoke(user, null)).getPersonId();
+		}
+	}
+
 	public static boolean encounterDateIncludesTime(){
 		return "true".equalsIgnoreCase(Context.getAdministrationService().getGlobalProperty("xforms.encounterDateIncludesTime", "false"));
 	}
-	
+
 	public static boolean isJavaRosaSaveFormat(){
 		return "javarosa".equalsIgnoreCase(Context.getAdministrationService().getGlobalProperty("xforms.saveFormat","purcforms"));
 	}

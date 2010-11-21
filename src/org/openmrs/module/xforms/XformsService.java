@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.openmrs.Form;
 import org.openmrs.GlobalProperty;
+import org.openmrs.Person;
+import org.openmrs.User;
 import org.openmrs.module.xforms.db.XformsDAO;
 import org.openmrs.module.xforms.formentry.FormEntryError;
 import org.openmrs.module.xforms.model.PatientMedicalHistory;

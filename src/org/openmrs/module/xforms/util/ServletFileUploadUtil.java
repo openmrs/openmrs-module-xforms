@@ -26,6 +26,8 @@ import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 
 
 /**
+ * Handles upload of xforms as files. Where a submission can consist of multiple files like 
+ * images files, pictures files, sound files, vide files, and more. (multipart content)
  * 
  * @author daniel
  *
@@ -48,7 +50,7 @@ public class ServletFileUploadUtil {
 			if(items.size() > 0) 
 				xml = fillBinaryDataToXform(xml, items);
 			
-			// send success signal to ODK-Collect
+			// send success signal
 			response.setStatus(HttpServletResponse.SC_CREATED);
 			response.setHeader("Location", serverLocation);
 			response.getOutputStream().println("Data submitted successfully");

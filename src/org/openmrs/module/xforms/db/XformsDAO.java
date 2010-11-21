@@ -3,6 +3,8 @@ package org.openmrs.module.xforms.db;
 import java.util.List;
 
 import org.openmrs.GlobalProperty;
+import org.openmrs.Person;
+import org.openmrs.User;
 import org.openmrs.module.xforms.MedicalHistoryField;
 import org.openmrs.module.xforms.Xform;
 import org.openmrs.module.xforms.formentry.FormEntryError;

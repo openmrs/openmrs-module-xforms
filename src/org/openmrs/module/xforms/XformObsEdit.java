@@ -3,6 +3,7 @@ package org.openmrs.module.xforms;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
+import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.util.DOMUtil;
@@ -329,7 +331,16 @@ public class XformObsEdit {
 
 	private static void setEncounterHeader(Encounter encounter, Element formNode) throws Exception{
 		encounter.setLocation(Context.getLocationService().getLocation(Integer.valueOf(XformBuilder.getNodeValue(formNode, XformBuilder.NODE_ENCOUNTER_LOCATION_ID))));
-		encounter.setProvider(Context.getUserService().getUser(Integer.valueOf(XformBuilder.getNodeValue(formNode, XformBuilder.NODE_ENCOUNTER_PROVIDER_ID))));
+		
+		Integer id = Integer.valueOf(XformBuilder.getNodeValue(formNode, XformBuilder.NODE_ENCOUNTER_PROVIDER_ID));
+		Person person = Context.getPersonService().getPerson(id);
+		try{
+			Method method = encounter.getClass().getMethod("setProvider", new Class[]{Person.class});
+			method.invoke(encounter, new Object[]{person});
+		}
+		catch(NoSuchMethodError ex){
+			encounter.setProvider(Context.getUserService().getUser(id));
+		}
 		
 		String submitString = XformBuilder.getNodeValue(formNode, XformBuilder.NODE_ENCOUNTER_ENCOUNTER_DATETIME);
 		Date date = XformsUtil.fromSubmitString2Date(submitString);
