@@ -178,8 +178,8 @@
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.localeList</property>
-		<defaultValue>en:English,fr:French,es:Spanish,it:Italian,pt:Portuguese</defaultValue>
-		<description>The list of locales supported by the form designer.</description>
+		<defaultValue>en:English</defaultValue>
+		<description>The list of locales supported by the form designer. e.g:  en:English,fr:French,es:Spanish,it:Italian,pt:Portuguese</description>
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.showLanguageTab</property>
