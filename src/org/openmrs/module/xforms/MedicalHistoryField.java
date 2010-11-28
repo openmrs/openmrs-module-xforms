@@ -1,5 +1,7 @@
 package org.openmrs.module.xforms;
 
+import java.util.UUID;
+
 import org.openmrs.BaseOpenmrsObject;
 
 
@@ -27,6 +29,7 @@ public class MedicalHistoryField extends BaseOpenmrsObject implements Comparable
 	}
 	
 	public MedicalHistoryField(Integer fieldId, String name, Integer tabIndex, boolean isNew){
+		this.setUuid(UUID.randomUUID().toString());
 		this.fieldId = fieldId;
 		this.name = name;
 		this.tabIndex = tabIndex;

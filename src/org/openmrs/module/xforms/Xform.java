@@ -1,6 +1,7 @@
 package org.openmrs.module.xforms;
 
 import java.util.Date;
+import java.util.UUID;
 
 import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.User;
@@ -47,6 +48,7 @@ public class Xform extends BaseOpenmrsObject {
 	 * Default constructor
 	 */
 	public Xform() {
+		this.setUuid(UUID.randomUUID().toString());
 	}
     
     /**
@@ -57,6 +59,7 @@ public class Xform extends BaseOpenmrsObject {
      * @param layoutXml - xml layout of the form.
      */
     public Xform(Integer formId, String xformXml) {
+    	this();
         setFormId(formId);
         setXformXml(xformXml);
         setDateCreated(new Date());

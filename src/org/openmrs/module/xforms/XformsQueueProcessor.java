@@ -28,6 +28,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.hl7.HL7InQueue;
 import org.openmrs.module.xforms.formentry.FormEntryQueue;
 import org.openmrs.module.xforms.formentry.FormEntryQueueProcessor;
+import org.openmrs.module.xforms.formentry.FormEntryWrapper;
 import org.openmrs.module.xforms.formentry.HL7InQueueProcessor;
 import org.openmrs.module.xforms.model.PersonRepeatAttribute;
 import org.openmrs.module.xforms.util.DOMUtil;
@@ -132,7 +133,13 @@ public class XformsQueueProcessor {
 		setNodeValue(formNode, XformBuilder.NODE_ENCOUNTER_LOCATION_ID, patient.getIdentifiers().iterator().next().getLocation().getLocationId().toString());
 
 		String xml = XformsUtil.doc2String(formNode);
-		processDoc(xml, pathName, propagateErrors);
+
+		if(isRemoteFormEntry()){
+			FormEntryWrapper.createFormEntryQueue(xml);
+		}
+		else{
+			processDoc(xml, pathName, propagateErrors);
+		}
 	}
 
 	/**
@@ -154,7 +161,10 @@ public class XformsQueueProcessor {
 					saveFormInError(xml,pathName);
 				else{
 					saveNewPatientEncounterIfAny(patient, root, pathName, propagateErrors);
-					saveFormInArchive(xml,pathName);
+					
+					if(!isRemoteFormEntry()){
+						saveFormInArchive(xml,pathName);
+					}
 				}
 			} //Check if encounter doc
 			else if(DOMUtil.isEncounterDoc(doc))
@@ -246,6 +256,10 @@ public class XformsQueueProcessor {
 		}
 	}
 
+	private boolean isRemoteFormEntry(){
+		return Context.getAdministrationService().getGlobalProperty("xforms.isRemoteFormEntry","false").equals("true");
+	}
+
 	/**
 	 * Submits a form to the form entry queue for further processing.
 	 * 
@@ -262,12 +276,15 @@ public class XformsQueueProcessor {
 			setMultipleSelectValues(doc.getDocumentElement());
 			xml = XformsUtil.doc2String(doc);
 
-			//FormEntryWrapper.createFormEntryQueue(xml);
+			if(isRemoteFormEntry()){
+				FormEntryWrapper.createFormEntryQueue(xml);
+			}
+			else{
+				processDoc(xml, pathName, propagateErrors);
 
-			processDoc(xml, pathName, propagateErrors);
-
-			if(archive)
-				saveFormInArchive(xmlOriginal,pathName);
+				if(archive)
+					saveFormInArchive(xmlOriginal,pathName);
+			}
 
 		} catch (Exception e) {
 
@@ -366,12 +383,12 @@ public class XformsQueueProcessor {
 		Patient pt = new Patient();
 		pt.setCreator(creator);
 		pt.setDateCreated(new Date());	
-		
+
 		PersonName pn = new PersonName();
 		pn.setGivenName(DOMUtil.getElementValue(root,XformBuilder.NODE_GIVEN_NAME));
 		pn.setFamilyName(DOMUtil.getElementValue(root,XformBuilder.NODE_FAMILY_NAME));
 		pn.setMiddleName(DOMUtil.getElementValue(root,XformBuilder.NODE_MIDDLE_NAME));
-        pn.setPreferred(true);
+		pn.setPreferred(true);
 		pn.setCreator(creator);
 		pn.setDateCreated(pt.getDateCreated());
 		pt.addName(pn);
@@ -463,7 +480,7 @@ public class XformsQueueProcessor {
 		pa.setCreator(creator);
 		pa.setDateCreated(pt.getDateCreated());
 		pa.setPreferred(true);
-		
+
 		addPersonAddressValue(XformBuilder.NODE_NAME_ADDRESS1, pa, root);
 		addPersonAddressValue(XformBuilder.NODE_NAME_ADDRESS2, pa, root);
 		addPersonAddressValue(XformBuilder.NODE_NAME_CITY_VILLAGE, pa, root);
@@ -477,7 +494,7 @@ public class XformsQueueProcessor {
 		addPersonAddressValue(XformBuilder.NODE_NAME_REGION, pa, root);
 		addPersonAddressValue(XformBuilder.NODE_NAME_SUBREGION, pa, root);
 		addPersonAddressValue(XformBuilder.NODE_NAME_TOWNSHIP_DIVISION, pa, root);
-		
+
 		pt.addAddress(pa);
 	}
 

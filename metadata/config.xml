@@ -246,6 +246,11 @@
 		<defaultValue>purcforms</defaultValue>
 		<description>The format in which the xforms will be saved. For now we support two formats: purcforms and javarosa</description>
 	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.isRemoteFormEntry</property>
+		<defaultValue>false</defaultValue>
+		<description>Set to true if this is a remote form entry server (Not the main server).</description>
+	</globalProperty>
 	
 	<!-- /Required Global Properties -->
 
