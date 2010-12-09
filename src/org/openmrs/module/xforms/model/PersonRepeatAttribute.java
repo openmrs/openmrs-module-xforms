@@ -16,6 +16,7 @@ package org.openmrs.module.xforms.model;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Date;
+import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -72,9 +73,11 @@ public class PersonRepeatAttribute extends BaseOpenmrsObject implements java.io.
 
 	/** default constructor */
 	public PersonRepeatAttribute() {
+		this.setUuid(UUID.randomUUID().toString());
 	}
 	
 	public PersonRepeatAttribute(Integer personRepeatAttributeId) {
+		this();
 		this.personRepeatAttributeId = personRepeatAttributeId;
 	}
 	
@@ -84,6 +87,7 @@ public class PersonRepeatAttribute extends BaseOpenmrsObject implements java.io.
 	 * @param value
 	 */
 	public PersonRepeatAttribute(Integer attributeTypeId, String value) {
+		this();
 		this.attributeTypeId = attributeTypeId;
 		this.value = value;
 	}
@@ -116,6 +120,7 @@ public class PersonRepeatAttribute extends BaseOpenmrsObject implements java.io.
 		target.setVoided(getVoided());
 		target.setDateVoided(getDateVoided());
 		target.setVoidReason(getVoidReason());
+		target.setUuid(getUuid());
 		return target;
 	}
 
