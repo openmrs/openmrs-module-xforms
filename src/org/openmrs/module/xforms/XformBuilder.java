@@ -2074,7 +2074,13 @@ public final class XformBuilder {
 			}*/
 
 			if(tableName != null && columnName != null){
-				String value = xformsService.getFieldDefaultValue(formId, child.getName().toUpperCase());
+				String name = child.getName().toUpperCase();
+				String value = xformsService.getFieldDefaultValue(formId, name);
+				if(value == null && name.contains("_")){
+					name = name.replace('_', ' ');
+					value = xformsService.getFieldDefaultValue(formId, name);
+				}
+				
 				if(value != null && value.trim().length() > 0){
 					StringWriter w = new StringWriter();
 					velocityEngine.evaluate(velocityContext, w, XformBuilder.class.getName(), value);
@@ -2659,11 +2665,11 @@ public final class XformBuilder {
 		velocityContext.put("calendar", Calendar.getInstance());
 		velocityContext.put("patient", patient);
 		velocityContext.put("form", form);
+		velocityContext.put("obs", new ObsHistory(patient));
 		velocityContext.put("timestamp", new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_TIME_SUBMIT_FORMAT,XformConstants.DEFAULT_DATE_TIME_SUBMIT_FORMAT)));
 		velocityContext.put("date", new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_SUBMIT_FORMAT,XformConstants.DEFAULT_DATE_SUBMIT_FORMAT)));
 		velocityContext.put("time", new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_TIME_SUBMIT_FORMAT,XformConstants.DEFAULT_TIME_SUBMIT_FORMAT)));
 
-		// add the error handler
 		EventCartridge eventCartridge = new EventCartridge();
 		eventCartridge.addEventHandler(new VelocityExceptionHandler());
 		velocityContext.attachEventCartridge(eventCartridge);
