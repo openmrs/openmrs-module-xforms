@@ -807,8 +807,13 @@ public class XformsQueueProcessor {
 		patient.setBirthdate(XformsUtil.fromSubmitString2Date(birthDate.toString()));
 		patient.setBirthdateEstimated("true".equals(DOMUtil.getElementValue(doc, XformBuilder.NODE_PATIENT_BIRTH_DATE_ESTIMATED)));
 
+		addPersonAttributes(patient, doc.getDocumentElement(), Context.getService(XformsService.class), patient.getCreator());
+		addPersonAddresses(patient, doc.getDocumentElement(), patient.getCreator());
+		
 		Context.getPatientService().savePatient(patient);
 		DOMUtil.setElementValue(doc.getDocumentElement(), XformBuilder.NODE_PATIENT_PATIENT_ID, patient.getPatientId().toString());
+	
+		//TODO May need to call addPersonRepeatAttributes(pt,root,xformsService);
 	}
 
 	private String getPatientIdentifier(Document doc){
