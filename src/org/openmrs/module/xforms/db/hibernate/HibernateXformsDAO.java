@@ -477,7 +477,7 @@ public class HibernateXformsDAO implements XformsDAO {
 	
 	
 	public String getFieldDefaultValue(Integer formId, String fieldName){
-		String sql = "select default_value from form_field ff inner join field f " +
+		String sql = "select distinct default_value from form_field ff inner join field f " +
 					"where ff.field_id=f.field_id " +
 					"and ff.form_id=" + formId + " and name = '" + fieldName + "'";
 		

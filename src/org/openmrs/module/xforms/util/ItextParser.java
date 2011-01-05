@@ -18,7 +18,7 @@ import org.w3c.dom.NodeList;
  *
  */
 public class ItextParser {	
-	
+
 	/**
 	 * Parses an xform and sets the text of various nodes based on a given a locale.
 	 * 
@@ -27,7 +27,7 @@ public class ItextParser {
 	 * @return the document where all itext refs are filled with text for a given locale.
 	 */
 	public static String parse(String xml, String locale) throws Exception {
-		
+
 		Document doc = XformsUtil.fromString2Doc(xml);
 
 		//Check if we have an itext block in this xform.
@@ -36,41 +36,44 @@ public class ItextParser {
 			return xml;
 
 		Element itextNode = ((Element)nodes.item(0));
-		
+
 		//Check if we have any translations in this itext block.
 		nodes = itextNode.getElementsByTagName("translation");
 		if(nodes == null || nodes.getLength() == 0)
 			return xml;
-		
+
 		HashMap<String,String> itextMap = null; //Map of default id and itext (for multiple values of the itext node) for the default language.
 
 		//Map of each locale key and map of its id and itext translations.
 		for(int index = 0; index < nodes.getLength(); index++){
 			Element translationNode = (Element)nodes.item(index);
 			String lang = translationNode.getAttribute("lang");
-			
+
 			if(!locale.toLowerCase().equals(lang.toLowerCase()))
 				continue;
-			
+
 			itextMap = new HashMap<String,String>();
 			fillItextMap(translationNode, itextMap);
-				
+
 			break;
 		}
-		
-		//TODO Need not rely on the xf prefix.
-		translateNodes("xf:label", doc, itextMap);
-		translateNodes("xf:hint", doc, itextMap);
-		translateNodes("xf:title", doc, itextMap);
-		translateNodes("xf:bind", doc, itextMap);
-		
+
+		//TODO itextMap is null when there are no translations for the current locale.
+		if(itextMap != null){
+			//TODO Need not rely on the xf prefix.
+			translateNodes("xf:label", doc, itextMap);
+			translateNodes("xf:hint", doc, itextMap);
+			translateNodes("xf:title", doc, itextMap);
+			translateNodes("xf:bind", doc, itextMap);
+		}
+
 		//We do not need the itext block any more since we have finished translating the form.
 		itextNode.getParentNode().removeChild(itextNode);
-		
+
 		return XformsUtil.doc2String(doc);
 	}
-	
-	
+
+
 	/**
 	 * Fills a map of id and itext for a given locale as represented by a given translation node.
 	 * 
@@ -88,7 +91,7 @@ public class ItextParser {
 		}
 
 	}
-	
+
 	/**
 	 * Sets the text value of a node.
 	 * 
@@ -125,8 +128,8 @@ public class ItextParser {
 
 		itextMap.put(id, defaultValue);
 	}
-	
-	
+
+
 	/**
 	 * For a given xforms document, fills the text of all nodes having a given name with their 
 	 * corresponding text based on the itext id in the ref attribute.
@@ -142,16 +145,16 @@ public class ItextParser {
 
 		for(int index = 0; index < nodes.getLength(); index++){
 			Element node = (Element)nodes.item(index);
-			
+
 			String id = getItextId(node);
 			if(id == null || id.trim().length() == 0)
 				continue;
-			
+
 			node.setTextContent(itextMap.get(id));
 		}
 	}
-	
-	
+
+
 	/**
 	 * Gets the itext id from a given itext expression as represented by the ref attribute of a given node.
 	 * 
@@ -171,11 +174,11 @@ public class ItextParser {
 
 		//We do not need this ref any more and so lets reduce the form size.
 		node.removeAttribute("ref");
-		
+
 		//Get the itext id which starts at the 11th character.
 		return ref.substring(10,ref.lastIndexOf("'"));
 	}
-	
+
 	private static boolean isBindNode(Element node){
 		return (node.getNodeName().equalsIgnoreCase("bind") ||
 				node.getNodeName().equalsIgnoreCase("xf:bind"));
