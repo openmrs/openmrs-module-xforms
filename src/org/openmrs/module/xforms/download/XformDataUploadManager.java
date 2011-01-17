@@ -244,7 +244,7 @@ public class XformDataUploadManager {
 	 * @param enterer
 	 */
 	private static void setHeaderValues(Document doc, String sessionId, String enterer){
-		NodeList elemList = doc.getElementsByTagName(XformConstants.NODE_SESSION);
+		/*NodeList elemList = doc.getElementsByTagName(XformConstants.NODE_SESSION);
 		if (elemList != null && elemList.getLength() > 0) 
 			((Element)elemList.item(0)).setTextContent(sessionId);
 
@@ -258,7 +258,21 @@ public class XformDataUploadManager {
 
 		elemList = doc.getElementsByTagName(XformConstants.NODE_ENTERER);
 		if (elemList != null && elemList.getLength() > 0) 
-			((Element)elemList.item(0)).setTextContent(enterer);
+			((Element)elemList.item(0)).setTextContent(enterer);*/
+		
+		setTextContent(doc.getElementsByTagName(XformConstants.NODE_SESSION), sessionId);
+		setTextContent(doc.getElementsByTagName(XformConstants.NODE_UID), FormEntryWrapper.generateFormUid());
+		setTextContent(doc.getElementsByTagName(XformConstants.NODE_DATE_ENTERED), FormUtil.dateToString(new java.util.Date()));
+		setTextContent(doc.getElementsByTagName(XformConstants.NODE_ENTERER), enterer);
+	}
+	
+	private static void setTextContent(NodeList elemList, String value){
+		if(elemList == null)
+			return;
+		
+		for(int index = 0; index < elemList.getLength(); index++){
+			((Element)elemList.item(index)).setTextContent(value);
+		}
 	}
 
 	/**

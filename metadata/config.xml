@@ -251,6 +251,11 @@
 		<defaultValue>false</defaultValue>
 		<description>Set to true if this is a remote form entry server (Not the main server).</description>
 	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.decimalSeparators</property>
+		<defaultValue>en:.;fr:.;es:,;it:.;pt:.</defaultValue>
+		<description>The decimal separators for each locale. e.g:  en:.;fr:.;es:,;it:.;pt:.</description>
+	</globalProperty>
 	
 	<!-- /Required Global Properties -->
 
@@ -359,4 +364,3 @@
 	</mappingFiles>
 	
 </module>
-

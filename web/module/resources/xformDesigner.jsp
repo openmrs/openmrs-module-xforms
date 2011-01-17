@@ -106,6 +106,9 @@
     <div id="saveFormat" style="visibility:hidden;">${saveFormat}</div>
      
     <div id="localeList" style="visibility:hidden;">${localeList}</div>
+    
+    <div id="localeKey" style="visibility:hidden;">${localeKey}</div>
+	<div id="decimalSeparators" style="visibility:hidden;">${decimalSeparators}</div>
         
     
     <div id="searchConcepts" style="height:0px;width:"><openmrs_tag:conceptField formFieldName="conceptId" searchLabel="Search Concept" initialValue="" /></div>
@@ -417,20 +420,27 @@
     	}
 
     	function initialize(){
-     		
-    		dojo.addOnLoad( function() {
-    			dojo.event.topic.subscribe("conceptId_search/select", 
-    				function(msg) {
-    					if (msg) {
-    						var concept = msg.objs[0];
-    						var conceptPopup = dojo.widget.manager.getWidgetById("conceptId_selection");
-    						conceptPopup.displayNode.innerHTML = concept.conceptId + "^" + concept.name + "^99DCT";
-    						conceptPopup.hiddenInputNode.value = concept.name;						
-    						conceptPopup.hiddenInputNode.focus();
-    					}
-    				}
-    			);
-    		})	
+
+    		if (typeof(dojo) != "undefined"){
+        		
+	    		dojo.addOnLoad( function() {
+	    			dojo.event.topic.subscribe("conceptId_search/select", 
+	    				function(msg) {
+	    					if (msg) {
+	    						var concept = msg.objs[0];
+	    						var conceptPopup = dojo.widget.manager.getWidgetById("conceptId_selection");
+	    						conceptPopup.displayNode.innerHTML = concept.conceptId + "^" + concept.name + "^99DCT";
+	    						conceptPopup.hiddenInputNode.value = concept.name;						
+	    						conceptPopup.hiddenInputNode.focus();
+	    					}
+	    				}
+	    			);
+	    		})	
+
+    		}
+    		else{
+    			document.getElementById("searchConcepts").style.visibility="hidden";
+    		}
       	}
 
     	function searchExternal(key,value,parentElement,textElement,valueElement,filterField){

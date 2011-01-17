@@ -67,6 +67,9 @@ public class XformDesignerController extends SimpleFormController {
 		map.put(XformConstants.FORM_DESIGNER_KEY_SHOW_SUBMIT_SUCCESS_MSG, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_SHOW_SUBMIT_SUCCESS_MSG,XformConstants.DEFAULT_SHOW_SUBMIT_SUCCESS_MSG));
 		map.put(XformConstants.FORM_DESIGNER_KEY_LOCALE_LIST, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_LOCALE_LIST,XformConstants.DEFAULT_LOCALE_LIST));
 
+		map.put(XformConstants.FORM_DESIGNER_KEY_LOCALE_KEY, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_LOCALE, Context.getLocale().getLanguage()));
+		map.put(XformConstants.FORM_DESIGNER_KEY_DECIMAL_SEPARATORS, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DECIMAL_SEPARATORS, XformConstants.DEFAULT_DECIMAL_SEPARATORS));
+
 		map.put("showLanguageTab", Context.getAdministrationService().getGlobalProperty("xforms.showLanguageTab","false"));
 		map.put("showXformsSourceTab", Context.getAdministrationService().getGlobalProperty("xforms.showXformsSourceTab","false"));
 		map.put("showLayoutXmlTab", Context.getAdministrationService().getGlobalProperty("xforms.showLayoutXmlTab","false"));

@@ -77,6 +77,9 @@ public class XformConstants {
 	/** The default flag to determine whether to display the submit success message or not. */
 	public static final String DEFAULT_SHOW_SUBMIT_SUCCESS_MSG = "false";
 	
+	/** The default value for the decimal separators. */
+	public static final String DEFAULT_DECIMAL_SEPARATORS = "en:.;fr:.;es:,;it:.;pt:.";
+	
 	/** The default font family. */
 	public static final String DEFAULT_FONT_FAMILY = "Verdana, 'Lucida Grande', 'Trebuchet MS', Arial, Sans-Serif";
 	
@@ -116,6 +119,12 @@ public class XformConstants {
 	/** The global property key for the time display format.*/
 	public static final String GLOBAL_PROP_KEY_SHOW_SUBMIT_SUCCESS_MSG = "xforms.showSubmitSuccessMsg";
 	
+	/** The global property key for the decimal separators.*/
+	public static final String GLOBAL_PROP_KEY_DECIMAL_SEPARATORS = "xforms.decimalSeparators";
+	
+	/** The global property key for the current locale.*/
+	public static final String GLOBAL_PROP_KEY_LOCALE = "xforms.locale";
+	
 	/** The global property key for the default font family.*/
 	public static final String GLOBAL_PROP_KEY_DEFAULT_FONT_FAMILY = "xforms.defaultFontFamily";
 	
@@ -133,6 +142,12 @@ public class XformConstants {
 	
 	/** The form designer key for determining whether to show the form submit message or not.*/
 	public static final String FORM_DESIGNER_KEY_SHOW_SUBMIT_SUCCESS_MSG = "showSubmitSuccessMsg";
+	
+	/** The form designer key for the decimal separators.*/
+	public static final String FORM_DESIGNER_KEY_DECIMAL_SEPARATORS = "decimalSeparators";
+	
+	/** The form designer key for the current locale.*/
+	public static final String FORM_DESIGNER_KEY_LOCALE_KEY = "localeKey";
 	
 	/** The form designer key for the datetime submit format.*/
 	public static final String FORM_DESIGNER_KEY_DATE_TIME_SUBMIT_FORMAT = "dateTimeSubmitFormat";

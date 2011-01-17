@@ -2164,7 +2164,10 @@ public final class XformBuilder {
 	 * @param xformAction - the url to post the xform data to.
 	 * @return - the xml of the new patient xform.
 	 */
-	public static String getNewPatientXform()throws Exception {			
+	public static String getNewPatientXform()throws Exception {		
+		obsRepeatItems = new Hashtable<String,String>();
+		nodesets = new Hashtable<String,String>();
+		
 		Document doc = new Document();
 		doc.setEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
 
