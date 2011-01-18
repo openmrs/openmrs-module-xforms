@@ -137,6 +137,8 @@ public class XformObsEdit {
 			String value = obs.getValueAsString(Context.getLocale());
 			if(concept.getDatatype().isCoded() && obs.getValueCoded() != null)
 				value = FormUtil.conceptToString(obs.getValueCoded(), Context.getLocale());
+			else if(concept.getDatatype().getHl7Abbreviation().equals(ConceptDatatype.DATE) && obs.getValueDatetime() != null)
+				value = XformsUtil.fromDate2SubmitString(obs.getValueDatetime());
 			else if(concept.getDatatype().getHl7Abbreviation().equals(ConceptDatatype.DATETIME) && obs.getValueDatetime() != null)
 				value = XformsUtil.fromDateTime2SubmitString(obs.getValueDatetime());
 			else if(concept.getDatatype().getHl7Abbreviation().equals(ConceptDatatype.TIME) && obs.getValueDatetime() != null)
