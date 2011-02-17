@@ -10,7 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Form;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.xforms.BasicFormBuilder;
 import org.openmrs.module.xforms.XformConstants;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;

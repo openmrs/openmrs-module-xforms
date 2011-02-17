@@ -7,6 +7,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
@@ -205,8 +206,8 @@ public class FormXmlTemplateBuilder {
 				Concept concept = field.getConcept();
 				String hl7Abbr = concept.getDatatype().getHl7Abbreviation();
 				xml.append(" openmrs_concept=\"");
-				xml.append(FormUtil.conceptToString(concept, Context
-						.getLocale()));
+				xml.append(StringEscapeUtils.escapeXml(FormUtil.conceptToString(concept, Context
+						.getLocale())));
 				xml.append("\" openmrs_datatype=\"");
 				xml.append(hl7Abbr);
 				xml.append("\"");
@@ -250,9 +251,9 @@ public class FormXmlTemplateBuilder {
 										answerConceptName);
 								xml.append(answerTag);
 								xml.append(" openmrs_concept=\"");
-								xml.append(FormUtil.conceptToString(answer
+								xml.append(StringEscapeUtils.escapeXml(FormUtil.conceptToString(answer
 										.getAnswerConcept(), Context
-										.getLocale()));
+										.getLocale())));
 								xml.append("\">false</");
 								xml.append(answerTag);
 								xml.append(">\n");
@@ -262,9 +263,9 @@ public class FormXmlTemplateBuilder {
 										answerDrugName);
 								xml.append(answerTag);
 								xml.append(" openmrs_concept=\"");
-								xml.append(FormUtil.conceptToString(answer
+								xml.append(StringEscapeUtils.escapeXml(FormUtil.conceptToString(answer
 										.getAnswerConcept(), Context
-										.getLocale()));
+										.getLocale())));
 								xml.append("^");
 								xml.append(FormUtil.drugToString(answerDrug));
 								xml.append("\">false</");

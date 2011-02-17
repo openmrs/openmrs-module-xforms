@@ -120,8 +120,11 @@ public class ObsHistory {
 				return obs.getValueAsBoolean();
 			else if(dt.isText())
 				return obs.getValueText();
-			else if(dt.isDate())
-				return obs.getValueDatetime();
+			else if(dt.isDate()){
+				if(obs.getValueDatetime() != null)
+					return org.openmrs.api.context.Context.getDateFormat().format(obs.getValueDatetime());
+				return obs.getValueDatetime();  
+			}
 			else if(dt.isCoded())
 				return obs.getValueCoded();
 		}

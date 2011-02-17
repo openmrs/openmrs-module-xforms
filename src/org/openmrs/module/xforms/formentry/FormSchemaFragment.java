@@ -3,6 +3,7 @@ package org.openmrs.module.xforms.formentry;
 import java.util.Collection;
 import java.util.Locale;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptNumeric;
@@ -133,7 +134,7 @@ public class FormSchemaFragment {
 				+ "\" />\n"
 				+ "  </xs:sequence>\n"
 				+ "  <xs:attribute name=\"openmrs_concept\" type=\"xs:string\" use=\"required\" fixed=\""
-				+ FormUtil.conceptToString(concept, locale)
+				+ StringEscapeUtils.escapeXml(FormUtil.conceptToString(concept, locale))
 				+ "\" />\n"
 				+ "  <xs:attribute name=\"openmrs_datatype\" type=\"xs:string\" use=\"required\" fixed=\""
 				+ concept.getDatatype().getHl7Abbreviation() + "\" />\n"
@@ -196,7 +197,7 @@ public class FormSchemaFragment {
 								+ (required ? "0" : "1") + "\" />\n")
 				+ "  </xs:sequence>\n"
 				+ "  <xs:attribute name=\"openmrs_concept\" type=\"xs:string\" use=\"required\" fixed=\""
-				+ FormUtil.conceptToString(concept, locale)
+				+ StringEscapeUtils.escapeXml(FormUtil.conceptToString(concept, locale))
 				+ "\" />\n"
 				+ "  <xs:attribute name=\"openmrs_datatype\" type=\"xs:string\" use=\"required\" fixed=\""
 				+ concept.getDatatype().getHl7Abbreviation() + "\" />\n"
@@ -257,14 +258,14 @@ public class FormSchemaFragment {
 					&& answer.getAnswerDrug() != null) {
 				String answerDrugName = answer.getAnswerDrug().getName();
 				xml += "          <xs:enumeration value=\""
-						+ FormUtil.conceptToString(answer.getAnswerConcept(),
-								locale) + "^"
+						+ StringEscapeUtils.escapeXml(FormUtil.conceptToString(answer.getAnswerConcept(),
+								locale)) + "^"
 						+ FormUtil.drugToString(answer.getAnswerDrug())
 						+ "\" /> <!-- " + answerDrugName + " -->\n";
 			} else {
 				xml += "          <xs:enumeration value=\""
-						+ FormUtil.conceptToString(answer.getAnswerConcept(),
-								locale) + "\" /> <!-- " + answerConceptName
+						+ StringEscapeUtils.escapeXml(FormUtil.conceptToString(answer.getAnswerConcept(),
+								locale)) + "\" /> <!-- " + answerConceptName
 						+ " -->\n";
 			}
 		}
@@ -273,7 +274,7 @@ public class FormSchemaFragment {
 				+ "    </xs:element>\n"
 				+ "  </xs:sequence>\n"
 				+ "  <xs:attribute name=\"openmrs_concept\" type=\"xs:string\" use=\"required\" fixed=\""
-				+ FormUtil.conceptToString(concept, locale)
+				+ StringEscapeUtils.escapeXml(FormUtil.conceptToString(concept, locale))
 				+ "\" />\n"
 				+ "  <xs:attribute name=\"openmrs_datatype\" type=\"xs:string\" use=\"required\" fixed=\""
 				+ concept.getDatatype().getHl7Abbreviation()
@@ -319,8 +320,8 @@ public class FormSchemaFragment {
 						+ "        <xs:simpleContent>\n"
 						+ "          <xs:extension base=\"xs:boolean\">\n"
 						+ "            <xs:attribute name=\"openmrs_concept\" type=\"xs:string\" use=\"required\" fixed=\""
-						+ FormUtil.conceptToString(answerConcept,
-								locale)
+						+ StringEscapeUtils.escapeXml(FormUtil.conceptToString(answerConcept,
+								locale))
 						+ "^"
 						+ FormUtil.drugToString(answerDrug)
 						+ "\" />\n"
@@ -339,8 +340,8 @@ public class FormSchemaFragment {
 						+ "        <xs:simpleContent>\n"
 						+ "          <xs:extension base=\"xs:boolean\">\n"
 						+ "            <xs:attribute name=\"openmrs_concept\" type=\"xs:string\" use=\"required\" fixed=\""
-						+ FormUtil.conceptToString(answerConcept,
-								locale) + "\" />\n"
+						+ StringEscapeUtils.escapeXml(FormUtil.conceptToString(answerConcept,
+								locale)) + "\" />\n"
 						+ "          </xs:extension>\n"
 						+ "        </xs:simpleContent>\n"
 						+ "      </xs:complexType>\n" + "    </xs:element>\n";
@@ -348,7 +349,7 @@ public class FormSchemaFragment {
 		}
 		xml += "  </xs:sequence>\n"
 				+ "  <xs:attribute name=\"openmrs_concept\" type=\"xs:string\" use=\"required\" fixed=\""
-				+ FormUtil.conceptToString(concept, locale)
+				+ StringEscapeUtils.escapeXml(FormUtil.conceptToString(concept, locale))
 				+ "\" />\n"
 				+ "  <xs:attribute name=\"openmrs_datatype\" type=\"xs:string\" use=\"required\" fixed=\""
 				+ concept.getDatatype().getHl7Abbreviation()

@@ -5,6 +5,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptDatatype;
@@ -76,7 +77,7 @@ public class FormSchemaBuilder {
 			String hl7Value  = fieldName;
 			Concept concept = section.getField().getConcept();
 			if(concept != null)
-				hl7Value = FormUtil.conceptToString(concept, Context.getLocale());
+				hl7Value = StringEscapeUtils.escapeXml(FormUtil.conceptToString(concept, Context.getLocale()));
 			
 			schema.append("      <xs:element name=\"" + sectionTag
 					+ "\" type=\"" + sectionTypeTag 
@@ -93,7 +94,7 @@ public class FormSchemaBuilder {
 		while (section != null) {
 			section = renderSection(section);
 		}
-
+		
 		// render element definitions (types)
 		for (ComplexType complexType : complexTypes) {
 			String token = complexType.getToken();
@@ -255,8 +256,8 @@ public class FormSchemaBuilder {
 
 				schema
 						.append("  <xs:attribute name=\"openmrs_concept\" type=\"xs:string\" use=\"required\" fixed=\""
-								+ FormUtil.conceptToString(concept, Context
-										.getLocale()) + "\" />\n");
+								+ StringEscapeUtils.escapeXml(FormUtil.conceptToString(concept, Context
+										.getLocale())) + "\" />\n");
 				schema
 						.append("  <xs:attribute name=\"openmrs_datatype\" type=\"xs:string\" use=\"required\" fixed=\""
 								+ concept.getDatatype().getHl7Abbreviation()
