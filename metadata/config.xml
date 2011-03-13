@@ -268,6 +268,11 @@
 		<defaultValue>en:.;fr:.;es:,;it:.;pt:.</defaultValue>
 		<description>The decimal separators for each locale. e.g:  en:.;fr:.;es:,;it:.;pt:.</description>
 	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.new_patient_identifier_type_id</property>
+		<defaultValue>1</defaultValue>
+		<description>The id of the patient identifier type which will be used when creating new patients from forms which do not have a patient_identifier.identifier_type_id field.</description>
+	</globalProperty>
 	
 	<!-- /Required Global Properties -->
 

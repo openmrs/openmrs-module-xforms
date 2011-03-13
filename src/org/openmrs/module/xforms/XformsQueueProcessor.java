@@ -758,8 +758,11 @@ public class XformsQueueProcessor {
 		String identifierType = DOMUtil.getElementValue(doc, XformBuilder.NODE_PATIENT_IDENTIFIER_TYPE);
 		if(identifierType == null || identifierType.trim().length() == 0){
 			identifierType = DOMUtil.getElementValue(doc, XformBuilder.NODE_PATIENT_IDENTIFIER_TYPE_ID);
-			if(identifierType == null || identifierType.trim().length() == 0)
-				throw new Exception("Expected patient identifier type value");
+			if(identifierType == null || identifierType.trim().length() == 0){
+				identifierType = Context.getAdministrationService().getGlobalProperty("xforms.new_patient_identifier_type_id", null);
+				if(identifierType == null || identifierType.trim().length() == 0)
+					throw new Exception("Expected patient identifier type value");
+			}
 		}
 
 		//Check if family name is filled.
@@ -799,7 +802,9 @@ public class XformsQueueProcessor {
 
 		int id = Integer.parseInt(identifierType);
 		PatientIdentifierType idtfType = Context.getPatientService().getPatientIdentifierType(id);
-
+		if(idtfType == null)
+			throw new Exception("Expected an existing patient identifier type value");
+		
 		identifier.setIdentifierType(idtfType);
 		identifier.setLocation(getLocation(DOMUtil.getElementValue(doc, XformBuilder.NODE_ENCOUNTER_LOCATION_ID)));
 		patient.addIdentifier(identifier);

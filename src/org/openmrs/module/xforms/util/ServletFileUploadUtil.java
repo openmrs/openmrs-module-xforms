@@ -3,6 +3,7 @@ package org.openmrs.module.xforms.util;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.List;
 
@@ -34,7 +35,7 @@ import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
  */
 public class ServletFileUploadUtil {
 	
-	public static String getXformsInstanceData(HttpServletRequest request, HttpServletResponse response) throws IOException, Exception {
+	public static String getXformsInstanceData(HttpServletRequest request, HttpServletResponse response, PrintWriter writer) throws IOException, Exception {
 		
 		String serverLocation = request.getServerName();
 		ServletFileUpload upload = new ServletFileUpload(new DiskFileItemFactory());
@@ -53,7 +54,7 @@ public class ServletFileUploadUtil {
 			// send success signal
 			response.setStatus(HttpServletResponse.SC_CREATED);
 			response.setHeader("Location", serverLocation);
-			response.getOutputStream().println("Data submitted successfully");
+			writer.println("Data submitted successfully");
 			return xml;
 		// any exception occurs, fire up error message(exception for exceeding image file size)
 		} catch (FileUploadException e2) {

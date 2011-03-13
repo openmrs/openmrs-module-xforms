@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.text.CharacterIterator;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -89,6 +90,8 @@ public class XformDownloadServlet extends HttpServlet {
 
 		String target = request.getParameter(XformConstants.REQUEST_PARAM_TARGET);
 
+		PrintWriter writer = response.getWriter();
+		
 		try{
 			if(XformConstants.REQUEST_PARAM_XFORMS.equalsIgnoreCase(target))
 				new XformsServer().processConnection(new DataInputStream((InputStream)request.getInputStream()), new DataOutputStream((OutputStream)response.getOutputStream()));
@@ -158,7 +161,7 @@ public class XformDownloadServlet extends HttpServlet {
 
 					response.setContentType(XformConstants.HTTP_HEADER_CONTENT_TYPE_XML); 
 					response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
-					response.getWriter().print(xml);
+					writer.print(xml);
 					return;
 				}
 
@@ -185,20 +188,20 @@ public class XformDownloadServlet extends HttpServlet {
 
 				if (XformConstants.REQUEST_PARAM_XFORM.equalsIgnoreCase(target)) {
 					if(formId == 0)
-						doPatientXformGet(request, response,xformsService,formId);
+						doPatientXformGet(request, response,xformsService,formId, writer);
 					else
-						doXformGet(request, response, form,formService,xformsService,createNew,attachment);
+						doXformGet(request, response, form,formService,xformsService,createNew,attachment, writer);
 				}
 				else if (XformConstants.REQUEST_PARAM_XFORM_ENTRY.equals(target)){
 					if(formId == 0)
-						doPatientXformEntryGet(request, response, xformsService,formId);
+						doPatientXformEntryGet(request, response, xformsService,formId, writer);
 					else
-						doXformEntryGet(request, response, form,formService,xformsService,createNew);
+						doXformEntryGet(request, response, form,formService,xformsService,createNew, writer);
 				}
 				else if (XformConstants.REQUEST_PARAM_XSLT.equals(target))		
-					doXsltGet(response, form,xformsService,createNew);
+					doXsltGet(response, form,xformsService,createNew, writer);
 				else if (XformConstants.REQUEST_PARAM_LAYOUT.equals(target))      
-					doLayoutGet(response, form,xformsService);
+					doLayoutGet(response, form,xformsService, writer);
 				else if(XformConstants.REQUEST_PARAM_XFORMREFRESH.equals(target)){
 					response.setHeader(XformConstants.HTTP_HEADER_CONTENT_TYPE, XformConstants.HTTP_HEADER_CONTENT_TYPE_XML);               
 
@@ -209,12 +212,12 @@ public class XformDownloadServlet extends HttpServlet {
 						xml = xformsService.getNewXform(formId).getXformXml();
 
 					response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
-					response.getWriter().print(xml);
+					writer.print(xml);
 				}
 			}
 		}
 		catch(Exception ex){
-			XformsUtil.reportDataUploadError(ex, request, response);
+			XformsUtil.reportDataUploadError(ex, request, response, writer);
 		}
 	}
 
@@ -227,7 +230,7 @@ public class XformDownloadServlet extends HttpServlet {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	protected void doXformGet(HttpServletRequest request, HttpServletResponse response, Form form,FormService formService,XformsService xformsService,boolean createNew, boolean attachment) throws Exception {
+	protected void doXformGet(HttpServletRequest request, HttpServletResponse response, Form form,FormService formService,XformsService xformsService,boolean createNew, boolean attachment, PrintWriter writer) throws Exception {
 
 		String filename = FormUtil.getFormUriWithoutExtension(form) + XformConstants.XFORM_FILE_EXTENSION;
 
@@ -267,10 +270,10 @@ public class XformDownloadServlet extends HttpServlet {
 			xformXml = XformsUtil.transformDocument(xformXml, Context.getAdministrationService().getGlobalProperty(xsltKey, null));
 
 		response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
-		response.getWriter().print(xformXml);
+		writer.print(xformXml);
 	}
 
-	private void doPatientXformGet(HttpServletRequest request, HttpServletResponse response, XformsService xformsService, Integer formId) throws ServletException, Exception{
+	private void doPatientXformGet(HttpServletRequest request, HttpServletResponse response, XformsService xformsService, Integer formId, PrintWriter writer) throws ServletException, Exception{
 		String xml = null;
 		Xform xform = xformsService.getXform(formId);
 		if(xform == null)
@@ -293,7 +296,7 @@ public class XformDownloadServlet extends HttpServlet {
 
 		response.setHeader(XformConstants.HTTP_HEADER_CONTENT_TYPE, XformConstants.HTTP_HEADER_CONTENT_TYPE_XML);
 		response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
-		response.getWriter().print(xml);
+		writer.print(xml);
 	}
 
 	/**
@@ -305,7 +308,7 @@ public class XformDownloadServlet extends HttpServlet {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	protected void doXsltGet(HttpServletResponse response, Form form,XformsService xformsService,boolean createNew) throws ServletException, IOException {
+	protected void doXsltGet(HttpServletResponse response, Form form,XformsService xformsService,boolean createNew, PrintWriter writer) throws ServletException, IOException {
 
 		String filename = FormUtil.getFormUriWithoutExtension(form) + XformConstants.XSLT_FILE_EXTENSION;
 
@@ -317,15 +320,15 @@ public class XformDownloadServlet extends HttpServlet {
 
 		String xslt= XformDownloadManager.getXslt(xformsService,form.getFormId(),false);
 		response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
-		response.getWriter().print(xslt);
+		writer.print(xslt);
 	}
 
-	protected void doLayoutGet(HttpServletResponse response, Form form,XformsService xformsService) throws ServletException, IOException {
+	protected void doLayoutGet(HttpServletResponse response, Form form,XformsService xformsService, PrintWriter writer) throws ServletException, IOException {
 		response.setHeader(XformConstants.HTTP_HEADER_CONTENT_TYPE, XformConstants.HTTP_HEADER_CONTENT_TYPE_XML);
 
 		String xslt= XformDownloadManager.getXslt(xformsService,form.getFormId(),false);
 		response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
-		response.getWriter().print(xslt);
+		writer.print(xslt);
 	}
 
 	/**
@@ -337,7 +340,7 @@ public class XformDownloadServlet extends HttpServlet {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	protected void doXformEntryGet(HttpServletRequest request, HttpServletResponse response, Form form,FormService formService,XformsService xformsService, boolean createNew) throws Exception {			
+	protected void doXformEntryGet(HttpServletRequest request, HttpServletResponse response, Form form,FormService formService,XformsService xformsService, boolean createNew, PrintWriter writer) throws Exception {			
 		String xformXml = XformDownloadManager.getXform(formService,xformsService,form.getFormId(),createNew);
 
 		Document doc = XformBuilder.getDocument(xformXml);
@@ -435,13 +438,13 @@ public class XformDownloadServlet extends HttpServlet {
 		//request.getRequestDispatcher("/xform.jsp").forward(request, response);
 		response.setHeader(XformConstants.HTTP_HEADER_CONTENT_TYPE, XformConstants.HTTP_HEADER_CONTENT_TYPE_XHTML_XML);
 		response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
-		response.getWriter().print(xml);
+		writer.print(xml);
 
 		//TODO New model we need to get formdef or xform and layout xml to send client
 		//formRunner.loadForm(formDef,layoutXml);
 	}
 
-	protected void doPatientXformEntryGet(HttpServletRequest request, HttpServletResponse response, XformsService xformsService, Integer formId) throws Exception {			
+	protected void doPatientXformEntryGet(HttpServletRequest request, HttpServletResponse response, XformsService xformsService, Integer formId, PrintWriter writer) throws Exception {			
 		String xformXml = null;
 		Xform xform = xformsService.getXform(formId);
 		if(xform == null)
@@ -564,7 +567,7 @@ public class XformDownloadServlet extends HttpServlet {
 		//request.getRequestDispatcher("/xform.jsp").forward(request, response);
 		response.setHeader(XformConstants.HTTP_HEADER_CONTENT_TYPE, XformConstants.HTTP_HEADER_CONTENT_TYPE_XML);
 		response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
-		response.getWriter().print(xml);
+		writer.print(xml);
 
 		//request.getLocale().;
 

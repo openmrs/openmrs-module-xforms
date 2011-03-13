@@ -7,12 +7,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,7 +34,6 @@ import org.openmrs.Form;
 import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
-import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.module.xforms.XformBuilder;
@@ -602,7 +601,9 @@ public class XformsUtil {
 	}
 
 
-	public static void reportDataUploadError(Exception ex, HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public static void reportDataUploadError(Exception ex, HttpServletRequest request, HttpServletResponse response, PrintWriter writer) throws IOException {
+		log.error(ex.getMessage(), ex);
+		
 		String message = ex.getMessage(); //"Could not process request. Click the more button for details.";
 		Object msg = request.getAttribute(XformConstants.REQUEST_ATTRIBUTE_ID_ERROR_MESSAGE);
 		if(msg != null)
@@ -611,8 +612,7 @@ public class XformsUtil {
 		response.setContentType("text/plain" /*XformConstants.HTTP_HEADER_CONTENT_TYPE_XML*/);
 		response.setHeader(XformConstants.HEADER_PURCFORMS_ERROR_MESSAGE, message);
 		response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-		ex.printStackTrace(response.getWriter());
-		log.error(ex.getMessage(), ex);
+		ex.printStackTrace(writer);
 	}
 
 

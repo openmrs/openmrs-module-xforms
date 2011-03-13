@@ -1,7 +1,7 @@
 package org.openmrs.module.xforms.web.controller;
 
 import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -62,6 +62,8 @@ public class XformDataUploadController extends SimpleFormController{
 		//try to authenticate users who logon inline (with the request).
 		XformsUtil.authenticateInlineUser(request);
 
+		PrintWriter writer = response.getWriter();
+		
 		// check if user is authenticated
 		if (XformsUtil.isAuthenticated(request,response,"/module/xforms/xformDataUpload.form")){
 			response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
@@ -96,12 +98,12 @@ public class XformDataUploadController extends SimpleFormController{
 					
 					Object id = request.getAttribute(XformConstants.REQUEST_ATTRIBUTE_ID_PATIENT_ID);
 					if(id != null)
-						response.getWriter().print(id.toString());
+						writer.print(id.toString());
 					
 					response.setStatus(HttpServletResponse.SC_OK);
 				}
 				catch(Exception ex){//HttpServletRequest request
-					XformsUtil.reportDataUploadError(ex, request, response);
+					XformsUtil.reportDataUploadError(ex, request, response, writer);
 				}
 			}
 		}
@@ -137,41 +139,8 @@ public class XformDataUploadController extends SimpleFormController{
 				obsService.voidObs(obs, "xformsmodule");
 		}
 	}
-
-
-	/**
-	 * Write the response after processing an xform submitted from the browser.
-	 * 
-	 * @param request - the request.
-	 * @param response - the response.
-	 */
-	private void setSingleEntryResponse(HttpServletRequest request, HttpServletResponse response){
-
-		String searchNew = Context.getAdministrationService().getGlobalProperty("xforms.searchNewPatientAfterFormSubmission");
-		String url = "/findPatient.htm";
-		if(XformConstants.FALSE_TEXT_VALUE.equalsIgnoreCase(searchNew)){
-			String patientId = request.getParameter(XformConstants.REQUEST_PARAM_PATIENT_ID);
-			url = "/patientDashboard.form?patientId="+patientId;
-		}
-		url = request.getContextPath() + url;
-
-		response.setStatus(HttpServletResponse.SC_OK);
-		response.setContentType("text/html;charset=utf-8");
-		response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
-
-		try{
-			//We are using an iframe to display the xform within the page.
-			//So this response just tells the iframe parent document to go to either the
-			//patient dashboard, or to the search patient screen, depending on the user's settings.
-			response.getWriter().println("<html>" + "<head>"
-					+"<script type='text/javascript'> window.onload=function() {self.parent.location.href='" + url + "';}; </script>"
-					+"</head>" + "</html>");
-		}
-		catch(IOException e){
-			log.error(e.getMessage(),e);
-		}
-	}
-
+	
+	
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception { 
 		return "";

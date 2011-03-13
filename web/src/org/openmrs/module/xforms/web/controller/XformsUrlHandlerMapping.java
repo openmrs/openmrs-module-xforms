@@ -39,7 +39,8 @@ public class XformsUrlHandlerMapping extends SimpleUrlHandlerMapping{
 				}
 			}
 		}
-		else if("/admin/patients/newPatient.form".equals(arg0)){
+		else if("/admin/patients/newPatient.form".equals(arg0) || "/admin/patients/shortPatientForm.form".equals(arg0)
+				|| "/admin/patients/patient.form".equals(arg0)){
 			if("true".equals(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_USE_PATIENT_XFORM,"false")))
 				return "patientReg";
 		}

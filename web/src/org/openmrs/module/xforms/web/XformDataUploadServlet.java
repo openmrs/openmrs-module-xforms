@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -42,6 +43,9 @@ public class XformDataUploadServlet extends HttpServlet{
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		PrintWriter writer = response.getWriter();
+		
 		try{
 			//check if external client sending multiple filled forms.
 			if(XformConstants.TRUE_TEXT_VALUE.equalsIgnoreCase(request.getParameter(XformConstants.REQUEST_PARAM_BATCH_ENTRY)))                        
@@ -61,27 +65,27 @@ public class XformDataUploadServlet extends HttpServlet{
 					
 					// check if request has multipart content
 					if(ServletFileUpload.isMultipartContent(request)) 
-						xml = ServletFileUploadUtil.getXformsInstanceData(request, response);
+						xml = ServletFileUploadUtil.getXformsInstanceData(request, response, writer);
 					else{
 						xml = IOUtils.toString(request.getInputStream(),XformConstants.DEFAULT_CHARACTER_ENCODING);
 						
 						Object id = request.getAttribute(XformConstants.REQUEST_ATTRIBUTE_ID_PATIENT_ID);
 						if(id != null)
-							response.getWriter().print(id.toString());
+							writer.print(id.toString());
 						
 						response.setStatus(HttpServletResponse.SC_OK);
 						response.setCharacterEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);
-						response.getWriter().println("Data submitted successfully");
+						writer.println("Data submitted successfully");
 					}
 
-					
-					///else single form filled from browser.
 					XformDataUploadManager.processXform(xml,request.getSession().getId(),XformsUtil.getEnterer(),true, request);
-				} 
+				}
+				else
+					System.out.println("...........Data upload user not authenticated.................");
 			}
 		}
 		catch(Exception e){
-			XformsUtil.reportDataUploadError(e, request, response);
+			XformsUtil.reportDataUploadError(e, request, response, writer);
 		}
 	}
 }
