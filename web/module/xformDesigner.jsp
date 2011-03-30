@@ -110,6 +110,7 @@
     <div id="localeKey" style="visibility:hidden;">${localeKey}</div>
 	<div id="decimalSeparators" style="visibility:hidden;">${decimalSeparators}</div>
         
+    <div id="undoRedoBufferSize" style="visibility:hidden;">${undoRedoBufferSize}</div>
     
     <div id="searchConcepts" style="height:0px;width:"><openmrs_tag:conceptField formFieldName="conceptId" searchLabel="Search Concept" initialValue="" /></div>
     

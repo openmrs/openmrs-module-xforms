@@ -273,6 +273,16 @@
 		<defaultValue>1</defaultValue>
 		<description>The id of the patient identifier type which will be used when creating new patients from forms which do not have a patient_identifier.identifier_type_id field.</description>
 	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.undoRedoBufferSize</property>
+		<defaultValue>-1</defaultValue>
+		<description>Set to the maximum number of actions you can undo or redo. The bigger the size, the more memory your browser needs. Default value is 100. Set to -1 if you do not want any limit.</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.autoGeneratePatientIdentifier</property>
+		<defaultValue>false</defaultValue>
+		<description>Set to true if you want the idgen module to generate patient identifiers when creating new patients using the xforms module.</description>
+	</globalProperty>
 	
 	<!-- /Required Global Properties -->
 

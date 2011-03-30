@@ -27,10 +27,12 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
 import org.openmrs.Form;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
@@ -52,9 +54,9 @@ import org.w3c.dom.Node;
  *
  */
 public class XformsUtil {
-
+	
 	private static Log log = LogFactory.getLog(XformsUtil.class);
-
+	
 	/**
 	 * Authenticates users who logon inline (with the request by appending user name and password to the url).
 	 * 
@@ -69,7 +71,7 @@ public class XformsUtil {
 				Context.authenticate(name, pw);
 		}
 	}
-
+	
 	/**
 	 * Checks if a user is authenticated. If not, takes them to the login page.
 	 * 
@@ -84,7 +86,7 @@ public class XformsUtil {
 			if (!Context.isAuthenticated()) {
 				if(loginRedirect != null)
 					request.getSession().setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR,request.getContextPath() + loginRedirect);
-
+				
 				request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.session.expired");
 				response.sendRedirect(request.getContextPath() + "/logout");
 				return false;
@@ -95,7 +97,7 @@ public class XformsUtil {
 		}
 		return true;
 	}
-
+	
 	/**
 	 * Gests the currently logged on user in a format expected by the enterer form node.
 	 * 
@@ -106,10 +108,10 @@ public class XformsUtil {
 		User user = Context.getAuthenticatedUser();
 		if (user != null)
 			enterer = user.getUserId() + "^" + user.getGivenName() + " " + user.getFamilyName();
-
+		
 		return enterer;
 	}
-
+	
 	//TODO Check to see if a method with this service already exists in the openmrs code.
 	/**
 	 * Converts a document to its text representation.
@@ -122,7 +124,7 @@ public class XformsUtil {
 			TransformerFactory tFactory = TransformerFactory.newInstance();
 			Transformer transformer = tFactory.newTransformer();
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-
+			
 			StringWriter outStream  = new StringWriter();
 			DOMSource source = new DOMSource(doc);
 			StreamResult result = new StreamResult(outStream);
@@ -132,10 +134,10 @@ public class XformsUtil {
 		catch(Exception e){
 			e.printStackTrace();
 		}
-
+		
 		return null;
 	}
-
+	
 	/**
 	 * Gets the default CSS for XForms.
 	 * 
@@ -175,7 +177,7 @@ public class XformsUtil {
 		" "+
 		"xf|input xf|label, xf|select1 xf|label, xf|select xf|label { display: table-cell; } ";
 	}
-
+	
 	//<xsl:number value="position()" format="1" />   
 	/**
 	 * Gets the default XSLT for transforming an XForm into an XHTML document.
@@ -217,8 +219,8 @@ public class XformsUtil {
 		"</xsl:template> "+
 		"</xsl:stylesheet> ";
 	}
-
-
+	
+	
 	/**
 	 * Gets the default plain (without JavaScript and css) XSLT for transforming an XForm into an XHTML document.
 	 * 
@@ -257,8 +259,8 @@ public class XformsUtil {
 		"</xsl:template> "+
 		"</xsl:stylesheet> ";
 	}
-
-
+	
+	
 	/**
 	 * Gets the javascript needed during the xforms processsing in the browser.
 	 * For now the javascript we have deals with deleting of xform repeat items.
@@ -266,14 +268,14 @@ public class XformsUtil {
 	 * @return the javascript script.
 	 */
 	private static String getJavaStriptNode(){
-
+		
 		String script = "function deleteRepeatItem(id){ " +
 		"        var model = document.getElementById('"+XformBuilder.MODEL_ID+"'); " +
 		"        var instance = model.getInstanceDocument('"+XformBuilder.INSTANCE_ID+"'); " +
 		"        var dataElement = instance.getElementsByTagName('problem_list')[0]; " +
 		"        var itemElements = dataElement.getElementsByTagName(id); " +
 		"        var cnt = itemElements.length; " +
-
+		
 		"        if (cnt > 1){ " +
 		"             dataElement.removeChild(itemElements[cnt-1]); " +
 		"        } else { " +
@@ -281,14 +283,14 @@ public class XformsUtil {
 		" 			for(var i=0; i<values.length; i++) " +
 		"			values[i].childNodes[0].nodeValue = null; " +
 		"        } " +
-
+		
 		"        model.rebuild(); " +
 		"        model.recalculate(); " +
 		"        model.refresh(); " +
 		"   } ";
-
+		
 		return script;
-
+		
 		/*Element scriptNode = bodyNode.createElement(XformBuilder.NAMESPACE_XFORMS, null);
 		scriptNode.setName(XformBuilder.NODE_SCRIPT);
 		scriptNode.setAttribute(null, XformBuilder.ATTRIBUTE_TYPE, "text/javascript");
@@ -296,7 +298,7 @@ public class XformsUtil {
 
 		return scriptNode;*/
 	}
-
+	
 	/**
 	 * Converts an xform to an xhtml document.
 	 * 
@@ -307,9 +309,9 @@ public class XformsUtil {
 	public static String fromXform2Xhtml(String xform, String xsl) throws Exception{
 		if(xsl == null) 
 			xsl = getDefaultXSLT();
-
+		
 		return transformDocument(xform,xsl);
-
+		
 		/*StringWriter outWriter = new StringWriter();
 		Source source = new StreamSource(IOUtils.toInputStream(xform,XformConstants.DEFAULT_CHARACTER_ENCODING));
 		Source xslt = new StreamSource(IOUtils.toInputStream(xsl,XformConstants.DEFAULT_CHARACTER_ENCODING));
@@ -324,7 +326,7 @@ public class XformsUtil {
 		t.transform(source, result);
 		return outWriter.toString();*/
 	}
-
+	
 	/**
 	 * Converts an xform to an xhtml document.
 	 * 
@@ -335,22 +337,22 @@ public class XformsUtil {
 	public static String transformDocument(String xml, String xsl) throws Exception{
 		if(xsl == null || xsl.trim().length() == 0) 
 			return xml;
-
+		
 		StringWriter outWriter = new StringWriter();
 		Source source = new StreamSource(IOUtils.toInputStream(xml,XformConstants.DEFAULT_CHARACTER_ENCODING));
 		Source xslt = new StreamSource(IOUtils.toInputStream(xsl,XformConstants.DEFAULT_CHARACTER_ENCODING));
 		Result result = new StreamResult(outWriter);
-
+		
 		System.setProperty("javax.xml.transform.TransformerFactory",
 		"net.sf.saxon.TransformerFactoryImpl");
-
+		
 		TransformerFactory tf = TransformerFactory.newInstance();
-
+		
 		Transformer t = tf.newTransformer(xslt);
 		t.transform(source, result);
 		return outWriter.toString();
 	}
-
+	
 	/**
 	 * Gets the directory where the user specified their xform error files were being stored
 	 * 
@@ -362,10 +364,10 @@ public class XformsUtil {
 		File xformsQueueDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(folderName);
 		if (log.isDebugEnabled())
 			log.debug("Loaded xforms error directory from global properties: " + xformsQueueDir.getAbsolutePath());
-
+		
 		return xformsQueueDir;
 	}
-
+	
 	/**
 	 * Gets the directory where the user specified their xform files were being stored before being processed.
 	 * 
@@ -377,10 +379,10 @@ public class XformsUtil {
 		File xformsQueueDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(folderName);
 		if (log.isDebugEnabled())
 			log.debug("Loaded xforms queue directory from global properties: " + xformsQueueDir.getAbsolutePath());
-
+		
 		return xformsQueueDir;
 	}
-
+	
 	/**
 	 * Gets the directory where the user specified for storage of complex obs.
 	 * 
@@ -392,10 +394,10 @@ public class XformsUtil {
 		File xformsComplexObsDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(folderName+File.separatorChar+path);
 		if (log.isDebugEnabled())
 			log.debug("Loaded xforms complex obs directory from global properties: " + xformsComplexObsDir.getAbsolutePath());
-
+		
 		return xformsComplexObsDir;
 	}
-
+	
 	/**
 	 * Gets the directory where the user specified their xform archives were being stored
 	 * 
@@ -405,19 +407,19 @@ public class XformsUtil {
 	public static File getXformsArchiveDir(Date d) {
 		AdministrationService as = Context.getAdministrationService();
 		String xformsArchiveFileName = as.getGlobalProperty(XformConstants.XFORMS_ARCHIVE_DIR, XformConstants.XFORMS_ARCHIVE_DIR_DEFAULT);
-
+		
 		// replace %Y %M %D in the folderName with the date
 		String folderName = FormEntryWrapper.replaceVariables(xformsArchiveFileName, d);
-
+		
 		// get the file object for this potentially new file
 		File xformsArchiveDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(folderName);
-
+		
 		if (log.isDebugEnabled())
 			log.debug("Loaded xforms archive directory from global properties: " + xformsArchiveDir.getAbsolutePath());
-
+		
 		return xformsArchiveDir;
 	}
-
+	
 	/**
 	 * Converts a string to a date.
 	 * 
@@ -429,74 +431,74 @@ public class XformsUtil {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_SUBMIT_FORMAT,XformConstants.DEFAULT_DATE_SUBMIT_FORMAT));
 		return dateFormat.parse(date);
 	}
-
+	
 	public static Date fromSubmitString2DateTime(String dateTime) throws ParseException {
 		String pattern = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_TIME_SUBMIT_FORMAT,XformConstants.DEFAULT_DATE_TIME_SUBMIT_FORMAT);
 		SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
-
+		
 		if("yyyy-MM-dd'T'HH:mm:ssZ".equals(pattern))
 			dateTime = dateTime.substring(0, 22) + dateTime.substring(23);
-
+		
 		return dateFormat.parse(dateTime);
 	}
-
+	
 	public static Date fromSubmitString2Time(String time) throws ParseException {
 		String pattern = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_TIME_SUBMIT_FORMAT,XformConstants.DEFAULT_TIME_SUBMIT_FORMAT);
 		SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
-
+		
 		if("yyyy-MM-dd'T'HH:mm:ssZ".equals(pattern))
 			time = time.substring(0, 22) + time.substring(23);
-
+		
 		return dateFormat.parse(time);
 	}
-
+	
 	public static Date fromDisplayString2Date(String date) throws ParseException {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_DISPLAY_FORMAT,XformConstants.DEFAULT_DATE_DISPLAY_FORMAT));
 		return dateFormat.parse(date);
 	}
-
+	
 	public static Date fromDisplayString2DateTime(String date) throws ParseException {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_TIME_DISPLAY_FORMAT,XformConstants.DEFAULT_DATE_TIME_DISPLAY_FORMAT));
 		return dateFormat.parse(date);
 	}
-
+	
 	public static Date fromDisplayString2Time(String date) throws ParseException {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_TIME_DISPLAY_FORMAT,XformConstants.DEFAULT_TIME_DISPLAY_FORMAT));
 		return dateFormat.parse(date);
 	}
-
+	
 	public static String fromDate2DisplayString(Date date) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_DISPLAY_FORMAT,XformConstants.DEFAULT_DATE_DISPLAY_FORMAT));
 		return dateFormat.format(date);
 	}
-
+	
 	public static String fromDate2SubmitString(Date date) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_SUBMIT_FORMAT,XformConstants.DEFAULT_DATE_SUBMIT_FORMAT));
 		return dateFormat.format(date);
 	}
-
+	
 	public static String fromDateTime2SubmitString(Date date) {
 		String pattern = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_TIME_SUBMIT_FORMAT,XformConstants.DEFAULT_DATE_TIME_SUBMIT_FORMAT);
 		SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
 		String value = dateFormat.format(date);
-
+		
 		if("yyyy-MM-dd'T'HH:mm:ssZ".equals(pattern))
 			value = value.substring(0, 22) + ":" + value.substring(22);
-
+		
 		return value;
 	}
-
+	
 	public static String fromTime2SubmitString(Date date) {
 		String pattern = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_TIME_SUBMIT_FORMAT,XformConstants.DEFAULT_TIME_SUBMIT_FORMAT);
 		SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
 		String value = dateFormat.format(date);
-
+		
 		if("yyyy-MM-dd'T'HH:mm:ssZ".equals(pattern))
 			value = value.substring(0, 22) + ":" + value.substring(22);
-
+		
 		return value;
 	}
-
+	
 	/**
 	 * Reads the contents of a file as a string.
 	 * 
@@ -508,17 +510,17 @@ public class XformsUtil {
 		File file  = new File(pathName);
 		FileReader reader = new FileReader(file);
 		BufferedReader input = new BufferedReader(reader);
-
+		
 		int readChar = 0;
 		while ((readChar = input.read()) != -1)
 			out.append((char)readChar);
-
+		
 		input.close();
 		reader.close();
-
+		
 		return out.toString();
 	}
-
+	
 	/**
 	 * Gets the url that the xform will post to after clicking the submit button.
 	 * 
@@ -528,7 +530,7 @@ public class XformsUtil {
 	public static String getActionUrl(HttpServletRequest request){
 		return request.getContextPath() + XformConstants.XFORM_DATA_UPLOAD_RELATIVE_URL;
 	}
-
+	
 	/**
 	 * Gets the schema of a form.
 	 * 
@@ -539,7 +541,7 @@ public class XformsUtil {
 		//TODO I need some implementattion here.
 		return FormEntryWrapper.getSchema(form);//((FormEntryService)Context.getService(FormEntryService.class)).getSchema(form);
 	}
-
+	
 	/**
 	 * 
 	 * Auto generated method comment
@@ -554,9 +556,9 @@ public class XformsUtil {
 		String className = Context.getAdministrationService().getGlobalProperty(globalPropKey);
 		if(className == null || className.length() == 0)
 			className = defaultClassName;
-
+		
 		Object obj = OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
-
+		
 		if(methodName.equals("serializeForms")){
 			Method method = obj.getClass().getMethod(methodName, new Class[]{OutputStream.class,Object.class,Integer.class,String.class,String.class});
 			method.invoke(obj, new Object[]{os, data,new Integer(1),"",""});
@@ -567,8 +569,8 @@ public class XformsUtil {
 			method.invoke(obj, new Object[]{os, data});
 		}
 	}
-
-
+	
+	
 	/**
 	 * 
 	 * Auto generated method comment
@@ -584,23 +586,23 @@ public class XformsUtil {
 		String className = Context.getAdministrationService().getGlobalProperty(globalPropKey);
 		if(className == null || className.length() == 0)
 			className = defaultClassName;
-
+		
 		Object obj = OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
 		Method method = obj.getClass().getMethod("deSerialize", new Class[]{InputStream.class,Object.class});
-
+		
 		return method.invoke(obj, new Object[]{is, data});
 	}
-
+	
 	/*public static String conceptToString(Concept concept, Locale locale) {
 		return concept.getConceptId() + "^" + concept.getName(locale).getName()
 				+ "^" + FormConstants.HL7_LOCAL_CONCEPT;
 	}*/
-
+	
 	public static Document fromString2Doc(String xml) throws Exception{
 		return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(IOUtils.toInputStream(xml,XformConstants.DEFAULT_CHARACTER_ENCODING));
 	}
-
-
+	
+	
 	public static void reportDataUploadError(Exception ex, HttpServletRequest request, HttpServletResponse response, PrintWriter writer) throws IOException {
 		log.error(ex.getMessage(), ex);
 		
@@ -608,14 +610,14 @@ public class XformsUtil {
 		Object msg = request.getAttribute(XformConstants.REQUEST_ATTRIBUTE_ID_ERROR_MESSAGE);
 		if(msg != null)
 			message = msg.toString();
-
+		
 		response.setContentType("text/plain" /*XformConstants.HTTP_HEADER_CONTENT_TYPE_XML*/);
 		response.setHeader(XformConstants.HEADER_PURCFORMS_ERROR_MESSAGE, message);
 		response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		ex.printStackTrace(writer);
 	}
-
-
+	
+	
 	/**
 	 * Gets the id of the provider for a given encounter.
 	 * OpenMRS from version 1.6 changed the return type of encounter.getProvider()
@@ -636,7 +638,7 @@ public class XformsUtil {
 			Method method = encounter.getClass().getMethod("getProvider", null);
 			return ((Person)method.invoke(encounter, null)).getPersonId();
 		}
-			/*List<User>  users = Context.getUserService().getUsersByPerson(encounter.getProvider(), false);
+		/*List<User>  users = Context.getUserService().getUsersByPerson(encounter.getProvider(), false);
             // deal with multiples by tossing exceptions if you like
             if (!users.isEmpty()).
                 return users.get(0).getUserId();*/
@@ -651,11 +653,46 @@ public class XformsUtil {
 			return ((Person)method.invoke(user, null)).getPersonId();
 		}
 	}
-
+	
+	public static boolean autoGeneratePatientIdentifier(){
+		return "true".equalsIgnoreCase(Context.getAdministrationService().getGlobalProperty("xforms.autoGeneratePatientIdentifier", "false"));
+	}
+	
+	public static PatientIdentifierType getNewPatientIdentifierType(){
+		try{
+			String type = Context.getAdministrationService().getGlobalProperty("xforms.new_patient_identifier_type_id", "1");
+			if(StringUtils.isEmpty(type))
+				return null;
+			
+			return Context.getPatientService().getPatientIdentifierType(Integer.parseInt(type));
+		}
+		catch(Exception ex){
+			ex.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	public static String getNewPatientIdentifier(PatientIdentifierType patientIdentifierType){
+		try{
+			if(patientIdentifierType == null)
+				return null;
+			
+			Object identifierSourceService = Context.getService(Class.forName("org.openmrs.module.idgen.service.IdentifierSourceService", true, OpenmrsClassLoader.getInstance()));
+			Method method = identifierSourceService.getClass().getMethod("generateIdentifier", new Class[]{PatientIdentifierType.class, String.class});
+			return (String)method.invoke(identifierSourceService, new Object[]{patientIdentifierType, "xforms module"});
+		}
+		catch(Exception ex){
+			ex.printStackTrace();
+		}
+		
+		return null;
+	}
+	
 	public static boolean encounterDateIncludesTime(){
 		return "true".equalsIgnoreCase(Context.getAdministrationService().getGlobalProperty("xforms.encounterDateIncludesTime", "false"));
 	}
-
+	
 	public static boolean isJavaRosaSaveFormat(){
 		return "javarosa".equalsIgnoreCase(Context.getAdministrationService().getGlobalProperty("xforms.saveFormat","purcforms"));
 	}

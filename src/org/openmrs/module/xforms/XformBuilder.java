@@ -979,7 +979,7 @@ public final class XformBuilder {
 		int numOfEntries = rootNode.getChildCount();
 		for (int i = 0; i < numOfEntries; i++) {
 			if (rootNode.isText(i))
-				continue;
+				continue; 
 
 			Element child = rootNode.getElement(i);
 			String name = child.getName();
@@ -1020,15 +1020,16 @@ public final class XformBuilder {
 			Element child = (Element)sequenceNode.getElement(i);
 			if("unbounded".equalsIgnoreCase(child.getAttributeValue(null, ATTRIBUTE_MAXOCCURS))){
 				String name = child.getAttributeValue(null, ATTRIBUTE_NAME);
-				obsRepeatItems.put(name, name);
 				problemList.put(name, name);
+
+				/*obsRepeatItems.put(name, name);
 
 				String nodeset = nodesets.get(name);
 				Element bindNode = (Element)bindings.get(name);
 				if(nodeset != null && bindNode != null){
 					if(nodeset.endsWith("/value"))
 						bindNode.setAttribute(null, ATTRIBUTE_NODESET, nodeset.substring(0, nodeset.length() - 6));
-				}
+				}*/
 			}
 		}
 	}
@@ -1081,7 +1082,7 @@ public final class XformBuilder {
 		if(bindNode == null){
 			//could be a section like problem_list_section
 			if(name.equals("problem_list"))
-				addProblemListItems(name, complexTypeNode, bodyNode, modelNode);
+				;//addProblemListItems(name, complexTypeNode, bodyNode, modelNode);
 
 			return; 
 		}
@@ -1089,8 +1090,9 @@ public final class XformBuilder {
 		boolean repeatItem = false;
 		Element lblNode = null;
 		String nameAttributeValue = complexTypeNode.getAttributeValue(null, "name");
-		if(nameAttributeValue != null && nameAttributeValue.endsWith("_section")){
-			problemList.put(name, name);
+		/*if(nameAttributeValue != null && nameAttributeValue.endsWith("_section")){
+			problemList.put(name, name);*/
+		if(problemList.contains(name)){
 			lblNode = addProblemListSection(name,bodyNode,repeatControls, modelNode);
 			repeatItem = true;
 		}
@@ -1437,7 +1439,7 @@ public final class XformBuilder {
 			//???????
 			if(repeatItem){
 				problemListItems.put(itemName, name);
-				removeChildNode(modelNode,itemName);
+				//removeChildNode(modelNode,itemName);
 			}
 
 			//Instead of the value node, multiple select questions have one node
@@ -1447,7 +1449,7 @@ public final class XformBuilder {
 				String type = node.getAttributeValue(null, "type"/*"minOccurs"*/);
 				if(type != null && !repeatItem){
 					if(problemList.containsKey(name))
-						//if(problemListItems.containsKey(name))
+					//if(problemListItems.containsKey(name))
 						return addProblemListSection(name,bodyNode,repeatControls, modelNode);
 					else
 						continue;
@@ -1532,12 +1534,12 @@ public final class XformBuilder {
 		if(problemList.containsKey(name))
 			controlNode.setAttribute(null, ATTRIBUTE_REF, valueNodeName);
 		else if(problemListItems.containsKey(name))
-			controlNode.setAttribute(null, ATTRIBUTE_REF, name+"/"+valueNodeName);
+			controlNode.setAttribute(null, ATTRIBUTE_BIND, name); //controlNode.setAttribute(null, ATTRIBUTE_REF, name+"/"+valueNodeName);
 		else
 			controlNode.setAttribute(null, ATTRIBUTE_BIND, name);
 
 		if(problemList.contains(name))
-			addControl(bodyNode,buildRepeatControl(bodyNode,controlNode,name, modelNode));
+			;//addControl(bodyNode,buildRepeatControl(bodyNode,controlNode,name, modelNode));
 		else if(problemListItems.containsKey(name)){
 			String repeatControlName = problemListItems.get(name);          
 			Element repeatControl = repeatControls.get(repeatControlName);

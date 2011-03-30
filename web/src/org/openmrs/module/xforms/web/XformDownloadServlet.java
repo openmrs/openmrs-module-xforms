@@ -27,6 +27,7 @@ import org.kxml2.kdom.Document;
 import org.openmrs.Form;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
@@ -466,7 +467,7 @@ public class XformDownloadServlet extends HttpServlet {
 				XformBuilder.setNodeValue(doc, XformBuilder.NODE_PATIENT_MIDDLE_NAME, patient.getMiddleName());
 				XformBuilder.setNodeValue(doc, XformBuilder.NODE_PATIENT_GIVEN_NAME, patient.getGivenName());
 				XformBuilder.setNodeValue(doc, XformBuilder.NODE_LOCATION_ID, patient.getPatientIdentifier().getLocation().getLocationId().toString());
-				XformBuilder.setNodeValue(doc, XformBuilder.NODE_PATIENT_ID, patient.getPatientId().toString());
+				XformBuilder.setNodeValue(doc, XformBuilder.NODE_PATIENT_ID, patient.getPatientId().toString());				
 			}
 
 
@@ -524,15 +525,26 @@ public class XformDownloadServlet extends HttpServlet {
 		PatientIdentifier identifier = patient.getPatientIdentifier();
 
 		if(identifier !=  null){
-			XformBuilder.setNodeValue(doc,"identifier",identifier.getIdentifier());
-			XformBuilder.setNodeValue(doc,"patient_identifier_type_id",identifier.getIdentifierType().getPatientIdentifierTypeId().toString());
+			XformBuilder.setNodeValue(doc, XformBuilder.NODE_IDENTIFIER, identifier.getIdentifier());
+			XformBuilder.setNodeValue(doc, XformBuilder.NODE_IDENTIFIER_TYPE_ID, identifier.getIdentifierType().getPatientIdentifierTypeId().toString());
 
 			fillPersonAttributes(patient,doc);
 			fillPersonAddresses(patient,doc);
 
 			XformObsEdit.fillPatientComplexObs(request, doc, xformXml);
 		}
-		//else must be new patient.  
+		else{
+			//else must be new patient. 
+			
+			if(XformsUtil.autoGeneratePatientIdentifier()){
+				PatientIdentifierType patientIdentifierType = XformsUtil.getNewPatientIdentifierType();
+				String id = XformsUtil.getNewPatientIdentifier(patientIdentifierType);
+				if(id != null){
+					XformBuilder.setNodeValue(doc, XformBuilder.NODE_IDENTIFIER, id);
+					XformBuilder.setNodeValue(doc, XformBuilder.NODE_IDENTIFIER_TYPE_ID, patientIdentifierType.getPatientIdentifierTypeId().toString());
+				}
+			}
+		} 
 
 		String xml = XformBuilder.fromDoc2String(doc);
 
