@@ -97,8 +97,14 @@ public class XformsQueueProcessor {
 		}
 		try {			
 			File queueDir = XformsUtil.getXformsQueueDir();
-			for (File file : queueDir.listFiles()) 
-				processXForm(XformsUtil.readFile(file.getAbsolutePath()),file.getAbsolutePath(),false,null);
+			for (File file : queueDir.listFiles()) {
+				try{
+					processXForm(XformsUtil.readFile(file.getAbsolutePath()), file.getAbsolutePath(), false, null);
+				}
+				catch(Exception e){
+					log.error("Problem occured while processing Xform: " + file.getAbsolutePath(), e);
+				}
+			}
 		}
 		catch(Exception e){
 			log.error("Problem occured while processing Xforms queue", e);

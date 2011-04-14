@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.lang.reflect.Method;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -93,6 +95,8 @@ public class XformObsEdit {
 		nonCopyAttributes.add("obsId");
 		nonCopyAttributes.add("obsGroupId");
 		
+		DecimalFormat decimalFormat = new DecimalFormat("#");
+		
 		Set<Obs> observations = encounter.getObs();
 		for(Obs obs : observations){
 			Concept concept = obs.getConcept();
@@ -143,6 +147,8 @@ public class XformObsEdit {
 				value = XformsUtil.fromDateTime2SubmitString(obs.getValueDatetime());
 			else if(concept.getDatatype().getHl7Abbreviation().equals(ConceptDatatype.TIME) && obs.getValueDatetime() != null)
 				value = XformsUtil.fromTime2SubmitString(obs.getValueDatetime());
+			else if(concept.getDatatype().getHl7Abbreviation().equals(ConceptDatatype.NUMERIC) && obs.getValueNumeric() != null)
+				value = decimalFormat.format(obs.getValueNumeric());
 
 			if("1".equals(node.getAttributeValue(null,"multiple"))){
 				Element multNode = XformBuilder.getElement(node, "xforms_value");
