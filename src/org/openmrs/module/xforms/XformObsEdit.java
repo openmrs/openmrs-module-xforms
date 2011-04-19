@@ -147,8 +147,10 @@ public class XformObsEdit {
 				value = XformsUtil.fromDateTime2SubmitString(obs.getValueDatetime());
 			else if(concept.getDatatype().getHl7Abbreviation().equals(ConceptDatatype.TIME) && obs.getValueDatetime() != null)
 				value = XformsUtil.fromTime2SubmitString(obs.getValueDatetime());
-			else if(concept.getDatatype().getHl7Abbreviation().equals(ConceptDatatype.NUMERIC) && obs.getValueNumeric() != null)
-				value = decimalFormat.format(obs.getValueNumeric());
+			else if(concept.getDatatype().getHl7Abbreviation().equals(ConceptDatatype.NUMERIC) && obs.getValueNumeric() != null){
+				if(value != null && value.contains("E")) //check if number is in scientific format.
+					value = decimalFormat.format(obs.getValueNumeric());
+			}
 
 			if("1".equals(node.getAttributeValue(null,"multiple"))){
 				Element multNode = XformBuilder.getElement(node, "xforms_value");
@@ -336,7 +338,7 @@ public class XformObsEdit {
 			
 			String conceptStr = child.getAttributeValue(null, "openmrs_concept");
 			if(conceptStr == null || conceptStr.trim().length() == 0)
-				continue; //TODO Can't we have sections which are not concepts?
+				;//continue; //TODO Can't we have sections which are not concepts?
 			
 			addNewObs(formNode, complexObs, encounter, child, datetime, null);
 		}
