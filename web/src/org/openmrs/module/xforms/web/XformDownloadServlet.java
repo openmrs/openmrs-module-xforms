@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kxml2.kdom.Document;
 import org.openmrs.Form;
+import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -367,6 +368,15 @@ public class XformDownloadServlet extends HttpServlet {
 			String locationId = XformBuilder.getNodeValue(doc.getRootElement(), XformBuilder.NODE_ENCOUNTER_LOCATION_ID);
 			if(locationId == null || locationId.trim().length() == 0){
 				locationId = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION);
+				
+				//If user has no location set under their profile page, use the default implementation location.
+				if(locationId == null || locationId.trim().length() == 0){
+					Location location = Context.getLocationService().getDefaultLocation();
+					if(location != null){
+						locationId = location.getLocationId().toString();
+					}
+				}
+				
 				if(locationId != null && locationId.trim().length() > 0)
 					XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_LOCATION_ID, locationId);
 			}
