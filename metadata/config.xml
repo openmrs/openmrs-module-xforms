@@ -20,6 +20,11 @@
 	<require_version>1.5.0</require_version>
 	<require_database_version>1.5.0</require_database_version>
 	
+	<advice>
+		<point>org.openmrs.api.FormService</point>
+		<class>org.openmrs.module.xforms.aop.FormDeleteAfterAdvice</class>
+	</advice>
+
 	<!-- Required Global Properties -->
 	<globalProperty>
 		<property>@MODULE_ID@.xformSerializer</property>
