@@ -24,64 +24,61 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
-
-
 /**
  * Provides XForms upload services.
  * 
  * @author Daniel
- *
  */
-public class XformUploadController extends SimpleFormController{
-
+public class XformUploadController extends SimpleFormController {
+	
 	/** Logger for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
-
+	
 	@Override
 	protected Map referenceData(HttpServletRequest request, Object obj, Errors err) throws Exception {
-		return new HashMap<String,Object>();
+		return new HashMap<String, Object>();
 	}
-
+	
 	@Override
-	protected Object formBackingObject(HttpServletRequest request) throws Exception { 
+	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 		return "Not Yet";
 	}
-
+	
 	@Override
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object object, BindException exceptions) throws Exception {						
-
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object object,
+	                                BindException exceptions) throws Exception {
+		
 		//try to authenticate users who logon inline (with the request).
 		XformsUtil.authenticateInlineUser(request);
-
+		
 		//check if user is authenticated
-		if (!XformsUtil.isAuthenticated(request,response,"/module/xforms/xformUpload.form"))
+		if (!XformsUtil.isAuthenticated(request, response, "/module/xforms/xformUpload.form"))
 			return null;
-
+		
 		Integer formId = Integer.parseInt(request.getParameter("formId"));
-
+		
 		String target = request.getParameter(XformConstants.REQUEST_PARAM_TARGET);
-
-		if (XformConstants.REQUEST_PARAM_XFORM.equals(target)){
+		
+		if (XformConstants.REQUEST_PARAM_XFORM.equals(target)) {
 			String xml = getRequestAsString(request);
-			XformsService xformsService = (XformsService)Context.getService(XformsService.class);
+			XformsService xformsService = (XformsService) Context.getService(XformsService.class);
 			Xform xform = xformsService.getXform(formId);
-
-			if(xform == null){
+			
+			if (xform == null) {
 				xform = new Xform();
 				xform.setFormId(formId);
 				xform.setCreator(Context.getAuthenticatedUser());
 				xform.setDateCreated(new Date());
-			}
-			else{
+			} else {
 				xform.setChangedBy(Context.getAuthenticatedUser());
 				xform.setDateChanged(new Date());
 			}
-
-			if("true".equals(request.getParameter("localeXml")))
+			
+			if ("true".equals(request.getParameter("localeXml")))
 				xform.setLocaleXml(xml);
-			else{
+			else {
 				String xformXml, layoutXml = null, localeXml = null, javaScriptSrc = null;
-
+				
 				/*int pos = xml.indexOf(XformConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR);
 				int pos2 = xml.indexOf(XformConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR);
 				if(pos > 0){
@@ -97,32 +94,35 @@ public class XformUploadController extends SimpleFormController{
 				}
 				else
 					xformXml = xml;*/
-				
+
 				int pos = xml.indexOf(XformConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR);
 				int pos2 = xml.indexOf(XformConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR);
 				int pos3 = xml.indexOf(XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR);
-				if(pos > 0){
-					xformXml = xml.substring(0,pos);
-					layoutXml = xml.substring(pos+XformConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR.length(), (pos2 > 0 ? pos2 : (pos3 > 0 ? pos3 : xml.length())));
-
-					if(pos2 > 0)
-						localeXml = xml.substring(pos2+XformConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR.length(), pos3 > 0 ? pos3 : xml.length());
-				
-					if(pos3 > 0)
-						javaScriptSrc = xml.substring(pos3+XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR.length(), xml.length());
-				}
-				else if(pos2 > 0){
-					xformXml = xml.substring(0,pos2);
-					localeXml = xml.substring(pos2+XformConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR.length(), pos3 > 0 ? pos3 : xml.length());
+				if (pos > 0) {
+					xformXml = xml.substring(0, pos);
+					layoutXml = xml.substring(pos + XformConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR.length(),
+					    (pos2 > 0 ? pos2 : (pos3 > 0 ? pos3 : xml.length())));
 					
-					if(pos3 > 0)
-						javaScriptSrc = xml.substring(pos3+XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR.length(), xml.length());
-				}
-				else if(pos3 > 0){
-					xformXml = xml.substring(0,pos3);
-					javaScriptSrc = xml.substring(pos3+XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR.length(), xml.length());
-				}
-				else
+					if (pos2 > 0)
+						localeXml = xml.substring(pos2 + XformConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR.length(),
+						    pos3 > 0 ? pos3 : xml.length());
+					
+					if (pos3 > 0)
+						javaScriptSrc = xml.substring(
+						    pos3 + XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR.length(), xml.length());
+				} else if (pos2 > 0) {
+					xformXml = xml.substring(0, pos2);
+					localeXml = xml.substring(pos2 + XformConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR.length(),
+					    pos3 > 0 ? pos3 : xml.length());
+					
+					if (pos3 > 0)
+						javaScriptSrc = xml.substring(
+						    pos3 + XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR.length(), xml.length());
+				} else if (pos3 > 0) {
+					xformXml = xml.substring(0, pos3);
+					javaScriptSrc = xml.substring(pos3 + XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR.length(),
+					    xml.length());
+				} else
 					xformXml = xml;
 				
 				xform.setXformXml(xformXml);
@@ -130,28 +130,26 @@ public class XformUploadController extends SimpleFormController{
 				xform.setLocaleXml(localeXml);
 				xform.setJavaScriptSrc(javaScriptSrc);
 			}
-
+			
 			xformsService.saveXform(xform);
-
+			
 			return null;
-		}
-		else{
-			MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
-
-			if (XformConstants.REQUEST_PARAM_XSLT.equals(target)){
+		} else {
+			MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+			
+			if (XformConstants.REQUEST_PARAM_XSLT.equals(target)) {
 				MultipartFile xsltFile = multipartRequest.getFile("xsltFile");
 				if (xsltFile != null && !xsltFile.isEmpty()) {
-					XformsService xformsService = (XformsService)Context.getService(XformsService.class);
-					String xml = IOUtils.toString(xsltFile.getInputStream(),XformConstants.DEFAULT_CHARACTER_ENCODING);
-					xformsService.saveXslt(formId,xml);
+					XformsService xformsService = (XformsService) Context.getService(XformsService.class);
+					String xml = IOUtils.toString(xsltFile.getInputStream(), XformConstants.DEFAULT_CHARACTER_ENCODING);
+					xformsService.saveXslt(formId, xml);
 					request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "xforms.xsltUploadSuccess");
 				}
-			}
-			else{
+			} else {
 				MultipartFile xformFile = multipartRequest.getFile("xformFile");
 				if (xformFile != null && !xformFile.isEmpty()) {
-					XformsService xformsService = (XformsService)Context.getService(XformsService.class);
-					String xml = IOUtils.toString(xformFile.getInputStream(),XformConstants.DEFAULT_CHARACTER_ENCODING);
+					XformsService xformsService = (XformsService) Context.getService(XformsService.class);
+					String xml = IOUtils.toString(xformFile.getInputStream(), XformConstants.DEFAULT_CHARACTER_ENCODING);
 					Xform xform = new Xform();
 					xform.setFormId(formId);
 					xform.setXformXml(xml);
@@ -161,11 +159,12 @@ public class XformUploadController extends SimpleFormController{
 					request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "xforms.xformUploadSuccess");
 				}
 			}
-
-			return new ModelAndView(new RedirectView(request.getContextPath() + "/admin/forms/formSchemaDesign.form?formId=" + formId));
+			
+			return new ModelAndView(new RedirectView(request.getContextPath() + "/admin/forms/formSchemaDesign.form?formId="
+			        + formId));
 		}
 	}
-
+	
 	private String getRequestAsString(HttpServletRequest request) throws java.io.IOException {
 		/*BufferedReader requestData = new BufferedReader(new InputStreamReader(request.getInputStream()));
 		StringBuffer stringBuffer = new StringBuffer();
@@ -177,10 +176,10 @@ public class XformUploadController extends SimpleFormController{
 		catch (Exception e){e.printStackTrace();}
 
 		return stringBuffer.toString();*/
-		
+
 		//We have commented out the above because we want to preserver new lines for formatting
 		//purposes. e.g the javascript attached to xforms becomes troublesome when the javascript is lost.
 		
-		return IOUtils.toString(request.getInputStream(),XformConstants.DEFAULT_CHARACTER_ENCODING);
+		return IOUtils.toString(request.getInputStream(), XformConstants.DEFAULT_CHARACTER_ENCODING);
 	}
 }
