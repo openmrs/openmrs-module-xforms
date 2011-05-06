@@ -181,7 +181,7 @@ public class XformsLocationAdvisor extends StaticMethodMatcherPointcutAdvisor im
 			}
 			
 			//select1 node does not have the location to delete or edit.
-			if (!locationFound){
+			if (!locationFound) {
 				if (operation == RefreshOperation.DELETE)
 					return;
 				
@@ -189,6 +189,12 @@ public class XformsLocationAdvisor extends StaticMethodMatcherPointcutAdvisor im
 			}
 			
 		} else {
+			
+			//Older versions of openmrs call AOP advisors more than once hence resulting into duplicates
+			//if this check is not performed.
+			if (locationExists(locationSelect1Element, sLocationId))
+				return;
+			
 			//Add new location
 			addNewLocationNode(doc, locationSelect1Element, location);
 		}
@@ -218,5 +224,26 @@ public class XformsLocationAdvisor extends StaticMethodMatcherPointcutAdvisor im
 		itemNode.appendChild(node);
 		
 		locationSelect1Element.appendChild(itemNode);
+	}
+	
+	/**
+	 * Checks if a location item node exists in a select1 node of an xforms document.
+	 * 
+	 * @param locationSelect1Element the select1 node.
+	 * @param locationId the location id string.
+	 * @return true if exists, else false.
+	 */
+	private boolean locationExists(Element locationSelect1Element, String locationId) {
+		//Get all xf:item nodes.
+		NodeList elements = locationSelect1Element.getElementsByTagName(XformBuilder.PREFIX_XFORMS + ":" + "item");
+		
+		//Look for an item node having an id attribute equal to the locationId.
+		for (int index = 0; index < elements.getLength(); index++) {
+			Element itemElement = (Element) elements.item(index);
+			if (locationId.equals(itemElement.getAttribute(XformBuilder.ATTRIBUTE_ID)))
+				return true;
+		}
+		
+		return false;
 	}
 }

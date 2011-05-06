@@ -201,6 +201,12 @@ public class XformsProviderAdvisor extends StaticMethodMatcherPointcutAdvisor im
 			}
 			
 		} else {
+			
+			//Older versions of openmrs call AOP advisors more than once hence resulting into duplicates
+			//if this check is not performed.
+			if (providerExists(providerSelect1Element, sPersonId))
+				return;
+			
 			//Add new provider
 			addNewProviderNode(doc, providerSelect1Element, user, personId);
 		}
@@ -230,5 +236,26 @@ public class XformsProviderAdvisor extends StaticMethodMatcherPointcutAdvisor im
 		itemNode.appendChild(node);
 		
 		providerSelect1Element.appendChild(itemNode);
+	}
+	
+	/**
+	 * Checks if a provider item node exists in a select1 node of an xforms document.
+	 * 
+	 * @param providerSelect1Element the select1 node.
+	 * @param personId the person id string for the provider.
+	 * @return true if exists, else false.
+	 */
+	private boolean providerExists(Element providerSelect1Element, String personId) {
+		//Get all xf:item nodes.
+		NodeList elements = providerSelect1Element.getElementsByTagName(XformBuilder.PREFIX_XFORMS + ":" + "item");
+		
+		//Look for an item node having an id attribute equal to the personId.
+		for (int index = 0; index < elements.getLength(); index++) {
+			Element itemElement = (Element) elements.item(index);
+			if (personId.equals(itemElement.getAttribute(XformBuilder.ATTRIBUTE_ID)))
+				return true;
+		}
+		
+		return false;
 	}
 }
