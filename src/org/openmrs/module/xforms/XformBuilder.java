@@ -681,7 +681,7 @@ public final class XformBuilder {
 						Element grandChildElement = childElement.getElement(j);
 						String value = grandChildElement.getAttributeValue(null, ATTRIBUTE_OPENMRS_CONCEPT);
 						if (StringUtils.isNotBlank(value))
-							addConceptMapAttributes(grandChildElement, value, j);
+							addConceptMapAttributes(grandChildElement, value);
 					}
 				}
 			}
@@ -690,7 +690,13 @@ public final class XformBuilder {
 		return fromDoc2String(doc);
 	}
 	
-	private static void addConceptMapAttributes(Element element, String conceptValueString, int index) {
+	/**
+	 * Methods replaces the conceptId with a concept source name and source code.
+	 * 
+	 * @param element the element with the openmrs_concept attribute
+	 * @param conceptValueString the value of the openmrs_concept attribute
+	 */
+	private static void addConceptMapAttributes(Element element, String conceptValueString) {
 		String[] tokens = StringUtils.split(conceptValueString, "^");
 		try {
 			ConceptService cs = Context.getConceptService();

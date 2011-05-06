@@ -1,17 +1,29 @@
 package org.openmrs.module.xforms.web.controller;
 
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.Xform;
+import org.openmrs.module.xforms.XformBuilder;
 import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformsService;
 import org.openmrs.module.xforms.util.XformsUtil;
@@ -23,6 +35,12 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 /**
  * Provides XForms upload services.
@@ -150,6 +168,55 @@ public class XformUploadController extends SimpleFormController {
 				if (xformFile != null && !xformFile.isEmpty()) {
 					XformsService xformsService = (XformsService) Context.getService(XformsService.class);
 					String xml = IOUtils.toString(xformFile.getInputStream(), XformConstants.DEFAULT_CHARACTER_ENCODING);
+					
+					boolean foundMappings = false;
+					//find concept values that are mappings and replace them witha actual conceptIds
+					DocumentBuilder docReader = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+					Document xmldoc = docReader.parse(new InputSource(new StringReader(xml)));
+					NodeList nodeList = xmldoc.getElementsByTagName(XformBuilder.NODE_FORM);
+					Node formNode = nodeList.item(0);
+					//find all conceptId attributes in the document and replace their value with the original conceptId
+					for (int i = 0; i < formNode.getChildNodes().getLength(); i++) {
+						Node currChildElement = formNode.getChildNodes().item(i);
+						for (int j = 0; j < currChildElement.getChildNodes().getLength(); j++) {
+							if (currChildElement.getChildNodes().item(j) != null
+							        && currChildElement.getChildNodes().item(j).hasAttributes()) {
+								NamedNodeMap namedNodeMap = currChildElement.getChildNodes().item(j).getAttributes();
+								
+								//if we have a value for the conceptId attribute as a concept map i.e the ':' separating source name and 
+								//the concept's code in the specified source
+								if (namedNodeMap.getNamedItem(XformBuilder.ATTRIBUTE_OPENMRS_CONCEPT) != null
+								        && namedNodeMap.getNamedItem(XformBuilder.ATTRIBUTE_OPENMRS_CONCEPT).getNodeValue()
+								                .indexOf(":") > -1) {
+									String sourceNameAndCode[] = StringUtils.split(
+									    namedNodeMap.getNamedItem(XformBuilder.ATTRIBUTE_OPENMRS_CONCEPT).getNodeValue(),
+									    ":");
+									Concept concept = Context.getConceptService().getConceptByMapping(sourceNameAndCode[1],
+									    sourceNameAndCode[0]);
+									
+									if (concept == null)
+										throw new APIException("Failed to find concept by mapping in source name:'"
+										        + sourceNameAndCode[0].trim() + "' and source code'"
+										        + sourceNameAndCode[1].trim() + "'");
+									
+									((Element) currChildElement.getChildNodes().item(j)).setAttribute(
+									    XformBuilder.ATTRIBUTE_OPENMRS_CONCEPT, concept.getConceptId().toString());
+									if (!foundMappings)
+										foundMappings = true;
+								}
+							}
+						}
+					}
+					
+					DOMSource domSource = new DOMSource(xmldoc);
+					StringWriter writer = new StringWriter();
+					StreamResult result = new StreamResult(writer);
+					TransformerFactory tf = TransformerFactory.newInstance();
+					Transformer transformer = tf.newTransformer();
+					transformer.transform(domSource, result);
+					if (foundMappings)
+						xml = writer.toString();
+					
 					Xform xform = new Xform();
 					xform.setFormId(formId);
 					xform.setXformXml(xml);
