@@ -644,6 +644,13 @@ public class XformsUtil {
                 return users.get(0).getUserId();*/
 	}
 	
+	/**
+	 * Gets the id of the person that a user represents.
+	 * 
+	 * @param user the user.
+	 * @return the personId.
+	 * @throws Exception
+	 */
 	public static Integer getPersonId(User user) throws Exception {
 		try{
 			return user.getPersonId();

@@ -203,6 +203,8 @@ public final class XformBuilder {
 	
 	public static final String ATTRIBUTE_VALUE = "value";
 	
+	public static final String ATTRIBUTE_CONCEPT_ID = "concept_id";
+	
 	public static final String XPATH_VALUE_TRUE = "true()";
 	
 	public static final String XPATH_VALUE_FALSE = "false()";
@@ -860,9 +862,9 @@ public final class XformBuilder {
 	 * @param controlNode - the UI control node.
 	 */
 	private static void populateProviders(Element controlNode) {
-		try {
+		try{
 			List<User> providers = Context.getUserService().getUsersByRole(new Role("Provider"));
-			for (User provider : providers) {
+			for(User provider : providers){
 				
 				Integer personId = XformsUtil.getPersonId(provider);
 				
@@ -871,9 +873,7 @@ public final class XformBuilder {
 				
 				Element node = itemNode.createElement(NAMESPACE_XFORMS, null);
 				node.setName(NODE_LABEL);
-				PersonName personName = provider.getPersonName(); //This may be null for some users that have not last and first names.
-				node.addChild(Element.TEXT, (personName != null ? personName.toString() : provider.getUsername()) + " ["
-				        + personId + "]");
+				node.addChild(Element.TEXT, getProviderName(provider, personId));
 				itemNode.addChild(Element.ELEMENT, node);
 				
 				node = itemNode.createElement(NAMESPACE_XFORMS, null);
@@ -884,7 +884,7 @@ public final class XformBuilder {
 				controlNode.addChild(Element.ELEMENT, itemNode);
 			}
 		}
-		catch (Exception ex) {
+		catch(Exception ex){
 			log.error("Failed to populate providers into the xform", ex);
 		}
 	}
@@ -902,7 +902,7 @@ public final class XformBuilder {
 			
 			Element node = itemNode.createElement(NAMESPACE_XFORMS, null);
 			node.setName(NODE_LABEL);
-			node.addChild(Element.TEXT, loc.getName() + " [" + loc.getLocationId() + "]");
+			node.addChild(Element.TEXT, getLocationName(loc));
 			itemNode.addChild(Element.ELEMENT, node);
 			
 			node = itemNode.createElement(NAMESPACE_XFORMS, null);
@@ -1511,8 +1511,13 @@ public final class XformBuilder {
 	 * @param node - the node having the concept name and id.
 	 */
 	private static void addLabelTextAndHint(Element labelNode, Element node) {
-		labelNode.addChild(Element.TEXT, getConceptName(node.getAttributeValue(null, ATTRIBUTE_FIXED)));
+		String fixedAttributeValue = node.getAttributeValue(null, ATTRIBUTE_FIXED);
+		labelNode.addChild(Element.TEXT , getConceptName(fixedAttributeValue));
 		
+		Element parentNode = (Element)labelNode.getParent();
+		if(parentNode.getName().contains(XformBuilder.CONTROL_SELECT))
+			parentNode.setAttribute(null, XformBuilder.ATTRIBUTE_CONCEPT_ID, getConceptId(fixedAttributeValue).toString());
+
 		String hint = getConceptDescription(node);
 		if (hint != null && hint.length() > 0) {
 			Element hintNode = /*bodyNode*/labelNode.createElement(NAMESPACE_XFORMS, null);
@@ -1584,7 +1589,7 @@ public final class XformBuilder {
 	 * @param val - the name and id combination.
 	 * @return - the cencept name.
 	 */
-	private static String getConceptName(String val) {
+	public static String getConceptName(String val) {
 		val = val.substring(val.indexOf('^') + 1, val.lastIndexOf('^'));
 		int pos = val.indexOf('^');
 		if (pos > 0)
@@ -1928,6 +1933,7 @@ public final class XformBuilder {
 		
 		Element itemNode = /*bodyNode*/controlNode.createElement(NAMESPACE_XFORMS, null);
 		itemNode.setName(NODE_ITEM);
+		itemNode.setAttribute(null, ATTRIBUTE_CONCEPT_ID, getConceptId(value).toString());
 		itemNode.addChild(Element.ELEMENT, itemLabelNode);
 		itemNode.addChild(Element.ELEMENT, itemValNode);
 		
@@ -2103,28 +2109,32 @@ public final class XformBuilder {
 	private static void addRestrictionEnumerations(Element restrictionNode, Element controlNode) {
 		Element itemValNode = null;
 		Element itemLabelNode = null;
-		for (int i = 0; i < restrictionNode.getChildCount(); i++) {
+		String valueText = null;
+		for(int i=0; i<restrictionNode.getChildCount(); i++){
 			//element nodes have the values. e.g. <xs:enumeration value="1360^RE TREATMENT^99DCT" /> 
-			if (restrictionNode.getType(i) == Element.ELEMENT) {
+			if(restrictionNode.getType(i) == Element.ELEMENT){
 				Element child = restrictionNode.getElement(i);
-				if (child.getName().equalsIgnoreCase(NODE_ENUMERATION)) {
+				if(child.getName().equalsIgnoreCase(NODE_ENUMERATION))
+				{
 					itemValNode = /*bodyNode*/controlNode.createElement(NAMESPACE_XFORMS, null);
-					itemValNode.setName(NODE_VALUE);
-					itemValNode.addChild(Element.TEXT, child.getAttributeValue(null, NODE_VALUE));
+					itemValNode.setName(NODE_VALUE);	
+					valueText = child.getAttributeValue(null, NODE_VALUE);
+					itemValNode.addChild(Element.TEXT, valueText);
 				}
 			}
 			
 			//Comments have the labels. e.g. <!--  RE TREATMENT --> 
-			if (restrictionNode.getType(i) == Element.COMMENT) {
+			if(restrictionNode.getType(i) == Element.COMMENT){
 				itemLabelNode = /*bodyNode*/controlNode.createElement(NAMESPACE_XFORMS, null);
-				itemLabelNode.setName(NODE_LABEL);
+				itemLabelNode.setName(NODE_LABEL);	
 				itemLabelNode.addChild(Element.TEXT, restrictionNode.getChild(i));
 			}
 			
 			//Check if both the labal and value are set. First loop sets value and second label.
-			if (itemLabelNode != null && itemValNode != null) {
+			if(itemLabelNode != null && itemValNode != null){
 				Element itemNode = controlNode.createElement(NAMESPACE_XFORMS, null);
 				itemNode.setName(NODE_ITEM);
+				itemNode.setAttribute(null, ATTRIBUTE_CONCEPT_ID, getConceptId(valueText).toString());
 				controlNode.addChild(Element.ELEMENT, itemNode);
 				
 				itemNode.addChild(Element.ELEMENT, itemLabelNode);
@@ -2756,6 +2766,7 @@ public final class XformBuilder {
 				
 				Element itemNode = controlNode.createElement(NAMESPACE_XFORMS, null);
 				itemNode.setName(NODE_ITEM);
+				itemNode.setAttribute(null, ATTRIBUTE_CONCEPT_ID, answerConcept.getConceptId().toString());
 				
 				Element node = itemNode.createElement(NAMESPACE_XFORMS, null);
 				node.setName(NODE_LABEL);
@@ -3039,5 +3050,27 @@ public final class XformBuilder {
 				index -= 1;
 			}
 		}
+	}
+	
+	/**
+	 * Gets the name of the location as displayed in xforms.
+	 * 
+	 * @param location the location object.
+	 * @return the location display text.
+	 */
+	public static String getLocationName(Location location){
+		return location.getName() + " [" + location.getLocationId() + "]";
+	}
+	
+	/**
+	 * Gets the name of the provider as it will be displayed in xforms.
+	 * 
+	 * @param provider the provider.
+	 * @param personId the id of the person this provider represents.
+	 * @return the display formatted provider name.
+	 */
+	public static String getProviderName(User provider, Integer personId){
+		PersonName personName = provider.getPersonName(); //This may be null for some users that have not last and first names.
+		return (personName != null ? personName.toString() : provider.getUsername())  + " [" + personId + "]";
 	}
 }

@@ -24,6 +24,21 @@
 		<point>org.openmrs.api.FormService</point>
 		<class>org.openmrs.module.xforms.aop.FormDeleteAfterAdvice</class>
 	</advice>
+	
+	<advice>
+		<point>org.openmrs.api.LocationService</point>
+		<class>org.openmrs.module.xforms.aop.XformsLocationAdvisor</class>
+	</advice>
+	
+	<advice>
+		<point>org.openmrs.api.UserService</point>
+		<class>org.openmrs.module.xforms.aop.XformsProviderAdvisor</class>
+	</advice>
+	
+	<advice>
+		<point>org.openmrs.api.ConceptService</point>
+		<class>org.openmrs.module.xforms.aop.XformsConceptAdvisor</class>
+	</advice>
 
 	<!-- Required Global Properties -->
 	<globalProperty>
@@ -74,7 +89,7 @@
 	<globalProperty>
 		<property>@MODULE_ID@.searchNewPatientAfterFormSubmission</property>
 		<defaultValue>true</defaultValue>
-		<description>Set to true if you want to search for a new patient after submiting a form, else set to false if you want to go back to the same patient.</description>
+		<description>Set to true if you want to search for a new patient after submitting a form, else set to false if you want to go back to the same patient.</description>
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.multiSelectAppearance</property>
