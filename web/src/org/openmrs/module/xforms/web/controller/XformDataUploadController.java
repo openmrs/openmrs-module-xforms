@@ -39,6 +39,8 @@ import com.jcraft.jzlib.ZOutputStream;
 
 /**
  * Provides XForm data upload services from the web interface.
+ * Encounter form filling or editing of form obs data from the web interface submit data
+ * through this controller.
  * 
  * @author Daniel
  *

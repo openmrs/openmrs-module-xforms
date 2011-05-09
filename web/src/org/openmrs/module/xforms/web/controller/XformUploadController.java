@@ -43,7 +43,9 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 /**
- * Provides XForms upload services.
+ * Provides XForms upload services. 
+ * For instance when the form designer makes changes to an xform
+ * and wants to save it back to the database, it goes through this controller.
  * 
  * @author Daniel
  */
