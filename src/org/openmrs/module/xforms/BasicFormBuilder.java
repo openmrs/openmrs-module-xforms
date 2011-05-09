@@ -177,7 +177,7 @@ public class BasicFormBuilder {
 		return formField;
 	}
 	
-	private static String getFormXslt(){
+	public static String getFormXslt(){
 		
 		try{
 			StringBuffer fileData = new StringBuffer(1000);
