@@ -781,6 +781,11 @@ public final class XformBuilder {
 				
 			String name = child.getName();
 			
+			if(name.equals("patient_relationship")){
+				RelationshipBuilder.build(modelElement, bodyNode, child);
+				continue;
+			}
+			
 			//If the node has an openmrs_concept attribute but is not called obs,
 			//Or has the openmrs_attribite and openmrs_table attributes. 
 			if ((child.getAttributeValue(null, ATTRIBUTE_OPENMRS_CONCEPT) != null && !child.getName().equals(NODE_OBS))
@@ -925,7 +930,7 @@ public final class XformBuilder {
 	private static Element createBindNode(Element modelElement, Element node, Hashtable bindings,
 	                                      Hashtable<String, String> problemList, Hashtable<String, String> problemListItems) {
 		Element bindNode = modelElement.createElement(NAMESPACE_XFORMS, null);
-		bindNode.setName(ATTRIBUTE_BIND);
+		bindNode.setName(NODE_BIND);
 		bindNode.setAttribute(null, ATTRIBUTE_ID, node.getName());
 		
 		String name = node.getName();
@@ -1250,6 +1255,10 @@ public final class XformBuilder {
 	                                     Hashtable bindings, Hashtable<String, String> problemList,
 	                                     Hashtable<String, String> problemListItems,
 	                                     Hashtable<String, Element> repeatControls, Element modelNode) {
+		
+		if(name.equals("patient_relationship_section") || name.equals("relative_section"))
+			return;
+		
 		name = getBindNodeName(name);
 		if (name == null)
 			return;

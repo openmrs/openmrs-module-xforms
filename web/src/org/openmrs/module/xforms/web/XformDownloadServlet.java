@@ -37,6 +37,7 @@ import org.openmrs.User;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
+import org.openmrs.module.xforms.RelationshipBuilder;
 import org.openmrs.module.xforms.Xform;
 import org.openmrs.module.xforms.XformBuilder;
 import org.openmrs.module.xforms.XformConstants;
@@ -405,7 +406,9 @@ public class XformDownloadServlet extends HttpServlet {
 				patientParam += "&"+XformConstants.REQUEST_PARAM_PATIENT_SEARCH_PHRASE+"=" + phrase;
 
 			//XformBuilder.setPatientTableFieldValues(form.getFormId(),doc.getRootElement(), patient, xformsService);
-			XformBuilder.setPatientFieldValues(patient,form,doc.getRootElement(), xformsService);
+			XformBuilder.setPatientFieldValues(patient, form, doc.getRootElement(), xformsService);
+			
+			RelationshipBuilder.fillRelationships(patient, doc.getRootElement());
 		}
 
 		//clear any previously stored form session data
