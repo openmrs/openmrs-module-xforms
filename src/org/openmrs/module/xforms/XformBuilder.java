@@ -29,6 +29,7 @@ import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptSource;
 import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
@@ -44,6 +45,7 @@ import org.openmrs.module.xforms.formentry.FormEntryWrapper;
 import org.openmrs.module.xforms.util.XformsUtil;
 import org.openmrs.reporting.export.DataExportUtil.VelocityExceptionHandler;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
+import org.openmrs.util.OpenmrsUtil;
 import org.xmlpull.v1.XmlPullParser;
 
 //TODO This class is too big. May need breaking into smaller ones.
@@ -700,18 +702,32 @@ public final class XformBuilder {
 	 */
 	private static void addConceptMapAttributes(Element element, String conceptValueString) {
 		String[] tokens = StringUtils.split(conceptValueString, "^");
+		ConceptService cs = Context.getConceptService();
 		try {
-			ConceptService cs = Context.getConceptService();
 			Concept concept = cs.getConcept(Integer.valueOf(tokens[0].trim()));
+			ConceptSource preferredSource = null;
+			String prefSourceName = Context.getAdministrationService().getGlobalProperty(
+			    XformConstants.GLOBAL_PROP_KEY_PREFERRED_CONCEPT_SOURCE);
+			if (StringUtils.isNotBlank(prefSourceName))
+				preferredSource = cs.getConceptSourceByName(prefSourceName);
+			
 			if (concept.getConceptMappings().size() > 0) {
-				//Would be nice to first look in the widely used concept sources like SNOMED to find a mapping for wide usage,
-				//Or even more so let the user set a preferred concept source when creating a form
+				//if there a preferred concept source, use the concept mapping to that source
+				if (preferredSource != null) {
+					for (ConceptMap map : concept.getConceptMappings()) {
+						if (OpenmrsUtil.nullSafeEquals(preferredSource, map.getSource())) {
+							element.setAttribute(null, ATTRIBUTE_OPENMRS_CONCEPT,
+							    map.getSource().getName() + ":" + map.getSourceCode());
+							return;
+						}
+					}
+				}
+				
 				ConceptMap map = concept.getConceptMappings().iterator().next();
 				element.setAttribute(null, ATTRIBUTE_OPENMRS_CONCEPT, map.getSource().getName() + ":" + map.getSourceCode());
 			}
 		}
 		catch (NumberFormatException e) {
-			//Ooops!! Sincerely, why wouldn't the concept id be a number?
 			log.warn(e.getMessage());
 		}
 	}
@@ -781,7 +797,7 @@ public final class XformBuilder {
 				
 			String name = child.getName();
 			
-			if(name.equals("patient_relationship")){
+			if (name.equals("patient_relationship")) {
 				RelationshipBuilder.build(modelElement, bodyNode, child);
 				continue;
 			}
@@ -867,9 +883,9 @@ public final class XformBuilder {
 	 * @param controlNode - the UI control node.
 	 */
 	private static void populateProviders(Element controlNode) {
-		try{
+		try {
 			List<User> providers = Context.getUserService().getUsersByRole(new Role("Provider"));
-			for(User provider : providers){
+			for (User provider : providers) {
 				
 				Integer personId = XformsUtil.getPersonId(provider);
 				
@@ -889,7 +905,7 @@ public final class XformBuilder {
 				controlNode.addChild(Element.ELEMENT, itemNode);
 			}
 		}
-		catch(Exception ex){
+		catch (Exception ex) {
 			log.error("Failed to populate providers into the xform", ex);
 		}
 	}
@@ -1256,7 +1272,7 @@ public final class XformBuilder {
 	                                     Hashtable<String, String> problemListItems,
 	                                     Hashtable<String, Element> repeatControls, Element modelNode) {
 		
-		if(name.equals("patient_relationship_section") || name.equals("relative_section"))
+		if (name.equals("patient_relationship_section") || name.equals("relative_section"))
 			return;
 		
 		name = getBindNodeName(name);
@@ -1521,12 +1537,12 @@ public final class XformBuilder {
 	 */
 	private static void addLabelTextAndHint(Element labelNode, Element node) {
 		String fixedAttributeValue = node.getAttributeValue(null, ATTRIBUTE_FIXED);
-		labelNode.addChild(Element.TEXT , getConceptName(fixedAttributeValue));
+		labelNode.addChild(Element.TEXT, getConceptName(fixedAttributeValue));
 		
-		Element parentNode = (Element)labelNode.getParent();
-		if(parentNode.getName().contains(XformBuilder.CONTROL_SELECT))
+		Element parentNode = (Element) labelNode.getParent();
+		if (parentNode.getName().contains(XformBuilder.CONTROL_SELECT))
 			parentNode.setAttribute(null, XformBuilder.ATTRIBUTE_CONCEPT_ID, getConceptId(fixedAttributeValue).toString());
-
+		
 		String hint = getConceptDescription(node);
 		if (hint != null && hint.length() > 0) {
 			Element hintNode = /*bodyNode*/labelNode.createElement(NAMESPACE_XFORMS, null);
@@ -2119,28 +2135,27 @@ public final class XformBuilder {
 		Element itemValNode = null;
 		Element itemLabelNode = null;
 		String valueText = null;
-		for(int i=0; i<restrictionNode.getChildCount(); i++){
+		for (int i = 0; i < restrictionNode.getChildCount(); i++) {
 			//element nodes have the values. e.g. <xs:enumeration value="1360^RE TREATMENT^99DCT" /> 
-			if(restrictionNode.getType(i) == Element.ELEMENT){
+			if (restrictionNode.getType(i) == Element.ELEMENT) {
 				Element child = restrictionNode.getElement(i);
-				if(child.getName().equalsIgnoreCase(NODE_ENUMERATION))
-				{
+				if (child.getName().equalsIgnoreCase(NODE_ENUMERATION)) {
 					itemValNode = /*bodyNode*/controlNode.createElement(NAMESPACE_XFORMS, null);
-					itemValNode.setName(NODE_VALUE);	
+					itemValNode.setName(NODE_VALUE);
 					valueText = child.getAttributeValue(null, NODE_VALUE);
 					itemValNode.addChild(Element.TEXT, valueText);
 				}
 			}
 			
 			//Comments have the labels. e.g. <!--  RE TREATMENT --> 
-			if(restrictionNode.getType(i) == Element.COMMENT){
+			if (restrictionNode.getType(i) == Element.COMMENT) {
 				itemLabelNode = /*bodyNode*/controlNode.createElement(NAMESPACE_XFORMS, null);
-				itemLabelNode.setName(NODE_LABEL);	
+				itemLabelNode.setName(NODE_LABEL);
 				itemLabelNode.addChild(Element.TEXT, restrictionNode.getChild(i));
 			}
 			
 			//Check if both the labal and value are set. First loop sets value and second label.
-			if(itemLabelNode != null && itemValNode != null){
+			if (itemLabelNode != null && itemValNode != null) {
 				Element itemNode = controlNode.createElement(NAMESPACE_XFORMS, null);
 				itemNode.setName(NODE_ITEM);
 				itemNode.setAttribute(null, ATTRIBUTE_CONCEPT_ID, getConceptId(valueText).toString());
@@ -3067,7 +3082,7 @@ public final class XformBuilder {
 	 * @param location the location object.
 	 * @return the location display text.
 	 */
-	public static String getLocationName(Location location){
+	public static String getLocationName(Location location) {
 		return location.getName() + " [" + location.getLocationId() + "]";
 	}
 	
@@ -3078,8 +3093,8 @@ public final class XformBuilder {
 	 * @param personId the id of the person this provider represents.
 	 * @return the display formatted provider name.
 	 */
-	public static String getProviderName(User provider, Integer personId){
+	public static String getProviderName(User provider, Integer personId) {
 		PersonName personName = provider.getPersonName(); //This may be null for some users that have not last and first names.
-		return (personName != null ? personName.toString() : provider.getUsername())  + " [" + personId + "]";
+		return (personName != null ? personName.toString() : provider.getUsername()) + " [" + personId + "]";
 	}
 }

@@ -292,6 +292,12 @@
 		<description>Set to true if you want the idgen module to generate patient identifiers when creating new patients using the xforms module.</description>
 	</globalProperty>
 	
+	<globalProperty>
+		<property>@MODULE_ID@.preferredConceptSource</property>
+		<defaultValue></defaultValue>
+		<description>The name for preferred concept source to be used for forms that can be shared with other OpenMRS installations.</description>
+	</globalProperty>
+	
 	<!-- /Required Global Properties -->
 
 	<!-- /Xforms Module Properties -->

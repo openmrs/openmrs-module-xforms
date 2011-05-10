@@ -201,6 +201,8 @@ public class XformConstants {
 
 	public static final String GLOBAL_PROP_KEY_USE_ENCOUNTER_XFORM = "xforms.useEncounterXform";
 	
+	public static final String GLOBAL_PROP_KEY_PREFERRED_CONCEPT_SOURCE = "xforms.preferredConceptSource";
+	
 	/** The default value for the user serializer class.*/
 	public static final String DEFAULT_USER_SERIALIZER= "org.openmrs.module.xforms.DefaultUserSerializer";
 	
@@ -340,6 +342,11 @@ public class XformConstants {
 	public static final String PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR = " PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR ";
 
 	public static final String HEADER_PURCFORMS_ERROR_MESSAGE = "PURCFORMS-ERROR-MESSAGE";
+	
+	/**
+	 * Used in hl7: 123^concept name^99DCT
+	 */
+	public static final String HL7_LOCAL_CONCEPT = "99DCT";
 	
 	public static final String REQUEST_ATTRIBUTE_ID_ERROR_MESSAGE = "ERROR_MESSAGE";
 	

@@ -171,54 +171,6 @@ public class XformUploadController extends SimpleFormController {
 					XformsService xformsService = (XformsService) Context.getService(XformsService.class);
 					String xml = IOUtils.toString(xformFile.getInputStream(), XformConstants.DEFAULT_CHARACTER_ENCODING);
 					
-					boolean foundMappings = false;
-					//find concept values that are mappings and replace them witha actual conceptIds
-					DocumentBuilder docReader = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-					Document xmldoc = docReader.parse(new InputSource(new StringReader(xml)));
-					NodeList nodeList = xmldoc.getElementsByTagName(XformBuilder.NODE_FORM);
-					Node formNode = nodeList.item(0);
-					//find all conceptId attributes in the document and replace their value with the original conceptId
-					for (int i = 0; i < formNode.getChildNodes().getLength(); i++) {
-						Node currChildElement = formNode.getChildNodes().item(i);
-						for (int j = 0; j < currChildElement.getChildNodes().getLength(); j++) {
-							if (currChildElement.getChildNodes().item(j) != null
-							        && currChildElement.getChildNodes().item(j).hasAttributes()) {
-								NamedNodeMap namedNodeMap = currChildElement.getChildNodes().item(j).getAttributes();
-								
-								//if we have a value for the conceptId attribute as a concept map i.e the ':' separating source name and 
-								//the concept's code in the specified source
-								if (namedNodeMap.getNamedItem(XformBuilder.ATTRIBUTE_OPENMRS_CONCEPT) != null
-								        && namedNodeMap.getNamedItem(XformBuilder.ATTRIBUTE_OPENMRS_CONCEPT).getNodeValue()
-								                .indexOf(":") > -1) {
-									String sourceNameAndCode[] = StringUtils.split(
-									    namedNodeMap.getNamedItem(XformBuilder.ATTRIBUTE_OPENMRS_CONCEPT).getNodeValue(),
-									    ":");
-									Concept concept = Context.getConceptService().getConceptByMapping(sourceNameAndCode[1],
-									    sourceNameAndCode[0]);
-									
-									if (concept == null)
-										throw new APIException("Failed to find concept by mapping in source name:'"
-										        + sourceNameAndCode[0].trim() + "' and source code'"
-										        + sourceNameAndCode[1].trim() + "'");
-									
-									((Element) currChildElement.getChildNodes().item(j)).setAttribute(
-									    XformBuilder.ATTRIBUTE_OPENMRS_CONCEPT, concept.getConceptId().toString());
-									if (!foundMappings)
-										foundMappings = true;
-								}
-							}
-						}
-					}
-					
-					DOMSource domSource = new DOMSource(xmldoc);
-					StringWriter writer = new StringWriter();
-					StreamResult result = new StreamResult(writer);
-					TransformerFactory tf = TransformerFactory.newInstance();
-					Transformer transformer = tf.newTransformer();
-					transformer.transform(domSource, result);
-					if (foundMappings)
-						xml = writer.toString();
-					
 					Xform xform = new Xform();
 					xform.setFormId(formId);
 					xform.setXformXml(xml);
