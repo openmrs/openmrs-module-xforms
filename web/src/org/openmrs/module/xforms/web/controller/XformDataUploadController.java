@@ -11,16 +11,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kxml2.kdom.Document;
-import org.kxml2.kdom.Element;
-import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
-import org.openmrs.api.APIException;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.XformBuilder;
@@ -41,9 +37,8 @@ import com.jcraft.jzlib.ZOutputStream;
 //TODO This class is to be deleted as it functionality is now done by XformDataUploadServlet
 
 /**
- * Provides XForm data upload services from the web interface.
- * Encounter form filling or editing of form obs data from the web interface submit data
- * through this controller.
+ * Provides XForm data upload services from the web interface. Encounter form filling or editing of
+ * form obs data from the web interface submit data through this controller.
  * 
  * @author Daniel
  */
@@ -127,36 +122,8 @@ public class XformDataUploadController extends SimpleFormController {
 	}
 	
 	private void processXformEdit(HttpServletRequest request, String xml) throws Exception {
+		xml = XformsUtil.replaceConceptMaps(xml);
 		Document doc = XformBuilder.getDocument(xml);
-		//replace concept maps with ids
-		for (int i = 0; i < doc.getRootElement().getChildCount(); i++) {
-			Element childElement = doc.getRootElement().getElement(i);
-			if (childElement != null) {
-				for (int j = 0; j < childElement.getChildCount(); j++) {
-					if (childElement.getElement(j) != null) {
-						Element grandChildElement = childElement.getElement(j);
-						String value = grandChildElement.getAttributeValue(null, XformBuilder.ATTRIBUTE_OPENMRS_CONCEPT);
-						if (StringUtils.isNotBlank(value) && value.indexOf(":") > 0) {
-							String sourceNameAndCode[] = StringUtils.split(value, ":");
-							Concept concept = Context.getConceptService().getConceptByMapping(sourceNameAndCode[1],
-							    sourceNameAndCode[0]);
-							
-							if (concept == null)
-								throw new APIException("Failed to find concept by mapping in source name:'"
-								        + sourceNameAndCode[0].trim() + "' and source code'" + sourceNameAndCode[1].trim()
-								        + "'");
-							
-							grandChildElement.setAttribute(null, XformBuilder.ATTRIBUTE_OPENMRS_CONCEPT, concept
-							        .getConceptId().toString()
-							        + "^"
-							        + concept.getName()
-							        + "^"
-							        + XformConstants.HL7_LOCAL_CONCEPT);
-						}
-					}
-				}
-			}
-		}
 		if (XformPatientEdit.isPatientElement(doc.getRootElement())) {
 			Patient patient = XformPatientEdit.getEditedPatient(doc.getRootElement());
 			Context.getPatientService().savePatient(patient);

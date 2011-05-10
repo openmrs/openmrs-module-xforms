@@ -15,11 +15,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Concept;
-import org.openmrs.api.APIException;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.Xform;
@@ -34,8 +31,6 @@ import org.openmrs.util.FormUtil;
 import org.openmrs.util.OpenmrsUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
@@ -89,41 +84,8 @@ public class XformDataUploadManager {
 	public static void processXform(String xml, String sessionId, String enterer, boolean propagateErrors,
 	                                HttpServletRequest request) throws Exception {
 		DocumentBuilder db = dbf.newDocumentBuilder();
+		xml = XformsUtil.replaceConceptMaps(xml);
 		Document doc = db.parse(IOUtils.toInputStream(xml, XformConstants.DEFAULT_CHARACTER_ENCODING));
-		
-		//find concept values that are mappings and replace them with actual conceptIds
-		NodeList nodeList = doc.getElementsByTagName(XformBuilder.NODE_FORM);
-		Node formNode = nodeList.item(0);
-		//find all conceptId attributes in the document and replace their value with the original conceptId
-		for (int i = 0; i < formNode.getChildNodes().getLength(); i++) {
-			Node currChildElement = formNode.getChildNodes().item(i);
-			for (int j = 0; j < currChildElement.getChildNodes().getLength(); j++) {
-				if (currChildElement.getChildNodes().item(j) != null
-				        && currChildElement.getChildNodes().item(j).hasAttributes()) {
-					NamedNodeMap namedNodeMap = currChildElement.getChildNodes().item(j).getAttributes();
-					
-					//if we have a value for the conceptId attribute as a concept map i.e the ':' separating source name and 
-					//the concept's code in the specified source
-					if (namedNodeMap.getNamedItem(XformBuilder.ATTRIBUTE_OPENMRS_CONCEPT) != null
-					        && namedNodeMap.getNamedItem(XformBuilder.ATTRIBUTE_OPENMRS_CONCEPT).getNodeValue().indexOf(":") > -1) {
-						String sourceNameAndCode[] = StringUtils.split(
-						    namedNodeMap.getNamedItem(XformBuilder.ATTRIBUTE_OPENMRS_CONCEPT).getNodeValue(), ":");
-						Concept concept = Context.getConceptService().getConceptByMapping(sourceNameAndCode[1],
-						    sourceNameAndCode[0]);
-						
-						if (concept == null)
-							throw new APIException("Failed to find concept by mapping in source name:'"
-							        + sourceNameAndCode[0].trim() + "' and source code'" + sourceNameAndCode[1].trim() + "'");
-						
-						((Element) currChildElement.getChildNodes().item(j)).setAttribute(
-						    XformBuilder.ATTRIBUTE_OPENMRS_CONCEPT,
-						    concept.getConceptId().toString() + "^" + concept.getName() + "^"
-						            + XformConstants.HL7_LOCAL_CONCEPT);
-					}
-				}
-			}
-		}
-		
 		setHeaderValues(doc, sessionId, enterer);
 		queueForm(XformsUtil.doc2String(doc), propagateErrors, request);
 	}

@@ -677,15 +677,20 @@ public final class XformBuilder {
 		    problemListItems);
 		
 		//find all conceptId attributes in the document and replace their value with a mapped concept
-		for (int i = 0; i < formNode.getChildCount(); i++) {
-			Element childElement = formNode.getElement(i);
-			if (childElement != null) {
-				for (int j = 0; j < childElement.getChildCount(); j++) {
-					if (childElement.getElement(j) != null) {
-						Element grandChildElement = childElement.getElement(j);
-						String value = grandChildElement.getAttributeValue(null, ATTRIBUTE_OPENMRS_CONCEPT);
-						if (StringUtils.isNotBlank(value))
-							addConceptMapAttributes(grandChildElement, value);
+		String prefSourceName = Context.getAdministrationService().getGlobalProperty(
+		    XformConstants.GLOBAL_PROP_KEY_PREFERRED_CONCEPT_SOURCE);
+		//we only use the mappings if the global property is set
+		if (StringUtils.isNotBlank(prefSourceName)) {
+			for (int i = 0; i < formNode.getChildCount(); i++) {
+				Element childElement = formNode.getElement(i);
+				if (childElement != null) {
+					for (int j = 0; j < childElement.getChildCount(); j++) {
+						if (childElement.getElement(j) != null) {
+							Element grandChildElement = childElement.getElement(j);
+							String value = grandChildElement.getAttributeValue(null, ATTRIBUTE_OPENMRS_CONCEPT);
+							if (StringUtils.isNotBlank(value))
+								addConceptMapAttributes(grandChildElement, value);
+						}
 					}
 				}
 			}
@@ -708,23 +713,19 @@ public final class XformBuilder {
 			ConceptSource preferredSource = null;
 			String prefSourceName = Context.getAdministrationService().getGlobalProperty(
 			    XformConstants.GLOBAL_PROP_KEY_PREFERRED_CONCEPT_SOURCE);
-			if (StringUtils.isNotBlank(prefSourceName))
+			if (StringUtils.isNotBlank(prefSourceName)) {
 				preferredSource = cs.getConceptSourceByName(prefSourceName);
-			
-			if (concept.getConceptMappings().size() > 0) {
-				//if there a preferred concept source, use the concept mapping to that source
-				if (preferredSource != null) {
-					for (ConceptMap map : concept.getConceptMappings()) {
-						if (OpenmrsUtil.nullSafeEquals(preferredSource, map.getSource())) {
-							element.setAttribute(null, ATTRIBUTE_OPENMRS_CONCEPT,
-							    map.getSource().getName() + ":" + map.getSourceCode());
-							return;
+				if (concept.getConceptMappings().size() > 0) {
+					if (preferredSource != null) {
+						for (ConceptMap map : concept.getConceptMappings()) {
+							if (OpenmrsUtil.nullSafeEquals(preferredSource, map.getSource())) {
+								element.setAttribute(null, ATTRIBUTE_OPENMRS_CONCEPT,
+								    map.getSource().getName() + ":" + map.getSourceCode());
+								return;
+							}
 						}
 					}
 				}
-				
-				ConceptMap map = concept.getConceptMappings().iterator().next();
-				element.setAttribute(null, ATTRIBUTE_OPENMRS_CONCEPT, map.getSource().getName() + ":" + map.getSourceCode());
 			}
 		}
 		catch (NumberFormatException e) {
