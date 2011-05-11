@@ -11,7 +11,6 @@ import org.openmrs.module.web.extension.AdministrationSectionExt;
  * Adds Xform utility links to the administration page.
  * 
  * @author Daniel
- *
  */
 public class XformsAdminExt extends AdministrationSectionExt {
 	
@@ -20,10 +19,8 @@ public class XformsAdminExt extends AdministrationSectionExt {
 	}
 	
 	/**
-	 * Returns the required privilege in order to see this section.  Can be a 
-	 * comma delimited list of privileges.  
-	 * If the default empty string is returned, only an authenticated 
-	 * user is required
+	 * Returns the required privilege in order to see this section. Can be a comma delimited list of
+	 * privileges. If the default empty string is returned, only an authenticated user is required
 	 * 
 	 * @return Privilege string
 	 */
@@ -38,14 +35,12 @@ public class XformsAdminExt extends AdministrationSectionExt {
 	public Map<String, String> getLinks() {
 		Map<String, String> map = new HashMap<String, String>();
 		
-		if("true".equals(Context.getAdministrationService().getGlobalProperty("xforms.showOfflineFormDesigner", "false")))
+		if ("true".equals(Context.getAdministrationService().getGlobalProperty("xforms.showOfflineFormDesigner", "false")))
 			map.put("module/xforms/xformDesigner.form", "xforms.designer");
 		
 		map.put("module/xforms/xformDesigner.form?formId=0", "xforms.designPatientXform");
 		map.put("module/xforms/medicalHistoryFields.form?formId=-1", "xforms.medicalHistoryFields");
-		
-		//TODO Very very buggy as it clears all global properties.
-		//map.put("module/xforms/xformProperties.form", "xforms properties");
+		map.put("module/xforms/xformProperties.htm", "xforms.manageXFormProperties");
 		
 		return map;
 	}
