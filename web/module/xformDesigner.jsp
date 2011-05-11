@@ -12,6 +12,9 @@
     
     <openmrs:htmlInclude file="/openmrs.js" />
     <openmrs:htmlInclude file="/moduleResources/xforms/formdesigner/FormDesigner.nocache.js"/>
+    
+    <link rel="shortcut icon" type="image/ico" href="/openmrs/images/openmrs-favicon.ico">
+	<link rel="icon" type="image/png" href="/openmrs/images/openmrs-favicon.png">
 		
   </head>
   <body>
@@ -113,8 +116,6 @@
     <div id="undoRedoBufferSize" style="visibility:hidden;">${undoRedoBufferSize}</div>
     
     <div id="searchConcepts" style="height:0px;width:"><openmrs_tag:conceptField formFieldName="conceptId" searchLabel="Search Concept" initialValue="" /></div>
-    
-    
     
     
     
