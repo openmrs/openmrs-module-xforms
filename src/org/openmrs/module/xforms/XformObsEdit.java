@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -735,21 +734,3 @@ public class XformObsEdit {
 		}
 	}
 }
-
-
-//String s = "";
-//if(formNode != null)
-//	s = "NOT NULL";
-//else
-//	s = "NULL";
-//for(Obs obs : observations){
-//	Concept concept = obs.getConcept();
-//	s+=":" + FormUtil.conceptToString(concept, Context.getLocale());
-//	s+="+++" + FormUtil.getXmlToken(concept.getDisplayString());
-//	s+="=" + obs.getValueAsString(Context.getLocale());
-//
-//	ConceptDatatype dataType = concept.getDatatype();
-//	s += " & " + FormUtil.getXmlToken(obs.getValueAsString(Context.getLocale()));
-//	if(dataType.isCoded())
-//		s += " !! " + FormUtil.conceptToString(obs.getValueCoded(), Context.getLocale());
-//

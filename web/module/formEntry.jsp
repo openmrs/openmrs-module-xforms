@@ -94,7 +94,6 @@
 
 <div id="searchConcepts" style="height:0px;width:0px;"><openmrs_tag:conceptField formFieldName="conceptId" searchLabel="Search Concept" initialValue="" /></div>
 
-
 <script language="javascript">
 	var PurcformsText = {
 	    	file: "<spring:message code="xforms.file" />",
@@ -187,6 +186,8 @@
 	    	isNotInList: "<spring:message code="xforms.isNotInList" />",
 	    	startsWith: "<spring:message code="xforms.startsWith" />",
 	    	doesNotStartWith: "<spring:message code="xforms.doesNotStartWith" />",
+	    	endsWith: "<spring:message code="xforms.endsWith" />",
+	    	doesNotEndWith: "<spring:message code="xforms.doesNotEndWith" />",
 	    	contains: "<spring:message code="xforms.contains" />",
 	    	doesNotContain: "<spring:message code="xforms.doesNotContain" />",
 	    	isBetween: "<spring:message code="xforms.isBetween" />",
@@ -376,6 +377,7 @@
        		calculation: "<spring:message code="xforms.calculation" />",
        		id: "<spring:message code="xforms.id" />",
        		formKey: "<spring:message code="xforms.formKey" />",
+       		logo: "<spring:message code="xforms.logo" />",
        		filterField: "<spring:message code="xforms.filterField" />"
 	};
 

@@ -471,6 +471,9 @@ public final class XformBuilder {
 	 * @param value - the value to set.
 	 */
 	public static void setNodeValue(Element node, String value) {
+		if(value == null)
+			value = "";
+		
 		for (int i = 0; i < node.getChildCount(); i++) {
 			if (node.isText(i)) {
 				node.removeChild(i);

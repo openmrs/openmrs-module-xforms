@@ -4,18 +4,14 @@
 <script type="text/javascript" src='${pageContext.request.contextPath}/dwr/util.js'></script>
 <script type="text/javascript" src='${pageContext.request.contextPath}/dwr/interface/DWRXformsService.js'></script>
 
-
-
 <html>
   <head>
     <title>OpenMRS XForms Designer</title>
     
     <openmrs:htmlInclude file="/openmrs.js" />
     <openmrs:htmlInclude file="/moduleResources/xforms/formdesigner/FormDesigner.nocache.js"/>
-    
-    <link rel="shortcut icon" type="image/ico" href="/openmrs/images/openmrs-favicon.ico">
-	<link rel="icon" type="image/png" href="/openmrs/images/openmrs-favicon.png">
-		
+
+
   </head>
   <body>
   
@@ -118,14 +114,8 @@
     <div id="searchConcepts" style="height:0px;width:"><openmrs_tag:conceptField formFieldName="conceptId" searchLabel="Search Concept" initialValue="" /></div>
     
     
-    
-    <!--   <div id="searchProvider"><openmrs_tag:userField formFieldName="joe" roles="System Developer;" /></div> -->
-    
-    
-    
-    
-    
    <script language="javascript">
+		
     	var PurcformsText = {
      	    	file: "<spring:message code="xforms.file" />",
     	    	view: "<spring:message code="xforms.view" />",
@@ -217,6 +207,8 @@
     	    	isNotInList: "<spring:message code="xforms.isNotInList" />",
     	    	startsWith: "<spring:message code="xforms.startsWith" />",
     	    	doesNotStartWith: "<spring:message code="xforms.doesNotStartWith" />",
+    	    	endsWith: "<spring:message code="xforms.endsWith" />",
+    	    	doesNotEndWith: "<spring:message code="xforms.doesNotEndWith" />",
     	    	contains: "<spring:message code="xforms.contains" />",
     	    	doesNotContain: "<spring:message code="xforms.doesNotContain" />",
     	    	isBetween: "<spring:message code="xforms.isBetween" />",
@@ -406,6 +398,7 @@
            		calculation: "<spring:message code="xforms.calculation" />",
            		id: "<spring:message code="xforms.id" />",
            		formKey: "<spring:message code="xforms.formKey" />",
+           		logo: "<spring:message code="xforms.logo" />",
            		filterField: "<spring:message code="xforms.filterField" />"
     	};
 
@@ -446,37 +439,96 @@
       	}
 
     	function searchExternal(key,value,parentElement,textElement,valueElement,filterField){
-    		var searchWidget = dojo.widget.manager.getWidgetById("conceptId_search");
-    		searchWidget.includeClasses = (filterField == null ? [] : filterField.split(","));
-    		
-    		var selectionWidget = dojo.widget.manager.getWidgetById("conceptId_selection");
-    		
-     		selectionWidget.displayNode = textElement;
-
-    		selectionWidget.hiddenInputNode = valueElement;
-    		
-    		searchWidget.clearSearch();
-    		searchWidget.toggleShowing();
-
-
-    		var left = dojo.style.totalOffsetLeft(parentElement.parentNode, false) + dojo.style.getBorderBoxWidth(parentElement.parentNode) + 10;
-    		if (left + dojo.style.getBorderBoxWidth(searchWidget.domNode) > dojo.html.getViewportWidth())
-    			left = dojo.html.getViewportWidth() - dojo.style.getBorderBoxWidth(searchWidget.domNode) - 10 + dojo.html.getScrollLeft();
-    		
-    		var top = dojo.style.totalOffsetTop(parentElement.parentNode, true);
-    		var scrollTop = dojo.html.getScrollTop();
-    		var boxHeight = dojo.style.getBorderBoxHeight(searchWidget.domNode);
-    		var viewportHeight = dojo.html.getViewportHeight();
-    		if ((top + boxHeight - scrollTop) > viewportHeight - 5)
-    			top = viewportHeight - boxHeight + scrollTop - 10;
-    	
-    		dojo.style.setPositivePixelValue(searchWidget.domNode, "top", top);
-
-    		dojo.style.setPositivePixelValue(searchWidget.domNode, "left", left);
-    		
-    		searchWidget.inputNode.select();
-    		searchWidget.inputNode.value = value;
+    		if (typeof(dojo) != "undefined"){
+	    		var searchWidget = dojo.widget.manager.getWidgetById("conceptId_search");
+	    		searchWidget.includeClasses = (filterField == null ? [] : filterField.split(","));
+	    		
+	    		var selectionWidget = dojo.widget.manager.getWidgetById("conceptId_selection");
+	    		
+	     		selectionWidget.displayNode = textElement;
+	
+	    		selectionWidget.hiddenInputNode = valueElement;
+	    		
+	    		searchWidget.clearSearch();
+	    		searchWidget.toggleShowing();
+	
+	
+	    		var left = dojo.style.totalOffsetLeft(parentElement.parentNode, false) + dojo.style.getBorderBoxWidth(parentElement.parentNode) + 10;
+	    		if (left + dojo.style.getBorderBoxWidth(searchWidget.domNode) > dojo.html.getViewportWidth())
+	    			left = dojo.html.getViewportWidth() - dojo.style.getBorderBoxWidth(searchWidget.domNode) - 10 + dojo.html.getScrollLeft();
+	    		
+	    		var top = dojo.style.totalOffsetTop(parentElement.parentNode, true);
+	    		var scrollTop = dojo.html.getScrollTop();
+	    		var boxHeight = dojo.style.getBorderBoxHeight(searchWidget.domNode);
+	    		var viewportHeight = dojo.html.getViewportHeight();
+	    		if ((top + boxHeight - scrollTop) > viewportHeight - 5)
+	    			top = viewportHeight - boxHeight + scrollTop - 10;
+	    	
+	    		dojo.style.setPositivePixelValue(searchWidget.domNode, "top", top);
+	
+	    		dojo.style.setPositivePixelValue(searchWidget.domNode, "left", left);
+	    		
+	    		searchWidget.inputNode.select();
+	    		searchWidget.inputNode.value = value;
+    		}
+    		else{
+    			valElement = valueElement;
+    			txtElement = textElement;
+    			
+    			if(txtConcept == null){
+    				txtConcept = document.getElementById("conceptId_selection");
+    				txtConcept.parentNode.removeChild(txtConcept);
+    				
+    				blurEventHandler = txtConcept.onblur;
+    				
+    				txtConcept.onblur=function(){
+    					//alert('yo men')
+    					var parent = txtConcept.parentNode;
+    		    		parent.removeChild(txtConcept);
+    		    		parent.appendChild(valElement);
+    		    		
+    		    		txtConcept.onblur = blurEventHandler;
+    		    		txtConcept.onblur();
+    					};
+    			}
+    			else{
+    				valElement.value = '';
+    	    		txtElement.innerHTML = '';
+    			}
+    			
+    			txtConcept.style.height = valueElement.parentNode.parentNode.parentNode.parentNode.style.height;
+    			txtConcept.style.width = valueElement.parentNode.parentNode.parentNode.parentNode.style.width;
+    			
+    			var parent = valueElement.parentNode;
+    			parent.removeChild(valueElement);
+    			
+    			//valueElement.style.visibility="hidden";
+    			//valueElement.style.height = "0px";
+    			//valueElement.style.width = "0px";
+    			
+    			parent.appendChild(txtConcept);
+    			txtConcept.value = value;
+    			txtConcept.focus();
+    		}
     	}
+    	
+    	function funcconceptIdAutoCompleteOnSelect(concept, item) {	
+    		valElement.value = concept.name;
+    		txtElement.innerHTML = concept.conceptId + "^" + concept.name + "^99DCT";
+    		
+    		var parent = txtConcept.parentNode;
+    		parent.removeChild(txtConcept);
+    		parent.appendChild(valElement);
+    		
+    		//valElement.style.visibility="visible";
+    		//valElement.style.height = txtConcept.style.height;
+    		//valElement.style.width = txtConcept.style.width;
+    		
+    		valElement.focus();
+    		
+    		alert(item);
+    	}
+
 
     	function getQuestionBinding(id, pos){
 			  return null;

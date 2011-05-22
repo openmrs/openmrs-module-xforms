@@ -132,12 +132,12 @@ public class RelationshipBuilder {
 			if (++index > 1)
 				patientRelationShipNode = XformBuilder.createCopy(patientRelationShipNode, new ArrayList<String>());
 			
-			String relative = relationship.getPersonA().getPersonName().toString();
+			String relative = relationship.getPersonA().getPersonName().toString() + " - " + getPatientIdentifier(relationship.getPersonA());
 			String sSelationship = relationship.getRelationshipType().getaIsToB();
 			sSelationship += " (" + getShortName(patient) + " is " + relationship.getRelationshipType().getbIsToA() + ")";
 			
 			if(getPersonId(patient) == relationship.getPersonA().getPersonId()){
-				relative = relationship.getPersonB().getPersonName().toString();
+				relative = relationship.getPersonB().getPersonName().toString() + " - " + getPatientIdentifier(relationship.getPersonB());
 				sSelationship = relationship.getRelationshipType().getbIsToA();
 				sSelationship += " (" + getShortName(patient) + " is " + relationship.getRelationshipType().getaIsToB() + ")";
 			}
@@ -162,5 +162,13 @@ public class RelationshipBuilder {
 			return patient.getGivenName();
 		
 		return patient.getFamilyName();
+	}
+	
+	private static String getPatientIdentifier(Person person) throws Exception {
+		Patient patient = Context.getPatientService().getPatient(person.getPersonId());
+		if(getPersonId(patient) == person.getPersonId())
+			return patient.getPatientIdentifier().getIdentifier();
+		
+		return "";
 	}
 }
