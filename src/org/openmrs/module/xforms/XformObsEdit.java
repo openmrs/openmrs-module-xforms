@@ -368,9 +368,12 @@ public class XformObsEdit {
 		}
 		
 		String submitString = XformBuilder.getNodeValue(formNode, XformBuilder.NODE_ENCOUNTER_ENCOUNTER_DATETIME);
-		Date date = XformsUtil.fromSubmitString2Date(submitString);
+		Date date = null;
 		if(XformsUtil.encounterDateIncludesTime())
 			date = XformsUtil.fromSubmitString2DateTime(submitString);
+		else
+			date = XformsUtil.fromSubmitString2Date(submitString);
+		
 		encounter.setEncounterDatetime(date);
 	}
 
