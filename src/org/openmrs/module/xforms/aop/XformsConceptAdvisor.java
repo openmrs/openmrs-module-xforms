@@ -44,9 +44,17 @@ public class XformsConceptAdvisor implements AfterReturningAdvice {
 		if (method.getName().equals("saveConcept")) {
 			
 			Concept concept = (Concept) args[0];
-			if (!concept.getDatatype().isCoded())
-				return; //We only deal with coded concepts.
+			if (!concept.getDatatype().isCoded()){
 				
+				String newName = concept.getName().getName();
+				String oldName = Context.getService(XformsService.class).getConceptName(concept.getConceptId(), Context.getLocale().getLanguage());
+				if(!newName.equals(oldName)){
+					refreshConceptName(concept, newName, oldName);
+				}
+				
+				return; //For the rest, we only deal with coded concepts.
+			}
+			
 			String conceptId = concept.getConceptId().toString();
 			
 			XformsService xformsService = Context.getService(XformsService.class);
@@ -62,7 +70,7 @@ public class XformsConceptAdvisor implements AfterReturningAdvice {
 				
 				//Get all xf:select1 nodes in the xforms document.
 				NodeList elements = doc.getDocumentElement().getElementsByTagName(
-				    XformBuilder.PREFIX_XFORMS + ":" + XformBuilder.CONTROL_SELECT1);
+					XformBuilder.PREFIX_XFORMS + ":" + XformBuilder.CONTROL_SELECT1);
 				
 				//Look for the node which has a concept_id attribute value of conceptId
 				for (int index = 0; index < elements.getLength(); index++) {
@@ -125,6 +133,14 @@ public class XformsConceptAdvisor implements AfterReturningAdvice {
 			}
 		}
 		
+		//Update name if changed.
+		String newName = concept.getName().getName();
+		String oldName = Context.getService(XformsService.class).getConceptName(concept.getConceptId(), Context.getLocale().getLanguage());
+		if(!newName.equals(oldName)){
+			refreshConceptName(concept, newName, oldName, conceptSelect1Element);
+			xformModified = true;
+		}
+		
 		//Only save if there are changes to the xforms document.
 		if (xformModified) {
 			xform.setXformXml(XformsUtil.doc2String(doc));
@@ -176,5 +192,69 @@ public class XformsConceptAdvisor implements AfterReturningAdvice {
 		itemNode.appendChild(node);
 		
 		conceptSelect1Element.appendChild(itemNode);
+	}
+	
+	
+	private void refreshConceptName(Concept concept, String newName, String oldName) throws Exception {
+		XformsService xformsService = Context.getService(XformsService.class);
+		List<Xform> xforms = xformsService.getXforms();
+		if (xforms == null)
+			return;
+		
+		String sConceptId = concept.getId().toString();
+		
+		//Loop through the xforms refreshing one by one
+		for (Xform xform : xforms) {
+			
+			String xml = xform.getXformXml();
+			Document doc = XformsUtil.fromString2Doc(xml);
+			
+			//Get all xf:item nodes in the xforms document.
+			NodeList elements = doc.getDocumentElement().getElementsByTagName(
+				XformBuilder.PREFIX_XFORMS + ":" + "item");
+			
+			boolean xformModified = false;
+			
+			//Look for the node which has a concept_id attribute value of conceptId
+			for (int index = 0; index < elements.getLength(); index++) {
+				Element element = (Element) elements.item(index);
+				
+				if (sConceptId.equalsIgnoreCase(element.getAttribute(XformBuilder.ATTRIBUTE_CONCEPT_ID))) {
+					boolean ret = refreshConceptName(concept, newName, oldName, element);
+					if(ret){
+						xformModified = true;
+					}
+				}
+			}
+			
+			if (xformModified) {
+				xform.setXformXml(XformsUtil.doc2String(doc));
+				xformsService.saveXform(xform);
+			}
+		}
+	}
+	
+	private boolean refreshConceptName(Concept concept, String newName, String oldName, Element parentElement){
+		NodeList elements = parentElement.getElementsByTagName(XformBuilder.PREFIX_XFORMS + ":" + "label");
+		if(elements.getLength() > 0) {
+			Element labelElement = (Element) elements.item(0); //We deal with only the first label node.
+			
+			//Assuming label element for the select1 node comes first.
+			if (oldName.equals(labelElement.getTextContent())){
+				labelElement.setTextContent(newName);
+				setItemValueText(parentElement, StringEscapeUtils.escapeXml(FormUtil.conceptToString(concept, Context.getLocale())));
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	private void setItemValueText(Element parentElement, String valueText){
+		NodeList elements = parentElement.getElementsByTagName(XformBuilder.PREFIX_XFORMS + ":" + "value");
+		if(elements.getLength() > 0) {
+			Element valueElement = (Element) elements.item(0);
+			valueElement.setTextContent(valueText);
+		}
 	}
 }

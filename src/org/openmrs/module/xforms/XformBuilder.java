@@ -1590,7 +1590,14 @@ public final class XformBuilder {
 	 * @return - the id
 	 */
 	private static Integer getConceptId(String conceptName) {
-		return Integer.parseInt(conceptName.substring(0, conceptName.indexOf("^")));
+		try{
+			return Integer.parseInt(conceptName.substring(0, conceptName.indexOf("^")));
+		}
+		catch(Exception ex){
+			ex.printStackTrace();
+		}
+		
+		return null;
 	}
 	
 	/**

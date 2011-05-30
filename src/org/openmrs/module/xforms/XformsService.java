@@ -1,11 +1,10 @@
 package org.openmrs.module.xforms;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.openmrs.Form;
 import org.openmrs.GlobalProperty;
-import org.openmrs.Person;
-import org.openmrs.User;
 import org.openmrs.module.xforms.db.XformsDAO;
 import org.openmrs.module.xforms.formentry.FormEntryError;
 import org.openmrs.module.xforms.model.PatientMedicalHistory;
@@ -208,4 +207,32 @@ public interface XformsService {
 	 * @param formEntryError to save to the db
 	 */
 	public void createFormEntryError(FormEntryError formEntryError);
+	
+	/**
+	 * Gets the name of a location with a given id.
+	 * 
+	 * @param locationId the location id.
+	 * @return the location name.
+	 */
+	@Transactional(readOnly=true)
+	public String getLocationName(Integer locationId);
+	
+	/**
+	 * Gets the name of a person with a given id.
+	 * 
+	 * @param personId the person id.
+	 * @return the person name.
+	 */
+	@Transactional(readOnly=true)
+	public String getPersonName(Integer personId);
+	
+	/**
+	 * Gets the name of a concept with a given id.
+	 * 
+	 * @param conceptId the concept id.
+	 * @param localeKey the locale key.
+	 * @return the concept name.
+	 */
+	@Transactional(readOnly=true)
+	public String getConceptName(Integer conceptId, String localeKey);
 }

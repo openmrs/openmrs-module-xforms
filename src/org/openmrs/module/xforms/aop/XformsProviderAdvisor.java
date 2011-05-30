@@ -72,7 +72,13 @@ public class XformsProviderAdvisor extends StaticMethodMatcherPointcutAdvisor im
 			
 			if (!isNewUser) {
 				//TODO If name has changed, is there an easy way of getting the old value before saving to database?
-				oldName = XformBuilder.getProviderName(user, XformsUtil.getPersonId(user));
+				//oldName = XformBuilder.getProviderName(user, XformsUtil.getPersonId(user));
+				Integer personId = XformsUtil.getPersonId(user);
+				oldName = Context.getService(XformsService.class).getPersonName(personId);
+				if(oldName != null)
+					oldName += " [" + personId + "]";
+				else
+					oldName = XformBuilder.getProviderName(user, personId);
 			}
 			
 			Object o = invocation.proceed();

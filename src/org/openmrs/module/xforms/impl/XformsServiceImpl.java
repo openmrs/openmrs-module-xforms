@@ -232,4 +232,16 @@ public class XformsServiceImpl implements XformsService {
 	public List<Object[]> getXformsList(){
 		return getXformsDAO().getXformsList();
 	}
+	
+	public String getLocationName(Integer locationId){
+		return getXformsDAO().getLocationName(locationId);
+	}
+	
+	public String getPersonName(Integer personId){
+		return getXformsDAO().getPersonName(personId);
+	}
+	
+	public String getConceptName(Integer conceptId, String localeKey){
+		return getXformsDAO().getConceptName(conceptId, localeKey);
+	}
 }

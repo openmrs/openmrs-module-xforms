@@ -25,6 +25,7 @@ import org.openmrs.module.xforms.model.MedicalHistoryValue;
 import org.openmrs.module.xforms.model.PatientMedicalHistory;
 import org.openmrs.module.xforms.model.PersonRepeatAttribute;
 import org.openmrs.module.xforms.model.XformUser;
+import org.springframework.util.StringUtils;
 
 /**
  * Provides the hibernate data access services for the Xforms module.
@@ -34,16 +35,16 @@ import org.openmrs.module.xforms.model.XformUser;
  */
 public class HibernateXformsDAO implements XformsDAO {
 	protected final Log log = LogFactory.getLog(getClass());
-
+	
 	/**
 	 * Hibernate session factories
 	 */
 	private SessionFactory sessionFactory;
-
+	
 	public HibernateXformsDAO() {
-
+		
 	}
-
+	
 	/**
 	 * Set session factory
 	 * 
@@ -52,7 +53,7 @@ public class HibernateXformsDAO implements XformsDAO {
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-
+	
 	/**
 	 * @see org.openmrs.module.xforms.XformsService#getXform(java.lang.Integer)
 	 */
@@ -63,7 +64,7 @@ public class HibernateXformsDAO implements XformsDAO {
 		
 		return (Xform) query.uniqueResult();
 	}
-
+	
 	/**
 	 * @see org.openmrs.module.xforms.XformsService#getXforms()
 	 */
@@ -71,7 +72,7 @@ public class HibernateXformsDAO implements XformsDAO {
 	public List<Xform> getXforms() {
 		return sessionFactory.getCurrentSession().createQuery("from Xform").list();
 	}
-
+	
 	/**
 	 * @see org.openmrs.module.xforms.XformsService#saveXform(org.openmrs.module.xforms.Xform)
 	 */
@@ -81,7 +82,7 @@ public class HibernateXformsDAO implements XformsDAO {
 		//Context.evictFromSession(xform);
 		sessionFactory.getCurrentSession().save(xform);
 	}
-
+	
 	/**
 	 * @see org.openmrs.module.xforms.XformsService#deleteXform(java.lang.Integer)
 	 */
@@ -89,10 +90,10 @@ public class HibernateXformsDAO implements XformsDAO {
 		Query query = sessionFactory.getCurrentSession().createQuery(
 		"delete from Xform where formId = :formId");
 		query.setParameter("formId", formId);
-
+		
 		query.executeUpdate();
 	}
-
+	
 	/**
 	 * @see org.openmrs.module.xforms.XformsService#deleteXslt(java.lang.Integer)
 	 */
@@ -100,15 +101,15 @@ public class HibernateXformsDAO implements XformsDAO {
 		Query query = sessionFactory.getCurrentSession().createQuery(
 		"update Xform set xslt = null where formId = :formId");
 		query.setParameter("formId", formId);
-
+		
 		query.executeUpdate();
 	}
-
+	
 	/**
 	 * @see org.openmrs.module.xforms.XformsService#getPatientValue(java.lang.Integer,java.lang.String,java.lang.String,java.lang.String)
 	 */
 	public Object getPatientValue(Integer patientId, String tableName,
-			String columnName, String filterValue) {
+	                              String columnName, String filterValue) {
 		
 		if(tableName.equals("patient")){
 			if(columnName.equals("birthdate")||columnName.equals("birthdate_estimated")||columnName.equals("gender"))
@@ -143,63 +144,63 @@ public class HibernateXformsDAO implements XformsDAO {
 			.uniqueResult();
 		} catch (Exception e) {
 			log.error("Could not get value for field:[" + columnName
-					+ "] table:[" + tableName + "] SQL=" + sql
-					+ " ErrorDetails=" + e.getMessage(), /*e*/null);
+				+ "] table:[" + tableName + "] SQL=" + sql
+				+ " ErrorDetails=" + e.getMessage(), /*e*/null);
 		}
-
+		
 		return null;
 	}
-
+	
 	/**
 	 * @see org.openmrs.module.xforms.XformsService#getUsers()
 	 */
 	public List<XformUser> getUsers() {
 		List<XformUser> users = new ArrayList<XformUser>();
-
+		
 		String sql = "select user_id,system_id,username,password,salt from users " +
-					"where password is not null and salt is not null and " +
-					"not (username is null and system_id is null)";
-
+		"where password is not null and salt is not null and " +
+		"not (username is null and system_id is null)";
+		
 		try {
 			PreparedStatement st = sessionFactory.getCurrentSession()
 			.connection().prepareStatement(sql);
 			ResultSet res = st.executeQuery();
-
+			
 			while (res.next())
 				users.add(new XformUser(res.getInt("user_id"), res.getString("system_id"),
-						res.getString("username"),res.getString("password"), res.getString("salt")));
-
+					res.getString("username"),res.getString("password"), res.getString("salt")));
+			
 			return users;
 		} catch (SQLException e) {
 			log.error(e.getMessage(),e);
 		}
-
+		
 		return null;
 	}
-
+	
 	public List<Integer> getXformFormIds() {
 		List<Integer> formIds = new ArrayList<Integer>();
-
+		
 		String sql = "select form_id from xforms_xform where form_id in (select form_id from form) and form_id<>"
 			+ XformConstants.PATIENT_XFORM_FORM_ID;
-
+		
 		try {
 			PreparedStatement st = sessionFactory.getCurrentSession()
 			.connection().prepareStatement(sql);
 			ResultSet res = st.executeQuery();
-
+			
 			while (res.next())
 				formIds.add(res.getInt("form_id"));
-
+			
 			return formIds;
 		} catch (SQLException e) {
 			log.error(e.getMessage(),e);
 		}
-
+		
 		return null;
-
+		
 	}
-
+	
 	/**
 	 * @see org.openmrs.module.xforms.XformsService#hasXform(java.lang.Integer)
 	 */
@@ -208,7 +209,7 @@ public class HibernateXformsDAO implements XformsDAO {
 		return sessionFactory.getCurrentSession().createSQLQuery(sql)
 		.uniqueResult() != null;
 	}
-
+	
 	/**
 	 * @see org.openmrs.module.xforms.XformsService#hasXslt(java.lang.Integer)
 	 */
@@ -218,7 +219,7 @@ public class HibernateXformsDAO implements XformsDAO {
 		return sessionFactory.getCurrentSession().createSQLQuery(sql)
 		.uniqueResult() != null;
 	}
-
+	
 	/**
 	 * @see org.openmrs.module.xforms.XformsService#getXslt(java.lang.Integer)
 	 */
@@ -233,10 +234,10 @@ public class HibernateXformsDAO implements XformsDAO {
 		} catch (SQLException e) {
 			log.error(e.getMessage(),e);
 		}
-
+		
 		return null;
 	}
-
+	
 	/**
 	 * @see org.openmrs.module.xforms.XformsService#saveXslt(java.lang.Integer,java.lang.String)
 	 */
@@ -245,10 +246,10 @@ public class HibernateXformsDAO implements XformsDAO {
 		"update xforms_xform set xslt = :xslt where form_id = :formId");
 		query.setParameter("xslt", xslt);
 		query.setParameter("formId", formId);
-
+		
 		query.executeUpdate();
 	}
-
+	
 	/**
 	 * @see org.openmrs.module.xforms.XformsService#getFieldDefaultValue(java.lang.Integer,java.lang.String)
 	 */
@@ -268,26 +269,26 @@ public class HibernateXformsDAO implements XformsDAO {
 
 		return null;
 	}*/
-
+	
 	public List<PersonRepeatAttribute> getPersonRepeatAttributes(Integer personId, Integer personAttributeId){
 		Query query = sessionFactory.getCurrentSession().createQuery(
-				"from PersonRepeatAttributes where personId=:personId "+
+			"from PersonRepeatAttributes where personId=:personId "+
 		"and attributeTypeId=:attributeTypeId");
-
+		
 		query.setParameter("personId", personId);
 		query.setParameter("attributeTypeId", personAttributeId);
-
+		
 		return query.list();
 	}
-
+	
 	public void savePersonRepeatAttribute(PersonRepeatAttribute personRepeatAttribute){
 		sessionFactory.getCurrentSession().save(personRepeatAttribute);
 	}
-
+	
 	public void deletePersonRepeatAttribute(Integer personRepeatAttributeId){
 		sessionFactory.getCurrentSession().delete(personRepeatAttributeId);
 	}
-
+	
 	public List<Object[]> getList(String sql, String displayField, String valueField){
 		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
 		
@@ -380,32 +381,32 @@ public class HibernateXformsDAO implements XformsDAO {
 	
 	
 	public PatientMedicalHistory getPatientMedicalHistory(Integer patientId){
-
+		
 		String sql = "select * from (select mhf.tabIndex,mhf.name, " +
-			"value_group_id, " +
-			"value_boolean, " +
-			"value_drug, " +
-			"value_datetime, " +
-			"value_numeric, " +
-			"value_text, " +
-			"e.encounter_datetime " +
-			"from encounter e " +
-			"inner join obs o on o.encounter_id = e.encounter_id " +
-			"inner join xforms_medical_history_field mhf on mhf.field_id=o.concept_id " +
-			"and o.person_id = e.patient_id " +
-			"where e.patient_id = " + patientId + " " +
-			"and value_coded is null and o.voided = 0 " +
-			"UNION " +
-			"select mhf.tabIndex, mhf.name, null, null, null, null, null, cn.name, e.encounter_datetime " +
-			"from encounter e " +
-			"inner join obs o on o.encounter_id = e.encounter_id " +
-			"inner join concept_name cn on cn.concept_id=o.value_coded " +
-			"inner join xforms_medical_history_field mhf on mhf.field_id=o.concept_id " +
-			"and o.person_id = e.patient_id " +
-			"where e.patient_id = " + patientId + " " +
-			"and value_coded is not null and o.voided = 0 ) as t " +
-			"order by tabIndex,name,encounter_datetime";
-
+		"value_group_id, " +
+		"value_boolean, " +
+		"value_drug, " +
+		"value_datetime, " +
+		"value_numeric, " +
+		"value_text, " +
+		"e.encounter_datetime " +
+		"from encounter e " +
+		"inner join obs o on o.encounter_id = e.encounter_id " +
+		"inner join xforms_medical_history_field mhf on mhf.field_id=o.concept_id " +
+		"and o.person_id = e.patient_id " +
+		"where e.patient_id = " + patientId + " " +
+		"and value_coded is null and o.voided = 0 " +
+		"UNION " +
+		"select mhf.tabIndex, mhf.name, null, null, null, null, null, cn.name, e.encounter_datetime " +
+		"from encounter e " +
+		"inner join obs o on o.encounter_id = e.encounter_id " +
+		"inner join concept_name cn on cn.concept_id=o.value_coded " +
+		"inner join xforms_medical_history_field mhf on mhf.field_id=o.concept_id " +
+		"and o.person_id = e.patient_id " +
+		"where e.patient_id = " + patientId + " " +
+		"and value_coded is not null and o.voided = 0 ) as t " +
+		"order by tabIndex,name,encounter_datetime";
+		
 		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
 		query.addScalar("name", Hibernate.STRING);
 		//query.addScalar("value", Hibernate.STRING);
@@ -419,11 +420,11 @@ public class HibernateXformsDAO implements XformsDAO {
 		query.addScalar("value_text", Hibernate.STRING);
 		
 		query.addScalar("encounter_datetime", Hibernate.DATE);
-
+		
 		List<Object[]> list = query.list();
 		if(list == null || list.size() == 0)
 			return null;
-
+		
 		PatientMedicalHistory history = new PatientMedicalHistory();
 		MedicalHistoryFieldData field = null;
 		String prevName = null;
@@ -469,17 +470,17 @@ public class HibernateXformsDAO implements XformsDAO {
 			
 			field.addValue(mhv /*new MedicalHistoryValue((String)item[1],(Date)item[2])*/);
 		}
-
+		
 		history.setPatientId(patientId);
-
+		
 		return history;
 	}
 	
 	
 	public String getFieldDefaultValue(Integer formId, String fieldName){
 		String sql = "select distinct default_value from form_field ff inner join field f " +
-					"where ff.field_id=f.field_id " +
-					"and ff.form_id=" + formId + " and name = '" + fieldName + "'";
+		"where ff.field_id=f.field_id " +
+		"and ff.form_id=" + formId + " and name = '" + fieldName + "'";
 		
 		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
 		query.addScalar("default_value", Hibernate.STRING);
@@ -490,7 +491,7 @@ public class HibernateXformsDAO implements XformsDAO {
 	public void createFormEntryError(FormEntryError formEntryError) throws DAOException {
 		sessionFactory.getCurrentSession().save(formEntryError);
 	}
-
+	
 	public List<GlobalProperty> getXFormsGlobalProperties() {
 		String sql = "select * from global_property gp where gp.property like 'xforms%'";
 		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
@@ -500,12 +501,105 @@ public class HibernateXformsDAO implements XformsDAO {
 	
 	public List<Object[]> getXformsList(){
 		String sql = "select f.form_id, f.name from xforms_xform xf inner join form f " +
-					 "on xf.form_id=f.form_id where f.retired=0 ";
+		"on xf.form_id=f.form_id where f.retired=0 ";
 		
 		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
 		query.addScalar("form_id", Hibernate.INTEGER);
 		query.addScalar("name", Hibernate.STRING);
 		
 		return query.list();
+	}
+	
+	public String getLocationName(Integer locationId){
+		String sql = "select name from location where retired = 0 and location_id=" + locationId;
+		return (String)sessionFactory.getCurrentSession().createSQLQuery(sql).uniqueResult(); 
+	}
+	
+	public String getPersonName(Integer personId){
+		try{
+			String sql = "select given_name, middle_name, family_name, preferred from person_name where voided = 0 and person_id=" + personId;
+			
+			PreparedStatement st = sessionFactory.getCurrentSession().connection().prepareStatement(sql);
+			ResultSet res = st.executeQuery();
+			
+			String name = null;
+			
+			while (res.next()){
+				
+				//If we already have a name, overwrite it only with a preferred one.
+				if(name != null){
+					if(res.getInt("preferred") != 1)
+						continue;
+					else
+						name = null;
+				}
+				
+				String givenName = res.getString("given_name");
+				String middleName = res.getString("middle_name");
+				String familyName = res.getString("family_name");
+				
+				if (StringUtils.hasText(givenName))
+					name = givenName;
+				
+				if (StringUtils.hasText(middleName)){
+					if(name == null)
+						name = givenName;
+					else
+						name += " " + givenName;
+				}
+				
+				if (StringUtils.hasText(familyName)){
+					if(name == null)
+						name = familyName;
+					else
+						name += " " + familyName;
+				}
+				
+				if(res.getInt("preferred") == 1)
+					break;
+			}
+			
+			return name;
+		}
+		catch(SQLException ex){
+			ex.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	public String getConceptName(Integer conceptId, String localeKey){
+		try{
+			String sql = "select name from concept_name where concept_id=" + conceptId + " and locale='" + localeKey + "' and voided = 0";
+						
+			PreparedStatement st = sessionFactory.getCurrentSession().connection().prepareStatement(sql);
+			ResultSet res = st.executeQuery();
+			
+			String name = null;
+			
+			while (res.next()){
+				
+				//TODO Older versions, which we still support, do not have the locale_preferred column.
+				//If we already have a name, overwrite it only with a preferred one.
+				/*if(name != null){
+					if(res.getInt("locale_preferred") != 1)
+						continue;
+					else
+						name = null;
+				}*/
+				
+				name = res.getString("name");
+				
+				/*if(res.getInt("locale_preferred") == 1)*/
+					break;
+			}
+			
+			return name;
+		}
+		catch(SQLException ex){
+			ex.printStackTrace();
+		}
+		
+		return null;
 	}
 }

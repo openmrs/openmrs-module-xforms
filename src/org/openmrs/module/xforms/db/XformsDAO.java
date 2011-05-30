@@ -11,6 +11,7 @@ import org.openmrs.module.xforms.formentry.FormEntryError;
 import org.openmrs.module.xforms.model.PatientMedicalHistory;
 import org.openmrs.module.xforms.model.PersonRepeatAttribute;
 import org.openmrs.module.xforms.model.XformUser;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Provides data access services to the Xforms module.
@@ -104,4 +105,8 @@ public interface XformsDAO {
 	public List<GlobalProperty> getXFormsGlobalProperties();
 	
 	public List<Object[]> getXformsList();
+	
+	public String getLocationName(Integer locationId);
+	public String getPersonName(Integer personId);
+	public String getConceptName(Integer conceptId, String localeKey);
 }

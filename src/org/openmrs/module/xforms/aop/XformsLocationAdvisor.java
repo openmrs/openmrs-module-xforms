@@ -67,7 +67,12 @@ public class XformsLocationAdvisor extends StaticMethodMatcherPointcutAdvisor im
 			
 			if (!isNewLocation) {
 				//TODO If name has changed, is there an easy way of getting the old value before saving to database?
-				oldName = XformBuilder.getLocationName(location);
+				//oldName = XformBuilder.getLocationName(location);
+				oldName = Context.getService(XformsService.class).getLocationName(location.getLocationId());
+				if(oldName !=  null)
+					oldName += " [" + location.getLocationId() + "]";
+				else
+					oldName = XformBuilder.getLocationName(location);
 			}
 			
 			Object o = invocation.proceed();
