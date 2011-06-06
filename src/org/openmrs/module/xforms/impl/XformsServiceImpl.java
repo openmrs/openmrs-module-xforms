@@ -155,7 +155,7 @@ public class XformsServiceImpl implements XformsService {
     /**
      * @see org.openmrs.module.xforms.XformsService#getXform(java.lang.Integer,java.lang.boolean)
      */
-    public Xform getXform(Integer formId, boolean createNewIfNonExistant) {
+    public Xform getXform(Integer formId, boolean createNewIfNonExistant) throws Exception {
         Xform xform = getXformsDAO().getXform(formId);
 
         if (xform == null && createNewIfNonExistant)
@@ -167,21 +167,13 @@ public class XformsServiceImpl implements XformsService {
     /**
      * @see org.openmrs.module.xforms.XformsService#getNewXform(java.lang.Integer)
      */
-    public Xform getNewXform(Integer formId) {
+    public Xform getNewXform(Integer formId) throws Exception {
         FormService formService = (FormService) Context.getService(FormService.class);
         Form form = formService.getForm(formId);
         String schemaXml = XformsUtil.getSchema(form);
         String templateXml = FormEntryWrapper.getFormTemplate(form); // new
                                                                         // FormXmlTemplateBuilder(form,FormEntryUtil.getFormAbsoluteUrl(form)).getXmlTemplate(false);
-        
-        try{
-        	return new Xform(formId, XformBuilder.getXform4mStrings(schemaXml,templateXml));
-        }
-        catch(Exception ex){
-        	log.error(ex.getMessage(),ex);
-        }
-        
-        return null;
+        return new Xform(formId, XformBuilder.getXform4mStrings(schemaXml,templateXml));
     }
     
 	public List<PersonRepeatAttribute> getPersonRepeatAttributes(Integer personId, Integer personAttributeId){

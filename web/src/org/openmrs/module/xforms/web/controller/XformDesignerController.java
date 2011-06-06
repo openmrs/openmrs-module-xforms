@@ -79,6 +79,7 @@ public class XformDesignerController extends SimpleFormController {
 		map.put("showJavaScriptTab", Context.getAdministrationService().getGlobalProperty("xforms.showJavaScriptTab","false"));
 		map.put("saveFormat", Context.getAdministrationService().getGlobalProperty("xforms.saveFormat","purcforms"));
 		map.put("undoRedoBufferSize", Context.getAdministrationService().getGlobalProperty("xforms.undoRedoBufferSize","100"));
+		map.put("overwriteValidationsOnRefresh", Context.getAdministrationService().getGlobalProperty("xforms.overwriteValidationsOnRefresh","false"));
 
 		String url = request.getRequestURI();
 		url = url.substring(0, url.indexOf("module/xforms/xformDesigner.form"));

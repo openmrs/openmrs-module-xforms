@@ -172,7 +172,7 @@ public interface XformsService {
 	 * @return XForm associated with the form
 	 */
 	@Transactional(readOnly=true)
-	public Xform getXform(Integer formId, boolean createNewIfNonExistant);
+	public Xform getXform(Integer formId, boolean createNewIfNonExistant) throws Exception;
 	
 	/**
 	 * Gets a new XForm for the given form. This Xform is created on the fly basing on
@@ -183,7 +183,7 @@ public interface XformsService {
 	 * @return XForm associated with the form
 	 */
 	@Transactional(readOnly=true)
-	public Xform getNewXform(Integer formId);
+	public Xform getNewXform(Integer formId) throws Exception;
 	
 	public List<GlobalProperty> getXFormsGlobalProperties();
 	

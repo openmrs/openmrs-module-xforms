@@ -111,6 +111,8 @@
         
     <div id="undoRedoBufferSize" style="visibility:hidden;">${undoRedoBufferSize}</div>
     
+    <div id="overwriteValidationsOnRefresh" style="visibility:hidden;">${overwriteValidationsOnRefresh}</div>
+    
     <div id="searchConcepts" style="height:0px;width:"><openmrs_tag:conceptField formFieldName="conceptId" searchLabel="Search Concept" initialValue="" /></div>
     
     

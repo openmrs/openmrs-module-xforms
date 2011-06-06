@@ -67,7 +67,7 @@ public class FormSchemaFragment {
 				+ form.getFormId()
 				+ "\" use=\"required\" />\n"
 				+ "    <xs:attribute name=\"name\" type=\"xs:string\" fixed=\""
-				+ form.getName()
+				+ StringEscapeUtils.escapeXml(form.getName())
 				+ "\" use=\"required\" />\n"
 				+ "    <xs:attribute name=\"version\" type=\"xs:string\" fixed=\""
 				+ form.getVersion() + "\" use=\"required\" />\n"

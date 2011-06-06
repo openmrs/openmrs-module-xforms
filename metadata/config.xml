@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>xforms</id>
 	<name>XForms</name>
-	<version>4.0.3.1</version>
+	<version>4.0.4</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Daniel Kayiwa</author>
 	<description>
@@ -296,6 +296,12 @@
 		<property>@MODULE_ID@.preferredConceptSource</property>
 		<defaultValue></defaultValue>
 		<description>The name for preferred concept source to be used for forms that can be shared with other OpenMRS installations.</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>@MODULE_ID@.overwriteValidationsOnRefresh</property>
+		<defaultValue>false</defaultValue>
+		<description>Set to true if, on refresh, you want custom validations to be replaced by those from the database concepts.</description>
 	</globalProperty>
 	
 	<!-- /Required Global Properties -->

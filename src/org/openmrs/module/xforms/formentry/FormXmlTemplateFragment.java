@@ -2,6 +2,7 @@ package org.openmrs.module.xforms.formentry;
 
 import java.io.UnsupportedEncodingException;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Form;
@@ -33,7 +34,7 @@ public class FormXmlTemplateFragment {
 		return "<form id=\""
 				+ form.getFormId()
 				+ "\" name=\""
-				+ form.getName()
+				+ StringEscapeUtils.escapeXml(form.getName())
 				+ "\" "
 				+ "version=\""
 				+ form.getVersion()

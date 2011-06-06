@@ -25,7 +25,7 @@ public class DWRXformsService {
 
 	protected final Log log = LogFactory.getLog(getClass());
 
-	public String getXform(String formId){
+	public String getXform(String formId) throws Exception {
 		Xform xform = null;
 
 		//only fill the objects if the user has authenticated properly
