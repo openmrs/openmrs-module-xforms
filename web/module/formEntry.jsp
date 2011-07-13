@@ -76,6 +76,7 @@
 <div id="entityFormDefDownloadUrlSuffix" style="visibility:hidden;">${entityFormDefDownloadUrlSuffix}</div>
 <div id="formDataUploadUrlSuffix" style="visibility:hidden;">${formDataUploadUrlSuffix}</div>
 <div id="afterSubmitUrlSuffix" style="visibility:hidden;">${afterSubmitUrlSuffix}</div>
+<div id="afterCancelUrlSuffix" style="visibility:hidden;">${afterCancelUrlSuffix}</div>
 <div id="externalSourceUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/widgetValueDownload?</div>
 <div id="multimediaUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/multimediaDownload</div>
 
@@ -83,6 +84,7 @@
 <div id="defaultFontSize" style="visibility:hidden;">${defaultFontSize}</div>
 
 <div id="appendEntityIdAfterSubmit" style="visibility:hidden;">1</div>
+<div id="appendEntityIdAfterCancel" style="visibility:hidden;">1</div>
 
 <div id="timeSubmitFormat" style="visibility:hidden;">${timeSubmitFormat}</div>
 <div id="timeDisplayFormat" style="visibility:hidden;">${timeDisplayFormat}</div>

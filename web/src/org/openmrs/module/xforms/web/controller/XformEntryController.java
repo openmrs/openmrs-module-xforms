@@ -54,6 +54,8 @@ public class XformEntryController extends SimpleFormController{
 			map.put("formDataUploadUrlSuffix", "module/xforms/xformDataUpload.form?mode=edit");
 			map.put("afterSubmitUrlSuffix", "patientDashboard.form?");
 		}
+		
+		map.put("afterCancelUrlSuffix", "patientDashboard.form?");
 
 		map.put(XformConstants.FORM_DESIGNER_KEY_DATE_SUBMIT_FORMAT, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_SUBMIT_FORMAT,XformConstants.DEFAULT_DATE_SUBMIT_FORMAT));
 		map.put(XformConstants.FORM_DESIGNER_KEY_DATE_DISPLAY_FORMAT, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_DISPLAY_FORMAT,XformConstants.DEFAULT_DATE_DISPLAY_FORMAT));

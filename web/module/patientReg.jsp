@@ -71,14 +71,16 @@
     
 <div id="entityFormDefDownloadUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/xformDownload?target=xformentry&contentType=xml${patientParams}&</div>
 <div id="formDataUploadUrlSuffix" style="visibility:hidden;">${formDataUploadUrlSuffix}</div>
-<div id="afterSubmitUrlSuffix" style="visibility:hidden;">patientDashboard.form?</div>
+<div id="afterSubmitUrlSuffix" style="visibility:hidden;">${afterSubmitUrlSuffix}</div>
+<div id="afterCancelUrlSuffix" style="visibility:hidden;">${afterCancelUrlSuffix}</div>
 <div id="externalSourceUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/widgetValueDownload?</div>
 <div id="multimediaUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/multimediaDownload</div>
 
 <div id="defaultFontFamily" style="visibility:hidden;">${defaultFontFamily}</div>
 <div id="defaultFontSize" style="visibility:hidden;">${defaultFontSize}</div>
 
-<div id="appendEntityIdAfterSubmit" style="visibility:hidden;">1</div>
+<div id="appendEntityIdAfterSubmit" style="visibility:hidden;">${appendEntityIdAfterSubmit}</div>
+<div id="appendEntityIdAfterCancel" style="visibility:hidden;">${appendEntityIdAfterCancel}</div>
 
 <div id="timeSubmitFormat" style="visibility:hidden;">${timeSubmitFormat}</div>
 <div id="timeDisplayFormat" style="visibility:hidden;">${timeDisplayFormat}</div>

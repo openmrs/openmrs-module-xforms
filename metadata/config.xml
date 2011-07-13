@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>xforms</id>
 	<name>XForms</name>
-	<version>4.0.4</version>
+	<version>4.0.4.1</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Daniel Kayiwa</author>
 	<description>
@@ -15,7 +15,7 @@
 
 	<activator>@MODULE_PACKAGE@.XformsActivator</activator>
 	
-	<updateURL>https://dev.openmrs.org/modules/download/xforms/update.rdf</updateURL>
+	<updateURL>https://modules.openmrs.org/modules/download/xforms/update.rdf</updateURL>
 	
 	<require_version>1.5.0</require_version>
 	<require_database_version>1.5.0</require_database_version>

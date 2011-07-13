@@ -74,10 +74,19 @@ public class PatientRegController extends SimpleFormController{
 		map.put(XformConstants.FORM_DESIGNER_KEY_LOCALE_KEY, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_LOCALE, Context.getLocale().getLanguage()));
 		map.put(XformConstants.FORM_DESIGNER_KEY_DECIMAL_SEPARATORS, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DECIMAL_SEPARATORS, XformConstants.DEFAULT_DECIMAL_SEPARATORS));
 
+		map.put("appendEntityIdAfterSubmit", "1");
+		map.put("appendEntityIdAfterCancel", "1");
+		map.put("afterSubmitUrlSuffix", "patientDashboard.form?");
+		map.put("afterCancelUrlSuffix", "patientDashboard.form?");
+		
 		if(request.getParameter("patientId") != null)
 			map.put("formDataUploadUrlSuffix", "module/xforms/xformDataUpload.form?mode=edit");
-		else
+		else{
 			map.put("formDataUploadUrlSuffix", "module/xforms/xformDataUpload.form");
+			
+			map.put("appendEntityIdAfterCancel", "0");
+			map.put("afterCancelUrlSuffix", "findPatient.htm?");
+		}
 		
 		return map;
 	}
