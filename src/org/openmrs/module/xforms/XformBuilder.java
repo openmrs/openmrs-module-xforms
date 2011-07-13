@@ -267,6 +267,12 @@ public final class XformBuilder {
 	
 	public static final String NODE_IDENTIFIER_TYPE_ID = "patient_identifier_type_id";
 	
+	public static final String NODE_DEGREE = "degree";
+	public static final String NODE_FAMILY_NAME2 = "family_name2";
+	public static final String NODE_FAMILY_NAME_PREFIX = "family_name_prefix";
+	public static final String NODE_FAMILY_NAME_SUFFIX = "family_name_suffix";
+	public static final String NODE_PREFIX = "prefix";
+	
 	public static final String NODE_LOAD = "load";
 	
 	public static final String DATA_TYPE_DATE = "xsd:date";
@@ -2483,6 +2489,17 @@ public final class XformBuilder {
 		
 		addPatientNode(formNode, modelNode, groupNode, NODE_GENDER, DATA_TYPE_TEXT, "Gender", "The patient's sex", false,
 		    false, CONTROL_SELECT1, new String[] { "Male", "Female" }, new String[] { "M", "F" }, true);
+		
+		addPatientNode(formNode, modelNode, groupNode, NODE_DEGREE, DATA_TYPE_TEXT, "Degree",
+		    "The patient name degree", false, false, CONTROL_INPUT, null, null, true);
+		addPatientNode(formNode, modelNode, groupNode, NODE_FAMILY_NAME2, DATA_TYPE_TEXT, "Family Name 2",
+		    "The patient second family name", false, false, CONTROL_INPUT, null, null, true);
+		addPatientNode(formNode, modelNode, groupNode, NODE_FAMILY_NAME_PREFIX, DATA_TYPE_TEXT, "Family Name Prefix",
+		    "The patient family name prefix", false, false, CONTROL_INPUT, null, null, true);
+		addPatientNode(formNode, modelNode, groupNode, NODE_FAMILY_NAME_SUFFIX, DATA_TYPE_TEXT, "Family Name Suffix",
+		    "The patient family name suffix", false, false, CONTROL_INPUT, null, null, true);
+		addPatientNode(formNode, modelNode, groupNode, NODE_PREFIX, DATA_TYPE_TEXT, "Prefix",
+		    "The patient name prefix", false, false, CONTROL_INPUT, null, null, true);
 		
 		String[] items, itemValues;
 		int i = 0;

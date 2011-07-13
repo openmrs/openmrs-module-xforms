@@ -33,6 +33,7 @@ import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
+import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
@@ -524,6 +525,31 @@ public class XformDownloadServlet extends HttpServlet {
 		s = patient.getGivenName();
 		if(s != null && s.trim().length() > 0)
 			XformBuilder.setNodeValue(doc, NODE_PATIENT_GIVEN_NAME, s);
+		
+		//=========================
+		PersonName personName = patient.getPersonName();
+		if(personName != null){
+			s = personName.getDegree();
+			if(s != null && s.trim().length() > 0)
+				XformBuilder.setNodeValue(doc, XformBuilder.NODE_DEGREE, s);
+			
+			s = personName.getPrefix();
+			if(s != null && s.trim().length() > 0)
+				XformBuilder.setNodeValue(doc, XformBuilder.NODE_PREFIX, s);
+			
+			s = personName.getFamilyName2();
+			if(s != null && s.trim().length() > 0)
+				XformBuilder.setNodeValue(doc, XformBuilder.NODE_FAMILY_NAME2, s);
+			
+			s = personName.getFamilyNamePrefix();
+			if(s != null && s.trim().length() > 0)
+				XformBuilder.setNodeValue(doc, XformBuilder.NODE_FAMILY_NAME_PREFIX, s);
+			
+			s = personName.getFamilyNameSuffix();
+			if(s != null && s.trim().length() > 0)
+				XformBuilder.setNodeValue(doc, XformBuilder.NODE_FAMILY_NAME_SUFFIX, s);
+		}
+		//==========================
 
 		s = patient.getGender();
 		if(s != null && s.trim().length() > 0)

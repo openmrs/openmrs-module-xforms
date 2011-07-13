@@ -49,6 +49,12 @@ public class XformPatientEdit {
 		personName.setGivenName(XformBuilder.getNodeValue(rootNode, XformBuilder.NODE_GIVEN_NAME));		
 		personName.setDateChanged(new Date());
 		personName.setChangedBy(Context.getAuthenticatedUser());
+		
+		personName.setDegree(XformBuilder.getNodeValue(rootNode, XformBuilder.NODE_DEGREE));
+		personName.setFamilyName2(XformBuilder.getNodeValue(rootNode, XformBuilder.NODE_FAMILY_NAME2));
+		personName.setFamilyNamePrefix(XformBuilder.getNodeValue(rootNode, XformBuilder.NODE_FAMILY_NAME_PREFIX));
+		personName.setFamilyNameSuffix(XformBuilder.getNodeValue(rootNode, XformBuilder.NODE_FAMILY_NAME_SUFFIX));
+		personName.setPrefix(XformBuilder.getNodeValue(rootNode, XformBuilder.NODE_PREFIX));
 
 		String val = XformBuilder.getNodeValue(rootNode,XformBuilder.NODE_BIRTH_DATE);
 		try{ 

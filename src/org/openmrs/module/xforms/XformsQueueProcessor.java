@@ -394,6 +394,13 @@ public class XformsQueueProcessor {
 		pn.setGivenName(DOMUtil.getElementValue(root,XformBuilder.NODE_GIVEN_NAME));
 		pn.setFamilyName(DOMUtil.getElementValue(root,XformBuilder.NODE_FAMILY_NAME));
 		pn.setMiddleName(DOMUtil.getElementValue(root,XformBuilder.NODE_MIDDLE_NAME));
+		
+		pn.setDegree(DOMUtil.getElementValue(root, XformBuilder.NODE_DEGREE));
+		pn.setFamilyName2(DOMUtil.getElementValue(root, XformBuilder.NODE_FAMILY_NAME2));
+		pn.setFamilyNamePrefix(DOMUtil.getElementValue(root, XformBuilder.NODE_FAMILY_NAME_PREFIX));
+		pn.setFamilyNameSuffix(DOMUtil.getElementValue(root, XformBuilder.NODE_FAMILY_NAME_SUFFIX));
+		pn.setPrefix(DOMUtil.getElementValue(root, XformBuilder.NODE_PREFIX));
+		
 		pn.setPreferred(true);
 		pn.setCreator(creator);
 		pn.setDateCreated(pt.getDateCreated());
