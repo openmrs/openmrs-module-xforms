@@ -131,7 +131,7 @@ public class XformDownloadServlet extends HttpServlet {
 						if (port != 80)
 							url += ":" + Integer.toString(port);
 
-						url += "/openmrs/moduleServlet/xforms/xformDownload?target=xform&contentType=xml&excludeLayout=true&formId=";
+						url += request.getContextPath() + "/moduleServlet/xforms/xformDownload?target=xform&contentType=xml&excludeLayout=true&formId=";
 
 						url = formatXml(url);
 						
