@@ -122,7 +122,15 @@ public class XformsProviderAdvisor extends StaticMethodMatcherPointcutAdvisor im
 		for (Xform xform : xforms) {
 			
 			String xml = xform.getXformXml();
-			Document doc = XformsUtil.fromString2Doc(xml);
+			//Document doc = XformsUtil.fromString2Doc(xml);
+			Document doc = null;
+			try{
+				doc = XformsUtil.fromString2Doc(xml);
+			}
+			catch(Exception ex){
+				ex.printStackTrace();
+				continue;
+			}
 			
 			//Get all xf:select1 nodes in the xforms document.
 			NodeList elements = doc.getDocumentElement().getElementsByTagName(
