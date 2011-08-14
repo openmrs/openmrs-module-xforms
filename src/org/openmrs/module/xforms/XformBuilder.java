@@ -367,6 +367,7 @@ public final class XformBuilder {
 	public static final String NODE_NAME_OTHER_IDENTIFIERS = "other_identifiers";
 	public static final String NODE_NAME_OTHER_IDENTIFIER = "other_identifier";
 	public static final String NODE_NAME_OTHER_IDENTIFIER_TYPE_ID = "other_identifier_type_id";
+	public static final String NODE_NAME_OTHER_IDENTIFIER_LOCATION_ID = "other_identifier_location_id";
 	
 	private static Hashtable<String, String> obsRepeatItems;
 	
@@ -3196,6 +3197,22 @@ public final class XformBuilder {
 			addPatientNode(dataNode, modelNode, repeatNode, NODE_NAME_OTHER_IDENTIFIER_TYPE_ID, DATA_TYPE_INT, "Identifier Type",
 			    "The patient's other identifier type", false, false, CONTROL_SELECT1, items, itemValues, true,
 			    "/" + NODE_PATIENT + "/" + name + "/other_identifier_type_id");
+		}
+		
+		
+		List<Location> locations = Context.getLocationService().getAllLocations();
+		if (locations != null) {
+			int i = 0;
+			items = new String[locations.size()];
+			itemValues = new String[locations.size()];
+			for (Location location : locations) {
+				items[i] = getLocationName(location);
+				itemValues[i++] = location.getLocationId().toString();
+			}
+			
+			addPatientNode(dataNode, modelNode, repeatNode, NODE_NAME_OTHER_IDENTIFIER_LOCATION_ID, DATA_TYPE_INT, "Identifier Location",
+			    "The patient's other identifier location", false, false, CONTROL_SELECT1, items, itemValues, true,
+			    "/" + NODE_PATIENT + "/" + name + "/other_identifier_location_id");
 		}
 	}
 }
