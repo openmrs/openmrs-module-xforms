@@ -33,8 +33,8 @@ import org.openmrs.module.xforms.formentry.HL7InQueueProcessor;
 import org.openmrs.module.xforms.model.PersonRepeatAttribute;
 import org.openmrs.module.xforms.util.DOMUtil;
 import org.openmrs.module.xforms.util.XformsUtil;
-import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -429,7 +429,7 @@ public class XformsQueueProcessor {
 
 			addPersonAddresses(pt, root, creator);
 			
-			addOtherIdentifiers(pt, root, creator);
+			addOtherIdentifiers(pt, root, creator, patientService, propagateErrors, request);
 
 			Patient pt2 = patientService.identifierInUse(identifier.getIdentifier(),identifier.getIdentifierType(),pt);
 			if(pt2 == null){
@@ -893,31 +893,75 @@ public class XformsQueueProcessor {
 		//System.out.println("complex obs value = " + file.getAbsolutePath());
 	}
 	
-	private void addOtherIdentifiers(Patient pt, Element root, User creator) throws Exception{
-		
-		/*NodeList nodes = root.getElementsByTagName(XformBuilder.NODE_NAME_PREFIX_PERSON_ADDRESS + name);
+	private void addOtherIdentifiers(Patient pt, Element root, User creator, PatientService patientService, boolean propagateErrors, HttpServletRequest request) throws Exception{
+		NodeList nodes = root.getElementsByTagName(XformBuilder.NODE_NAME_OTHER_IDENTIFIERS);
 		if(nodes == null || nodes.getLength() == 0)
 			return;
 		
-		PersonAddress pa = new PersonAddress();
-		pa.setCreator(creator);
-		pa.setDateCreated(pt.getDateCreated());
-		pa.setPreferred(true);
+		for(int index = 0; index < nodes.getLength(); index++){
+			addOtherIdentifier((Element)nodes.item(index), creator, pt, patientService, propagateErrors, request);
+		}
+	}
+	
+	private void addOtherIdentifier(Element root, User creator, Patient pt, PatientService patientService, boolean propagateErrors, HttpServletRequest request) throws Exception {
+		//Look for identifier value.
+		NodeList nodes = root.getElementsByTagName(XformBuilder.NODE_NAME_OTHER_IDENTIFIER);
+		if(nodes == null || nodes.getLength() == 0)
+			return; //no identifier node found, possibly deleted.
+		
+		String identifierValue = nodes.item(0).getTextContent();
+		if(identifierValue == null || identifierValue.trim().length() == 0)
+			return; //no identifier value found.
+		
+		//Look for identifier type id
+		nodes = root.getElementsByTagName(XformBuilder.NODE_NAME_OTHER_IDENTIFIER_TYPE_ID);
+		if(nodes == null || nodes.getLength() == 0)
+			reportError("Form should have identifier type selection for identifier: " + identifierValue,  propagateErrors, request);
+		
+		String identifierTypeId = nodes.item(0).getTextContent();
+		if(identifierTypeId == null || identifierTypeId.trim().length() == 0)
+			reportError("Please select identifier type for identifier: " + identifierValue,  propagateErrors, request);
+		
+		//Look for identifier location id
+		nodes = root.getElementsByTagName(XformBuilder.NODE_NAME_OTHER_IDENTIFIER_LOCATION_ID);
+		if(nodes == null || nodes.getLength() == 0)
+			reportError("Form should have location type selection for identifier: " + identifierValue,  propagateErrors, request);
+		
+		String identifierLocationId = nodes.item(0).getTextContent();
+		if(identifierLocationId == null || identifierLocationId.trim().length() == 0)
+			reportError("Please select location type for identifier: " + identifierValue,  propagateErrors, request);
+		
+		//Now try add the identifier.
+		PatientIdentifier identifier = new PatientIdentifier();
+		identifier.setCreator(creator);
+		identifier.setDateCreated(pt.getDateCreated());
+		identifier.setIdentifier(identifierValue);
+		PatientIdentifierType identifierType = patientService.getPatientIdentifierType(Integer.parseInt(identifierTypeId));
+		identifier.setIdentifierType(identifierType);
+		identifier.setLocation(getLocation(identifierLocationId));
+		identifier.setPreferred(false);
+		
+		for(PatientIdentifier existingIdentifier : pt.getIdentifiers()){
+			if(existingIdentifier.getIdentifierType() == identifierType){
+				reportError("Patient already has an identifier for the identifier type: "+identifierType.getName(), propagateErrors, request);
+			}
+		}
+		
+		pt.addIdentifier(identifier);
+		
+		Patient pt2 = patientService.identifierInUse(identifier.getIdentifier(),identifier.getIdentifierType(), pt);
+		if(pt2 != null){
+			reportError("Tried to create patient who already exists with the identifier:"+identifier.getIdentifier(), propagateErrors, request);
+		}
+	}
+	
+	private void reportError(String message, boolean propagateErrors, HttpServletRequest request) throws Exception {
+		log.error(message);
 
-		addPersonAddressValue(XformBuilder.NODE_NAME_ADDRESS1, pa, root);
-		addPersonAddressValue(XformBuilder.NODE_NAME_ADDRESS2, pa, root);
-		addPersonAddressValue(XformBuilder.NODE_NAME_CITY_VILLAGE, pa, root);
-		addPersonAddressValue(XformBuilder.NODE_NAME_STATE_PROVINCE, pa, root);
-		addPersonAddressValue(XformBuilder.NODE_NAME_POSTAL_CODE, pa, root);
-		addPersonAddressValue(XformBuilder.NODE_NAME_COUNTRY, pa, root);
-		addPersonAddressValue(XformBuilder.NODE_NAME_LATITUDE, pa, root);
-		addPersonAddressValue(XformBuilder.NODE_NAME_LONGITUDE, pa, root);
-		addPersonAddressValue(XformBuilder.NODE_NAME_COUNTY_DISTRICT, pa, root);
-		addPersonAddressValue(XformBuilder.NODE_NAME_NEIGHBORHOOD_CELL, pa, root);
-		addPersonAddressValue(XformBuilder.NODE_NAME_REGION, pa, root);
-		addPersonAddressValue(XformBuilder.NODE_NAME_SUBREGION, pa, root);
-		addPersonAddressValue(XformBuilder.NODE_NAME_TOWNSHIP_DIVISION, pa, root);
+		if(request != null)
+			request.setAttribute(XformConstants.REQUEST_ATTRIBUTE_ID_ERROR_MESSAGE, message);
 
-		pt.addAddress(pa);*/
+		if(propagateErrors)
+			throw new Exception(message);
 	}
 }
