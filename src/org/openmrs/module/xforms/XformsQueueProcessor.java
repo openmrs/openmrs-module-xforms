@@ -425,9 +425,11 @@ public class XformsQueueProcessor {
 			identifier.setPreferred(true);
 			pt.addIdentifier(identifier);
 
-			addPersonAttributes(pt,root,xformsService, creator);
+			addPersonAttributes(pt, root, xformsService, creator);
 
 			addPersonAddresses(pt, root, creator);
+			
+			addOtherIdentifiers(pt, root, creator);
 
 			Patient pt2 = patientService.identifierInUse(identifier.getIdentifier(),identifier.getIdentifierType(),pt);
 			if(pt2 == null){
@@ -889,5 +891,33 @@ public class XformsQueueProcessor {
 			element.setTextContent(file.getAbsolutePath());
 
 		//System.out.println("complex obs value = " + file.getAbsolutePath());
+	}
+	
+	private void addOtherIdentifiers(Patient pt, Element root, User creator) throws Exception{
+		
+		/*NodeList nodes = root.getElementsByTagName(XformBuilder.NODE_NAME_PREFIX_PERSON_ADDRESS + name);
+		if(nodes == null || nodes.getLength() == 0)
+			return;
+		
+		PersonAddress pa = new PersonAddress();
+		pa.setCreator(creator);
+		pa.setDateCreated(pt.getDateCreated());
+		pa.setPreferred(true);
+
+		addPersonAddressValue(XformBuilder.NODE_NAME_ADDRESS1, pa, root);
+		addPersonAddressValue(XformBuilder.NODE_NAME_ADDRESS2, pa, root);
+		addPersonAddressValue(XformBuilder.NODE_NAME_CITY_VILLAGE, pa, root);
+		addPersonAddressValue(XformBuilder.NODE_NAME_STATE_PROVINCE, pa, root);
+		addPersonAddressValue(XformBuilder.NODE_NAME_POSTAL_CODE, pa, root);
+		addPersonAddressValue(XformBuilder.NODE_NAME_COUNTRY, pa, root);
+		addPersonAddressValue(XformBuilder.NODE_NAME_LATITUDE, pa, root);
+		addPersonAddressValue(XformBuilder.NODE_NAME_LONGITUDE, pa, root);
+		addPersonAddressValue(XformBuilder.NODE_NAME_COUNTY_DISTRICT, pa, root);
+		addPersonAddressValue(XformBuilder.NODE_NAME_NEIGHBORHOOD_CELL, pa, root);
+		addPersonAddressValue(XformBuilder.NODE_NAME_REGION, pa, root);
+		addPersonAddressValue(XformBuilder.NODE_NAME_SUBREGION, pa, root);
+		addPersonAddressValue(XformBuilder.NODE_NAME_TOWNSHIP_DIVISION, pa, root);
+
+		pt.addAddress(pa);*/
 	}
 }

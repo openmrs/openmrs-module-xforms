@@ -364,6 +364,10 @@ public final class XformBuilder {
 	
 	public static final String NODE_NAME_PREFIX_PERSON_ADDRESS = "person_address_";
 	
+	public static final String NODE_NAME_OTHER_IDENTIFIERS = "other_identifiers";
+	public static final String NODE_NAME_OTHER_IDENTIFIER = "other_identifier";
+	public static final String NODE_NAME_OTHER_IDENTIFIER_TYPE_ID = "other_identifier_type_id";
+	
 	private static Hashtable<String, String> obsRepeatItems;
 	
 	private static Hashtable<String, String> nodesets;
@@ -2532,9 +2536,19 @@ public final class XformBuilder {
 		
 		addPersonAddresses(formNode, modelNode, groupNode);
 		
+		addOtherPatientIdentifiers(formNode, modelNode, groupNode);
+		
 		addEncounterForm(doc, formNode, modelNode, groupNode);
 		
 		return XformBuilder.fromDoc2String(doc);
+	}
+	
+	private static void addPatientNode(Element formNode, Element modelNode, Element bodyNode, String name, String type,
+	                                   String label, String hint, boolean required, boolean readonly, String controlType,
+	                                   String[] items, String[] itemValues, boolean visible) {
+		
+		addPatientNode(formNode, modelNode, bodyNode, name, type, label, hint, required, 
+			readonly, controlType, items, itemValues, visible, "/" + NODE_PATIENT + "/" + name);
 	}
 	
 	/**
@@ -2555,7 +2569,7 @@ public final class XformBuilder {
 	 */
 	private static void addPatientNode(Element formNode, Element modelNode, Element bodyNode, String name, String type,
 	                                   String label, String hint, boolean required, boolean readonly, String controlType,
-	                                   String[] items, String[] itemValues, boolean visible) {
+	                                   String[] items, String[] itemValues, boolean visible, String nodeset) {
 		//add the model node
 		Element element = formNode.createElement(null, null);
 		element.setName(name);
@@ -2568,7 +2582,7 @@ public final class XformBuilder {
 		element = modelNode.createElement(NAMESPACE_XFORMS, null);
 		element.setName(NODE_BIND);
 		element.setAttribute(null, ATTRIBUTE_ID, name);
-		element.setAttribute(null, ATTRIBUTE_NODESET, "/" + NODE_PATIENT + "/" + name);
+		element.setAttribute(null, ATTRIBUTE_NODESET, nodeset);
 		element.setAttribute(null, ATTRIBUTE_TYPE, type);
 		if (readonly)
 			element.setAttribute(null, ATTRIBUTE_READONLY, XPATH_VALUE_TRUE);
@@ -3124,5 +3138,64 @@ public final class XformBuilder {
 	public static String getProviderName(User provider, Integer personId) {
 		PersonName personName = provider.getPersonName(); //This may be null for some users that have not last and first names.
 		return (personName != null ? personName.toString() : provider.getUsername()) + " [" + personId + "]";
+	}
+	
+	private static void addOtherPatientIdentifiers(Element formNode, Element modelNode, Element groupNode) {
+		
+		String name = NODE_NAME_OTHER_IDENTIFIERS;
+		
+		//add the model node
+		Element dataNode = formNode.createElement(null, null);
+		dataNode.setName(name);
+		formNode.addChild(Element.ELEMENT, dataNode);
+		
+		//add the model binding
+		Element bindingNode = modelNode.createElement(NAMESPACE_XFORMS, null);
+		bindingNode.setName(NODE_BIND);
+		bindingNode.setAttribute(null, ATTRIBUTE_ID, name);
+		bindingNode.setAttribute(null, ATTRIBUTE_NODESET, "/" + NODE_PATIENT + "/" /*+NODE_NAME_PERSON_ADDRESSES+"/"*/
+		        + name);
+		bindingNode.setAttribute(null, ATTRIBUTE_TYPE, DATA_TYPE_TEXT);
+		
+		modelNode.addChild(Element.ELEMENT, bindingNode);
+		
+		
+		//Create repeat group node
+		Element repeatGroupNode = groupNode.createElement(NAMESPACE_XFORMS, null);
+		repeatGroupNode.setName(NODE_GROUP);
+		groupNode.addChild(Element.ELEMENT, repeatGroupNode);
+		
+		//add the repeat group label
+		Element labelNode = repeatGroupNode.createElement(NAMESPACE_XFORMS, null);
+		labelNode.setName(NODE_LABEL);
+		labelNode.addChild(Element.TEXT, "Other dentifiers");
+		repeatGroupNode.addChild(Element.ELEMENT, labelNode);
+		
+		//add repeat node.
+		Element repeatNode = repeatGroupNode.createElement(NAMESPACE_XFORMS, null);
+		repeatNode.setName(CONTROL_REPEAT);
+		repeatNode.setAttribute(null, ATTRIBUTE_BIND, name);
+		repeatGroupNode.addChild(Element.ELEMENT, repeatNode);
+		
+		
+		addPatientNode(dataNode, modelNode, repeatNode, NODE_NAME_OTHER_IDENTIFIER, DATA_TYPE_TEXT, "Identifier",
+		    "The patient's other identifier value", false, false, CONTROL_INPUT, null, null, true,
+		    "/" + NODE_PATIENT + "/" + name + "/other_identifier");
+		
+		
+		String[] items, itemValues;
+		List<PatientIdentifierType> identifierTypes = Context.getPatientService().getAllPatientIdentifierTypes();
+		if (identifierTypes != null) {
+			int i = 0;
+			items = new String[identifierTypes.size()];
+			itemValues = new String[identifierTypes.size()];
+			for (PatientIdentifierType identifierType : identifierTypes) {
+				items[i] = identifierType.getName();
+				itemValues[i++] = identifierType.getPatientIdentifierTypeId().toString();
+			}
+			addPatientNode(dataNode, modelNode, repeatNode, NODE_NAME_OTHER_IDENTIFIER_TYPE_ID, DATA_TYPE_INT, "Identifier Type",
+			    "The patient's other identifier type", false, false, CONTROL_SELECT1, items, itemValues, true,
+			    "/" + NODE_PATIENT + "/" + name + "/other_identifier_type_id");
+		}
 	}
 }
