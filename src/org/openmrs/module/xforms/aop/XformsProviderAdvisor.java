@@ -121,28 +121,26 @@ public class XformsProviderAdvisor extends StaticMethodMatcherPointcutAdvisor im
 		//Loop through the xforms refreshing one by one
 		for (Xform xform : xforms) {
 			
-			String xml = xform.getXformXml();
-			//Document doc = XformsUtil.fromString2Doc(xml);
-			Document doc = null;
 			try{
-				doc = XformsUtil.fromString2Doc(xml);
+				String xml = xform.getXformXml();
+				Document doc = XformsUtil.fromString2Doc(xml);
+				
+				//Get all xf:select1 nodes in the xforms document.
+				NodeList elements = doc.getDocumentElement().getElementsByTagName(
+				    XformBuilder.PREFIX_XFORMS + ":" + XformBuilder.CONTROL_SELECT1);
+				
+				//Look for the provider node which has a bind attribute value of: encounter.provider_id.
+				for (int index = 0; index < elements.getLength(); index++) {
+					Element element = (Element) elements.item(index);
+					if ("encounter.provider_id".equalsIgnoreCase(element.getAttribute(XformBuilder.ATTRIBUTE_BIND))) {
+						refreshProviderWithId(operation, element, user, oldName, doc, xform, xformsService);
+						break; //We can have only one provider element, as of now.
+					}
+				}
 			}
 			catch(Exception ex){
 				ex.printStackTrace();
-				continue;
-			}
-			
-			//Get all xf:select1 nodes in the xforms document.
-			NodeList elements = doc.getDocumentElement().getElementsByTagName(
-			    XformBuilder.PREFIX_XFORMS + ":" + XformBuilder.CONTROL_SELECT1);
-			
-			//Look for the provider node which has a bind attribute value of: encounter.provider_id.
-			for (int index = 0; index < elements.getLength(); index++) {
-				Element element = (Element) elements.item(index);
-				if ("encounter.provider_id".equalsIgnoreCase(element.getAttribute(XformBuilder.ATTRIBUTE_BIND))) {
-					refreshProviderWithId(operation, element, user, oldName, doc, xform, xformsService);
-					break; //We can have only one provider element, as of now.
-				}
+				continue; //failure for one form should not stop others from proceeding.
 			}
 		}
 	}

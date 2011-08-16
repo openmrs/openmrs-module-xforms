@@ -65,28 +65,26 @@ public class XformsConceptAdvisor implements AfterReturningAdvice {
 			//Loop through the xforms refreshing one by one
 			for (Xform xform : xforms) {
 				
-				String xml = xform.getXformXml();
-				//Document doc = XformsUtil.fromString2Doc(xml);
-				Document doc = null;
 				try{
-					doc = XformsUtil.fromString2Doc(xml);
+					String xml = xform.getXformXml();
+					Document doc = XformsUtil.fromString2Doc(xml);
+					
+					//Get all xf:select1 nodes in the xforms document.
+					NodeList elements = doc.getDocumentElement().getElementsByTagName(
+						XformBuilder.PREFIX_XFORMS + ":" + XformBuilder.CONTROL_SELECT1);
+					
+					//Look for the node which has a concept_id attribute value of conceptId
+					for (int index = 0; index < elements.getLength(); index++) {
+						Element element = (Element) elements.item(index);
+						if (conceptId.equalsIgnoreCase(element.getAttribute(XformBuilder.ATTRIBUTE_CONCEPT_ID))) {
+							refreshConceptWithId(element, concept, doc, xform, xformsService);
+							break;
+						}
+					}
 				}
 				catch(Exception ex){
 					ex.printStackTrace();
-					continue;
-				}
-				
-				//Get all xf:select1 nodes in the xforms document.
-				NodeList elements = doc.getDocumentElement().getElementsByTagName(
-					XformBuilder.PREFIX_XFORMS + ":" + XformBuilder.CONTROL_SELECT1);
-				
-				//Look for the node which has a concept_id attribute value of conceptId
-				for (int index = 0; index < elements.getLength(); index++) {
-					Element element = (Element) elements.item(index);
-					if (conceptId.equalsIgnoreCase(element.getAttribute(XformBuilder.ATTRIBUTE_CONCEPT_ID))) {
-						refreshConceptWithId(element, concept, doc, xform, xformsService);
-						break;
-					}
+					continue; //failure for one form should not stop others from proceeding.
 				}
 			}
 			
@@ -214,38 +212,36 @@ public class XformsConceptAdvisor implements AfterReturningAdvice {
 		//Loop through the xforms refreshing one by one
 		for (Xform xform : xforms) {
 			
-			String xml = xform.getXformXml();
-			//Document doc = XformsUtil.fromString2Doc(xml);
-			Document doc = null;
 			try{
-				doc = XformsUtil.fromString2Doc(xml);
+				String xml = xform.getXformXml();
+				Document doc = XformsUtil.fromString2Doc(xml);
+				
+				//Get all xf:item nodes in the xforms document.
+				NodeList elements = doc.getDocumentElement().getElementsByTagName(
+					XformBuilder.PREFIX_XFORMS + ":" + "item");
+				
+				boolean xformModified = false;
+				
+				//Look for the node which has a concept_id attribute value of conceptId
+				for (int index = 0; index < elements.getLength(); index++) {
+					Element element = (Element) elements.item(index);
+					
+					if (sConceptId.equalsIgnoreCase(element.getAttribute(XformBuilder.ATTRIBUTE_CONCEPT_ID))) {
+						boolean ret = refreshConceptName(concept, newName, oldName, element);
+						if(ret){
+							xformModified = true;
+						}
+					}
+				}
+				
+				if (xformModified) {
+					xform.setXformXml(XformsUtil.doc2String(doc));
+					xformsService.saveXform(xform);
+				}
 			}
 			catch(Exception ex){
 				ex.printStackTrace();
-				continue;
-			}
-			
-			//Get all xf:item nodes in the xforms document.
-			NodeList elements = doc.getDocumentElement().getElementsByTagName(
-				XformBuilder.PREFIX_XFORMS + ":" + "item");
-			
-			boolean xformModified = false;
-			
-			//Look for the node which has a concept_id attribute value of conceptId
-			for (int index = 0; index < elements.getLength(); index++) {
-				Element element = (Element) elements.item(index);
-				
-				if (sConceptId.equalsIgnoreCase(element.getAttribute(XformBuilder.ATTRIBUTE_CONCEPT_ID))) {
-					boolean ret = refreshConceptName(concept, newName, oldName, element);
-					if(ret){
-						xformModified = true;
-					}
-				}
-			}
-			
-			if (xformModified) {
-				xform.setXformXml(XformsUtil.doc2String(doc));
-				xformsService.saveXform(xform);
+				continue; //failure for one form should not stop others from proceeding.
 			}
 		}
 	}
