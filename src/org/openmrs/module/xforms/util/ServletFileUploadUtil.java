@@ -28,7 +28,7 @@ import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 
 /**
  * Handles upload of xforms as files. Where a submission can consist of multiple files like 
- * images files, pictures files, sound files, vide files, and more. (multipart content)
+ * images files, pictures files, sound files, video files, and more. (multipart content)
  * 
  * @author daniel
  *

@@ -37,24 +37,11 @@ public class XformDownloadManager {
 	 * @param os - the stream.
 	 * @throws Exception  
 	 */
-	public static void downloadXforms(OutputStream os, String serializerKey) throws Exception{
-		//Context.openSession(); //This prevents the bluetooth server from failing with the form field lazy load exception.
-		
+	public static void downloadXforms(OutputStream os, String serializerKey) throws Exception{		
 		if(serializerKey == null || serializerKey.trim().length() == 0)
 			serializerKey = XformConstants.GLOBAL_PROP_KEY_XFORM_SERIALIZER;
 		
         XformsUtil.invokeSerializationMethod("serializeForms",os, serializerKey, XformConstants.DEFAULT_XFORM_SERIALIZER, getXmlForms());
-        
-		/*String className = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_XFORM_SERIALIZER);
-		if(className == null || className.length() == 0)
-			className = XformConstants.DEFAULT_XFORM_SERIALIZER;
-        
-        Object obj = OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
-        Method method = obj.getClass().getMethod("serialize", new Class[]{DataOutputStream.class,Object.class});
-        method.invoke(obj, new Object[]{new DataOutputStream(os), getXmlForms(actionUrl)});*/
-        
-		//SerializableData sr = (SerializableData)OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
-		//sr.serialize(new DataOutputStream(os), getXmlForms(actionUrl));
 	}
 	
 	/**
@@ -64,26 +51,7 @@ public class XformDownloadManager {
 	 * @return a list of xforms xml text.
 	 */
 	private static List<String> getXmlForms(){
-		/*String useStoredXform = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_USER_STORED_XFORMS);
-		boolean createNew = false;
-		if(XformConstants.FALSE_TEXT_VALUE.equalsIgnoreCase(useStoredXform))
-			createNew = true;*/
-
 		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
-		//FormService formService = (FormService)Context.getService(FormService.class);
-
-		/*List<Xform> xforms = xformsService.getXforms();
-		List<String> xmlforms = new ArrayList<String>();
-		for(Xform xform : xforms){
-			if(xform.getFormId() != XformConstants.PATIENT_XFORM_FORM_ID){
-				String s = getXform(formService,xformsService,xform.getFormId(),createNew);
-				if(s != null) //could fail parsing xform.
-				    xmlforms.add(s);
-			}
-		}
-		
-		String xml = XformBuilder.getNewPatientXform();
-		xmlforms.add(xml);*/
 		
 		List<Xform> xforms = xformsService.getXforms();
 		List<String> xmlforms = new ArrayList<String>();
@@ -91,8 +59,6 @@ public class XformDownloadManager {
 			String xml = xform.getXformXml();
 			if(xml != null)
 				xmlforms.add(xml);
-			//if(xform.getFormId() == 18)
-			//	System.out.println(xml);
 		}
 		
 		return xmlforms;

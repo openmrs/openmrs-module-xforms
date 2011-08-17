@@ -124,6 +124,7 @@ public class XformDownloadServlet extends HttpServlet {
 					String xml = "<?xml version='1.0' encoding='UTF-8' ?>";
 					List<Object[]> xformList = xformsService.getXformsList();
 
+					//Check if this client wants to include the download url for each form.
 					if("withurl".equalsIgnoreCase(request.getParameter("format"))){
 
 						String url = "http://" + request.getServerName();
@@ -143,9 +144,6 @@ public class XformDownloadServlet extends HttpServlet {
 						}
 
 						xml += "\n</forms>";
-
-						//http://localhost:8081/openmrs/moduleServlet/xforms/xformDownload?target=xformslist
-
 					}
 					else{
 
@@ -177,15 +175,6 @@ public class XformDownloadServlet extends HttpServlet {
 				boolean createNew = false;
 				if(XformConstants.FALSE_TEXT_VALUE.equalsIgnoreCase(useStoredXform))
 					createNew = true;
-
-				//This property if for those who do not want to make two separate requests for 
-				//users and xforms. This can be helpfull in say bluetooth implementations where
-				//the first connection succeeds but second fails randomly hence making it better
-				//to fetch everything in once single connection request.
-				/*String shouldIncludeUsers = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_INCLUDE_USERS_IN_XFORMS_DOWNLOAD);
-				boolean includeUsers = true;
-				if(XformConstants.FALSE_TEXT_VALUE.equalsIgnoreCase(shouldIncludeUsers))
-					includeUsers = false;*/
 
 				Integer formId = Integer.parseInt(request.getParameter(XformConstants.REQUEST_PARAM_FORM_ID));
 				Form form = formService.getForm(formId);
@@ -265,9 +254,6 @@ public class XformDownloadServlet extends HttpServlet {
 					xformXml += XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR + xml;
 			}
 		}
-
-		//if("xhtml".equalsIgnoreCase(request.getParameter("contentType")))
-		//	xformXml = XformsUtil.fromXform2Xhtml(xformXml, XformsUtil.getPlainDefaultXSLT());
 
 		String xsltKey = request.getParameter("xsltKey");
 		if(xsltKey != null)
