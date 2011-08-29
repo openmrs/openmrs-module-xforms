@@ -135,7 +135,7 @@ public class XformsUtil {
 		try {
 			TransformerFactory tFactory = TransformerFactory.newInstance();
 			Transformer transformer = tFactory.newTransformer();
-			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			//transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 			
 			StringWriter outStream = new StringWriter();
 			DOMSource source = new DOMSource(doc);
