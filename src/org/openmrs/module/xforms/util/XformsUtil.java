@@ -135,6 +135,8 @@ public class XformsUtil {
 		try {
 			TransformerFactory tFactory = TransformerFactory.newInstance();
 			Transformer transformer = tFactory.newTransformer();
+			
+			//This adds unnecessary indenting which makes the xform too big for mobile devices.
 			//transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 			
 			StringWriter outStream = new StringWriter();
