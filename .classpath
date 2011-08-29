@@ -16,7 +16,7 @@
 	<classpathentry kind="lib" path="lib-common/mail.jar"/>
 	<classpathentry kind="lib" path="lib-common/antlr_2.7.6.jar"/>
 	<classpathentry kind="lib" path="lib-common/asm.jar"/>
-	<classpathentry kind="lib" path="lib-common/c3p0-0.9.1.jar"/>
+	<classpathentry kind="lib" path="lib-common/c3p0-0.9.1.jar" sourcepath="/Users/danielkayiwa/.m2/repository/c3p0/c3p0/0.9.1/c3p0-0.9.1-sources.jar"/>
 	<classpathentry kind="lib" path="lib-common/cglib-2.1_3.jar"/>
 	<classpathentry kind="lib" path="lib-common/commons-collections-3.1.jar"/>
 	<classpathentry kind="lib" path="lib-common/dom4j-1.6.1.jar"/>
