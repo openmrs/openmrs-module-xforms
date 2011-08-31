@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kxml2.kdom.Document;
@@ -140,7 +141,7 @@ public class XformDownloadServlet extends HttpServlet {
 
 						if(xformList != null){
 							for(Object[] item : xformList)
-								xml += "\n  <form url='" + url + item[0] + "'>" + item[1] + "</form>";
+								xml += "\n  <form url='" + url + item[0] + "'>" + StringEscapeUtils.escapeXml(item[1].toString()) + "</form>";
 						}
 
 						xml += "\n</forms>";
@@ -153,7 +154,7 @@ public class XformDownloadServlet extends HttpServlet {
 							for(Object[] item : xformList){
 								xml += "\n  <xform>";
 								xml += "\n    <id>" + item[0] + "</id>";
-								xml += "\n    <name>" + item[1] + "</name>";
+								xml += "\n    <name>" + StringEscapeUtils.escapeXml(item[1].toString()) + "</name>";
 								xml += "\n  </xform>";
 							}
 						}
