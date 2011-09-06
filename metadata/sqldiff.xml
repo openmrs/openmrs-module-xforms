@@ -119,4 +119,28 @@
 		</sql>
 	</diff>
 	
+	<diff>
+		<version>3.7.8</version>
+		<author>Daniel Kayiwa</author>
+		<date>September 6th 2011</date>
+		<description>
+			Adding uuid field to the xform table.
+		</description>
+		<sql>
+			ALTER TABLE xforms_xform ADD uuid char(38);	
+		</sql>
+	</diff>
+	
+	<diff>
+		<version>3.7.9</version>
+		<author>Daniel Kayiwa</author>
+		<date>September 6th 2011</date>
+		<description>
+			Adding uuids to all data in the the xform table.
+		</description>
+		<sql>
+			update xforms_xform set uuid = uuid() where uuid is null;	
+		</sql>
+	</diff>
+	
 </sqldiff>
