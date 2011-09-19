@@ -77,6 +77,8 @@ public class XformDesignerController extends SimpleFormController {
 		map.put("showLayoutXmlTab", Context.getAdministrationService().getGlobalProperty("xforms.showLayoutXmlTab","false"));
 		map.put("showModelXmlTab", Context.getAdministrationService().getGlobalProperty("xforms.showModelXmlTab","false"));
 		map.put("showJavaScriptTab", Context.getAdministrationService().getGlobalProperty("xforms.showJavaScriptTab","false"));
+		map.put("showDesignSurfaceTab", Context.getAdministrationService().getGlobalProperty("xforms.showDesignSurfaceTab","true"));
+		map.put("showPreviewTab", Context.getAdministrationService().getGlobalProperty("xforms.showPreviewTab","true"));
 		map.put("saveFormat", Context.getAdministrationService().getGlobalProperty("xforms.saveFormat","purcforms"));
 		map.put("undoRedoBufferSize", Context.getAdministrationService().getGlobalProperty("xforms.undoRedoBufferSize","100"));
 		map.put("overwriteValidationsOnRefresh", Context.getAdministrationService().getGlobalProperty("xforms.overwriteValidationsOnRefresh","false"));
