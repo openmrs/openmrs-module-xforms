@@ -272,17 +272,19 @@ public class XformDownloadServlet extends HttpServlet {
 		else{
 			xml = xform.getXformXml();
 
-			String layout = xform.getLayoutXml();
-			if(layout != null && layout.length() > 0)
-				xml += XformConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR + layout;
-
-			String localeXml = xform.getLocaleXml();
-			if(localeXml != null && localeXml.length() > 0)
-				xml += XformConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR + localeXml;
-
-			String javaScriptSrc = xform.getJavaScriptSrc();
-			if(javaScriptSrc != null && javaScriptSrc.length() > 0)
-				xml += XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR + javaScriptSrc;
+			if(!"true".equals(request.getParameter("excludeLayout"))){
+				String layout = xform.getLayoutXml();
+				if(layout != null && layout.length() > 0)
+					xml += XformConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR + layout;
+	
+				String localeXml = xform.getLocaleXml();
+				if(localeXml != null && localeXml.length() > 0)
+					xml += XformConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR + localeXml;
+	
+				String javaScriptSrc = xform.getJavaScriptSrc();
+				if(javaScriptSrc != null && javaScriptSrc.length() > 0)
+					xml += XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR + javaScriptSrc;
+			}
 		}
 
 		response.setHeader(XformConstants.HTTP_HEADER_CONTENT_TYPE, XformConstants.HTTP_HEADER_CONTENT_TYPE_XML);
