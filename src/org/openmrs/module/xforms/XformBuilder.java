@@ -30,12 +30,14 @@ import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptSource;
+import org.openmrs.Encounter;
 import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
+import org.openmrs.Relationship;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.ConceptService;
@@ -2985,6 +2987,12 @@ public final class XformBuilder {
 		    "time",
 		    new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(
 		        XformConstants.GLOBAL_PROP_KEY_TIME_SUBMIT_FORMAT, XformConstants.DEFAULT_TIME_SUBMIT_FORMAT)));
+		
+		List<Encounter> encounters = Context.getEncounterService().getEncountersByPatientId(patient.getPatientId(), false);
+		velocityContext.put("patientEncounters", encounters);
+		
+		List<Relationship> relationships = Context.getPersonService().getRelationshipsByPerson(patient);
+		velocityContext.put("relationships", relationships);
 		
 		EventCartridge eventCartridge = new EventCartridge();
 		eventCartridge.addEventHandler(new VelocityExceptionHandler());
