@@ -117,7 +117,15 @@ public class FormEntryQueueProcessor {
 
 		// Now that we've determined the form used to create the XML data,
 		// we can obtain the associated XSLT to perform the transform to HL7.
-		String xsltDoc = form.getXslt();
+		String xsltDoc = null;
+		
+		try{
+			xsltDoc = form.getXslt();
+		}
+		catch(UnsupportedOperationException ex){
+			//TODO this is thrown by 1.9
+			//UnsupportedOperationException: XSLTs no longer exist on Forms. Use Form Attributes.
+		}
 
 		if(xsltDoc == null)
 			xsltDoc = BasicFormBuilder.getFormXslt();
