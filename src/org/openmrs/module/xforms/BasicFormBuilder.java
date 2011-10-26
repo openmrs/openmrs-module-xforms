@@ -43,7 +43,13 @@ public class BasicFormBuilder {
 	
 	
 	public static void addDefaultFields(Form form){
-		form.setXslt(getFormXslt());
+		try{
+			form.setXslt(getFormXslt());
+		}
+		catch(UnsupportedOperationException ex){
+			//TODO this is thrown by 1.9
+			//UnsupportedOperationException: XSLTs no longer exist on Forms. Use Form Attributes.
+		}
 		
 		FormService formService = Context.getFormService();
 		
