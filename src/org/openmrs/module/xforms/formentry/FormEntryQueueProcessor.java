@@ -27,6 +27,7 @@ import org.openmrs.User;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.hl7.HL7InQueue;
+import org.openmrs.hl7.HL7Source;
 import org.openmrs.module.xforms.BasicFormBuilder;
 import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformsService;
@@ -68,6 +69,7 @@ public class FormEntryQueueProcessor {
 		FormService formService = Context.getFormService();
 		Integer formId = null;
 		String hl7SourceKey = null;
+		HL7Source hl7Source = null;
 		String errorDetails = null;
 
 		// First we parse the FormEntry xml data to obtain the formId of the
@@ -110,6 +112,12 @@ public class FormEntryQueueProcessor {
 			
 			return null;
 		}
+		
+		// Get the HL7 source based on the form's encounter type
+        hl7Source = Context.getHL7Service().getHL7SourceByName(
+                Context.getAdministrationService().getGlobalProperty(
+                    FormEntryConstants.FORMENTRY_GP_DEFAULT_HL7_SOURCE,
+                    FormEntryConstants.FORMENTRY_DEFAULT_HL7_SOURCE_NAME));
 
 		// If source key not provided, use FormEntryQueue.formEntryQueueId
 		if (hl7SourceKey == null || hl7SourceKey.length() < 1)
@@ -173,7 +181,7 @@ public class FormEntryQueueProcessor {
 		// current FormEntry queue item into the archive.
 		HL7InQueue hl7InQueue = new HL7InQueue();
 		hl7InQueue.setHL7Data(out.toString());
-		hl7InQueue.setHL7Source(Context.getHL7Service().getHL7Source(1));
+		hl7InQueue.setHL7Source(/*hl7Source*/ Context.getHL7Service().getHL7Source(1));
 		hl7InQueue.setHL7SourceKey(hl7SourceKey);
 		//Context.getHL7Service().saveHL7InQueue(hl7InQueue);
 
