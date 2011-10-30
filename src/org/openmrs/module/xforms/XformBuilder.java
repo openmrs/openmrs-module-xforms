@@ -44,6 +44,7 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.formentry.FormEntryWrapper;
+import org.openmrs.module.xforms.util.XformBuilderUtil;
 import org.openmrs.module.xforms.util.XformsUtil;
 import org.openmrs.reporting.export.DataExportUtil.VelocityExceptionHandler;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
@@ -854,7 +855,7 @@ public final class XformBuilder {
 				if (name.equalsIgnoreCase(NODE_ENCOUNTER_LOCATION_ID))
 					populateLocations(controlNode);
 				else if (name.equalsIgnoreCase(NODE_ENCOUNTER_PROVIDER_ID))
-					populateProviders(controlNode);
+					populateProviders(controlNode, formNode, modelElement, bodyNode);
 				else if (name.equalsIgnoreCase(NODE_ENCOUNTER_ENCOUNTER_DATETIME))
 					setNodeValue(child, "'today()'"); //Set encounter date defaulting to today
 			}
@@ -899,8 +900,13 @@ public final class XformBuilder {
 	 * 
 	 * @param controlNode - the UI control node.
 	 */
-	private static void populateProviders(Element controlNode) {
+	private static void populateProviders(Element controlNode, Element formNode, Element modelNode, Element groupNode) {
 		try {
+			//If we are on 1.9 and above, try use the new provider API
+			if(XformBuilderUtil.populateProviders19(formNode, modelNode, groupNode)){
+				return;
+			}
+			
 			List<User> providers = Context.getUserService().getUsersByRole(new Role("Provider"));
 			for (User provider : providers) {
 				
@@ -2570,7 +2576,7 @@ public final class XformBuilder {
 	 * @param items
 	 * @param itemValues
 	 */
-	private static void addPatientNode(Element formNode, Element modelNode, Element bodyNode, String name, String type,
+	public static void addPatientNode(Element formNode, Element modelNode, Element bodyNode, String name, String type,
 	                                   String label, String hint, boolean required, boolean readonly, String controlType,
 	                                   String[] items, String[] itemValues, boolean visible, String nodeset) {
 		//add the model node
