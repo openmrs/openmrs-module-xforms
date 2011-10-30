@@ -21,7 +21,9 @@ import org.openmrs.util.FormConstants;
  */
 public class FormEntryConstants {
 	
-	
+	public static final String FORMENTRY_GP_DEFAULT_HL7_SOURCE = "formentry.default_hl7_source";
+    public static final String FORMENTRY_DEFAULT_HL7_SOURCE_NAME = "local";
+
 	/**
 	 * @deprecated Use org.openmrs.util.form.FormConstants.FIELD_TYPE_CONCEPT
 	 */
