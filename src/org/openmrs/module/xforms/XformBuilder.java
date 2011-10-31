@@ -903,9 +903,13 @@ public final class XformBuilder {
 	private static void populateProviders(Element controlNode, Element formNode, Element modelNode, Element groupNode) {
 		try {
 			//If we are on 1.9 and above, try use the new provider API
-			if(XformBuilderUtil.populateProviders19(formNode, modelNode, groupNode)){
+			if (XformsUtil.isOnePointNineAndAbove()) {
+				XformBuilderUtil.populateProviders(controlNode);
 				return;
 			}
+			/*if(XformBuilderUtil.populateProviders19(formNode, modelNode, groupNode)){
+				return;
+			}*/
 			
 			List<User> providers = Context.getUserService().getUsersByRole(new Role("Provider"));
 			for (User provider : providers) {

@@ -28,7 +28,7 @@ public class XformBuilderUtil {
 			//add the model node
 			Element dataNode = formNode.createElement(null, null);
 			dataNode.setName(name);
-			formNode.addChild(Element.ELEMENT, dataNode);
+			//formNode.addChild(Element.ELEMENT, dataNode);
 			
 			//add the model binding
 			Element bindingNode = modelNode.createElement(XformBuilder.NAMESPACE_XFORMS, null);
@@ -37,13 +37,13 @@ public class XformBuilderUtil {
 			bindingNode.setAttribute(null, XformBuilder.ATTRIBUTE_NODESET, "/" + XformBuilder.NODE_FORM + "/" + name);
 			bindingNode.setAttribute(null, XformBuilder.ATTRIBUTE_TYPE, XformBuilder.DATA_TYPE_TEXT);
 			
-			modelNode.addChild(Element.ELEMENT, bindingNode);
+			//modelNode.addChild(Element.ELEMENT, bindingNode);
 			
 			
 			//Create repeat group node
 			Element repeatGroupNode = groupNode.createElement(XformBuilder.NAMESPACE_XFORMS, null);
 			repeatGroupNode.setName(XformBuilder.NODE_GROUP);
-			groupNode.addChild(Element.ELEMENT, repeatGroupNode);
+			//groupNode.addChild(Element.ELEMENT, repeatGroupNode);
 			
 			//add the repeat group label
 			Element labelNode = repeatGroupNode.createElement(XformBuilder.NAMESPACE_XFORMS, null);
@@ -83,6 +83,10 @@ public class XformBuilderUtil {
 				    "The provider", true, false, XformBuilder.CONTROL_SELECT1, items, itemValues, true,
 				    "/" + XformBuilder.NODE_FORM + "/" + name + "/provider_id");
 			}
+			
+			formNode.addChild(Element.ELEMENT, dataNode);
+			modelNode.addChild(Element.ELEMENT, bindingNode);
+			groupNode.addChild(Element.ELEMENT, repeatGroupNode);
 
 			return true;
 		}
@@ -153,7 +157,7 @@ public class XformBuilderUtil {
 		}
 	}
 	
-	/*private static void populateProviders(Element controlNode) throws Exception {
+	public static void populateProviders(Element controlNode) throws Exception {
 		
 		Method method = Context.class.getMethod("getProviderService", null);
 		Object service = method.invoke(null);
@@ -199,5 +203,5 @@ public class XformBuilderUtil {
 			
 			controlNode.addChild(Element.ELEMENT, itemNode);
 		}
-	}*/
+	}
 }

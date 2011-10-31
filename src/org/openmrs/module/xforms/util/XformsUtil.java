@@ -766,4 +766,14 @@ public class XformsUtil {
 		
 		return convertedXml;
 	}
+	
+	public static boolean isOnePointNineAndAbove(){
+		try{
+			Method method = Context.class.getMethod("getProviderService", null);
+			return true;
+		}
+		catch(NoSuchMethodException ex){}
+		
+		return false;
+	}
 }
