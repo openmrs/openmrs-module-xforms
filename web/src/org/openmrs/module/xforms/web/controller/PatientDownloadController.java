@@ -80,7 +80,7 @@ public class PatientDownloadController extends SimpleFormController{
 				if(request.getParameter(XformConstants.REQUEST_PARAM_DOWNLOAD_COHORTS) != null)
 					PatientDownloadManager.downloadCohorts(response.getOutputStream(),serializerKey);
 				else
-					PatientDownloadManager.downloadPatients(request.getParameter("cohortId"), response.getOutputStream(), serializerKey);
+					PatientDownloadManager.downloadPatients(request.getParameter("cohortId"), response.getOutputStream(), serializerKey, false);
 			}
 		}
 		else{

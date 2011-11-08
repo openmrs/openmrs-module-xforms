@@ -13,12 +13,16 @@ import org.openmrs.Cohort;
 import org.openmrs.Patient;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
+import org.openmrs.cohort.CohortSearchHistory;
 import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformsService;
 import org.openmrs.module.xforms.model.PatientData;
 import org.openmrs.module.xforms.model.PatientTableField;
 import org.openmrs.module.xforms.model.PatientTableFieldBuilder;
 import org.openmrs.module.xforms.util.XformsUtil;
+import org.openmrs.reporting.PatientSearch;
+import org.openmrs.reporting.PatientSearchReportObject;
+import org.openmrs.util.OpenmrsConstants;
 
 
 /**
@@ -27,38 +31,48 @@ import org.openmrs.module.xforms.util.XformsUtil;
  * @author Daniel
  *
  */
+@SuppressWarnings("deprecation")
 public class PatientDownloadManager {
 
 	private static Log log = LogFactory.getLog(PatientDownloadManager.class);
 
 
-	public static void downloadPatients(String cohortId, OutputStream os, String serializerKey) throws Exception{
-
+	public static void downloadPatients(String cohortId, OutputStream os, String serializer, boolean isSavedSearch) throws Exception{
 		if(cohortId == null)
 			cohortId = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_PATIENT_DOWNLOAD_COHORT);
 
-		if(serializerKey == null)
-			serializerKey = XformConstants.GLOBAL_PROP_KEY_PATIENT_SERIALIZER;
+		if(serializer == null)
+			serializer = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_PATIENT_SERIALIZER);
 
 		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
-		XformsUtil.invokeSerializationMethod("serialize",os,serializerKey , XformConstants.DEFAULT_PATIENT_SERIALIZER, getPatientData(cohortId,xformsService));
+		XformsUtil.invokeSerializationMethod("serialize",os,serializer , XformConstants.DEFAULT_PATIENT_SERIALIZER, getPatientData(cohortId,xformsService,isSavedSearch));
 	}
 
-	public static void downloadPatients(String name, String identifier, OutputStream os,String serializerKey) throws Exception{
-		if(serializerKey == null)
-			serializerKey = XformConstants.GLOBAL_PROP_KEY_PATIENT_SERIALIZER;
+	public static void downloadPatients(String name, String identifier, OutputStream os,String serializer) throws Exception{
+		if(serializer == null)
+			serializer = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_PATIENT_SERIALIZER);
 
 		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
-		XformsUtil.invokeSerializationMethod("serialize",os, serializerKey, XformConstants.DEFAULT_PATIENT_SERIALIZER, getPatientData(name,identifier,xformsService));
+		XformsUtil.invokeSerializationMethod("serialize",os, serializer, XformConstants.DEFAULT_PATIENT_SERIALIZER, getPatientData(name,identifier,xformsService));
 	}
 
-	private static PatientData getPatientData(String sCohortId,XformsService xformsService){
+	private static PatientData getPatientData(String sCohortId,XformsService xformsService, boolean isSavedSearch){
 		//Context.openSession(); //This prevents the bluetooth server from failing with the form field lazy load exception.
 		PatientData patientData  = new PatientData();
-
+		Cohort cohort = null;;
 		Integer cohortId = getCohortId(sCohortId);
 		if(cohortId != null){
-			Cohort cohort = Context.getCohortService().getCohort(cohortId);
+			if (!isSavedSearch)
+				cohort = Context.getCohortService().getCohort(cohortId);
+			else {
+				CohortSearchHistory history= new CohortSearchHistory();
+				PatientSearchReportObject patientSearchReportObject = (PatientSearchReportObject) Context.getReportObjectService().getReportObject(cohortId);
+				if (patientSearchReportObject != null){
+					history.addSearchItem(PatientSearch.createSavedSearchReference(cohortId));
+					cohort = history.getPatientSet(0, null);
+				}
+			}
+			
 			if(cohort != null){
 				Set<Integer> patientIds = cohort.getMemberIds();
 				if(patientIds != null && patientIds.size() > 0){
@@ -82,7 +96,7 @@ public class PatientDownloadManager {
 
 		return patientData;
 	}
-
+	
 	private static PatientData getPatientData(String name, String identifier,XformsService xformsService){
 		//Context.openSession(); //This prevents the bluetooth server from failing with the form field lazy load exception.
 		PatientData patientData  = new PatientData();
@@ -138,10 +152,17 @@ public class PatientDownloadManager {
 		return patients;
 	}
 
-	public static void downloadCohorts(OutputStream os, String serializerKey) throws Exception{
-		if(serializerKey == null)
-			serializerKey = XformConstants.GLOBAL_PROP_KEY_COHORT_SERIALIZER;
+	public static void downloadCohorts(OutputStream os, String serializer) throws Exception{
+		if(serializer == null)
+				serializer = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_COHORT_SERIALIZER);
 
-		XformsUtil.invokeSerializationMethod("serialize",os, serializerKey, XformConstants.DEFAULT_COHORT_SERIALIZER, Context.getCohortService().getCohorts());
+		XformsUtil.invokeSerializationMethod("serialize",os, serializer, XformConstants.DEFAULT_COHORT_SERIALIZER, Context.getCohortService().getCohorts());
+	}
+	
+	public static void downloadSavesSearches(OutputStream os, String serializer) throws Exception{
+		if(serializer == null)
+				serializer =  Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_SAVED_SEARCH_SERIALIZER);
+
+		XformsUtil.invokeSerializationMethod("serialize",os, serializer, XformConstants.DEFAULT_SAVED_SEARCH_SERIALIZER, Context.getReportObjectService().getReportObjectsByType(OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTSEARCH));
 	}
 }

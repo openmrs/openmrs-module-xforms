@@ -181,6 +181,9 @@ public class XformConstants {
     
     /** The global property key for the cohort serializer class.*/
     public static final String GLOBAL_PROP_KEY_COHORT_SERIALIZER = "xforms.cohortSerializer";
+    
+    /** The global property key for the cohort serializer class.*/
+    public static final String GLOBAL_PROP_KEY_SAVED_SEARCH_SERIALIZER = "xforms.savedSearchSerializer";
 	
 	/** The global property key for the xform serializer class.*/
 	public static final String GLOBAL_PROP_KEY_XFORM_SERIALIZER = "xforms.xformSerializer";
@@ -211,6 +214,9 @@ public class XformConstants {
 	
     /** The default value for the cohort serializer class.*/
     public static final String DEFAULT_COHORT_SERIALIZER = "org.openmrs.module.xforms.DefaultCohortSerializer";
+    
+    /** The default value for the saved search serializer class.*/
+    public static final String DEFAULT_SAVED_SEARCH_SERIALIZER = "org.openmrs.module.xforms.DefaultSavedSearchSerializer";
 
 	/** The default value for the xform serializer class.*/
 	public static final String DEFAULT_XFORM_SERIALIZER = "org.openmrs.module.xforms.DefaultXformSerializer";

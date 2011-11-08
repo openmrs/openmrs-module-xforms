@@ -45,11 +45,17 @@ public class XformsServer {
 	/** Action to download a list of patients from the server. */
 	public static final byte ACTION_DOWNLOAD_PATIENTS = 6;
 
-	/** Action to download a list of patients from the server. */
+	/** Action to download a list of users from the server. */
 	public static final byte ACTION_DOWNLOAD_USERS = 7;
 
 	/** Action to download a list of users and forms from the server. */
 	public static final byte ACTION_DOWNLOAD_COHORTS = 8;
+	
+	/** Action to download a list of users and forms from the server. */
+	public static final byte ACTION_DOWNLOAD_SAVED_SEARCHES = 9;
+	
+	/** Action to download a list of patients from the server. */
+	public static final byte ACTION_DOWNLOAD_SS_PATIENTS = 10;
 
 	/** Action to download a list of users and forms from the server. */
 	public static final byte ACTION_DOWNLOAD_USERS_AND_FORMS = 11;
@@ -85,11 +91,11 @@ public class XformsServer {
 
 			String name = dis.readUTF();
 			String pw = dis.readUTF();
-			String serializerKey = dis.readUTF();
+			String serializer = dis.readUTF();
+			@SuppressWarnings("unused")
 			String locale = dis.readUTF();
 			
 			byte action = dis.readByte();
-				
 			Context.openSession();
 			
 			try{
@@ -103,19 +109,23 @@ public class XformsServer {
 				DataOutputStream dosTemp = new DataOutputStream(baos);
 				
 				if (action == ACTION_DOWNLOAD_PATIENTS)
-					downloadPatients(String.valueOf(dis.readInt()), dosTemp,null);
+					downloadPatients(String.valueOf(dis.readInt()), dosTemp,serializer, false);
+				else if(action == ACTION_DOWNLOAD_SS_PATIENTS)
+					downloadPatients(String.valueOf(dis.readInt()), dosTemp,serializer, true);
 				else if(action == ACTION_DOWNLOAD_COHORTS)
-					PatientDownloadManager.downloadCohorts(dosTemp,null);
+					PatientDownloadManager.downloadCohorts(dosTemp,serializer);
+				else if(action == ACTION_DOWNLOAD_SAVED_SEARCHES)
+					PatientDownloadManager.downloadSavesSearches(dosTemp, serializer);
 				else if (action == ACTION_DOWNLOAD_FORMS)
-					XformDownloadManager.downloadXforms(dosTemp,serializerKey);
+					XformDownloadManager.downloadXforms(dosTemp,serializer);
 				else if (action == ACTION_UPLOAD_FORMS)
-					submitXforms(dis, dosTemp,serializerKey);
+					submitXforms(dis, dosTemp,serializer);
 				else if (action == ACTION_DOWNLOAD_USERS)
-					UserDownloadManager.downloadUsers(dosTemp,serializerKey);
+					UserDownloadManager.downloadUsers(dosTemp,serializer);
 				else if (action == ACTION_DOWNLOAD_USERS_AND_FORMS)
-					downloadUsersAndForms(dosTemp,serializerKey);
+					downloadUsersAndForms(dosTemp,serializer);
 				else if(action == ACTION_DOWNLOAD_FILTERED_PATIENTS)
-					downloadPatients(dis.readUTF(), dis.readUTF(), dosTemp,serializerKey);
+					downloadPatients(dis.readUTF(), dis.readUTF(), dosTemp,serializer);
 
 				responseStatus = ResponseStatus.STATUS_SUCCESS;
 			}
@@ -144,12 +154,12 @@ public class XformsServer {
 		}
 	}
 
-	private void downloadPatients(String cohortId, OutputStream os, String serializerKey) throws Exception{
+	private void downloadPatients(String cohortId, OutputStream os, String serializer, boolean isSavedSearch) throws Exception{
 		
 		//Context.openSession();
 		
 		try{
-			PatientDownloadManager.downloadPatients(cohortId, os, serializerKey);
+			PatientDownloadManager.downloadPatients(cohortId, os, serializer, isSavedSearch);
 		}
 		finally{
 			//Context.closeSession();

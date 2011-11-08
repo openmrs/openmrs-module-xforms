@@ -540,18 +540,17 @@ public class XformsUtil {
 	 * Auto generated method comment
 	 * 
 	 * @param os
-	 * @param globalPropKey
+	 * @param serializerClass
 	 * @param defaultClassName
 	 * @param data
 	 * @throws Exception
 	 */
-	public static void invokeSerializationMethod(String methodName, OutputStream os, String globalPropKey,
+	public static void invokeSerializationMethod(String methodName, OutputStream os, String serializerClass,
 	                                             String defaultClassName, Object data) throws Exception {
-		String className = Context.getAdministrationService().getGlobalProperty(globalPropKey);
-		if (className == null || className.length() == 0)
-			className = defaultClassName;
+		if (serializerClass == null || serializerClass.length() == 0)
+			serializerClass = defaultClassName;
 		
-		Object obj = OpenmrsClassLoader.getInstance().loadClass(className).newInstance();
+		Object obj = OpenmrsClassLoader.getInstance().loadClass(serializerClass).newInstance();
 		
 		if (methodName.equals("serializeForms")) {
 			Method method = obj.getClass().getMethod(methodName,

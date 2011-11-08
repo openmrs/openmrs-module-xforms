@@ -57,6 +57,11 @@
 		<description>The patient cohort (cohort_id and name) serializer</description>
 	</globalProperty>
 	<globalProperty>
+		<property>@MODULE_ID@.savedSearchSerializer</property>
+		<defaultValue>org.openmrs.module.xforms.serialization.DefaultSavedSearchSerializer</defaultValue>
+		<description>The patient saved search serializer</description>
+	</globalProperty>
+	<globalProperty>
 		<property>@MODULE_ID@.userSerializer</property>
 		<defaultValue>org.openmrs.module.xforms.serialization.DefaultUserSerializer</defaultValue>
 		<description>The user set serializer</description>
