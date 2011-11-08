@@ -19,7 +19,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -532,7 +531,7 @@ public class XformsUtil {
 	 * @return
 	 */
 	public static String getSchema(Form form) {
-		//TODO I need some implementattion here.
+		//TODO I need some implementation here.
 		return FormEntryWrapper.getSchema(form);//((FormEntryService)Context.getService(FormEntryService.class)).getSchema(form);
 	}
 	
@@ -545,8 +544,10 @@ public class XformsUtil {
 	 * @param data
 	 * @throws Exception
 	 */
-	public static void invokeSerializationMethod(String methodName, OutputStream os, String serializerClass,
+	public static void invokeSerializationMethod(String methodName, OutputStream os, String globalPropKey,
 	                                             String defaultClassName, Object data) throws Exception {
+		String serializerClass = Context.getAdministrationService().getGlobalProperty(globalPropKey);
+		
 		if (serializerClass == null || serializerClass.length() == 0)
 			serializerClass = defaultClassName;
 		

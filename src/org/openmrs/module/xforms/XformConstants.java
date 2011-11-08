@@ -182,7 +182,7 @@ public class XformConstants {
     /** The global property key for the cohort serializer class.*/
     public static final String GLOBAL_PROP_KEY_COHORT_SERIALIZER = "xforms.cohortSerializer";
     
-    /** The global property key for the cohort serializer class.*/
+    /** The global property key for the saved search serializer class.*/
     public static final String GLOBAL_PROP_KEY_SAVED_SEARCH_SERIALIZER = "xforms.savedSearchSerializer";
 	
 	/** The global property key for the xform serializer class.*/
@@ -207,19 +207,19 @@ public class XformConstants {
 	public static final String GLOBAL_PROP_KEY_PREFERRED_CONCEPT_SOURCE = "xforms.preferredConceptSource";
 	
 	/** The default value for the user serializer class.*/
-	public static final String DEFAULT_USER_SERIALIZER= "org.openmrs.module.xforms.DefaultUserSerializer";
+	public static final String DEFAULT_USER_SERIALIZER= "org.openmrs.module.xforms.serialization.DefaultUserSerializer";
 	
 	/** The default value for the patient serializer class.*/
-	public static final String DEFAULT_PATIENT_SERIALIZER = "org.openmrs.module.xforms.DefaultPatientSerializer";
+	public static final String DEFAULT_PATIENT_SERIALIZER = "org.openmrs.module.xforms.serialization.DefaultPatientSerializer";
 	
     /** The default value for the cohort serializer class.*/
-    public static final String DEFAULT_COHORT_SERIALIZER = "org.openmrs.module.xforms.DefaultCohortSerializer";
+    public static final String DEFAULT_COHORT_SERIALIZER = "org.openmrs.module.xforms.serialization.DefaultCohortSerializer";
     
     /** The default value for the saved search serializer class.*/
-    public static final String DEFAULT_SAVED_SEARCH_SERIALIZER = "org.openmrs.module.xforms.DefaultSavedSearchSerializer";
+    public static final String DEFAULT_SAVED_SEARCH_SERIALIZER = "org.openmrs.module.xforms.serialization.DefaultSavedSearchSerializer";
 
 	/** The default value for the xform serializer class.*/
-	public static final String DEFAULT_XFORM_SERIALIZER = "org.openmrs.module.xforms.DefaultXformSerializer";
+	public static final String DEFAULT_XFORM_SERIALIZER = "org.openmrs.module.xforms.serialization.DefaultXformSerializer";
 	
 	/** The session form node. */
 	public static final String NODE_SESSION = "session";

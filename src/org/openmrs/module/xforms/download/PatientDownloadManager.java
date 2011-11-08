@@ -37,23 +37,23 @@ public class PatientDownloadManager {
 	private static Log log = LogFactory.getLog(PatientDownloadManager.class);
 
 
-	public static void downloadPatients(String cohortId, OutputStream os, String serializer, boolean isSavedSearch) throws Exception{
+	public static void downloadPatients(String cohortId, OutputStream os, String serializerKey, boolean isSavedSearch) throws Exception{
 		if(cohortId == null)
 			cohortId = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_PATIENT_DOWNLOAD_COHORT);
 
-		if(serializer == null)
-			serializer = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_PATIENT_SERIALIZER);
+		if(serializerKey == null)
+			serializerKey = XformConstants.GLOBAL_PROP_KEY_PATIENT_SERIALIZER;
 
 		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
-		XformsUtil.invokeSerializationMethod("serialize",os,serializer , XformConstants.DEFAULT_PATIENT_SERIALIZER, getPatientData(cohortId,xformsService,isSavedSearch));
+		XformsUtil.invokeSerializationMethod("serialize",os,serializerKey , XformConstants.DEFAULT_PATIENT_SERIALIZER, getPatientData(cohortId,xformsService,isSavedSearch));
 	}
 
-	public static void downloadPatients(String name, String identifier, OutputStream os,String serializer) throws Exception{
-		if(serializer == null)
-			serializer = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_PATIENT_SERIALIZER);
+	public static void downloadPatients(String name, String identifier, OutputStream os,String serializerKey) throws Exception{
+		if(serializerKey == null)
+			serializerKey = XformConstants.GLOBAL_PROP_KEY_PATIENT_SERIALIZER;
 
 		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
-		XformsUtil.invokeSerializationMethod("serialize",os, serializer, XformConstants.DEFAULT_PATIENT_SERIALIZER, getPatientData(name,identifier,xformsService));
+		XformsUtil.invokeSerializationMethod("serialize",os, serializerKey, XformConstants.DEFAULT_PATIENT_SERIALIZER, getPatientData(name,identifier,xformsService));
 	}
 
 	private static PatientData getPatientData(String sCohortId,XformsService xformsService, boolean isSavedSearch){
@@ -152,17 +152,17 @@ public class PatientDownloadManager {
 		return patients;
 	}
 
-	public static void downloadCohorts(OutputStream os, String serializer) throws Exception{
-		if(serializer == null)
-				serializer = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_COHORT_SERIALIZER);
+	public static void downloadCohorts(OutputStream os, String serializerKey) throws Exception{
+		if(serializerKey == null)
+				serializerKey = XformConstants.GLOBAL_PROP_KEY_COHORT_SERIALIZER;
 
-		XformsUtil.invokeSerializationMethod("serialize",os, serializer, XformConstants.DEFAULT_COHORT_SERIALIZER, Context.getCohortService().getCohorts());
+		XformsUtil.invokeSerializationMethod("serialize",os, serializerKey, XformConstants.DEFAULT_COHORT_SERIALIZER, Context.getCohortService().getCohorts());
 	}
 	
-	public static void downloadSavesSearches(OutputStream os, String serializer) throws Exception{
-		if(serializer == null)
-				serializer =  Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_SAVED_SEARCH_SERIALIZER);
+	public static void downloadSavesSearches(OutputStream os, String serializerKey) throws Exception{
+		if(serializerKey == null)
+				serializerKey =  XformConstants.GLOBAL_PROP_KEY_SAVED_SEARCH_SERIALIZER;
 
-		XformsUtil.invokeSerializationMethod("serialize",os, serializer, XformConstants.DEFAULT_SAVED_SEARCH_SERIALIZER, Context.getReportObjectService().getReportObjectsByType(OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTSEARCH));
+		XformsUtil.invokeSerializationMethod("serialize",os, serializerKey, XformConstants.DEFAULT_SAVED_SEARCH_SERIALIZER, Context.getReportObjectService().getReportObjectsByType(OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTSEARCH));
 	}
 }
