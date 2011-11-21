@@ -321,6 +321,13 @@
 		<defaultValue>true</defaultValue>
 		<description>Set to true if you want to display the Preview tab of the form designer.</description>
 	</globalProperty>
+	
+	<globalProperty>
+		<property>@MODULE_ID@.usingJQuery</property>
+		<defaultValue>false</defaultValue>
+		<description>Set to true for OpenMRS versions (1.7++) using jQuery, else false.</description>
+	</globalProperty>
+	
 	<!-- /Required Global Properties -->
 
 	<!-- /Xforms Module Properties -->

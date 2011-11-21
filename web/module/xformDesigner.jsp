@@ -11,6 +11,24 @@
     <openmrs:htmlInclude file="/openmrs.js" />
     <openmrs:htmlInclude file="/moduleResources/xforms/formdesigner/FormDesigner.nocache.js"/>
 
+	<c:if test="${empty DO_NOT_INCLUDE_JQUERY}">
+		<openmrs:htmlInclude file="/scripts/jquery/jquery.min.js" />
+		<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui.custom.min.js" />
+	          <openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-timepicker-addon.js" />
+		<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-datepicker-i18n.js" />
+		<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-timepicker-i18n.js" />
+		
+		<c:if test="${usingJQuery}">
+        	<link href="<openmrs:contextPath/>/scripts/jquery-ui/css/<spring:theme code='jqueryui.theme.name' />/jquery-ui.custom.css" type="text/css" rel="stylesheet" />
+		
+			<script type="text/javascript">
+				<c:if test="${empty DO_NOT_INCLUDE_JQUERY}">
+					var $j = jQuery.noConflict();
+				</c:if>
+			</script>
+		</c:if>
+
+	</c:if>
 
   </head>
   <body>
@@ -120,6 +138,8 @@
     
    <script language="javascript">
 		
+   		var txtConcept;
+   		
     	var PurcformsText = {
      	    	file: "<spring:message code="xforms.file" />",
     	    	view: "<spring:message code="xforms.view" />",
@@ -480,10 +500,10 @@
     			txtElement = textElement;
     			
     			if(txtConcept == null){
-    				txtConcept = document.getElementById("conceptId_selection");
+    				txtConcept = document.getElementById("conceptId_id_selection");
     				txtConcept.parentNode.removeChild(txtConcept);
     				
-    				blurEventHandler = txtConcept.onblur;
+    				/*blurEventHandler = txtConcept.onblur;
     				
     				txtConcept.onblur=function(){
     					//alert('yo men')
@@ -493,7 +513,7 @@
     		    		
     		    		txtConcept.onblur = blurEventHandler;
     		    		txtConcept.onblur();
-    					};
+    				};*/
     			}
     			else{
     				valElement.value = '';
@@ -529,8 +549,6 @@
     		//valElement.style.width = txtConcept.style.width;
     		
     		valElement.focus();
-    		
-    		alert(item);
     	}
 
 

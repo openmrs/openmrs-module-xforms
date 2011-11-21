@@ -94,6 +94,9 @@
 
 
 <script language="javascript">
+
+	var txtConcept;
+
 	var PurcformsText = {
 	    	file: "<spring:message code="xforms.file" />",
 	    	view: "<spring:message code="xforms.view" />",
@@ -419,35 +422,91 @@
 	}
 
 	function searchExternal(key,value,parentElement,textElement,valueElement,filterField){
-		var searchWidget = dojo.widget.manager.getWidgetById("conceptId_search");
-		searchWidget.includeClasses = (filterField == null ? [] : filterField.split(","));
+		if (typeof(dojo) != "undefined"){
+			var searchWidget = dojo.widget.manager.getWidgetById("conceptId_search");
+			searchWidget.includeClasses = (filterField == null ? [] : filterField.split(","));
+		
+			var selectionWidget = dojo.widget.manager.getWidgetById("conceptId_selection");
+	 		selectionWidget.displayNode = textElement;
 	
-		var selectionWidget = dojo.widget.manager.getWidgetById("conceptId_selection");
- 		selectionWidget.displayNode = textElement;
-
-		selectionWidget.hiddenInputNode = valueElement;
-		
-		searchWidget.clearSearch();
-		searchWidget.toggleShowing();
-
-
-		var left = dojo.style.totalOffsetLeft(parentElement.parentNode, false) + dojo.style.getBorderBoxWidth(parentElement.parentNode) + 10;
-		if (left + dojo.style.getBorderBoxWidth(searchWidget.domNode) > dojo.html.getViewportWidth())
-			left = dojo.html.getViewportWidth() - dojo.style.getBorderBoxWidth(searchWidget.domNode) - 10 + dojo.html.getScrollLeft();
-		
-		var top = dojo.style.totalOffsetTop(parentElement.parentNode, true);
-		var scrollTop = dojo.html.getScrollTop();
-		var boxHeight = dojo.style.getBorderBoxHeight(searchWidget.domNode);
-		var viewportHeight = dojo.html.getViewportHeight();
-		if ((top + boxHeight - scrollTop) > viewportHeight - 5)
-			top = viewportHeight - boxHeight + scrollTop - 10;
+			selectionWidget.hiddenInputNode = valueElement;
+			
+			searchWidget.clearSearch();
+			searchWidget.toggleShowing();
 	
-		dojo.style.setPositivePixelValue(searchWidget.domNode, "top", top);
-
-		dojo.style.setPositivePixelValue(searchWidget.domNode, "left", left);
+	
+			var left = dojo.style.totalOffsetLeft(parentElement.parentNode, false) + dojo.style.getBorderBoxWidth(parentElement.parentNode) + 10;
+			if (left + dojo.style.getBorderBoxWidth(searchWidget.domNode) > dojo.html.getViewportWidth())
+				left = dojo.html.getViewportWidth() - dojo.style.getBorderBoxWidth(searchWidget.domNode) - 10 + dojo.html.getScrollLeft();
+			
+			var top = dojo.style.totalOffsetTop(parentElement.parentNode, true);
+			var scrollTop = dojo.html.getScrollTop();
+			var boxHeight = dojo.style.getBorderBoxHeight(searchWidget.domNode);
+			var viewportHeight = dojo.html.getViewportHeight();
+			if ((top + boxHeight - scrollTop) > viewportHeight - 5)
+				top = viewportHeight - boxHeight + scrollTop - 10;
 		
-		searchWidget.inputNode.select();
-		searchWidget.inputNode.value = value;
+			dojo.style.setPositivePixelValue(searchWidget.domNode, "top", top);
+	
+			dojo.style.setPositivePixelValue(searchWidget.domNode, "left", left);
+			
+			searchWidget.inputNode.select();
+			searchWidget.inputNode.value = value;
+		}
+		else{
+			valElement = valueElement;
+			txtElement = textElement;
+			
+			if(txtConcept == null){
+				txtConcept = document.getElementById("conceptId_id_selection");
+				txtConcept.parentNode.removeChild(txtConcept);
+				
+				/*blurEventHandler = txtConcept.onblur;
+				
+				txtConcept.onblur=function(){
+					//alert('yo men')
+					var parent = txtConcept.parentNode;
+		    		parent.removeChild(txtConcept);
+		    		parent.appendChild(valElement);
+		    		
+		    		txtConcept.onblur = blurEventHandler;
+		    		txtConcept.onblur();
+				};*/
+			}
+			else{
+				valElement.value = '';
+	    		txtElement.innerHTML = '';
+			}
+			
+			txtConcept.style.height = valueElement.parentNode.parentNode.parentNode.parentNode.style.height;
+			txtConcept.style.width = valueElement.parentNode.parentNode.parentNode.parentNode.style.width;
+			
+			var parent = valueElement.parentNode;
+			parent.removeChild(valueElement);
+			
+			//valueElement.style.visibility="hidden";
+			//valueElement.style.height = "0px";
+			//valueElement.style.width = "0px";
+			
+			parent.appendChild(txtConcept);
+			txtConcept.value = value;
+			txtConcept.focus();
+		}
+	}
+	
+	function funcconceptIdAutoCompleteOnSelect(concept, item) {	
+		valElement.value = concept.name;
+		txtElement.innerHTML = concept.conceptId + "^" + concept.name + "^99DCT";
+		
+		var parent = txtConcept.parentNode;
+		parent.removeChild(txtConcept);
+		parent.appendChild(valElement);
+		
+		//valElement.style.visibility="visible";
+		//valElement.style.height = txtConcept.style.height;
+		//valElement.style.width = txtConcept.style.width;
+		
+		valElement.focus();
 	}
 	
 </script>
