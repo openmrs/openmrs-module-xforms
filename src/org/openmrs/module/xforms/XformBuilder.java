@@ -7,10 +7,13 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -1193,6 +1196,8 @@ public final class XformBuilder {
 	                                Hashtable bindings, Hashtable<String, String> problemList,
 	                                Hashtable<String, String> problemListItems) {
 		Hashtable<String, Element> repeatControls = new Hashtable<String, Element>();
+		Hashtable<String, List<String>> duplicateFields = new Hashtable<String, List<String>>();
+		
 		int numOfEntries = rootNode.getChildCount();
 		for (int i = 0; i < numOfEntries; i++) {
 			if (rootNode.isText(i))
@@ -1200,9 +1205,27 @@ public final class XformBuilder {
 			
 			Element child = rootNode.getElement(i);
 			String name = child.getName();
-			if (name.equalsIgnoreCase(NODE_COMPLEXTYPE) && isUserDefinedSchemaElement(child))
+			if (name.equalsIgnoreCase(NODE_COMPLEXTYPE) && isUserDefinedSchemaElement(child)) {
 				parseComplexType(child, child.getAttributeValue(null, ATTRIBUTE_NAME), bodyNode, xformSchemaNode, bindings,
 				    problemList, problemListItems, repeatControls, modelNode);
+				
+				Set<Entry<String, List<String>>> entries = duplicateFields.entrySet();
+				for(Entry<String, List<String>> entry : entries){
+					String key = child.getAttributeValue(null, ATTRIBUTE_NAME);
+					if(!key.equals(entry.getKey()))
+						continue;
+					
+					String firstField = key.substring(0, key.indexOf("_type"));
+					List<String>  fields = entry.getValue();
+					for(String field : fields){
+						if(field.equals(firstField))
+							continue;
+						
+						parseComplexType(child, field + "_type", bodyNode, xformSchemaNode, bindings,
+						    problemList, problemListItems, repeatControls, modelNode);
+					}
+				}
+			}
 			else {
 				String nameAttribute = child.getAttributeValue(null, ATTRIBUTE_NAME);
 				if (name.equalsIgnoreCase(NODE_SIMPLETYPE)
@@ -1211,37 +1234,59 @@ public final class XformBuilder {
 					xformSchemaNode.addChild(0, Element.ELEMENT, child);
 				
 				if ("obs_section".equalsIgnoreCase(nameAttribute))
-					parseObsSectionRepeats(child, bindings, problemList);
+					parseObsSectionRepeats(child, bindings, problemList, duplicateFields);
 			}
 			
-			if (name.equalsIgnoreCase(NODE_SIMPLETYPE))
+			if (name.equalsIgnoreCase(NODE_SIMPLETYPE)){
 				parseSimpleType(child, child.getAttributeValue(null, ATTRIBUTE_NAME), bindings);
+				
+				Set<Entry<String, List<String>>> entries = duplicateFields.entrySet();
+				for(Entry<String, List<String>> entry : entries){
+					String key = child.getAttributeValue(null, ATTRIBUTE_NAME);
+					if(!key.equals(entry.getKey() + "_restricted_type"))
+						continue;
+					
+					String firstField = key.substring(0, key.indexOf("_type"));
+					List<String>  fields = entry.getValue();
+					for(String field : fields){
+						if(field.equals(firstField))
+							continue;
+						
+						parseSimpleType(child, field + "_type", bindings);
+					}
+				}
+			}
 		}
 	}
 	
 	private static void parseObsSectionRepeats(Element complexTypeNode, Hashtable bindings,
-	                                           Hashtable<String, String> problemList) {
+	                                           Hashtable<String, String> problemList, Hashtable<String, 
+	                                           List<String>> duplicateFields) {
 		for (int i = 0; i < complexTypeNode.getChildCount(); i++) {
 			if (complexTypeNode.isText(i))
 				continue; //ignore text.
 				
 			Element child = (Element) complexTypeNode.getElement(i);
 			if (child.getName().equalsIgnoreCase(NODE_SEQUENCE)) {
-				parseObsSectionSequenceRepeats(child, bindings, problemList);
+				parseObsSectionSequenceRepeats(child, bindings, problemList, duplicateFields);
 				return;
 			}
 		}
 	}
 	
 	private static void parseObsSectionSequenceRepeats(Element sequenceNode, Hashtable bindings,
-	                                                   Hashtable<String, String> problemList) {
+	                                                   Hashtable<String, String> problemList, 
+	                                                   Hashtable<String, List<String>> duplicateFields) {
+		
+		Hashtable<String, List<String>> fieldMap = new Hashtable<String, List<String>>();
+		
 		for (int i = 0; i < sequenceNode.getChildCount(); i++) {
 			if (sequenceNode.isText(i))
 				continue; //ignore text.
 				
 			Element child = (Element) sequenceNode.getElement(i);
+			String name = child.getAttributeValue(null, ATTRIBUTE_NAME);
 			if ("unbounded".equalsIgnoreCase(child.getAttributeValue(null, ATTRIBUTE_MAXOCCURS))) {
-				String name = child.getAttributeValue(null, ATTRIBUTE_NAME);
 				problemList.put(name, name);
 				
 				/*obsRepeatItems.put(name, name);
@@ -1252,6 +1297,18 @@ public final class XformBuilder {
 					if(nodeset.endsWith("/value"))
 						bindNode.setAttribute(null, ATTRIBUTE_NODESET, nodeset.substring(0, nodeset.length() - 6));
 				}*/
+			}
+			
+			String type = child.getAttributeValue(null, ATTRIBUTE_TYPE);
+			List<String> fields = fieldMap.get(type);
+			if(fields == null){
+				fields = new ArrayList<String>();
+				fields.add(name);
+				fieldMap.put(type, fields);
+			}
+			else{
+				fields.add(name);
+				duplicateFields.put(type, fields);
 			}
 		}
 	}
