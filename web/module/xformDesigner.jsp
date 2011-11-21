@@ -12,13 +12,13 @@
     <openmrs:htmlInclude file="/moduleResources/xforms/formdesigner/FormDesigner.nocache.js"/>
 
 	<c:if test="${empty DO_NOT_INCLUDE_JQUERY}">
-		<openmrs:htmlInclude file="/scripts/jquery/jquery.min.js" />
-		<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui.custom.min.js" />
-	          <openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-timepicker-addon.js" />
-		<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-datepicker-i18n.js" />
-		<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-timepicker-i18n.js" />
-		
 		<c:if test="${usingJQuery}">
+			<openmrs:htmlInclude file="/scripts/jquery/jquery.min.js" />
+			<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui.custom.min.js" />
+		          <openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-timepicker-addon.js" />
+			<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-datepicker-i18n.js" />
+			<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-timepicker-i18n.js" />
+		
         	<link href="<openmrs:contextPath/>/scripts/jquery-ui/css/<spring:theme code='jqueryui.theme.name' />/jquery-ui.custom.css" type="text/css" rel="stylesheet" />
 		
 			<script type="text/javascript">

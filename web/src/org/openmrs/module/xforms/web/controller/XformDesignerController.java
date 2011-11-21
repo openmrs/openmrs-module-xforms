@@ -10,10 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Form;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.xforms.BasicFormBuilder;
 import org.openmrs.module.xforms.XformConstants;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.servlet.ModelAndView;
@@ -82,7 +81,7 @@ public class XformDesignerController extends SimpleFormController {
 		map.put("saveFormat", Context.getAdministrationService().getGlobalProperty("xforms.saveFormat","purcforms"));
 		map.put("undoRedoBufferSize", Context.getAdministrationService().getGlobalProperty("xforms.undoRedoBufferSize","100"));
 		map.put("overwriteValidationsOnRefresh", Context.getAdministrationService().getGlobalProperty("xforms.overwriteValidationsOnRefresh","false"));
-		map.put("usingJQuery", Context.getAdministrationService().getGlobalProperty("xforms.usingJQuery","false"));
+		map.put("usingJQuery", usesJquery());
 
 		String url = request.getRequestURI();
 		url = url.substring(0, url.indexOf("module/xforms/xformDesigner.form"));
@@ -113,5 +112,12 @@ public class XformDesignerController extends SimpleFormController {
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception { 
 		return "Not Yet";
-	}    
+	}   
+	
+	private boolean usesJquery(){
+		int pos = OpenmrsConstants.OPENMRS_VERSION_SHORT.indexOf('.');
+		pos = OpenmrsConstants.OPENMRS_VERSION_SHORT.indexOf('.', pos + 1);
+		double version  = Double.parseDouble(OpenmrsConstants.OPENMRS_VERSION_SHORT.substring(0, pos));
+		return version > 1.7 || version == 1.10; //TODO Need to do proper check instead of hard coding 1.10
+	}
 }
