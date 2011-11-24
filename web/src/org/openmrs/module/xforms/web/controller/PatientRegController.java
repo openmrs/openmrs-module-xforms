@@ -10,6 +10,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.XformConstants;
+import org.openmrs.module.xforms.util.XformsUtil;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.servlet.ModelAndView;
@@ -87,6 +88,8 @@ public class PatientRegController extends SimpleFormController{
 			map.put("appendEntityIdAfterCancel", "0");
 			map.put("afterCancelUrlSuffix", "findPatient.htm?");
 		}
+		
+		map.put("usingJQuery", XformsUtil.usesJquery());
 		
 		return map;
 	}

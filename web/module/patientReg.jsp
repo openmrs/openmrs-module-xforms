@@ -6,6 +6,12 @@
 <script type="text/javascript" src='${pageContext.request.contextPath}/dwr/util.js'></script>
 <script type="text/javascript" src='${pageContext.request.contextPath}/dwr/interface/DWRXformsService.js'></script>
 
+<c:if test="${usingJQuery}">
+		<openmrs:htmlInclude file="/dwr/interface/DWRConceptService.js" />
+		<openmrs:htmlInclude file="/scripts/jquery/autocomplete/OpenmrsAutoComplete.js" />
+		<openmrs:htmlInclude file="/scripts/jquery/autocomplete/jquery.ui.autocomplete.autoSelect.js" />
+</c:if>
+	
 <style type="text/css">
 	body {
 		font-size: 12px;
@@ -90,8 +96,11 @@
 <div id="localeKey" style="visibility:hidden;">${localeKey}</div>
 <div id="decimalSeparators" style="visibility:hidden;">${decimalSeparators}</div>
 
-<div id="searchConcepts" style="height:0px;width:0px;"><openmrs_tag:conceptField formFieldName="conceptId" searchLabel="Search Concept" initialValue="" /></div>
-
+<div id="searchConcepts" style="height:0px;width:">
+    <input type="text" id="conceptId_id_selection" />
+	<input type="hidden" name="conceptId" id="conceptId_id" />
+	<input type="text" name="conceptId_other" id="conceptId_id_other" style="display:none" value=""/>
+</div>
 
 <script language="javascript">
 
@@ -458,6 +467,26 @@
 			txtElement = textElement;
 			
 			if(txtConcept == null){
+				
+				var includeC = (filterField == null ? "" : filterField).split(",");
+				var excludeC = "".split(",");
+				var includeD = "".split(",");
+				var excludeD = "".split(",");
+
+				// the typical callback
+				var callback = new CreateCallback({includeClasses:includeC, excludeClasses:excludeC, includeDatatypes:includeD, excludeDatatypes:excludeD}).conceptCallback();
+
+				// set up the autocomplete
+				new AutoComplete("conceptId_id_selection", callback, {
+					select: function(event, ui) {
+						funcconceptIdAutoCompleteOnSelect(ui.item.object, ui.item);
+					},
+		            placeholder:'Enter concept name or id',
+		            autoSelect: true
+				});
+				
+				
+				
 				txtConcept = document.getElementById("conceptId_id_selection");
 				txtConcept.parentNode.removeChild(txtConcept);
 				

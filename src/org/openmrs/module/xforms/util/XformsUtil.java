@@ -46,6 +46,7 @@ import org.openmrs.module.xforms.XformBuilder;
 import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.formentry.FormEntryWrapper;
 import org.openmrs.util.OpenmrsClassLoader;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 import org.w3c.dom.Document;
@@ -775,5 +776,12 @@ public class XformsUtil {
 		catch(NoSuchMethodException ex){}
 		
 		return false;
+	}
+	
+	public static boolean usesJquery(){
+		int pos = OpenmrsConstants.OPENMRS_VERSION_SHORT.indexOf('.');
+		pos = OpenmrsConstants.OPENMRS_VERSION_SHORT.indexOf('.', pos + 1);
+		double version  = Double.parseDouble(OpenmrsConstants.OPENMRS_VERSION_SHORT.substring(0, pos));
+		return version > 1.7 || version == 1.10; //TODO Need to do proper check instead of hard coding 1.10
 	}
 }
