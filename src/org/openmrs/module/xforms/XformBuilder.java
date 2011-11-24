@@ -1215,13 +1215,20 @@ public final class XformBuilder {
 					if(!key.equals(entry.getKey()))
 						continue;
 					
-					String firstField = key.substring(0, key.indexOf("_type"));
+					String suffix = "_type";
+					int pos = key.indexOf(suffix);
+					if(pos < 1){
+						suffix = "_section";
+						pos = key.indexOf(suffix);
+					}
+					
+					String firstField = key.substring(0, pos);
 					List<String>  fields = entry.getValue();
 					for(String field : fields){
 						if(field.equals(firstField))
 							continue;
 						
-						parseComplexType(child, field + "_type", bodyNode, xformSchemaNode, bindings,
+						parseComplexType(child, field + suffix, bodyNode, xformSchemaNode, bindings,
 						    problemList, problemListItems, repeatControls, modelNode);
 					}
 				}
