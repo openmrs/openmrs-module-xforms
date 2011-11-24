@@ -6,11 +6,18 @@
 <script type="text/javascript" src='${pageContext.request.contextPath}/dwr/util.js'></script>
 <script type="text/javascript" src='${pageContext.request.contextPath}/dwr/interface/DWRXformsService.js'></script>
 
-<c:if test="${usingJQuery}">
-		<openmrs:htmlInclude file="/dwr/interface/DWRConceptService.js" />
-		<openmrs:htmlInclude file="/scripts/jquery/autocomplete/OpenmrsAutoComplete.js" />
-		<openmrs:htmlInclude file="/scripts/jquery/autocomplete/jquery.ui.autocomplete.autoSelect.js" />
-</c:if>
+<c:choose>
+    <c:when test="${usingJQuery}">
+	    <div id="searchConcepts" style="height:0px;width:">
+		    <input type="text" id="conceptId_id_selection" />
+			<input type="hidden" name="conceptId" id="conceptId_id" />
+			<input type="text" name="conceptId_other" id="conceptId_id_other" style="display:none" value=""/>
+		</div>
+	</c:when>
+	<c:otherwise>
+		<div id="searchConcepts" style="height:0px;width:"><openmrs_tag:conceptField formFieldName="conceptId" searchLabel="Search Concept" initialValue="" /></div>
+	</c:otherwise>
+</c:choose>
 	
 <style type="text/css">
 	body {

@@ -137,13 +137,19 @@
     <div id="undoRedoBufferSize" style="visibility:hidden;">${undoRedoBufferSize}</div>
     
     <div id="overwriteValidationsOnRefresh" style="visibility:hidden;">${overwriteValidationsOnRefresh}</div>
-    
-    <div id="searchConcepts" style="height:0px;width:">
-	    <input type="text" id="conceptId_id_selection" />
-		<input type="hidden" name="conceptId" id="conceptId_id" />
-		<input type="text" name="conceptId_other" id="conceptId_id_other" style="display:none" value=""/>
-	</div>
-    
+        
+    <c:choose>
+	    <c:when test="${usingJQuery}">
+		    <div id="searchConcepts" style="height:0px;width:">
+			    <input type="text" id="conceptId_id_selection" />
+				<input type="hidden" name="conceptId" id="conceptId_id" />
+				<input type="text" name="conceptId_other" id="conceptId_id_other" style="display:none" value=""/>
+			</div>
+		</c:when>
+		<c:otherwise>
+			<div id="searchConcepts" style="height:0px;width:"><openmrs_tag:conceptField formFieldName="conceptId" searchLabel="Search Concept" initialValue="" /></div>
+		</c:otherwise>
+    </c:choose>
     
    <script language="javascript">
 		
