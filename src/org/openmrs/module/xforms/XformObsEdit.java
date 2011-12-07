@@ -83,7 +83,10 @@ public class XformObsEdit {
 
 		formNode.setAttribute(null, "encounterId", encounter.getEncounterId().toString());
 
-		XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_LOCATION_ID, encounter.getLocation().getLocationId().toString());
+		if (encounter.getLocation() != null) {
+			XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_LOCATION_ID, encounter.getLocation().getLocationId().toString());
+		}
+		
 		XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_ENCOUNTER_DATETIME, XformsUtil.encounterDateIncludesTime() ? XformsUtil.fromDateTime2SubmitString(encounter.getEncounterDatetime()) : XformsUtil.fromDate2SubmitString(encounter.getEncounterDatetime()));
 		XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_PROVIDER_ID, XformsUtil.getProviderId(encounter).toString());
 
