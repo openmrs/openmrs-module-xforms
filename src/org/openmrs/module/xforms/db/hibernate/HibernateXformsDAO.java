@@ -9,7 +9,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-//import org.hibernate.Hibernate;
+import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
@@ -25,6 +25,7 @@ import org.openmrs.module.xforms.model.MedicalHistoryValue;
 import org.openmrs.module.xforms.model.PatientMedicalHistory;
 import org.openmrs.module.xforms.model.PersonRepeatAttribute;
 import org.openmrs.module.xforms.model.XformUser;
+import org.openmrs.module.xforms.util.XformsUtil;
 import org.springframework.util.StringUtils;
 
 /**
@@ -292,11 +293,19 @@ public class HibernateXformsDAO implements XformsDAO {
 	public List<Object[]> getList(String sql, String displayField, String valueField){
 		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
 		
-		if(displayField != null && displayField.trim().length() > 0)
-			query.addScalar(displayField/*, Hibernate.STRING*/);
+		if(displayField != null && displayField.trim().length() > 0){
+			if(XformsUtil.isOnePointNineAndAbove())
+				query.addScalar(displayField/*, Hibernate.STRING*/);
+			else
+				query.addScalar(displayField, Hibernate.STRING);
+		}
 		
-		if(valueField != null && valueField.trim().length() > 0)
-			query.addScalar(valueField/*, Hibernate.STRING*/);
+		if(valueField != null && valueField.trim().length() > 0){
+			if(XformsUtil.isOnePointNineAndAbove())
+				query.addScalar(valueField/*, Hibernate.STRING*/);
+			else
+				query.addScalar(valueField, Hibernate.STRING);
+		}
 		
 		return query.list();
 	}
@@ -408,18 +417,36 @@ public class HibernateXformsDAO implements XformsDAO {
 		"order by tabIndex,name,encounter_datetime";
 		
 		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
-		query.addScalar("name"/*, Hibernate.STRING*/);
+		
+		if(XformsUtil.isOnePointNineAndAbove())
+			query.addScalar("name"/*, Hibernate.STRING*/);
+		else
+			query.addScalar("name", Hibernate.STRING);
+		
 		//query.addScalar("value", Hibernate.STRING);
 		
-		query.addScalar("value_group_id"/*, Hibernate.INTEGER*/);
-		query.addScalar("value_boolean"/*, Hibernate.INTEGER*/);
-		query.addScalar("value_drug"/*, Hibernate.INTEGER*/);
-		query.addScalar("value_datetime"/*, Hibernate.DATE*/);
-		query.addScalar("value_numeric"/*, Hibernate.FLOAT*/);
-		//query.addScalar("value_modifier"/*, Hibernate.OBJECT*/);
-		query.addScalar("value_text"/*, Hibernate.STRING*/);
-		
-		query.addScalar("encounter_datetime"/*, Hibernate.DATE*/);
+		if(XformsUtil.isOnePointNineAndAbove()){
+			query.addScalar("value_group_id"/*, Hibernate.INTEGER*/);
+			query.addScalar("value_boolean"/*, Hibernate.INTEGER*/);
+			query.addScalar("value_drug"/*, Hibernate.INTEGER*/);
+			query.addScalar("value_datetime"/*, Hibernate.DATE*/);
+			query.addScalar("value_numeric"/*, Hibernate.FLOAT*/);
+			//query.addScalar("value_modifier"/*, Hibernate.OBJECT*/);
+			query.addScalar("value_text"/*, Hibernate.STRING*/);
+			
+			query.addScalar("encounter_datetime"/*, Hibernate.DATE*/);
+		}
+		else{
+			query.addScalar("value_group_id", Hibernate.INTEGER);
+			query.addScalar("value_boolean", Hibernate.INTEGER);
+			query.addScalar("value_drug", Hibernate.INTEGER);
+			query.addScalar("value_datetime", Hibernate.DATE);
+			query.addScalar("value_numeric", Hibernate.FLOAT);
+			//query.addScalar("value_modifier", Hibernate.OBJECT);
+			query.addScalar("value_text", Hibernate.STRING);
+			
+			query.addScalar("encounter_datetime", Hibernate.DATE);
+		}
 		
 		List<Object[]> list = query.list();
 		if(list == null || list.size() == 0)
@@ -483,7 +510,11 @@ public class HibernateXformsDAO implements XformsDAO {
 		"and ff.form_id=" + formId + " and name = '" + fieldName + "'";
 		
 		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
-		query.addScalar("default_value"/*, Hibernate.STRING*/);
+		
+		if(XformsUtil.isOnePointNineAndAbove())
+			query.addScalar("default_value"/*, Hibernate.STRING*/);
+		else
+			query.addScalar("default_value", Hibernate.STRING);
 		
 		return (String)query.uniqueResult();
 	}
@@ -504,8 +535,15 @@ public class HibernateXformsDAO implements XformsDAO {
 		"on xf.form_id=f.form_id where f.retired=0 ";
 		
 		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
-		query.addScalar("form_id"/*, Hibernate.INTEGER*/);
-		query.addScalar("name"/*, Hibernate.STRING*/);
+		
+		if(XformsUtil.isOnePointNineAndAbove()){
+			query.addScalar("form_id"/*, Hibernate.INTEGER*/);
+			query.addScalar("name"/*, Hibernate.STRING*/);
+		}
+		else{
+			query.addScalar("form_id", Hibernate.INTEGER);
+			query.addScalar("name", Hibernate.STRING);
+		}
 		
 		return query.list();
 	}
