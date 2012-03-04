@@ -1,5 +1,6 @@
 package org.openmrs.module.xforms.formentry;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
@@ -14,6 +15,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.xpath.XPath;
@@ -31,7 +33,10 @@ import org.openmrs.hl7.HL7Source;
 import org.openmrs.module.xforms.BasicFormBuilder;
 import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformsService;
+import org.openmrs.module.xforms.util.XformsUtil;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 /**
@@ -134,6 +139,12 @@ public class FormEntryQueueProcessor {
 		
 		if (xsltDoc == null)
 			xsltDoc = BasicFormBuilder.getFormXslt();
+		
+		//if this is 1.9, we need to add the provider_id_attribute and set its value, this 
+		//will be used by xml to hl7 xslt to determine if it should include the assigning
+		//authority so that ORUR01 handler in core considers the id to be a providerId 
+		if (XformsUtil.isOpenmrsVersion19OrLater())
+			xsltDoc = addProviderAttribute(xsltDoc);
 		
 		StringWriter outWriter = new StringWriter();
 		Source source = new StreamSource(new StringReader(formData), XformConstants.DEFAULT_CHARACTER_ENCODING);
@@ -282,5 +293,30 @@ public class FormEntryQueueProcessor {
 	
 	public void garbageCollect() {
 		Context.clearSession();
+	}
+	
+	/**
+	 * Utility methods that adds the 'provider_id_type' attribute to the 'encounter.provider_id' tag
+	 * and set its value to 'PROIVDER.ID'
+	 * 
+	 * @param xml
+	 * @return
+	 * @throws Exception
+	 */
+	public static String addProviderAttribute(String xml) throws Exception {
+		Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+		        .parse(new ByteArrayInputStream(xml.getBytes()));
+		NodeList providerTags = doc.getElementsByTagName("encounter.provider_id");
+		for (int i = 0; i < providerTags.getLength(); i++) {
+			//when we start supporting, this should still work
+			Element providerElement = (Element) providerTags.item(i);
+			providerElement.setAttribute("provider_id_type", "PROVIDER.ID");
+		}
+		
+		Transformer transformer = TransformerFactory.newInstance().newTransformer();
+		StreamResult result = new StreamResult(new StringWriter());
+		transformer.transform(new DOMSource(doc), result);
+		
+		return result.getWriter().toString();
 	}
 }
