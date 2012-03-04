@@ -303,7 +303,7 @@ public class FormEntryQueueProcessor {
 	 * @return
 	 * @throws Exception
 	 */
-	public static String addProviderAttribute(String xml) throws Exception {
+	private static String addProviderAttribute(String xml) throws Exception {
 		Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder()
 		        .parse(new ByteArrayInputStream(xml.getBytes()));
 		NodeList providerTags = doc.getElementsByTagName("encounter.provider_id");
