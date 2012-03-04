@@ -712,7 +712,7 @@ public class XformsUtil {
 	 * @throws TransformerException
 	 */
 	public static String replaceConceptMaps(String xml) throws ParserConfigurationException, SAXException, IOException,
-	                                                   TransformerException {
+	    TransformerException {
 		String prefSourceName = Context.getAdministrationService().getGlobalProperty(
 		    XformConstants.GLOBAL_PROP_KEY_PREFERRED_CONCEPT_SOURCE);
 		if (StringUtils.isBlank(prefSourceName))
@@ -768,20 +768,20 @@ public class XformsUtil {
 		return convertedXml;
 	}
 	
-	public static boolean isOnePointNineAndAbove(){
-		try{
+	public static boolean isOnePointNineAndAbove() {
+		try {
 			Method method = Context.class.getMethod("getProviderService", null);
 			return true;
 		}
-		catch(NoSuchMethodException ex){}
+		catch (NoSuchMethodException ex) {}
 		
 		return false;
 	}
 	
-	public static boolean usesJquery(){
+	public static boolean usesJquery() {
 		int pos = OpenmrsConstants.OPENMRS_VERSION_SHORT.indexOf('.');
 		pos = OpenmrsConstants.OPENMRS_VERSION_SHORT.indexOf('.', pos + 1);
-		double version  = Double.parseDouble(OpenmrsConstants.OPENMRS_VERSION_SHORT.substring(0, pos));
+		double version = Double.parseDouble(OpenmrsConstants.OPENMRS_VERSION_SHORT.substring(0, pos));
 		return version > 1.7 || version == 1.10; //TODO Need to do proper check instead of hard coding 1.10
 	}
 }
