@@ -274,9 +274,13 @@ public final class XformBuilder {
 	public static final String NODE_IDENTIFIER_TYPE_ID = "patient_identifier_type_id";
 	
 	public static final String NODE_DEGREE = "degree";
+	
 	public static final String NODE_FAMILY_NAME2 = "family_name2";
+	
 	public static final String NODE_FAMILY_NAME_PREFIX = "family_name_prefix";
+	
 	public static final String NODE_FAMILY_NAME_SUFFIX = "family_name_suffix";
+	
 	public static final String NODE_PREFIX = "prefix";
 	
 	public static final String NODE_LOAD = "load";
@@ -371,8 +375,11 @@ public final class XformBuilder {
 	public static final String NODE_NAME_PREFIX_PERSON_ADDRESS = "person_address_";
 	
 	public static final String NODE_NAME_OTHER_IDENTIFIERS = "other_identifiers";
+	
 	public static final String NODE_NAME_OTHER_IDENTIFIER = "other_identifier";
+	
 	public static final String NODE_NAME_OTHER_IDENTIFIER_TYPE_ID = "other_identifier_type_id";
+	
 	public static final String NODE_NAME_OTHER_IDENTIFIER_LOCATION_ID = "other_identifier_location_id";
 	
 	private static Hashtable<String, String> obsRepeatItems;
@@ -380,7 +387,9 @@ public final class XformBuilder {
 	private static Hashtable<String, String> nodesets;
 	
 	private static Hashtable<String, List<String>> repeatSharedKids;
+	
 	private static Hashtable<String, List<String>> sharedRestrictions;
+	
 	private static Hashtable<String, String> repeatChildTypes;
 	
 	private static String ATTRIBUTE_PRELOAD = "jr:preload";
@@ -492,7 +501,7 @@ public final class XformBuilder {
 	 * @param value - the value to set.
 	 */
 	public static void setNodeValue(Element node, String value) {
-		if(value == null)
+		if (value == null)
 			value = "";
 		
 		for (int i = 0; i < node.getChildCount(); i++) {
@@ -723,19 +732,18 @@ public final class XformBuilder {
 			}
 		}
 		
-	    cleanUp();
-	    
+		cleanUp();
+		
 		return fromDoc2String(doc);
 	}
 	
-	private static void cleanUp(){
+	private static void cleanUp() {
 		obsRepeatItems.clear();
 		nodesets.clear();
 		repeatSharedKids.clear();
 		sharedRestrictions.clear();
 		repeatChildTypes.clear();
 	}
-	
 	
 	/**
 	 * Methods replaces the conceptId with a concept source name and source code.
@@ -931,7 +939,7 @@ public final class XformBuilder {
 			/*if(XformBuilderUtil.populateProviders19(formNode, modelNode, groupNode)){
 				return;
 			}*/
-			
+
 			List<User> providers = Context.getUserService().getUsersByRole(new Role("Provider"));
 			for (User provider : providers) {
 				
@@ -996,18 +1004,18 @@ public final class XformBuilder {
 		Element bindNode = modelElement.createElement(NAMESPACE_XFORMS, null);
 		bindNode.setName(NODE_BIND);
 		String binding = node.getName();
-		if(bindings.containsKey(binding)){
+		if (bindings.containsKey(binding)) {
 			String oldBinding = binding;
-			binding = ((Element)node.getParent()).getName() + "_" + binding;
+			binding = ((Element) node.getParent()).getName() + "_" + binding;
 			
 			List<String> bindingList = sharedRestrictions.get(oldBinding);
-			if(bindingList == null){
+			if (bindingList == null) {
 				bindingList = new ArrayList<String>();
 				sharedRestrictions.put(oldBinding, bindingList);
 			}
 			bindingList.add(binding);
 			
-			problemListItems.put(binding, ((Element)node.getParent()).getName());
+			problemListItems.put(binding, ((Element) node.getParent()).getName());
 		}
 		bindNode.setAttribute(null, ATTRIBUTE_ID, binding);
 		
@@ -1023,10 +1031,10 @@ public final class XformBuilder {
 		}
 		
 		//Check if this is an item of a problem list.
-		if (problemList.containsKey(parentName)){
-			if(problemListItems.contains(name)){
+		if (problemList.containsKey(parentName)) {
+			if (problemListItems.contains(name)) {
 				List<String> repeats = repeatSharedKids.get(name);
-				if(repeats == null){
+				if (repeats == null) {
 					repeats = new ArrayList<String>();
 					repeatSharedKids.put(name, repeats);
 				}
@@ -1250,13 +1258,12 @@ public final class XformBuilder {
 				parseComplexType(child, child.getAttributeValue(null, ATTRIBUTE_NAME), bodyNode, xformSchemaNode, bindings,
 				    problemList, problemListItems, repeatControls, modelNode);
 				
-				parseDuplicateFieldsComplexType(duplicateFields, repeatControls, child, bodyNode, modelNode, 
-					xformSchemaNode, bindings, problemList, problemListItems);
+				parseDuplicateFieldsComplexType(duplicateFields, repeatControls, child, bodyNode, modelNode,
+				    xformSchemaNode, bindings, problemList, problemListItems);
 				
-				parseSharedRepeatKidsComplexType(child.getAttributeValue(null, ATTRIBUTE_NAME), duplicateFields, 
-					repeatControls, child, bodyNode, modelNode, xformSchemaNode, bindings, problemList, problemListItems);
-			}
-			else {
+				parseSharedRepeatKidsComplexType(child.getAttributeValue(null, ATTRIBUTE_NAME), duplicateFields,
+				    repeatControls, child, bodyNode, modelNode, xformSchemaNode, bindings, problemList, problemListItems);
+			} else {
 				String nameAttribute = child.getAttributeValue(null, ATTRIBUTE_NAME);
 				if (name.equalsIgnoreCase(NODE_SIMPLETYPE)
 				        || (name.equalsIgnoreCase(NODE_COMPLEXTYPE) && nameAttribute != null
@@ -1267,72 +1274,73 @@ public final class XformBuilder {
 					parseObsSectionRepeats(child, bindings, problemList, duplicateFields);
 			}
 			
-			if (name.equalsIgnoreCase(NODE_SIMPLETYPE)){
+			if (name.equalsIgnoreCase(NODE_SIMPLETYPE)) {
 				parseSimpleType(child, child.getAttributeValue(null, ATTRIBUTE_NAME), bindings);
 				parseDuplicateFieldsSimpleType(duplicateFields, child, bindings);
 			}
 		}
 	}
 	
-	private static void parseDuplicateFieldsComplexType(Hashtable<String, List<String>> duplicateFields, 
-	                                                    Hashtable<String, Element> repeatControls,
-	                                                    Element child, Element bodyNode, Element modelNode, 
-	                                                    Element xformSchemaNode, Hashtable bindings, Hashtable<String, 
-	                                                    String> problemList, Hashtable<String, String> problemListItems){
+	private static void parseDuplicateFieldsComplexType(Hashtable<String, List<String>> duplicateFields,
+	                                                    Hashtable<String, Element> repeatControls, Element child,
+	                                                    Element bodyNode, Element modelNode, Element xformSchemaNode,
+	                                                    Hashtable bindings, Hashtable<String, String> problemList,
+	                                                    Hashtable<String, String> problemListItems) {
 		Set<Entry<String, List<String>>> entries = duplicateFields.entrySet();
-		for(Entry<String, List<String>> entry : entries){
+		for (Entry<String, List<String>> entry : entries) {
 			String key = child.getAttributeValue(null, ATTRIBUTE_NAME);
-			if(!key.equals(entry.getKey()))
+			if (!key.equals(entry.getKey()))
 				continue;
 			
 			String suffix = "_type";
 			int pos = key.indexOf(suffix);
-			if(pos < 1){
+			if (pos < 1) {
 				suffix = "_section";
 				pos = key.indexOf(suffix);
 			}
 			
 			String firstField = key.substring(0, pos);
-			List<String>  fields = entry.getValue();
-			for(String field : fields){
-				if(field.equals(firstField))
+			List<String> fields = entry.getValue();
+			for (String field : fields) {
+				if (field.equals(firstField))
 					continue;
 				
-				parseComplexType(child, field + suffix, bodyNode, xformSchemaNode, bindings,
-				    problemList, problemListItems, repeatControls, modelNode);
+				parseComplexType(child, field + suffix, bodyNode, xformSchemaNode, bindings, problemList, problemListItems,
+				    repeatControls, modelNode);
 			}
 		}
 	}
 	
-	private static void parseSharedRepeatKidsComplexType(String name, Hashtable<String, List<String>> duplicateFields, 
-	                                                    Hashtable<String, Element> repeatControls,
-	                                                    Element child, Element bodyNode, Element modelNode, 
-	                                                    Element xformSchemaNode, Hashtable bindings, Hashtable<String, 
-	                                                    String> problemList, Hashtable<String, String> problemListItems){	
+	private static void parseSharedRepeatKidsComplexType(String name, Hashtable<String, List<String>> duplicateFields,
+	                                                     Hashtable<String, Element> repeatControls, Element child,
+	                                                     Element bodyNode, Element modelNode, Element xformSchemaNode,
+	                                                     Hashtable bindings, Hashtable<String, String> problemList,
+	                                                     Hashtable<String, String> problemListItems) {
 		String orgName = name;
 		name = getBindNodeName(name);
 		List<String> repeats = repeatSharedKids.get(name);
-		if(repeats == null)
+		if (repeats == null)
 			return;
 		
-		for(String repeat : repeats){
+		for (String repeat : repeats) {
 			problemListItems.put(name, repeat);
-			parseComplexType(child, orgName, bodyNode, xformSchemaNode, bindings, problemList, problemListItems, 
-				repeatControls, modelNode);
+			parseComplexType(child, orgName, bodyNode, xformSchemaNode, bindings, problemList, problemListItems,
+			    repeatControls, modelNode);
 		}
 	}
 	
-	private static void parseDuplicateFieldsSimpleType(Hashtable<String, List<String>> duplicateFields, Element child, Hashtable bindings){
+	private static void parseDuplicateFieldsSimpleType(Hashtable<String, List<String>> duplicateFields, Element child,
+	                                                   Hashtable bindings) {
 		Set<Entry<String, List<String>>> entries = duplicateFields.entrySet();
-		for(Entry<String, List<String>> entry : entries){
+		for (Entry<String, List<String>> entry : entries) {
 			String key = child.getAttributeValue(null, ATTRIBUTE_NAME);
-			if(!key.equals(entry.getKey() + "_restricted_type"))
+			if (!key.equals(entry.getKey() + "_restricted_type"))
 				continue;
 			
 			String firstField = key.substring(0, key.indexOf("_type"));
-			List<String>  fields = entry.getValue();
-			for(String field : fields){
-				if(field.equals(firstField))
+			List<String> fields = entry.getValue();
+			for (String field : fields) {
+				if (field.equals(firstField))
 					continue;
 				
 				parseSimpleType(child, field + "_type", bindings);
@@ -1341,8 +1349,8 @@ public final class XformBuilder {
 	}
 	
 	private static void parseObsSectionRepeats(Element complexTypeNode, Hashtable bindings,
-	                                           Hashtable<String, String> problemList, Hashtable<String, 
-	                                           List<String>> duplicateFields) {
+	                                           Hashtable<String, String> problemList,
+	                                           Hashtable<String, List<String>> duplicateFields) {
 		for (int i = 0; i < complexTypeNode.getChildCount(); i++) {
 			if (complexTypeNode.isText(i))
 				continue; //ignore text.
@@ -1356,7 +1364,7 @@ public final class XformBuilder {
 	}
 	
 	private static void parseObsSectionSequenceRepeats(Element sequenceNode, Hashtable bindings,
-	                                                   Hashtable<String, String> problemList, 
+	                                                   Hashtable<String, String> problemList,
 	                                                   Hashtable<String, List<String>> duplicateFields) {
 		
 		Hashtable<String, List<String>> fieldMap = new Hashtable<String, List<String>>();
@@ -1382,12 +1390,11 @@ public final class XformBuilder {
 			
 			String type = child.getAttributeValue(null, ATTRIBUTE_TYPE);
 			List<String> fields = fieldMap.get(type);
-			if(fields == null){
+			if (fields == null) {
 				fields = new ArrayList<String>();
 				fields.add(name);
 				fieldMap.put(type, fields);
-			}
-			else{
+			} else {
 				fields.add(name);
 				duplicateFields.put(type, fields);
 			}
@@ -1452,11 +1459,10 @@ public final class XformBuilder {
 				;//addProblemListItems(name, complexTypeNode, bodyNode, modelNode);
 				
 			String binding = repeatChildTypes.get(orgName);
-			if(binding != null){
+			if (binding != null) {
 				name = binding;
 				bindNode = (Element) bindings.get(binding);
-			}
-			else
+			} else
 				return;
 		}
 		
@@ -1488,10 +1494,10 @@ public final class XformBuilder {
 				setDataType(bindNode, node);
 				
 				List<String> bindingList = sharedRestrictions.get(name);
-				if(bindingList != null){
-					for(String binding : bindingList){
-						Element bindingNode = (Element)bindings.get(binding);
-						if(bindingNode == null)
+				if (bindingList != null) {
+					for (String binding : bindingList) {
+						Element bindingNode = (Element) bindings.get(binding);
+						if (bindingNode == null)
 							continue;
 						
 						setDataType(bindingNode, node);
@@ -1770,10 +1776,10 @@ public final class XformBuilder {
 	 * @return - the id
 	 */
 	private static Integer getConceptId(String conceptName) {
-		try{
+		try {
 			return Integer.parseInt(conceptName.substring(0, conceptName.indexOf("^")));
 		}
-		catch(Exception ex){
+		catch (Exception ex) {
 			ex.printStackTrace();
 		}
 		
@@ -1838,9 +1844,9 @@ public final class XformBuilder {
 			String itemName = node.getAttributeValue(null, ATTRIBUTE_NAME);
 			//???????
 			if (repeatItem) {
-				if(problemListItems.containsKey(itemName)){
+				if (problemListItems.containsKey(itemName)) {
 					List<String> repeats = repeatSharedKids.get(itemName);
-					if(repeats == null){
+					if (repeats == null) {
 						repeats = new ArrayList<String>();
 						repeatSharedKids.put(itemName, repeats);
 					}
@@ -1863,9 +1869,9 @@ public final class XformBuilder {
 						continue;
 				}
 				
-				if(repeatItem){
+				if (repeatItem) {
 					String binding = name + "_" + itemName;
-					if(name.equals(problemListItems.get(binding))){
+					if (name.equals(problemListItems.get(binding))) {
 						repeatChildTypes.put(type, binding);
 					}
 				}
@@ -1948,7 +1954,8 @@ public final class XformBuilder {
 		labelNode.setName(NODE_LABEL);
 		inputNode.addChild(Element.ELEMENT, labelNode);
 		
-		addRepeatControlNode(name, inputNode, bodyNode, problemList, problemListItems, repeatControls, NODE_VALUE, modelNode, bindingNode);
+		addRepeatControlNode(name, inputNode, bodyNode, problemList, problemListItems, repeatControls, NODE_VALUE,
+		    modelNode, bindingNode);
 		
 		return labelNode;
 	}
@@ -1970,19 +1977,18 @@ public final class XformBuilder {
 		else if (problemListItems.containsKey(name)) {
 			String repeatControlName = problemListItems.get(name);
 			String nodeset = bindingNode.getAttributeValue(null, XformBuilder.ATTRIBUTE_NODESET);
-			if(nodeset != null && nodeset.contains(repeatControlName)){
+			if (nodeset != null && nodeset.contains(repeatControlName)) {
 				Element repeatControl = repeatControls.get(repeatControlName);
 				if (repeatControl != null) {
 					repeatControl.addChild(Element.ELEMENT, controlNode);
 					
 					String binding = repeatControlName + "_" + name;
 					String repeatBinding = problemListItems.get(binding);
-					if(repeatBinding != null && repeatBinding.equals(problemListItems.get(name))){
+					if (repeatBinding != null && repeatBinding.equals(problemListItems.get(name))) {
 						controlNode.setAttribute(null, ATTRIBUTE_BIND, binding);
 					}
 				}
-			}
-			else
+			} else
 				addControl(bodyNode, controlNode);
 		} else
 			addControl(bodyNode, controlNode);
@@ -2288,10 +2294,10 @@ public final class XformBuilder {
 			setValidationRule(bindingNode, upper, lower);
 			
 			List<String> bindingList = sharedRestrictions.get(name);
-			if(bindingList != null){
-				for(String binding : bindingList){
+			if (bindingList != null) {
+				for (String binding : bindingList) {
 					Element bindNode = (Element) bindings.get(binding);
-					if(bindNode == null)
+					if (bindNode == null)
 						continue;
 					
 					setValidationRule(bindNode, upper, lower);
@@ -2300,7 +2306,7 @@ public final class XformBuilder {
 		}
 	}
 	
-	private static void setValidationRule(Element bindingNode, String upper, String lower){
+	private static void setValidationRule(Element bindingNode, String upper, String lower) {
 		bindingNode.setAttribute(null, ATTRIBUTE_CONSTRAINT, ". &gt;= " + lower + " and . &lt;= " + upper);
 		bindingNode.setAttribute(null, (XformsUtil.isJavaRosaSaveFormat() ? "jr:constraintMsg" : ATTRIBUTE_MESSAGE),
 		    "value should be between " + lower + " and " + upper + " inclusive");
@@ -2538,7 +2544,7 @@ public final class XformBuilder {
 	 */
 	public static void setPatientTableFieldValues(Integer formId, Element parentNode, XformsService xformsService,
 	                                              VelocityEngine velocityEngine, VelocityContext velocityContext)
-	                                                                                                             throws Exception {
+	    throws Exception {
 		int numOfEntries = parentNode.getChildCount();
 		for (int i = 0; i < numOfEntries; i++) {
 			if (parentNode.getType(i) != Element.ELEMENT)
@@ -2709,16 +2715,16 @@ public final class XformBuilder {
 		addPatientNode(formNode, modelNode, groupNode, NODE_GENDER, DATA_TYPE_TEXT, "Gender", "The patient's sex", false,
 		    false, CONTROL_SELECT1, new String[] { "Male", "Female" }, new String[] { "M", "F" }, true);
 		
-		addPatientNode(formNode, modelNode, groupNode, NODE_DEGREE, DATA_TYPE_TEXT, "Degree",
-		    "The patient name degree", false, false, CONTROL_INPUT, null, null, true);
+		addPatientNode(formNode, modelNode, groupNode, NODE_DEGREE, DATA_TYPE_TEXT, "Degree", "The patient name degree",
+		    false, false, CONTROL_INPUT, null, null, true);
 		addPatientNode(formNode, modelNode, groupNode, NODE_FAMILY_NAME2, DATA_TYPE_TEXT, "Family Name 2",
 		    "The patient second family name", false, false, CONTROL_INPUT, null, null, true);
 		addPatientNode(formNode, modelNode, groupNode, NODE_FAMILY_NAME_PREFIX, DATA_TYPE_TEXT, "Family Name Prefix",
 		    "The patient family name prefix", false, false, CONTROL_INPUT, null, null, true);
 		addPatientNode(formNode, modelNode, groupNode, NODE_FAMILY_NAME_SUFFIX, DATA_TYPE_TEXT, "Family Name Suffix",
 		    "The patient family name suffix", false, false, CONTROL_INPUT, null, null, true);
-		addPatientNode(formNode, modelNode, groupNode, NODE_PREFIX, DATA_TYPE_TEXT, "Prefix",
-		    "The patient name prefix", false, false, CONTROL_INPUT, null, null, true);
+		addPatientNode(formNode, modelNode, groupNode, NODE_PREFIX, DATA_TYPE_TEXT, "Prefix", "The patient name prefix",
+		    false, false, CONTROL_INPUT, null, null, true);
 		
 		String[] items, itemValues;
 		int i = 0;
@@ -2764,8 +2770,8 @@ public final class XformBuilder {
 	                                   String label, String hint, boolean required, boolean readonly, String controlType,
 	                                   String[] items, String[] itemValues, boolean visible) {
 		
-		addPatientNode(formNode, modelNode, bodyNode, name, type, label, hint, required, 
-			readonly, controlType, items, itemValues, visible, "/" + NODE_PATIENT + "/" + name);
+		addPatientNode(formNode, modelNode, bodyNode, name, type, label, hint, required, readonly, controlType, items,
+		    itemValues, visible, "/" + NODE_PATIENT + "/" + name);
 	}
 	
 	/**
@@ -2785,8 +2791,8 @@ public final class XformBuilder {
 	 * @param itemValues
 	 */
 	public static void addPatientNode(Element formNode, Element modelNode, Element bodyNode, String name, String type,
-	                                   String label, String hint, boolean required, boolean readonly, String controlType,
-	                                   String[] items, String[] itemValues, boolean visible, String nodeset) {
+	                                  String label, String hint, boolean required, boolean readonly, String controlType,
+	                                  String[] items, String[] itemValues, boolean visible, String nodeset) {
 		//add the model node
 		Element element = formNode.createElement(null, null);
 		element.setName(name);
@@ -3176,7 +3182,7 @@ public final class XformBuilder {
 	}
 	
 	public static void setPatientFieldValues(Patient patient, Form form, Element parentNode, XformsService xformsService)
-	                                                                                                                     throws Exception {
+	    throws Exception {
 		//EasyFactoryConfiguration config = new EasyFactoryConfiguration();
 		
 		VelocityEngine velocityEngine = new VelocityEngine();
@@ -3382,7 +3388,6 @@ public final class XformBuilder {
 		
 		modelNode.addChild(Element.ELEMENT, bindingNode);
 		
-		
 		//Create repeat group node
 		Element repeatGroupNode = groupNode.createElement(NAMESPACE_XFORMS, null);
 		repeatGroupNode.setName(NODE_GROUP);
@@ -3400,11 +3405,9 @@ public final class XformBuilder {
 		repeatNode.setAttribute(null, ATTRIBUTE_BIND, name);
 		repeatGroupNode.addChild(Element.ELEMENT, repeatNode);
 		
-		
 		addPatientNode(dataNode, modelNode, repeatNode, NODE_NAME_OTHER_IDENTIFIER, DATA_TYPE_TEXT, "Identifier",
-		    "The patient's other identifier value", false, false, CONTROL_INPUT, null, null, true,
-		    "/" + NODE_PATIENT + "/" + name + "/other_identifier");
-		
+		    "The patient's other identifier value", false, false, CONTROL_INPUT, null, null, true, "/" + NODE_PATIENT + "/"
+		            + name + "/other_identifier");
 		
 		String[] items, itemValues;
 		List<PatientIdentifierType> identifierTypes = Context.getPatientService().getAllPatientIdentifierTypes();
@@ -3416,11 +3419,10 @@ public final class XformBuilder {
 				items[i] = identifierType.getName();
 				itemValues[i++] = identifierType.getPatientIdentifierTypeId().toString();
 			}
-			addPatientNode(dataNode, modelNode, repeatNode, NODE_NAME_OTHER_IDENTIFIER_TYPE_ID, DATA_TYPE_INT, "Identifier Type",
-			    "The patient's other identifier type", false, false, CONTROL_SELECT1, items, itemValues, true,
-			    "/" + NODE_PATIENT + "/" + name + "/other_identifier_type_id");
+			addPatientNode(dataNode, modelNode, repeatNode, NODE_NAME_OTHER_IDENTIFIER_TYPE_ID, DATA_TYPE_INT,
+			    "Identifier Type", "The patient's other identifier type", false, false, CONTROL_SELECT1, items, itemValues,
+			    true, "/" + NODE_PATIENT + "/" + name + "/other_identifier_type_id");
 		}
-		
 		
 		List<Location> locations = Context.getLocationService().getAllLocations();
 		if (locations != null) {
@@ -3432,9 +3434,9 @@ public final class XformBuilder {
 				itemValues[i++] = location.getLocationId().toString();
 			}
 			
-			addPatientNode(dataNode, modelNode, repeatNode, NODE_NAME_OTHER_IDENTIFIER_LOCATION_ID, DATA_TYPE_INT, "Identifier Location",
-			    "The patient's other identifier location", false, false, CONTROL_SELECT1, items, itemValues, true,
-			    "/" + NODE_PATIENT + "/" + name + "/other_identifier_location_id");
+			addPatientNode(dataNode, modelNode, repeatNode, NODE_NAME_OTHER_IDENTIFIER_LOCATION_ID, DATA_TYPE_INT,
+			    "Identifier Location", "The patient's other identifier location", false, false, CONTROL_SELECT1, items,
+			    itemValues, true, "/" + NODE_PATIENT + "/" + name + "/other_identifier_location_id");
 		}
 	}
 }
