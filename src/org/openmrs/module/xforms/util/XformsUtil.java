@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -784,20 +783,5 @@ public class XformsUtil {
 		pos = OpenmrsConstants.OPENMRS_VERSION_SHORT.indexOf('.', pos + 1);
 		double version = Double.parseDouble(OpenmrsConstants.OPENMRS_VERSION_SHORT.substring(0, pos));
 		return version > 1.7 || version == 1.10; //TODO Need to do proper check instead of hard coding 1.10
-	}
-	
-	/**
-	 * Hack to check if we are running OpenMRS version 1.9 or later to be able to handle the changes
-	 * in encounter providers
-	 */
-	public static boolean isOpenmrsVersion19OrLater() {
-		Field encounterProvidersField = null;
-		try {
-			encounterProvidersField = Encounter.class.getDeclaredField("encounterProviders");
-		}
-		catch (SecurityException e) {}
-		catch (NoSuchFieldException e) {}
-		return encounterProvidersField != null;
-		
 	}
 }

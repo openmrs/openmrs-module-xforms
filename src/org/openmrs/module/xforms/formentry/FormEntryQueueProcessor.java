@@ -31,6 +31,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.hl7.HL7InQueue;
 import org.openmrs.hl7.HL7Source;
 import org.openmrs.module.xforms.BasicFormBuilder;
+import org.openmrs.module.xforms.XformBuilder;
 import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformsService;
 import org.openmrs.module.xforms.util.XformsUtil;
@@ -143,8 +144,8 @@ public class FormEntryQueueProcessor {
 		//if this is 1.9, we need to add the provider_id_attribute and set its value, this 
 		//will be used by xml to hl7 xslt to determine if it should include the assigning
 		//authority so that ORUR01 handler in core considers the id to be a providerId 
-		if (XformsUtil.isOpenmrsVersion19OrLater())
-			xsltDoc = addProviderAttribute(xsltDoc);
+		if (XformsUtil.isOnePointNineAndAbove())
+			formData = addProviderAttribute(formData);
 		
 		StringWriter outWriter = new StringWriter();
 		Source source = new StreamSource(new StringReader(formData), XformConstants.DEFAULT_CHARACTER_ENCODING);
@@ -296,7 +297,7 @@ public class FormEntryQueueProcessor {
 	}
 	
 	/**
-	 * Utility methods that adds the 'provider_id_type' attribute to the 'encounter.provider_id' tag
+	 * Utility method that adds the 'provider_id_type' attribute to the 'encounter.provider_id' tag
 	 * and set its value to 'PROIVDER.ID'
 	 * 
 	 * @param xml
@@ -306,11 +307,12 @@ public class FormEntryQueueProcessor {
 	private static String addProviderAttribute(String xml) throws Exception {
 		Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder()
 		        .parse(new ByteArrayInputStream(xml.getBytes()));
-		NodeList providerTags = doc.getElementsByTagName("encounter.provider_id");
+		NodeList providerTags = doc.getElementsByTagName(XformBuilder.NODE_ENCOUNTER_PROVIDER_ID);
 		for (int i = 0; i < providerTags.getLength(); i++) {
-			//when we start supporting, this should still work
+			//when we start supporting multiple providers, this should still work
 			Element providerElement = (Element) providerTags.item(i);
-			providerElement.setAttribute("provider_id_type", "PROVIDER.ID");
+			providerElement.setAttribute(XformBuilder.ATTRIBUTE_PROVIDER_ID_TYPE,
+			    XformBuilder.VALUE_PROVIDER_ID_TYPE_PROV_ID);
 		}
 		
 		Transformer transformer = TransformerFactory.newInstance().newTransformer();

@@ -213,6 +213,8 @@ public final class XformBuilder {
 	
 	public static final String ATTRIBUTE_CONCEPT_ID = "concept_id";
 	
+	public static final String ATTRIBUTE_PROVIDER_ID_TYPE = "provider_id_type";
+	
 	public static final String XPATH_VALUE_TRUE = "true()";
 	
 	public static final String XPATH_VALUE_FALSE = "false()";
@@ -222,6 +224,8 @@ public final class XformBuilder {
 	public static final String VALUE_TRUE = "true";
 	
 	public static final String VALUE_FALSE = "false";
+	
+	public static final String VALUE_PROVIDER_ID_TYPE_PROV_ID = "PROVIDER.ID";
 	
 	public static final String NODE_SEPARATOR = "/";
 	
