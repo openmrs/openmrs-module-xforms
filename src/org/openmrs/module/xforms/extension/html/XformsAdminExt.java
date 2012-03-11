@@ -40,7 +40,7 @@ public class XformsAdminExt extends AdministrationSectionExt {
 		
 		map.put("module/xforms/xformDesigner.form?formId=0", "xforms.designPatientXform");
 		map.put("module/xforms/medicalHistoryFields.form?formId=-1", "xforms.medicalHistoryFields");
-		map.put("module/xforms/xformProperties.htm", "xforms.manageXFormProperties");
+		//map.put("module/xforms/xformProperties.htm", "xforms.manageXFormProperties");
 		
 		return map;
 	}
