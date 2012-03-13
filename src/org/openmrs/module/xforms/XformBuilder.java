@@ -1007,10 +1007,12 @@ public final class XformBuilder {
 	                                      Hashtable<String, String> problemList, Hashtable<String, String> problemListItems) {
 		Element bindNode = modelElement.createElement(NAMESPACE_XFORMS, null);
 		bindNode.setName(NODE_BIND);
+		String parentName = ((Element) node.getParent()).getName();
 		String binding = node.getName();
+		
 		if (bindings.containsKey(binding)) {
 			String oldBinding = binding;
-			binding = ((Element) node.getParent()).getName() + "_" + binding;
+			binding = parentName + "_" + binding;
 			
 			if(sharedRestrictions != null){
 				List<String> bindingList = sharedRestrictions.get(oldBinding);
@@ -1022,14 +1024,17 @@ public final class XformBuilder {
 				bindingList.add(binding);
 			}
 			
-			problemListItems.put(binding, ((Element) node.getParent()).getName());
+			problemListItems.put(binding, parentName);
 		}
+		else{
+			if(!parentName.equalsIgnoreCase("obs"))
+				binding = parentName + "_" + binding;
+		}
+		
 		bindNode.setAttribute(null, ATTRIBUTE_ID, binding);
 		
 		String name = node.getName();
 		String nodeset = getNodesetAttValue(node);
-		
-		String parentName = ((Element) node.getParent()).getName();
 		
 		//For problem list element bindings, we do not add the value part.
 		if (parentName.equalsIgnoreCase(NODE_PROBLEM_LIST)) {

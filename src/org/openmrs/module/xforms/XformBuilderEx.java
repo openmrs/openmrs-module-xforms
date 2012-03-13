@@ -319,6 +319,8 @@ public class XformBuilderEx {
 				
 				fieldTokens.put(formField, token);
 				
+				//This block is for nodes shared in more than one repeat question and hence get different bindings
+				//e.g weight_kg & gu_conv_set_weight_kg
 				if(formField.getParent() != null){
 					String s = fieldTokens.get(formField.getParent());
 					if(s != null){
