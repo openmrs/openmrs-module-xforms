@@ -11,10 +11,9 @@ import org.openmrs.Form;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.Xform;
-import org.openmrs.module.xforms.XformBuilder;
+import org.openmrs.module.xforms.XformBuilderEx;
 import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformsService;
-import org.openmrs.module.xforms.formentry.FormEntryWrapper;
 import org.openmrs.module.xforms.util.XformsUtil;
 
 /**
@@ -88,9 +87,10 @@ public class XformDownloadManager {
 	 * @return - the xml content of the xform.
 	 */
 	public static String createNewXform(FormService formService, Form form) throws Exception {
-		String schemaXml = XformsUtil.getSchema(form);
-		String templateXml = FormEntryWrapper.getFormTemplate(form);//new FormXmlTemplateBuilder(form,FormEntryUtil.getFormAbsoluteUrl(form)).getXmlTemplate(false);
-		return XformBuilder.getXform4mStrings(schemaXml, templateXml);
+		//String schemaXml = XformsUtil.getSchema(form);
+		//String templateXml = FormEntryWrapper.getFormTemplate(form);
+		//XformBuilder.getXform4mStrings(schemaXml, templateXml);
+		return XformBuilderEx.buildXform(form); 
 	}
 	
 	/**

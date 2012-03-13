@@ -216,7 +216,7 @@ public class FormSchemaFragment {
 	 *            integers
 	 * @return String representation of a number with given precision
 	 */
-	private static String numericToString(Double value, boolean precise) {
+	public static String numericToString(Double value, boolean precise) {
 		if (precise)
 			return value.toString();
 		else

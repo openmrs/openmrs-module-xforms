@@ -11,6 +11,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.MedicalHistoryField;
 import org.openmrs.module.xforms.Xform;
 import org.openmrs.module.xforms.XformBuilder;
+import org.openmrs.module.xforms.XformBuilderEx;
 import org.openmrs.module.xforms.XformsService;
 import org.openmrs.module.xforms.db.XformsDAO;
 import org.openmrs.module.xforms.formentry.FormEntryError;
@@ -170,10 +171,9 @@ public class XformsServiceImpl implements XformsService {
     public Xform getNewXform(Integer formId) throws Exception {
         FormService formService = (FormService) Context.getService(FormService.class);
         Form form = formService.getForm(formId);
-        String schemaXml = XformsUtil.getSchema(form);
-        String templateXml = FormEntryWrapper.getFormTemplate(form); // new
-                                                                        // FormXmlTemplateBuilder(form,FormEntryUtil.getFormAbsoluteUrl(form)).getXmlTemplate(false);
-        return new Xform(formId, XformBuilder.getXform4mStrings(schemaXml,templateXml));
+        //String schemaXml = XformsUtil.getSchema(form);
+        //String templateXml = FormEntryWrapper.getFormTemplate(form);
+        return new Xform(formId, XformBuilderEx.buildXform(form)/*XformBuilder.getXform4mStrings(schemaXml,templateXml)*/);
     }
     
 	public List<PersonRepeatAttribute> getPersonRepeatAttributes(Integer personId, Integer personAttributeId){

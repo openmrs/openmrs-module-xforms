@@ -755,7 +755,7 @@ public final class XformBuilder {
 	 * @param element the element with the openmrs_concept attribute
 	 * @param conceptValueString the value of the openmrs_concept attribute
 	 */
-	private static void addConceptMapAttributes(Element element, String conceptValueString) {
+	public static void addConceptMapAttributes(Element element, String conceptValueString) {
 		String[] tokens = StringUtils.split(conceptValueString, "^");
 		ConceptService cs = Context.getConceptService();
 		try {
@@ -789,7 +789,7 @@ public final class XformBuilder {
 	 * @param name - the name of the node.
 	 * @return - the label.
 	 */
-	private static String getDisplayText(String name) {
+	public static String getDisplayText(String name) {
 		/*if(name.equalsIgnoreCase(NODE_ENCOUNTER_ENCOUNTER_DATETIME))
 			return "ENCOUNTER DATE";
 		else if(name.equalsIgnoreCase(NODE_ENCOUNTER_LOCATION_ID))
@@ -831,7 +831,7 @@ public final class XformBuilder {
 	 * @param bindings - a hash table to populate with the built bindings.
 	 * @param bodyNode - the body node to add the UI control to.
 	 */
-	private static void parseTemplate(Element modelElement, Element formNode, Element formChild, Hashtable bindings,
+	public static void parseTemplate(Element modelElement, Element formNode, Element formChild, Hashtable bindings,
 	                                  Element bodyNode, Hashtable<String, String> problemList,
 	                                  Hashtable<String, String> problemListItems) {
 		int numOfEntries = formChild.getChildCount();
@@ -1012,12 +1012,15 @@ public final class XformBuilder {
 			String oldBinding = binding;
 			binding = ((Element) node.getParent()).getName() + "_" + binding;
 			
-			List<String> bindingList = sharedRestrictions.get(oldBinding);
-			if (bindingList == null) {
-				bindingList = new ArrayList<String>();
-				sharedRestrictions.put(oldBinding, bindingList);
+			if(sharedRestrictions != null){
+				List<String> bindingList = sharedRestrictions.get(oldBinding);
+				if (bindingList == null) {
+					bindingList = new ArrayList<String>();
+					sharedRestrictions.put(oldBinding, bindingList);
+				}
+			
+				bindingList.add(binding);
 			}
-			bindingList.add(binding);
 			
 			problemListItems.put(binding, ((Element) node.getParent()).getName());
 		}
@@ -1054,7 +1057,10 @@ public final class XformBuilder {
 		
 		//store the binding node with the key being its id attribute.
 		bindings.put(binding, bindNode);
-		nodesets.put(binding, nodeset);
+		
+		if(nodesets != null)
+			nodesets.put(binding, nodeset);
+		
 		return bindNode;
 	}
 	
@@ -1593,7 +1599,7 @@ public final class XformBuilder {
 	 * @param bindNode the bind xforms node whose data type to set.
 	 * @param node the schema node having the openmrs data type
 	 */
-	private static void setDataType(Element bindNode, Element node) {
+	public static void setDataType(Element bindNode, Element node) {
 		
 		//Some types may have been already set to the precise value
 		//and hence should not be overwritten. eg NM could have been
@@ -1677,7 +1683,7 @@ public final class XformBuilder {
 	 * @param name - the name of the complex or simple type node.
 	 * @return - the binding node name.
 	 */
-	private static String getBindNodeName(String name) {
+	public static String getBindNodeName(String name) {
 		if (name == null)
 			return null;
 		
@@ -2199,7 +2205,7 @@ public final class XformBuilder {
 	 * @param bodyNode - the body node.
 	 * @param controlNode - the UI control.
 	 */
-	private static void addControl(Element bodyNode, Element controlNode) {
+	public static void addControl(Element bodyNode, Element controlNode) {
 		bodyNode.addChild(Element.ELEMENT, controlNode);
 	}
 	
@@ -2339,7 +2345,7 @@ public final class XformBuilder {
 		return repeatControl;
 	}
 	
-	private static void addDefaultProblemListChild(String name, Element repeatControl, String nodeset, Element modelNode) {
+	public static void addDefaultProblemListChild(String name, Element repeatControl, String nodeset, Element modelNode) {
 		//add the input node.
 		Element controlNode = repeatControl.createElement(NAMESPACE_XFORMS, null);
 		controlNode.setName(CONTROL_INPUT);
