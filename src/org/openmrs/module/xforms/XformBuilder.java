@@ -1027,8 +1027,10 @@ public final class XformBuilder {
 			problemListItems.put(binding, parentName);
 		}
 		else{
-			if(!parentName.equalsIgnoreCase("obs"))
+			if(!(parentName.equalsIgnoreCase("obs") || parentName.equalsIgnoreCase("patient") ||
+					parentName.equalsIgnoreCase("encounter"))){
 				binding = parentName + "_" + binding;
+			}
 		}
 		
 		bindNode.setAttribute(null, ATTRIBUTE_ID, binding);
