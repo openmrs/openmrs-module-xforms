@@ -6,11 +6,19 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
+import org.openmrs.Concept;
+import org.openmrs.ConceptClass;
+import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptDescription;
+import org.openmrs.ConceptName;
 import org.openmrs.Field;
 import org.openmrs.Form;
 import org.openmrs.FormField;
+import org.openmrs.GlobalProperty;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
 
 
 /**
@@ -18,6 +26,7 @@ import org.openmrs.api.context.Context;
  */
 public class BasicFormBuilder {
 	
+	private static final int FIELD_TYPE_CONCEPT = 1;
 	private static final int FIELD_TYPE_SECTION = 5;
 	private static final int FIELD_TYPE_DATABASE_ELEMENT = 2;
 	
@@ -40,6 +49,11 @@ public class BasicFormBuilder {
 	private static final String FIELD_ENCOUNTER_DATETIME = "ENCOUNTER.ENCOUNTER_DATETIME";
 	private static final String FIELD_LOCATION_ID = "ENCOUNTER.LOCATION_ID";
 	private static final String FIELD_PROVIDER_ID = "ENCOUNTER.PROVIDER_ID";
+	
+	private static final int CONCEPT_CLASS_MISC = 11;
+	private static final int CONCEPT_DATATYPE_NA = 4;
+	
+	private static final String CONCEPT_NAME_MEDICAL_RECORD_OBSERVATIONS = "MEDICAL RECORD OBSERVATIONS";
 	
 	
 	public static void addDefaultFields(Form form){
@@ -118,18 +132,61 @@ public class BasicFormBuilder {
 	}
 	
 	private static Field getObsSection(FormService formService){
-		Field field = getField(formService, SECTION_NAME_OBS, FIELD_TYPE_SECTION);
-		if(field == null)
-			field = getField(formService, SECTION_NAME_OBS, 1); //concept
+		Field field = getField(formService, SECTION_NAME_OBS, FIELD_TYPE_CONCEPT);
+		if(field == null) {
+			field = getField(formService, SECTION_NAME_OBS, FIELD_TYPE_CONCEPT);
+		}
 		
 		if(field == null){
 			field = getNewField();
 			field.setName(SECTION_NAME_OBS);
-			field.setFieldType(formService.getFieldType(FIELD_TYPE_SECTION));
+			field.setFieldType(formService.getFieldType(FIELD_TYPE_CONCEPT));
+			field.setConcept(getObsSectionConcept());
 			field.setDescription("Obs section of form");
+		}
+		else if (field.getConcept() == null) {
+			field.setConcept(getObsSectionConcept());
 		}
 		
 		return field;
+	}
+	
+	private static Concept getObsSectionConcept() {
+		Concept concept = Context.getConceptService().getConceptByName(CONCEPT_NAME_MEDICAL_RECORD_OBSERVATIONS);
+		if (concept != null) {
+			return concept;
+		}
+		
+		String conceptId = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS);
+		if(conceptId != null && StringUtils.isNumeric(conceptId)) {
+			concept = Context.getConceptService().getConcept(Integer.parseInt(conceptId));
+			if (concept != null) {
+				return concept;
+			}
+		}
+		
+		concept = new Concept();
+		concept.addName(new ConceptName(CONCEPT_NAME_MEDICAL_RECORD_OBSERVATIONS, Context.getLocale()));
+		concept.addDescription(new ConceptDescription("General description for clinical observations entered into the system.", Context.getLocale()));
+		concept.setConceptClass(new ConceptClass(CONCEPT_CLASS_MISC));
+		concept.setDatatype(new ConceptDatatype(CONCEPT_DATATYPE_NA));
+		concept = Context.getConceptService().saveConcept(concept);
+		
+		GlobalProperty globalProperty = Context.getAdministrationService().getGlobalPropertyObject(OpenmrsConstants.GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS);
+		
+		if (globalProperty == null) {
+			globalProperty = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS, 
+				concept.getConceptId().toString(), "The concept id of the MEDICAL_RECORD_OBSERVATIONS concept.  " +
+						"This concept_id is presumed to be the generic grouping (obr) concept in hl7 messages.  " +
+						"An obs_group row is not created for this concept.");
+		}
+		else {
+			globalProperty.setPropertyValue(concept.getConceptId().toString());
+		}
+		
+		Context.getAdministrationService().saveGlobalProperty(globalProperty);
+		
+		return concept;
 	}
 	
 	private static Field getField(FormService formService, String name, int type){
