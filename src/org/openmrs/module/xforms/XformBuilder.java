@@ -887,8 +887,17 @@ public final class XformBuilder {
 				
 				if (name.equalsIgnoreCase(NODE_ENCOUNTER_LOCATION_ID))
 					populateLocations(controlNode);
-				else if (name.equalsIgnoreCase(NODE_ENCOUNTER_PROVIDER_ID))
+				else if (name.equalsIgnoreCase(NODE_ENCOUNTER_PROVIDER_ID)) {
 					populateProviders(controlNode, formNode, modelElement, bodyNode);
+					
+					//if this is 1.9, we need to add the provider_id_type attribute and set its value, this 
+					//will be used by xml to hl7 xslt to determine if it should include the assigning
+					//authority so that ORUR01 handler in core considers the id to be a providerId 
+					if (XformsUtil.isOnePointNineAndAbove()) {
+						((Element)child).setAttribute(null, XformBuilder.ATTRIBUTE_PROVIDER_ID_TYPE, 
+							XformBuilder.VALUE_PROVIDER_ID_TYPE_PROV_ID);
+					}
+				}
 				else if (name.equalsIgnoreCase(NODE_ENCOUNTER_ENCOUNTER_DATETIME))
 					setNodeValue(child, "'today()'"); //Set encounter date defaulting to today
 			}

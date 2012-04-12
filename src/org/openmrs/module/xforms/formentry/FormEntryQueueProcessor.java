@@ -34,7 +34,6 @@ import org.openmrs.module.xforms.BasicFormBuilder;
 import org.openmrs.module.xforms.XformBuilder;
 import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformsService;
-import org.openmrs.module.xforms.util.XformsUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -140,12 +139,6 @@ public class FormEntryQueueProcessor {
 		
 		if (xsltDoc == null)
 			xsltDoc = BasicFormBuilder.getFormXslt();
-		
-		//if this is 1.9, we need to add the provider_id_attribute and set its value, this 
-		//will be used by xml to hl7 xslt to determine if it should include the assigning
-		//authority so that ORUR01 handler in core considers the id to be a providerId 
-		if (XformsUtil.isOnePointNineAndAbove())
-			formData = addProviderAttribute(formData);
 		
 		StringWriter outWriter = new StringWriter();
 		Source source = new StreamSource(new StringReader(formData), XformConstants.DEFAULT_CHARACTER_ENCODING);
