@@ -1037,7 +1037,8 @@ public final class XformBuilder {
 		}
 		else{
 			if(!(parentName.equalsIgnoreCase("obs") || parentName.equalsIgnoreCase("patient") ||
-					parentName.equalsIgnoreCase("encounter"))){
+					parentName.equalsIgnoreCase("encounter") || parentName.equalsIgnoreCase("problem_list") ||
+					parentName.equalsIgnoreCase("orders"))) {
 				binding = parentName + "_" + binding;
 			}
 		}
