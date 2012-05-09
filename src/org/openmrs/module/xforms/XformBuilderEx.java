@@ -141,14 +141,18 @@ public class XformBuilderEx {
 	                      			Locale locale, FormField formField) {
 		
 		Element controlNode = addUInode(token, concept, XformBuilder.DATA_TYPE_TEXT, XformBuilder.CONTROL_SELECT1, locale, getParentNode(formField, locale));
-		addCodedUInodes(controlNode, answerList, concept, XformBuilder.DATA_TYPE_TEXT, XformBuilder.CONTROL_SELECT1, locale);
+		if (controlNode != null) {
+			addCodedUInodes(controlNode, answerList, concept, XformBuilder.DATA_TYPE_TEXT, XformBuilder.CONTROL_SELECT1, locale);
+		}
 	}
 	
 	public static void selectMultiple(String token, Concept concept,
 	                        			Collection<ConceptAnswer> answerList, Locale locale, FormField formField) {
 		
 		Element controlNode = addUInode(token, concept, XformBuilder.DATA_TYPE_TEXT, XformBuilder.CONTROL_SELECT, locale, getParentNode(formField, locale));
-		addCodedUInodes(controlNode, answerList, concept, XformBuilder.DATA_TYPE_TEXT, XformBuilder.CONTROL_SELECT, locale);
+		if (controlNode != null) {
+			addCodedUInodes(controlNode, answerList, concept, XformBuilder.DATA_TYPE_TEXT, XformBuilder.CONTROL_SELECT, locale);
+		}
 	}
 	
 	private static Element addUInode(String token, Concept concept, String dataType, String controlName, Locale locale, Element bodyNode){
@@ -160,6 +164,11 @@ public class XformBuilderEx {
 		controlNode.setAttribute(null, XformBuilder.ATTRIBUTE_BIND, bindName);
 		
 		Element bindNode = (Element) bindings.get(bindName);
+		if (bindNode == null) {
+			System.out.println("NULL bindNode for: " + bindName);
+			return null;
+		}
+		
 		bindNode.setAttribute(null, XformBuilder.ATTRIBUTE_TYPE, dataType);
 		
 		//create the label
