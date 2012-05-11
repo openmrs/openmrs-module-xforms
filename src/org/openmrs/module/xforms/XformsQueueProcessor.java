@@ -822,6 +822,7 @@ public class XformsQueueProcessor {
 		
 		identifier.setIdentifierType(idtfType);
 		identifier.setLocation(getLocation(DOMUtil.getElementValue(doc, XformBuilder.NODE_ENCOUNTER_LOCATION_ID)));
+		identifier.setPreferred(true);
 		patient.addIdentifier(identifier);
 
 		patient.setBirthdate(XformsUtil.fromSubmitString2Date(birthDate.toString()));
