@@ -390,7 +390,8 @@
        		id: "<spring:message code="xforms.id" />",
        		formKey: "<spring:message code="xforms.formKey" />",
        		logo: "<spring:message code="xforms.logo" />",
-       		filterField: "<spring:message code="xforms.filterField" />"
+       		filterField: "<spring:message code="xforms.filterField" />",
+       		repeatChildDataNodeNotFound: "<spring:message code="xforms.repeatChildDataNodeNotFound" />"
 	};
 
 	function isUserAuthenticated(){
