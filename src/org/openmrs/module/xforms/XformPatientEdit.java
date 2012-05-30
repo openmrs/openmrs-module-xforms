@@ -147,6 +147,9 @@ public class XformPatientEdit {
 				personAttribute.setDateCreated(new Date());
 				personAttribute.setCreator(Context.getAuthenticatedUser());
 				personAttribute.setAttributeType(type);
+				
+				//addAttribute will not add if value is not set.
+				personAttribute.setValue(value);
 				patient.addAttribute(personAttribute);
 			}
 			
