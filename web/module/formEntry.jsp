@@ -401,7 +401,8 @@
        		formKey: "<spring:message code="xforms.formKey" />",
        		logo: "<spring:message code="xforms.logo" />",
        		filterField: "<spring:message code="xforms.filterField" />",
-       		repeatChildDataNodeNotFound: "<spring:message code="xforms.repeatChildDataNodeNotFound" />"
+       		repeatChildDataNodeNotFound: "<spring:message code="xforms.repeatChildDataNodeNotFound" />",
+       		selectedFormField: "<spring:message code="xforms.selectedFormField" />"
 	};
 
 	function searchExternal(key,value,parentElement,textElement,valueElement,filterField){
