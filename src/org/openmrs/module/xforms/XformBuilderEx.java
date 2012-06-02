@@ -1,8 +1,11 @@
 package org.openmrs.module.xforms;
 
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -375,7 +378,11 @@ public class XformBuilderEx {
 					else if (datatype.getHl7Abbreviation().equals(FormConstants.HL7_CODED)
 							|| datatype.getHl7Abbreviation().equals(FormConstants.HL7_CODED_WITH_EXCEPTIONS)) {
 						
-						Collection<ConceptAnswer> answers = concept.getAnswers(false);
+						//Collection<ConceptAnswer> answers = concept.getAnswers(false);
+						List answers = new ArrayList<ConceptAnswer>(concept.getAnswers(false));
+						if(answers != null)
+							Collections.sort(answers);
+						
 						if (field.getSelectMultiple()){
 							selectMultiple(token, concept, answers, locale, formField);
 						}
