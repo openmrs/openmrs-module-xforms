@@ -34,6 +34,7 @@ public class XformBuilderEx {
 	public static Hashtable<String, Element> bindings;
 	private static Hashtable<FormField, Element> formFields;
 	private static Hashtable<FormField, String> fieldTokens;
+	private static boolean useConceptIdAsHint = false;
 	
 	/**
 	 * Builds an xform for an given an openmrs form.
@@ -46,6 +47,7 @@ public class XformBuilderEx {
 		bindings = new Hashtable<String, Element>();
 		formFields = new Hashtable<FormField, Element>();
 		fieldTokens = new Hashtable<FormField, String>();
+		useConceptIdAsHint = "true".equalsIgnoreCase(Context.getAdministrationService().getGlobalProperty("xforms.useConceptIdAsHint"));
 		
 		//String schemaXml = XformsUtil.getSchema(form);
 		String templateXml = FormEntryWrapper.getFormTemplate(form);
@@ -177,6 +179,8 @@ public class XformBuilderEx {
 		labelNode.addChild(Element.TEXT, concept.getBestName(locale).getName());
 		controlNode.addChild(Element.ELEMENT, labelNode);
 		
+		addHintNode(labelNode, concept);
+		
 		XformBuilder.addControl(bodyNode, controlNode);
 		
 		if(concept instanceof ConceptNumeric) {
@@ -224,6 +228,10 @@ public class XformBuilderEx {
 			itemLabelNode.addChild(Element.TEXT, conceptName);
 			itemNode.addChild(Element.ELEMENT, itemLabelNode);
 			
+			//TODO This will make sense after the form designer's OptionDef implements
+			//the xforms hint.
+			//addHintNode(itemLabelNode, answer.getAnswerConcept());
+			
 			Element itemValNode = controlNode.createElement(XformBuilder.NAMESPACE_XFORMS, null);
 			itemValNode.setName(XformBuilder.NODE_VALUE);
 			itemValNode.addChild(Element.TEXT, conceptValue);
@@ -252,6 +260,8 @@ public class XformBuilderEx {
 			labelNode.addChild(Element.TEXT, formField.getField().getConcept().getBestName(locale).getName());
 			groupNode.addChild(Element.ELEMENT, labelNode);
 			
+			addHintNode(labelNode, formField.getField().getConcept());
+			
 			Element repeatControl = bodyNode.createElement(XformBuilder.NAMESPACE_XFORMS, null);
 			repeatControl.setName(XformBuilder.CONTROL_REPEAT);
 			repeatControl.setAttribute(null, XformBuilder.ATTRIBUTE_BIND, token);
@@ -275,11 +285,12 @@ public class XformBuilderEx {
 		labelNode.addChild(Element.TEXT, formField.getField().getConcept().getBestName(locale).getName());
 		groupNode.addChild(Element.ELEMENT, labelNode);
 		
+		addHintNode(labelNode, concept);
+		
 		Element repeatControl = bodyNode.createElement(XformBuilder.NAMESPACE_XFORMS, null);
 		repeatControl.setName(XformBuilder.CONTROL_REPEAT);
 		repeatControl.setAttribute(null, XformBuilder.ATTRIBUTE_BIND, token);
 		groupNode.addChild(Element.ELEMENT, repeatControl);
-		
 
 		//add the input node.
 		Element controlNode = repeatControl.createElement(XformBuilder.NAMESPACE_XFORMS, null);
@@ -296,6 +307,8 @@ public class XformBuilderEx {
 		labelNode.setName(XformBuilder.NODE_LABEL);
 		labelNode.addChild(Element.TEXT, token + " value");
 		controlNode.addChild(Element.ELEMENT, labelNode);
+		
+		addHintNode(labelNode, concept);
 		
 		//create bind node
 		Element bindNode = controlNode.createElement(XformBuilder.NAMESPACE_XFORMS, null);
@@ -375,6 +388,23 @@ public class XformBuilderEx {
 					}
 				}
 			}
+		}
+	}
+	
+	private static void addHintNode(Element labelNode, Concept concept) {
+		String hint = null;
+		if(concept.getDescription() != null)
+			hint = concept.getDescription().getDescription();
+		
+		if(useConceptIdAsHint) {
+			hint = (hint != null ? hint + " [" + concept.getConceptId() + "]" : concept.getConceptId().toString());
+		}
+		
+		if(hint != null) {
+			Element hintNode = labelNode.createElement(XformBuilder.NAMESPACE_XFORMS, null);
+			hintNode.setName(XformBuilder.NODE_HINT);
+			hintNode.addChild(Element.TEXT, hint);
+			labelNode.getParent().addChild(Element.ELEMENT, hintNode);
 		}
 	}
 }
