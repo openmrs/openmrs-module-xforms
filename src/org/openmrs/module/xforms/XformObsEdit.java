@@ -183,7 +183,8 @@ public class XformObsEdit {
 			else{
 				Element valueNode = XformBuilder.getElement(node, "value");
 				if(valueNode != null){
-					if(complexObs.contains(node.getName())){
+					String nodeName = node.getName();
+					if(complexObs.contains(nodeName)){
 						String key = getComplexDataKey(formNode.getAttributeValue(null, "id"),"/form/obs/" + node.getName() + "/value");
 						value = getComplexObsValue(node.getName(),valueNode,value,key);
 					}
@@ -194,7 +195,7 @@ public class XformObsEdit {
 					if(concept.getDatatype().isCoded() && obs.getValueCoded() != null)
 						valueNode.setAttribute(null, "displayValue", obs.getValueCoded().getName().getName());
 
-					if(obsGroupId != null)
+					if(obsGroupId != null || (nodeName.equals("problem_added") || nodeName.equals("problem_resoved")))
 						valueNode.setAttribute(null, "default", "false()");
 				}
 
