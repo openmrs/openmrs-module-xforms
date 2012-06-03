@@ -567,8 +567,8 @@
     			//valueElement.style.width = "0px";
     			
     			parent.appendChild(txtConcept);
-    			txtConcept.value = value;
     			txtConcept.focus();
+    			txtConcept.value = value;
     		}
     	}
     	
