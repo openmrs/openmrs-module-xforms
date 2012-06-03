@@ -195,7 +195,7 @@ public class XformObsEdit {
 					if(concept.getDatatype().isCoded() && obs.getValueCoded() != null)
 						valueNode.setAttribute(null, "displayValue", obs.getValueCoded().getName().getName());
 
-					if(obsGroupId != null || (nodeName.equals("problem_added") || nodeName.equals("problem_resoved")))
+					if(obsGroupId != null || (nodeName.equals("problem_added") || nodeName.equals("problem_resolved")))
 						valueNode.setAttribute(null, "default", "false()");
 				}
 
