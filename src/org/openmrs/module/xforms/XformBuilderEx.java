@@ -147,7 +147,7 @@ public class XformBuilderEx {
 		
 		Element controlNode = addUInode(token, concept, XformBuilder.DATA_TYPE_TEXT, XformBuilder.CONTROL_SELECT1, locale, getParentNode(formField, locale));
 		if (controlNode != null) {
-			addCodedUInodes(controlNode, answerList, concept, XformBuilder.DATA_TYPE_TEXT, XformBuilder.CONTROL_SELECT1, locale);
+			addCodedUInodes(false, controlNode, answerList, concept, XformBuilder.DATA_TYPE_TEXT, XformBuilder.CONTROL_SELECT1, locale);
 		}
 	}
 	
@@ -156,7 +156,7 @@ public class XformBuilderEx {
 		
 		Element controlNode = addUInode(token, concept, XformBuilder.DATA_TYPE_TEXT, XformBuilder.CONTROL_SELECT, locale, getParentNode(formField, locale));
 		if (controlNode != null) {
-			addCodedUInodes(controlNode, answerList, concept, XformBuilder.DATA_TYPE_TEXT, XformBuilder.CONTROL_SELECT, locale);
+			addCodedUInodes(true, controlNode, answerList, concept, XformBuilder.DATA_TYPE_TEXT, XformBuilder.CONTROL_SELECT, locale);
 		}
 	}
 	
@@ -205,7 +205,7 @@ public class XformBuilderEx {
 		return controlNode;
 	}
 	
-	private static void addCodedUInodes(Element controlNode, Collection<ConceptAnswer> answerList, Concept concept, String dataType, String controlName, Locale locale){
+	private static void addCodedUInodes(boolean multiplSel, Element controlNode, Collection<ConceptAnswer> answerList, Concept concept, String dataType, String controlName, Locale locale){
 		for (ConceptAnswer answer : answerList) {
 			String conceptName = answer.getAnswerConcept().getName(locale).getName();
 			String conceptValue;
@@ -215,10 +215,18 @@ public class XformBuilderEx {
 					&& answer.getAnswerDrug() != null) {
 				
 				conceptName = answer.getAnswerDrug().getName();
-				conceptValue = StringEscapeUtils.escapeXml(FormUtil.conceptToString(answer.getAnswerConcept(),
-								locale)) + "^" + FormUtil.drugToString(answer.getAnswerDrug());
+				
+				if(multiplSel)
+					conceptValue = FormUtil.getXmlToken(conceptName);
+				else {
+					conceptValue = StringEscapeUtils.escapeXml(FormUtil.conceptToString(answer.getAnswerConcept(),
+									locale)) + "^" + FormUtil.drugToString(answer.getAnswerDrug());
+				}
 			} else {
-				conceptValue = StringEscapeUtils.escapeXml(FormUtil.conceptToString(answer.getAnswerConcept(), locale));
+				if(multiplSel)
+					conceptValue = FormUtil.getXmlToken(conceptName);
+				else
+					conceptValue = StringEscapeUtils.escapeXml(FormUtil.conceptToString(answer.getAnswerConcept(), locale));
 			}
 			
 			Element itemNode = controlNode.createElement(XformBuilder.NAMESPACE_XFORMS, null);
