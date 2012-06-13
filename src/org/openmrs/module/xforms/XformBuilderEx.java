@@ -388,7 +388,7 @@ public class XformBuilderEx {
 						
 						//Collection<ConceptAnswer> answers = concept.getAnswers(false);
 						List answers = new ArrayList<ConceptAnswer>(concept.getAnswers(false));
-						if(answers != null)
+						if(answers != null && answers.size() > 0 && answers.get(0) instanceof Comparable)
 							Collections.sort(answers);
 						
 						if (field.getSelectMultiple()){
