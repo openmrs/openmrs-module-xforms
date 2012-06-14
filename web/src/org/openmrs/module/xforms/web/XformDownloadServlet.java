@@ -490,6 +490,15 @@ public class XformDownloadServlet extends HttpServlet {
 				String locationId = XformBuilder.getNodeValue(doc.getRootElement(), XformBuilder.NODE_LOCATION_ID);
 				if(locationId == null || locationId.trim().length() == 0){
 					locationId = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION);
+					
+					//If user has no location set under their profile page, use the default implementation location.
+					if(locationId == null || locationId.trim().length() == 0){
+						Location location = Context.getLocationService().getDefaultLocation();
+						if(location != null){
+							locationId = location.getLocationId().toString();
+						}
+					}
+					
 					if(locationId != null && locationId.trim().length() > 0)
 						XformBuilder.setNodeValue(doc, XformBuilder.NODE_LOCATION_ID, locationId);
 				}
