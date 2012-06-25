@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="@MODULE_PACKAGE@">
+
+	<class name="MedicalHistoryField" table="xforms_medical_history_field">
+
+		<id name="fieldId" type="int" column="field_id">
+			<generator class="assigned" />
+		</id>
+		
+		<property name="name" type="java.lang.String" length="255" not-null="true"/>
+		
+		<property name="tabIndex" type="int" />
+		
+	</class>
+</hibernate-mapping>

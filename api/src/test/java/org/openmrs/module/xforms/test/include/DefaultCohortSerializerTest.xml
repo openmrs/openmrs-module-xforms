@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <cohort cohort_id="1" name="The First Unit Test Cohort" description="" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" voided_by="1" date_voided="2005-01-01 00:00:00.0" void_reason=""/>
+  <cohort cohort_id="2" name="The Second Unit Test Cohort" description="" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" voided_by="1" date_voided="2005-01-01 00:00:00.0" void_reason=""/>
+</dataset>

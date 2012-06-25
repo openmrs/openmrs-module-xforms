@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqldiff PUBLIC "-//OpenMRS//DTD OpenMRS SQL Diff Config 1.0//EN" "http://resources.openmrs.org/doctype/sqldiff-1.0.dtd">
+
+<sqldiff version="1.0">
+	<help>
+		USE:
+			The diffs are ordered by datamodel version number.
+			The script can be run in a top down fashion and is
+			expected to not failor overwrite old data
+		
+		EXPECT:
+			- "use business-database-name;" was called prior to
+			   calling this script
+	</help>
+	
+	
+	<diff>
+		<version>2.0</version>
+		<author>Daniel Kayiwa</author>
+		<date>Feb 15th 2009</date>
+		<description>
+			Creating new xforms table with proper name and extra columns.
+		</description>
+		<sql>
+			CREATE TABLE IF NOT EXISTS `xforms_xform` (
+			  `form_id` int(11) NOT NULL,
+			  `xform_xml` longtext,
+			  `layout_xml` longtext,
+			  `creator` int(11) NOT NULL default '0',
+			  `date_created` datetime NOT NULL default '0000-00-00 00:00:00',
+			  `changed_by` int(11) default NULL,
+			  `date_changed` datetime default NULL,
+			  PRIMARY KEY  (`form_id`),
+			  KEY `user_who_created_xform` (`creator`),
+			  KEY `form_with_which_xform_is_related` (`form_id`),
+			  CONSTRAINT `user_who_created_xform` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
+			  CONSTRAINT `user_who_last_changed_xform` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+		</sql>
+	</diff>
+	
+	<diff>
+		<version>2.1</version>
+		<author>Daniel Kayiwa</author>
+		<date>Feb 25th 2009</date>
+		<description>
+			Adding table for storing repeat attribute values.
+		</description>
+		<sql>
+			CREATE TABLE IF NOT EXISTS `xforms_person_repeat_attribute` (
+  			`person_repeat_attribute_id` int(11) NOT NULL auto_increment,
+  			`person_id` int(11) NOT NULL default '0',
+ 			`value` varchar(50) NOT NULL default '',
+  			`person_attribute_type_id` int(11) NOT NULL default '0',
+  			`value_id` int(11) NOT NULL default '0',
+  			`value_id_type` int NOT NULL default '0',
+  			`value_display_order` int NOT NULL default '0',
+ 			`creator` int(11) NOT NULL default '0',
+  			`date_created` datetime NOT NULL default '0000-00-00 00:00:00',
+  			`changed_by` int(11) default NULL,
+  			`date_changed` datetime default NULL,
+  			`voided` tinyint(1) NOT NULL default '0',
+  			`voided_by` int(11) default NULL,
+  			`date_voided` datetime default NULL,
+  			`void_reason` varchar(255) default NULL,
+  			PRIMARY KEY  (`person_repeat_attribute_id`),
+  			KEY `repeat_identifies_person` (`person_id`),
+  			KEY `repeat_defines_attribute_type` (`person_attribute_type_id`),
+  			KEY `repeat_attribute_creator` (`creator`),
+  			KEY `repeat_attribute_changer` (`changed_by`),
+  			KEY `repeat_attribute_voider` (`voided_by`),
+  			CONSTRAINT `repeat_attribute_changer` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`),
+  			CONSTRAINT `repeat_attribute_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
+  			CONSTRAINT `repeat_attribute_voider` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`),
+  			CONSTRAINT `repeat_defines_attribute_type` FOREIGN KEY (`person_attribute_type_id`) REFERENCES `person_attribute_type` (`person_attribute_type_id`),
+  			CONSTRAINT `repeat_identifies_person` FOREIGN KEY (`person_id`) REFERENCES `person` (`person_id`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;	
+		</sql>
+	</diff>
+	
+	<diff>
+		<version>2.6</version>
+		<author>Daniel Kayiwa</author>
+		<date>April 10th 2009</date>
+		<description>
+			Adding table for storing patient medical history.
+		</description>
+		<sql>
+			CREATE TABLE `xforms_medical_history_field` (
+			  `field_id` int(11) NOT NULL,
+			  `name` varchar(255) NOT NULL,
+			  `tabIndex` int(11) default NULL,
+			  PRIMARY KEY  (`field_id`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8;	
+		</sql>
+	</diff>
+	
+	<diff>
+		<version>3.7.6</version>
+		<author>Daniel Kayiwa</author>
+		<date>December 20th 2009</date>
+		<description>
+			Adding locale_xml field to the xform table.
+		</description>
+		<sql>
+			ALTER TABLE xforms_xform ADD locale_xml longtext;	
+		</sql>
+	</diff>
+	
+	<diff>
+		<version>3.7.7</version>
+		<author>Daniel Kayiwa</author>
+		<date>December 31th 2009</date>
+		<description>
+			Adding javascript_src field to the xform table.
+		</description>
+		<sql>
+			ALTER TABLE xforms_xform ADD javascript_src longtext;	
+		</sql>
+	</diff>
+	
+	<diff>
+		<version>3.7.8</version>
+		<author>Daniel Kayiwa</author>
+		<date>September 6th 2011</date>
+		<description>
+			Adding uuid field to the xform table.
+		</description>
+		<sql>
+			ALTER TABLE xforms_xform ADD uuid char(38);	
+		</sql>
+	</diff>
+	
+	<diff>
+		<version>3.7.9</version>
+		<author>Daniel Kayiwa</author>
+		<date>September 6th 2011</date>
+		<description>
+			Adding uuids to all data in the the xform table.
+		</description>
+		<sql>
+			update xforms_xform set uuid = uuid() where uuid is null;	
+		</sql>
+	</diff>
+	
+</sqldiff>
