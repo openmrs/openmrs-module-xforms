@@ -333,23 +333,23 @@
 	
 	<extension>
 		<point>org.openmrs.admin.list</point>
-		<class>@MODULE_PACKAGE@.extension.html.XformsAdminExt</class>
+		<class>@MODULE_PACKAGE@.web.extension.html.XformsAdminExt</class>
 	</extension>
 	<extension>
 		<point>org.openmrs.admin.forms.formHeader</point>
-		<class>@MODULE_PACKAGE@.extension.html.XformsFormHeaderExt</class>
+		<class>@MODULE_PACKAGE@.web.extension.html.XformsFormHeaderExt</class>
 	</extension>
 	
 	<!--
 	<extension>
 		<point>org.openmrs.patientDashboardTab</point>
-		<class>@MODULE_PACKAGE@.extension.html.XformsPatientDashboardTabExt</class>
+		<class>@MODULE_PACKAGE@.web.extension.html.XformsPatientDashboardTabExt</class>
 	</extension>
 	-->
 	
 	<extension>
 		<point>org.openmrs.module.web.extension.FormEntryHandler</point>
-		<class>org.openmrs.module.xforms.extension.html.XformsFormEntryHandler</class>
+		<class>org.openmrs.module.xforms.web.extension.html.XformsFormEntryHandler</class>
 	</extension>
 	
 	

@@ -1,4 +1,4 @@
-package org.openmrs.module.xforms.extension.html;
+package org.openmrs.module.xforms.web.extension.html;
 
 import java.util.ArrayList;
 import java.util.Collection;
