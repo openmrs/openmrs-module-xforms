@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!-- Beans to add to the current Application context definition -->
+  
+<beans>
+	
+    <bean id="xformsUrlMapping" class="org.openmrs.module.xforms.web.controller.XformsUrlHandlerMapping">
+    	<property name="order"><value>1</value></property>
+    	<property name="mappings">
+            <props>
+	           <prop key="module/@MODULE_ID@/xformDesigner.form">xformDesigner</prop>
+	           <prop key="module/@MODULE_ID@/xformDataUpload.form">xformDataUpload</prop>
+	           <prop key="module/@MODULE_ID@/xformUpload.form">xformUpload</prop>
+	           <prop key="module/@MODULE_ID@/xsltUpload.form">xsltUpload</prop>
+	           <prop key="module/@MODULE_ID@/xformDelete.form">xformDelete</prop>
+	           <prop key="module/@MODULE_ID@/formEntry.form">formEntry</prop>
+	           <prop key="module/@MODULE_ID@/patientDownload.form">patientDownload</prop>
+	           <!-- <prop key="module/@MODULE_ID@/xformProperties.form">xformProperties</prop> -->
+	           <prop key="module/@MODULE_ID@/xformDesigner.form">xformDesigner</prop>
+	           <prop key="module/@MODULE_ID@/medicalHistoryFields.form">medicalHistoryFields</prop>
+	           <!-- <prop key="admin/patients/newPatient.form">xformDesigner</prop> -->
+	           <!-- <prop key="admin/encounters/encounter.form">formEntry</prop> -->
+	    </props>
+	</property>
+    </bean>
+	
+    <!-- Controllers -->
+	
+    <bean id="xformDesigner" class="@MODULE_PACKAGE@.web.controller.XformDesignerController">
+	<property name="commandName"><value>xformDesigner</value></property>
+	<property name="formView"><value>/module/@MODULE_ID@/xformDesigner</value></property>
+	<property name="successView"><value>xformDesigner.form</value></property>
+    </bean>
+    
+    
+    <bean id="xformDataUpload" class="@MODULE_PACKAGE@.web.controller.XformDataUploadController">
+	<property name="commandName"><value>xformDataUpload</value></property>
+	<property name="formView"><value>/module/@MODULE_ID@/xformDataUpload</value></property>
+	<property name="successView"><value>xformDataUpload.form</value></property>
+    </bean>
+    
+    
+    <bean id="xformUpload" class="@MODULE_PACKAGE@.web.controller.XformUploadController">
+	<property name="commandName"><value>xformUpload</value></property>
+	<property name="formView"><value>/module/@MODULE_ID@/xformUpload</value></property>
+	<property name="successView"><value>xformUpload.form</value></property>
+    </bean>
+    
+    <bean id="xsltUpload" class="@MODULE_PACKAGE@.web.controller.XformUploadController">
+	<property name="commandName"><value>xsltUpload</value></property>
+	<property name="formView"><value>/module/@MODULE_ID@/xsltUpload</value></property>
+	<property name="successView"><value>xsltUpload.form</value></property>
+    </bean>
+    
+    <bean id="xformDelete" class="@MODULE_PACKAGE@.web.controller.XformDeleteController">
+	<property name="commandName"><value>xformDelete</value></property>
+	<property name="formView"><value>/module/@MODULE_ID@/xformDelete</value></property>
+	<property name="successView"><value>xformDelete.form</value></property>
+    </bean>
+    
+    <bean id="formEntry" class="@MODULE_PACKAGE@.web.controller.XformEntryController">
+	<property name="commandName"><value>formEntry</value></property>
+	<property name="formView"><value>/module/@MODULE_ID@/formEntry</value></property>
+	<property name="successView"><value>formEntry.form</value></property>
+    </bean>
+    
+    <bean id="patientDownload" class="@MODULE_PACKAGE@.web.controller.PatientDownloadController">
+	<property name="commandName"><value>patientDownload</value></property>
+	<property name="formView"><value>/module/@MODULE_ID@/patientDownload</value></property>
+	<property name="successView"><value>patientDownload.form</value></property>
+    </bean>
+    
+    <!-- 
+    <bean id="xformProperties" class="@MODULE_PACKAGE@.web.controller.XformPropertiesController">
+	<property name="commandName"><value>xformProperties</value></property>
+	<property name="formView"><value>/module/@MODULE_ID@/xformProperties</value></property>
+	<property name="successView"><value>xformProperties.form</value></property>
+    </bean>  -->
+    
+    <bean id="medicalHistoryFields" class="@MODULE_PACKAGE@.web.controller.MedicalHistoryFieldsController">
+		<property name="commandName"><value>form</value></property>
+		<property name="formView"><value>/module/@MODULE_ID@/medicalHistoryFields</value></property>
+		<property name="successView"><value>medicalHistoryFields.form</value></property>
+	</bean>
+	
+	<bean id="patientReg" class="@MODULE_PACKAGE@.web.controller.PatientRegController">
+		<property name="commandName"><value>patientReg</value></property>
+		<property name="formView"><value>/module/@MODULE_ID@/patientReg</value></property>
+		<property name="successView"><value>patientReg.form</value></property>
+    </bean>
+    
+</beans>

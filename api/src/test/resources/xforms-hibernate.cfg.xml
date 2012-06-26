@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+	"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+	<session-factory>
+		<mapping resource="FormEntryError.hbm.xml" />
+		<mapping resource="MedicalHistoryField.hbm.xml" />
+		<mapping resource="PersonRepeatAttribute.hbm.xml" />
+		<mapping resource="Xform.hbm.xml" />
+		<mapping resource="XformCohort.hbm.xml" />
+	</session-factory>
+</hibernate-configuration>
