@@ -109,8 +109,12 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	
+
 	<dependencies>
+		<!-- Dependencies deployed under org.openmrs.module.xforms come from the 
+			pre-maven lib directory. It was difficult to determine their exact versions, 
+			therefore they have been deployed as customized jars. Do not trust the specified 
+			versions and treat them only as hints. -->
 		<dependency>
 			<groupId>org.openmrs.module.xforms</groupId>
 			<artifactId>jzlib</artifactId>
@@ -202,7 +206,7 @@
 				<filtering>true</filtering>
 			</resource>
 		</resources>
-		
+
 		<pluginManagement>
 			<plugins>
 				<plugin>
