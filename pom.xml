@@ -62,7 +62,6 @@
 	</modules>
 
 	<properties>
-		<openmrsVersion>1.6.5</openmrsVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -111,6 +110,49 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+	
+	<dependencies>
+		<dependency>
+			<groupId>com.jcraft</groupId>
+			<artifactId>jzlib</artifactId>
+			<version>1.0.7</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.kxml</groupId>
+			<artifactId>kxml2</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jdom</groupId>
+			<artifactId>jdom</artifactId>
+			<version>1.1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>jaxen</groupId>
+			<artifactId>jaxen</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openmrs.module.xforms</groupId>
+			<artifactId>sms-server</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openmrs.module.xforms</groupId>
+			<artifactId>bluetooth-server</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openmrs.module.xforms</groupId>
+			<artifactId>dwr-mod</artifactId>
+			<version>1.1.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openmrs.module.xforms</groupId>
+			<artifactId>epihandy-xforms-server</artifactId>
+			<version>1.0</version>
+		</dependency>
+	</dependencies>
 
 	<profiles>
 		<profile>
@@ -121,22 +163,6 @@
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
-			
-			<!-- Dependencies missing in the api, but included in the web -->
-			<dependencies>
-				<dependency>
-					<groupId>commons-io</groupId>
-					<artifactId>commons-io</artifactId>
-					<version>1.4</version>
-					<scope>provided</scope>
-				</dependency>
-				<dependency>
-					<groupId>commons-beanutils</groupId>
-					<artifactId>commons-beanutils</artifactId>
-					<version>1.7.0</version>
-					<scope>provided</scope>
-				</dependency>
-			</dependencies>
 		</profile>
 
 		<profile>
@@ -312,47 +338,4 @@
 			</plugins>
 		</pluginManagement>
 	</build>
-
-	<dependencies>
-		<dependency>
-			<groupId>com.jcraft</groupId>
-			<artifactId>jzlib</artifactId>
-			<version>1.0.7</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.kxml</groupId>
-			<artifactId>kxml2</artifactId>
-			<version>2.3.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jdom</groupId>
-			<artifactId>jdom</artifactId>
-			<version>1.1.2</version>
-		</dependency>
-		<dependency>
-			<groupId>jaxen</groupId>
-			<artifactId>jaxen</artifactId>
-			<version>1.1.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.openmrs.module.xforms</groupId>
-			<artifactId>sms-server</artifactId>
-			<version>1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.openmrs.module.xforms</groupId>
-			<artifactId>bluetooth-server</artifactId>
-			<version>1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.openmrs.module.xforms</groupId>
-			<artifactId>dwr-mod</artifactId>
-			<version>1.1.3</version>
-		</dependency>
-		<dependency>
-			<groupId>org.openmrs.module.xforms</groupId>
-			<artifactId>epihandy-xforms-server</artifactId>
-			<version>1.0</version>
-		</dependency>
-	</dependencies>
 </project>
