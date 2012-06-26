@@ -176,27 +176,6 @@
 
 	<profiles>
 		<profile>
-			<id>openmrs-1.6.5</id>
-			<properties>
-				<openmrsVersion>1.6.5</openmrsVersion>
-			</properties>
-		</profile>
-
-		<profile>
-			<id>openmrs-1.8.3</id>
-			<properties>
-				<openmrsVersion>1.8.3</openmrsVersion>
-			</properties>
-		</profile>
-
-		<profile>
-			<id>openmrs-1.9</id>
-			<properties>
-				<openmrsVersion>1.9</openmrsVersion>
-			</properties>
-		</profile>
-		
-		<profile>
 			<id>release</id>
 			<build>
 				<plugins>

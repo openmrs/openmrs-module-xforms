@@ -12,6 +12,11 @@ import org.openmrs.test.BaseModuleContextSensitiveTest;
 public class FormSmsParserTest extends BaseModuleContextSensitiveTest {
 	
 	@Test
+	public void emptyTest() throws Exception {
+		//at least one non-ignored test needed
+	}
+	
+	@Test
 	@Ignore("No xform found with id=15. We need to find a way to run this test with the in-memory db.")
 	public void testSms2FormData() throws Exception {
 		//username,password,formid, question=answer
