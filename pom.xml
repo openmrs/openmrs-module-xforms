@@ -112,30 +112,30 @@
 	
 	<dependencies>
 		<dependency>
-			<groupId>com.jcraft</groupId>
+			<groupId>org.openmrs.module.xforms</groupId>
 			<artifactId>jzlib</artifactId>
 			<version>1.0.7</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.kxml</groupId>
+			<groupId>org.openmrs.module.xforms</groupId>
 			<artifactId>kxml2</artifactId>
 			<version>2.3.0</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.jdom</groupId>
+			<groupId>org.openmrs.module.xforms</groupId>
 			<artifactId>jdom</artifactId>
-			<version>1.1.2</version>
+			<version>1.1.1</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>jaxen</groupId>
+			<groupId>org.openmrs.module.xforms</groupId>
 			<artifactId>jaxen</artifactId>
-			<version>1.1.1</version>
+			<version>1.0</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
