@@ -23,7 +23,7 @@ public class XformsUrlHandlerMapping extends SimpleUrlHandlerMapping{
 	}
 
 	@Override
-	protected Object lookupHandler(String arg0, HttpServletRequest arg1) {
+	protected Object lookupHandler(String arg0, HttpServletRequest arg1) throws Exception {
 		if("/admin/encounters/encounter.form".equals(arg0)){
 			if("true".equals(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_USE_ENCOUNTER_XFORM,"false"))){
 

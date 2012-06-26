@@ -624,11 +624,11 @@ public class XformsUtil {
 	 */
 	public static Integer getProviderId(Encounter encounter) throws Exception {
 		try {
-			return encounter.getProvider().getUserId();
+			return encounter.getProvider().getPersonId();
 		}
 		catch (NoSuchMethodError ex) {
 			Method method = encounter.getClass().getMethod("getProvider", null);
-			return ((Person) method.invoke(encounter, null)).getPersonId();
+			return ((User) method.invoke(encounter, null)).getUserId();
 		}
 		/*List<User>  users = Context.getUserService().getUsersByPerson(encounter.getProvider(), false);
 		    // deal with multiples by tossing exceptions if you like
@@ -645,11 +645,11 @@ public class XformsUtil {
 	 */
 	public static Integer getPersonId(User user) throws Exception {
 		try {
-			return user.getPersonId();
+			return user.getUserId();
 		}
 		catch (NoSuchMethodError ex) {
-			Method method = user.getClass().getMethod("getPerson", null);
-			return ((Person) method.invoke(user, null)).getPersonId();
+			Method method = user.getClass().getMethod("getPersonId", null);
+			return (Integer) method.invoke(user, null);
 		}
 	}
 	
