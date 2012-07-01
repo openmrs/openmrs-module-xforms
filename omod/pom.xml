@@ -16,17 +16,9 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>${project.parent.groupId}</groupId>
-			<artifactId>${project.parent.artifactId}-api</artifactId>
-			<version>${project.parent.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>${project.parent.groupId}</groupId>
-			<artifactId>${project.parent.artifactId}-api</artifactId>
-			<version>${project.parent.version}</version>
-			<classifier>tests</classifier>
-			<scope>test</scope>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>xforms-api</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 		
 		<dependency>
@@ -48,6 +40,10 @@
 			<resource>
 				<directory>src/main/resources</directory>
 				<filtering>true</filtering>
+				<includes>
+					<include>**/*.xml</include>
+					<include>**/*.properties</include>
+				</includes>
 			</resource>
 			<resource>
 				<directory>src/main/webapp</directory>
