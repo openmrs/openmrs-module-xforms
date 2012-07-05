@@ -208,6 +208,8 @@ public class XformConstants {
 	
 	public static final String GLOBAL_PROP_KEY_ADMIN_EMAIL = "xforms.adminEmail";
 	
+	public static final String GLOBAL_PROP_KEY_EMAIL_SERVER_CONFIG = "xforms.emailServerConfig";
+	
 	/** The default value for the user serializer class.*/
 	public static final String DEFAULT_USER_SERIALIZER= "org.openmrs.module.xforms.serialization.DefaultUserSerializer";
 	
