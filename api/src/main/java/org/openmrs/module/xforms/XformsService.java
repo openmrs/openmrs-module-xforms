@@ -235,4 +235,14 @@ public interface XformsService {
 	 */
 	@Transactional(readOnly=true)
 	public String getConceptName(Integer conceptId, String localeKey);
+	
+	/**
+	 * Sends a stacktrace of the given exception to admin's e-mail, if it is defined
+	 * under {@link XformConstants#GLOBAL_PROP_KEY_ADMIN_EMAIL}.
+	 * 
+	 * @param subject
+	 * @param exception
+	 */
+	@Transactional
+	public void sendStacktraceToAdminByEmail(String subject, Exception exception);
 }

@@ -44,6 +44,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.module.xforms.XformBuilder;
 import org.openmrs.module.xforms.XformConstants;
+import org.openmrs.module.xforms.XformsService;
 import org.openmrs.module.xforms.formentry.FormEntryWrapper;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
@@ -599,6 +600,8 @@ public class XformsUtil {
 	public static void reportDataUploadError(Exception ex, HttpServletRequest request, HttpServletResponse response,
 	                                         PrintWriter writer) throws IOException {
 		log.error(ex.getMessage(), ex);
+		
+		Context.getService(XformsService.class).sendStacktraceToAdminByEmail("XForms Error: failed to upload data", ex);
 		
 		String message = ex.getMessage(); //"Could not process request. Click the more button for details.";
 		Object msg = request.getAttribute(XformConstants.REQUEST_ATTRIBUTE_ID_ERROR_MESSAGE);

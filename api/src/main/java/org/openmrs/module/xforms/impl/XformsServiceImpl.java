@@ -2,6 +2,7 @@ package org.openmrs.module.xforms.impl;
 
 import java.util.List;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Form;
@@ -12,6 +13,7 @@ import org.openmrs.module.xforms.MedicalHistoryField;
 import org.openmrs.module.xforms.Xform;
 import org.openmrs.module.xforms.XformBuilder;
 import org.openmrs.module.xforms.XformBuilderEx;
+import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformsService;
 import org.openmrs.module.xforms.db.XformsDAO;
 import org.openmrs.module.xforms.formentry.FormEntryError;
@@ -20,6 +22,10 @@ import org.openmrs.module.xforms.model.PatientMedicalHistory;
 import org.openmrs.module.xforms.model.PersonRepeatAttribute;
 import org.openmrs.module.xforms.model.XformUser;
 import org.openmrs.module.xforms.util.XformsUtil;
+import org.openmrs.notification.Message;
+import org.openmrs.notification.MessageException;
+import org.openmrs.notification.mail.MailMessageSender;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -33,6 +39,9 @@ public class XformsServiceImpl implements XformsService {
     private XformsDAO dao;
 
     private Log log = LogFactory.getLog(this.getClass());
+    
+    @Autowired
+    MailMessageSender mailMessageSender;
 
     public XformsServiceImpl() {
     }
@@ -236,4 +245,24 @@ public class XformsServiceImpl implements XformsService {
 	public String getConceptName(Integer conceptId, String localeKey){
 		return getXformsDAO().getConceptName(conceptId, localeKey);
 	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public void sendStacktraceToAdminByEmail(String subject, Exception exception) {
+		String email = Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_ADMIN_EMAIL);
+		if (email == null) {
+			return;
+		}
+		
+		Message message = new Message();
+		message.addRecipient(email);
+		message.setSubject(subject);
+		message.setContent(ExceptionUtils.getFullStackTrace(exception));
+		try {
+			mailMessageSender.send(message);
+		} catch (MessageException e) {
+			log.error("Failed to send an email to " + email, e);
+		}
+	}	
+	
 }
