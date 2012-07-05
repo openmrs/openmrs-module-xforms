@@ -164,7 +164,7 @@ public class XformsQueueProcessor {
 			if(DOMUtil.isPatientDoc(doc)){
 				Patient patient = saveNewPatient(root,getCreator(doc),propagateErrors,request);
 				if(patient == null)
-					saveFormInError(xml,pathName);
+					saveFormInError(xml,pathName, null);
 				else{
 					saveNewPatientEncounterIfAny(patient, root, pathName, propagateErrors);
 					
@@ -198,7 +198,7 @@ public class XformsQueueProcessor {
 					if(DOMUtil.isPatientElementDoc((Element)node)){
 						patient = saveNewPatient((Element)node,getCreator(doc),propagateErrors,request);
 						if(patient == null){
-							saveFormInError(xml,pathName);
+							saveFormInError(xml,pathName, null);
 							return;
 						}	
 					}
@@ -216,7 +216,7 @@ public class XformsQueueProcessor {
 			log.error(e.getMessage(), e);
 
 			if(!propagateErrors)
-				saveFormInError(xmlOriginal,pathName);
+				saveFormInError(xmlOriginal,pathName, null);
 			else
 				throw e;
 		}
@@ -297,7 +297,7 @@ public class XformsQueueProcessor {
 			log.error(e.getMessage(), e);
 
 			if(!propagateErrors)
-				saveFormInError(xmlOriginal,pathName);
+				saveFormInError(xmlOriginal,pathName, e);
 			else
 				throw e;
 		}
@@ -369,10 +369,15 @@ public class XformsQueueProcessor {
 	 * 
 	 * @param xml - the xml of the xform.
 	 * @param queuePathName - the queue full path and file name of this xform.
+	 * @param exception TODO
 	 * @return - the error full path and file name.
 	 */
-	private String saveFormInError(String xml,String queuePathName){
-		return saveForm(xml,XformsUtil.getXformsErrorDir(),queuePathName);
+	private String saveFormInError(String xml,String queuePathName, Exception exception){
+		String errorPath = saveForm(xml,XformsUtil.getXformsErrorDir(),queuePathName);
+		
+		Context.getService(XformsService.class).sendStacktraceToAdminByEmail("XForms Error: failed to process a form stored at " + errorPath, exception);
+		
+		return errorPath;
 	}
 
 	/** 

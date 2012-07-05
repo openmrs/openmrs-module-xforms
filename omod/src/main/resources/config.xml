@@ -327,6 +327,18 @@
 		<description>Set to true if you want to display the concept Id as the default field description.</description>
 	</globalProperty>
 	
+	<globalProperty>
+		<property>@MODULE_ID@.adminEmail</property>
+		<defaultValue></defaultValue>
+		<description>An e-mail address where notifications about failed data uploads will be sent.</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>@MODULE_ID@.emailServerConfig</property>
+		<defaultValue></defaultValue>
+		<description>A list of e-mail server properties in a form of 'mail.smtp.host=smtp.gmail.com;mail.smtp.port=587'. See JavaMailSender for more details.</description>
+	</globalProperty>
+	
 	<!-- /Required Global Properties -->
 
 	<!-- /Xforms Module Properties -->
