@@ -22,6 +22,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Form;
@@ -133,11 +134,11 @@ public class FormEntryQueueProcessor {
 			xsltDoc = form.getXslt();
 		}
 		catch (UnsupportedOperationException ex) {
-			//TODO this is thrown by 1.9
-			//UnsupportedOperationException: XSLTs no longer exist on Forms. Use Form Attributes.
+			//The service method will invoke the appropriate logic according to the openmrs version
+			xsltDoc = Context.getService(XformsService.class).getXslt(formId);
 		}
 		
-		if (xsltDoc == null)
+		if (StringUtils.isBlank(xsltDoc))
 			xsltDoc = BasicFormBuilder.getFormXslt();
 		
 		StringWriter outWriter = new StringWriter();

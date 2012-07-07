@@ -1,7 +1,11 @@
 package org.openmrs.module.xforms.impl;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Form;
@@ -10,17 +14,18 @@ import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.MedicalHistoryField;
 import org.openmrs.module.xforms.Xform;
-import org.openmrs.module.xforms.XformBuilder;
 import org.openmrs.module.xforms.XformBuilderEx;
+import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformsService;
 import org.openmrs.module.xforms.db.XformsDAO;
 import org.openmrs.module.xforms.formentry.FormEntryError;
-import org.openmrs.module.xforms.formentry.FormEntryWrapper;
 import org.openmrs.module.xforms.model.PatientMedicalHistory;
 import org.openmrs.module.xforms.model.PersonRepeatAttribute;
 import org.openmrs.module.xforms.model.XformUser;
 import org.openmrs.module.xforms.util.XformsUtil;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * Implements XForms services.
@@ -33,6 +38,8 @@ public class XformsServiceImpl implements XformsService {
     private XformsDAO dao;
 
     private Log log = LogFactory.getLog(this.getClass());
+    
+    private Class<?> formResourceClass;
 
     public XformsServiceImpl() {
     }
@@ -125,26 +132,89 @@ public class XformsServiceImpl implements XformsService {
     }
 
     /**
-     * @see org.openmrs.module.xforms.XformsService#hasXslt(java.lang.Integer)
-     */
-    public boolean hasXslt(Integer formId) {
-        return getXformsDAO().hasXslt(formId);
-    }
-
-    /**
-     * @see org.openmrs.module.xforms.XformsService#getXslt(java.lang.Integer)
-     */
-    @Transactional(readOnly = true)
-    public String getXslt(Integer formId) {
-        return getXformsDAO().getXslt(formId);
-    }
-
-    /**
-     * @see org.openmrs.module.xforms.XformsService#saveXslt(java.lang.Integer,java.lang.String)
-     */
-    public void saveXslt(Integer formId, String xslt) {
-        getXformsDAO().saveXslt(formId, xslt);
-    }
+	 * @see org.openmrs.module.xforms.XformsService#hasXslt(java.lang.Integer)
+	 */
+	public boolean hasXslt(Integer formId) {
+		if (XformsUtil.isOnePointNineAndAbove())
+			return StringUtils.isNotBlank(getXslt(formId));
+		
+		return getXformsDAO().hasXslt(formId);
+	}
+	
+	/**
+	 * @see org.openmrs.module.xforms.XformsService#getXslt(java.lang.Integer)
+	 */
+	@Transactional(readOnly = true)
+	public String getXslt(Integer formId) {
+		if (XformsUtil.isOnePointNineAndAbove()) {
+			Form form = Context.getFormService().getForm(formId);
+			if (form != null) {
+				Method getFormResourceMethod = ClassUtils.getMethodIfAvailable(FormService.class, "getFormResource",
+				    new Class<?>[] { Form.class, String.class });
+				if (getFormResourceMethod != null) {
+					Object formResource = ReflectionUtils.invokeMethod(getFormResourceMethod, Context.getFormService(),
+					    new Object[] { form, form.getName() + XformConstants.XFORM_XSLT_FORM_RESOURCE_NAME_SUFFIX });
+					if (formResource != null) {
+						Method valueMethod = ClassUtils.getMethodIfAvailable(formResource.getClass(), "getValue", null);
+						if (valueMethod != null)
+							return (String) ReflectionUtils.invokeMethod(valueMethod, formResource);
+					}
+				}
+			}
+			
+			return null;
+		} else {
+			return getXformsDAO().getXslt(formId);
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.module.xforms.XformsService#saveXslt(java.lang.Integer,java.lang.String)
+	 */
+	public void saveXslt(Integer formId, String xslt) {
+		if (XformsUtil.isOnePointNineAndAbove()) {
+			Form form = Context.getFormService().getForm(formId);
+			if (form != null) {
+				if (formResourceClass == null) {
+					try {
+						formResourceClass = Context.loadClass("org.openmrs.FormResource");
+					}
+					catch (ClassNotFoundException e) {
+						log.error("Failed to load class: org.openmrs.FormResource");
+					}
+				}
+				
+				if (formResourceClass != null) {
+					Method saveFormResourceMethod = ClassUtils.getMethodIfAvailable(FormService.class, "saveFormResource",
+					    new Class<?>[] { Form.class, String.class });
+					if (saveFormResourceMethod != null) {
+						Object formResource;
+						try {
+							formResource = formResourceClass.newInstance();
+							BeanUtils.setProperty(formResource, "form", form);
+							BeanUtils.setProperty(formResource, "name", form.getName()
+							        + XformConstants.XFORM_XSLT_FORM_RESOURCE_NAME_SUFFIX);
+							BeanUtils.setProperty(formResource, "valueReference", xslt);
+							
+							ReflectionUtils.invokeMethod(saveFormResourceMethod, formResourceClass,
+							    new Object[] { formResource });
+						}
+						catch (InstantiationException e) {
+							log.error("Error:", e);
+						}
+						catch (IllegalAccessException e) {
+							log.error("Error:", e);
+						}
+						catch (InvocationTargetException e) {
+							log.error("Error:", e);
+						}
+					}
+				}
+			}
+		} else {
+			getXformsDAO().saveXslt(formId, xslt);
+		}
+	}
 
     /**
      * @see org.openmrs.module.xforms.XformsService#getFieldDefaultValue(java.lang.Integer,java.lang.String)
