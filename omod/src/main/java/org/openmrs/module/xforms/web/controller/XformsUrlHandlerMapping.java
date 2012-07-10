@@ -44,6 +44,9 @@ public class XformsUrlHandlerMapping extends SimpleUrlHandlerMapping{
 			if("true".equals(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_USE_PATIENT_XFORM,"false")))
 				return "patientReg";
 		}
+		else if("/portlets/personFormEntry.portlet".equals(arg0)) {
+			return "personFormEntryPortlet";
+		}
 
 		return super.lookupHandler(arg0, arg1);
 	}

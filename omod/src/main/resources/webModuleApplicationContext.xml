@@ -26,6 +26,8 @@
     </bean>
 	
     <!-- Controllers -->
+    
+    <bean id="personFormEntryPortlet" class="org.openmrs.module.xforms.web.controller.XformsPersonFormEntryPortletController"/>
 	
     <bean id="xformDesigner" class="@MODULE_PACKAGE@.web.controller.XformDesignerController">
 	<property name="commandName"><value>xformDesigner</value></property>
