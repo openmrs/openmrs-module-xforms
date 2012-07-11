@@ -159,6 +159,8 @@ public final class XformBuilder {
 	
 	public static final String ATTRIBUTE_ID = "id";
 	
+	public static final String ATTRIBUTE_UUID = "uuid";
+	
 	public static final String ATTRIBUTE_NODESET = "nodeset";
 	
 	public static final String ATTRIBUTE_NAME = "name";
