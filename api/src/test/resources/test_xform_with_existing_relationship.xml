@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<xf:xforms xmlns:xf="http://www.w3.org/2002/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jr="http://openrosa.org/javarosa">
+	<xf:model id="openmrs_model">
+		<xf:instance id="openmrs_model_instance">
+			<form id="22" name="xForm3" version="0.1"
+				xmlns:openmrs="http://demo.openmrs.org/openmrs/moduleServlet/formentry/forms/schema/22-1"
+				xmlns:xd="http://schemas.microsoft.com/office/infopath/2003">
+
+				<patient_relationship uuid="c18717dd-5d78-4a0e-84fc-ee62c5f0676a">
+					<patient_relationship.relationship_type_id>1</patient_relationship.relationship_type_id>
+					<patient_relationship.a_or_b>B</patient_relationship.a_or_b>
+					<patient_relationship.description>Doctor</patient_relationship.description>
+					<patient_relationship.reverse_description>Patient</patient_relationship.reverse_description>
+					<patient_relationship.relative>
+						<relative.uuid>8adf539e-4b5a-47aa-80c0-ba1025c957fa</relative.uuid>
+					</patient_relationship.relative>
+				</patient_relationship>
+			</form>
+		</xf:instance>
+	</xf:model>
+</xf:xforms>

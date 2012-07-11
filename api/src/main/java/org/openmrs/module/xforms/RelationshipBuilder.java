@@ -41,6 +41,12 @@ public class RelationshipBuilder {
 	
 	public static final String NODE_RELATIVE = "relative";
 	
+	public static final String BIND_PATIENT_RELATIONSHIP_TYPE_ID = "patient_relationship.relationship_type_id";
+	
+	public static final String BIND_PATIENT_RELATIONSHIP_A_OR_B = "patient_relationship.a_or_b";
+	
+	public static final String BIND_RELATIVE_UUID = "relative.uuid";
+
 	public static void build(Element modelElement, Element bodyNode, Element dataNode) {
 		//Create the parent repeat ui node.
 		Element groupNode = bodyNode.createElement(XformBuilder.NAMESPACE_XFORMS, null);
