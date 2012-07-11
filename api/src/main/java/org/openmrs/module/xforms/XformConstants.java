@@ -361,4 +361,6 @@ public class XformConstants {
 	public static final String REQUEST_ATTRIBUTE_ID_ERROR_MESSAGE = "ERROR_MESSAGE";
 	
 	public static final String REQUEST_ATTRIBUTE_ID_PATIENT_ID = "PATIENT_ID";
+	
+	public static final String XFORM_XSLT_FORM_RESOURCE_NAME_SUFFIX = ".xFormXslt";
 }
