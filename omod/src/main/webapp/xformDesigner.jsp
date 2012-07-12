@@ -112,6 +112,7 @@
     
     <div id="defaultFontFamily" style="visibility:hidden;">${defaultFontFamily}</div>
     <div id="defaultFontSize" style="visibility:hidden;">${defaultFontSize}</div>
+    <div id="defaultGroupBoxHeaderBgColor" style="visibility:hidden;">${defaultGroupBoxHeaderBgColor}</div>
     
     <div id="timeSubmitFormat" style="visibility:hidden;">${timeSubmitFormat}</div>
     <div id="timeDisplayFormat" style="visibility:hidden;">${timeDisplayFormat}</div>
@@ -396,6 +397,7 @@
         		clickToAddNewCondition: "<spring:message code="xforms.clickToAddNewCondition" />",
         		qtnTypeGPS: "<spring:message code="xforms.qtnTypeGPS" />",
         		qtnTypeBarcode: "<spring:message code="xforms.qtnTypeBarcode" />",
+        		qtnTypeGroup: "<spring:message code="xforms.qtnTypeGroup" />",
         		palette: "<spring:message code="xforms.palette" />",
         		saveAsXhtml: "<spring:message code="xforms.saveAsXhtml" />",
         		groupWidgets: "<spring:message code="xforms.groupWidgets" />",

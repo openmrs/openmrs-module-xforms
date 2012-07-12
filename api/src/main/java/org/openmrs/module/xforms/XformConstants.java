@@ -82,7 +82,7 @@ public class XformConstants {
 	
 	/** The default font family. */
 	public static final String DEFAULT_FONT_FAMILY = "Verdana, 'Lucida Grande', 'Trebuchet MS', Arial, Sans-Serif";
-	
+		
 	/** The default font size. */
 	public static final String DEFAULT_FONT_SIZE = "16";
 		
@@ -166,6 +166,9 @@ public class XformConstants {
 	
 	/** The form designer key for the default font family.*/
 	public static final String FORM_DESIGNER_KEY_DEFAULT_FONT_FAMILY = "defaultFontFamily";
+	
+	/** The form designer key for the default group box header background color.*/
+	public static final String FORM_DESIGNER_KEY_DEFAULT_GROUPBOX_HEADER_BG_COLOR = "defaultGroupBoxHeaderBgColor";
 	
 	/** The form designer key for the default font size.*/
 	public static final String FORM_DESIGNER_KEY_DEFAULT_FONT_SIZE = "defaultFontSize";
