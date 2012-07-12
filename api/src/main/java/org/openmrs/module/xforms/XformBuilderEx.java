@@ -160,6 +160,32 @@ public class XformBuilderEx {
 		}
 	}
 	
+	public static void booleanConcept(String token, Concept concept, boolean required, Locale locale, FormField formField) {
+	
+		Element controlNode = addUInode(token, concept, XformBuilder.DATA_TYPE_BOOLEAN, XformBuilder.CONTROL_INPUT, locale, getParentNode(formField, locale));
+		/*if (controlNode != null) {
+			//addCodedUInodes(false, controlNode, answerList, concept, XformBuilder.DATA_TYPE_TEXT, XformBuilder.CONTROL_INPUT, locale);
+		
+			Element itemNode = controlNode.createElement(XformBuilder.NAMESPACE_XFORMS, null);
+			itemNode.setName(XformBuilder.NODE_ITEM);
+			controlNode.addChild(Element.ELEMENT, itemNode);
+			
+			Element itemLabelNode = controlNode.createElement(XformBuilder.NAMESPACE_XFORMS, null);
+			itemLabelNode.setName(XformBuilder.NODE_LABEL);
+			itemLabelNode.addChild(Element.TEXT, conceptName);
+			itemNode.addChild(Element.ELEMENT, itemLabelNode);
+			
+			//TODO This will make sense after the form designer's OptionDef implements
+			//the xforms hint.
+			//addHintNode(itemLabelNode, answer.getAnswerConcept());
+			
+			Element itemValNode = controlNode.createElement(XformBuilder.NAMESPACE_XFORMS, null);
+			itemValNode.setName(XformBuilder.NODE_VALUE);
+			itemValNode.addChild(Element.TEXT, conceptValue);
+			itemNode.addChild(Element.ELEMENT, itemValNode);
+		}*/
+	}
+	
 	private static Element addUInode(String token, Concept concept, String dataType, String controlName, Locale locale, Element bodyNode){
 		String bindName = token;
 		
@@ -375,6 +401,9 @@ public class XformBuilderEx {
 					
 					if (token.contains("problem_added") || token.contains("problem_resolved")){
 						addProblemList(token, concept, required, locale, formField);
+					}
+					else if (datatype.getHl7Abbreviation().equals(FormConstants.HL7_BOOLEAN)){
+						booleanConcept(token, concept, required, locale, formField);
 					}
 					else if (FormConstants.simpleDatatypes.containsKey(datatype.getHl7Abbreviation())){
 						simpleConcept(token, concept, XformBuilder.DATA_TYPE_TEXT, required, locale, formField);
