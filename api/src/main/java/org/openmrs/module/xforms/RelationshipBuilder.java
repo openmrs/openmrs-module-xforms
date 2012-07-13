@@ -46,7 +46,7 @@ public class RelationshipBuilder {
 	public static final String BIND_PATIENT_RELATIONSHIP_A_OR_B = "patient_relationship.a_or_b";
 	
 	public static final String BIND_RELATIVE_UUID = "relative.uuid";
-
+	
 	public static void build(Element modelElement, Element bodyNode, Element dataNode) {
 		//Create the parent repeat ui node.
 		Element groupNode = bodyNode.createElement(XformBuilder.NAMESPACE_XFORMS, null);
@@ -141,6 +141,8 @@ public class RelationshipBuilder {
 				relative = relationship.getPersonA().getPersonName().toString() + " - "
 				        + getPatientIdentifier(relationship.getPersonA());
 			}
+			
+			patientRelationShipNode.setAttribute(null, XformBuilder.ATTRIBUTE_UUID, relationship.getUuid());
 			
 			//This sets the display field and not really the hidden field for the personId/uuid
 			//TODO Add logic to set the person id/uuid as the  value id the hidden field
