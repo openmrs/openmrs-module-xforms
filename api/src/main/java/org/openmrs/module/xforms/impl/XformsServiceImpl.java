@@ -191,7 +191,7 @@ public class XformsServiceImpl implements XformsService {
 				
 				if (formResourceClass != null) {
 					Method saveFormResourceMethod = ClassUtils.getMethodIfAvailable(FormService.class, "saveFormResource",
-					    new Class<?>[] { Form.class, String.class });
+					    new Class<?>[] { formResourceClass });
 					if (saveFormResourceMethod != null) {
 						Object formResource;
 						try {
@@ -201,7 +201,7 @@ public class XformsServiceImpl implements XformsService {
 							        + XformConstants.XFORM_XSLT_FORM_RESOURCE_NAME_SUFFIX);
 							BeanUtils.setProperty(formResource, "valueReference", xslt);
 							
-							ReflectionUtils.invokeMethod(saveFormResourceMethod, formResourceClass,
+							ReflectionUtils.invokeMethod(saveFormResourceMethod, Context.getFormService(),
 							    new Object[] { formResource });
 						}
 						catch (InstantiationException e) {
