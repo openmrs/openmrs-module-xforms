@@ -199,7 +199,12 @@ public class XformsServiceImpl implements XformsService {
 							BeanUtils.setProperty(formResource, "form", form);
 							BeanUtils.setProperty(formResource, "name", form.getName()
 							        + XformConstants.XFORM_XSLT_FORM_RESOURCE_NAME_SUFFIX);
-							BeanUtils.setProperty(formResource, "valueReference", xslt);
+							
+							Method setValueReferenceMethod = ClassUtils.getMethodIfAvailable(FormService.class, "setValueReferenceInternal",
+							    new Class<?>[] { String.class });
+							if(setValueReferenceMethod != null){
+								ReflectionUtils.invokeMethod(setValueReferenceMethod, formResource, new Object[] { xslt });
+							}
 							
 							ReflectionUtils.invokeMethod(saveFormResourceMethod, Context.getFormService(),
 							    new Object[] { formResource });
