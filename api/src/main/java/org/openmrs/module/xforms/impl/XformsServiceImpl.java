@@ -12,6 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Form;
 import org.openmrs.GlobalProperty;
+import org.openmrs.api.APIException;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.MedicalHistoryField;
@@ -160,9 +161,17 @@ public class XformsServiceImpl implements XformsService {
 					Object formResource = ReflectionUtils.invokeMethod(getFormResourceMethod, Context.getFormService(),
 					    new Object[] { form, form.getName() + XformConstants.XFORM_XSLT_FORM_RESOURCE_NAME_SUFFIX });
 					if (formResource != null) {
-						Method valueMethod = ClassUtils.getMethodIfAvailable(formResource.getClass(), "getValue", null);
-						if (valueMethod != null)
-							return (String) ReflectionUtils.invokeMethod(valueMethod, formResource);
+						Method valueReferenceMethod = ClassUtils.getMethodIfAvailable(formResource.getClass(), "getValueReference", null);
+						if (valueReferenceMethod != null){
+							try{
+								return (String) ReflectionUtils.invokeMethod(valueReferenceMethod, formResource);
+							}catch(APIException e){
+								if("org.openmrs.customdatatype.NotYetPersistedException".equals(e.getClass().getName()))
+									return null;//ignore
+								
+								throw e;
+							}
+						}
 					}
 				}
 			}
