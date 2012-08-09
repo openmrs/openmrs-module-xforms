@@ -1039,7 +1039,8 @@ public final class XformBuilder {
 			if(!(parentName.equalsIgnoreCase("obs") || parentName.equalsIgnoreCase("patient") ||
 					parentName.equalsIgnoreCase("encounter") || parentName.equalsIgnoreCase("problem_list") ||
 					parentName.equalsIgnoreCase("orders"))) {
-				binding = parentName + "_" + binding;
+				//binding = parentName + "_" + binding;
+				//TODO Need to investigate why the above commented out code brings the no data node found error in the form designer
 			}
 		}
 		
