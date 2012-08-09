@@ -1,10 +1,12 @@
 package org.openmrs.module.xforms;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -81,7 +83,7 @@ public class XformsServer {
 	public void processConnection(DataInputStream dis, DataOutputStream dosParam)
 	throws IOException, Exception {
 
-		ZOutputStream gzip = new ZOutputStream(dosParam,JZlib.Z_BEST_COMPRESSION);
+		GZIPOutputStream gzip = new GZIPOutputStream(new BufferedOutputStream(dosParam));
 		DataOutputStream dos = new DataOutputStream(gzip);
 
 		byte responseStatus = ResponseStatus.STATUS_ERROR;
@@ -135,7 +137,7 @@ public class XformsServer {
 			if(responseStatus == ResponseStatus.STATUS_SUCCESS)
 				dos.write(baos.toByteArray());
 
-			dos.flush();
+			dos.close();
 			gzip.finish();
 		}
 		catch(Exception ex){
