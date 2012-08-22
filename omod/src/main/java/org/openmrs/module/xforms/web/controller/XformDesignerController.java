@@ -93,6 +93,7 @@ public class XformDesignerController extends SimpleFormController {
 		map.put("saveFormat", Context.getAdministrationService().getGlobalProperty("xforms.saveFormat","purcforms"));
 		map.put("undoRedoBufferSize", Context.getAdministrationService().getGlobalProperty("xforms.undoRedoBufferSize","100"));
 		map.put("overwriteValidationsOnRefresh", Context.getAdministrationService().getGlobalProperty("xforms.overwriteValidationsOnRefresh","false"));
+		map.put("maintainOrderingOnRefresh", Context.getAdministrationService().getGlobalProperty("xforms.maintainOrderingOnRefresh","true"));
 		map.put("usingJQuery", XformsUtil.usesJquery());
 
 		String url = request.getRequestURI();

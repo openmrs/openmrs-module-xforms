@@ -138,6 +138,7 @@
     <div id="undoRedoBufferSize" style="visibility:hidden;">${undoRedoBufferSize}</div>
     
     <div id="overwriteValidationsOnRefresh" style="visibility:hidden;">${overwriteValidationsOnRefresh}</div>
+    <div id="maintainOrderingOnRefresh" style="visibility:hidden;">${maintainOrderingOnRefresh}</div>
         
     <c:choose>
 	    <c:when test="${usingJQuery}">

@@ -339,6 +339,12 @@
 		<description>A list of e-mail server properties in a form of 'mail.smtp.host=smtp.gmail.com;mail.smtp.port=587'. See JavaMailSender for more details.</description>
 	</globalProperty>
 	
+	<globalProperty>
+		<property>@MODULE_ID@.maintainOrderingOnRefresh</property>
+		<defaultValue>true</defaultValue>
+		<description>Set to true if you want to maintain the ordering of items when you refresh a form in the form designer. Else set to false.</description>
+	</globalProperty>
+	
 	<!-- /Required Global Properties -->
 
 	<!-- /Xforms Module Properties -->
