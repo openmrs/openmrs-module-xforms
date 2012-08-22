@@ -299,14 +299,20 @@ public class XformBuilderEx {
 			
 			addHintNode(labelNode, formField.getField().getConcept());
 			
-			Element repeatControl = bodyNode.createElement(XformBuilder.NAMESPACE_XFORMS, null);
-			repeatControl.setName(XformBuilder.CONTROL_REPEAT);
-			repeatControl.setAttribute(null, XformBuilder.ATTRIBUTE_BIND, token);
-			groupNode.addChild(Element.ELEMENT, repeatControl);
-			
-			formFields.put(formField, repeatControl);
-			
-			return repeatControl;
+			if (formField.getMaxOccurs() != null && formField.getMaxOccurs() == -1) {
+				Element repeatControl = bodyNode.createElement(XformBuilder.NAMESPACE_XFORMS, null);
+				repeatControl.setName(XformBuilder.CONTROL_REPEAT);
+				repeatControl.setAttribute(null, XformBuilder.ATTRIBUTE_BIND, token);
+				groupNode.addChild(Element.ELEMENT, repeatControl);
+				
+				formFields.put(formField, repeatControl);
+				return repeatControl;
+			}
+			else {
+				groupNode.setAttribute(null, XformBuilder.ATTRIBUTE_ID, token);
+				formFields.put(formField, groupNode);
+				return groupNode;
+			}
 		}
 	}
 	
