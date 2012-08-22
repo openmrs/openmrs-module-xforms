@@ -56,6 +56,7 @@ public class XformBuilderEx {
 		String templateXml = FormEntryWrapper.getFormTemplate(form);
 		
 		Element formNode = (Element) XformBuilder.getDocument(new StringReader(templateXml)).getRootElement();
+		formNode.setAttribute(null, XformBuilder.ATTRIBUTE_UUID, form.getUuid());
 		
 		Document doc = new Document();
 		doc.setEncoding(XformConstants.DEFAULT_CHARACTER_ENCODING);

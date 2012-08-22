@@ -215,6 +215,8 @@ public final class XformBuilder {
 	
 	public static final String ATTRIBUTE_PROVIDER_ID_TYPE = "provider_id_type";
 	
+	public static final String ATTRIBUTE_UUID = "uuid";
+	
 	public static final String XPATH_VALUE_TRUE = "true()";
 	
 	public static final String XPATH_VALUE_FALSE = "false()";

@@ -75,7 +75,7 @@ public class PatientDownloadManager {
 			
 			if(cohort != null){
 				Set<Integer> patientIds = cohort.getMemberIds();
-				if(patientIds != null && patientIds.size() > 0){
+				if(patientIds != null && patientIds.size() > 0)
 					patientData.setPatients(getPatients(patientIds));
 					
 					//TODO We need to make this optional because it makes patient download too too slow.
@@ -84,7 +84,6 @@ public class PatientDownloadManager {
 						patientData.setFields(fields);
 						patientData.setFieldValues(PatientTableFieldBuilder.getPatientTableFieldValues(new ArrayList(patientIds), fields, xformsService));
 					}*/
-				}
 			}
 
 			List<Patient> patients = patientData.getPatients();
@@ -106,7 +105,7 @@ public class PatientDownloadManager {
 		if(identifier != null && identifier.trim().length() == 0)
 			identifier = null;
 
-		List<Patient> patients = Context.getPatientService().getPatients(name, identifier, null);
+		List<Patient> patients = Context.getPatientService().getPatients(name, identifier, null,false);
 		patientData.setPatients(patients);
 		if(patients != null){
 			for(Patient patient : patients){
