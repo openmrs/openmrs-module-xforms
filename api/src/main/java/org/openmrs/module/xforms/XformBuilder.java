@@ -834,8 +834,8 @@ public final class XformBuilder {
 	 * @param bodyNode - the body node to add the UI control to.
 	 */
 	public static void parseTemplate(Element modelElement, Element formNode, Element formChild, Hashtable bindings,
-	                                  Element bodyNode, Hashtable<String, String> problemList,
-	                                  Hashtable<String, String> problemListItems) {
+	                                 Element bodyNode, Hashtable<String, String> problemList,
+	                                 Hashtable<String, String> problemListItems) {
 		int numOfEntries = formChild.getChildCount();
 		for (int i = 0; i < numOfEntries; i++) {
 			if (formChild.isText(i))
@@ -896,11 +896,10 @@ public final class XformBuilder {
 					//will be used by xml to hl7 xslt to determine if it should include the assigning
 					//authority so that ORUR01 handler in core considers the id to be a providerId 
 					if (XformsUtil.isOnePointNineAndAbove()) {
-						((Element)child).setAttribute(null, XformBuilder.ATTRIBUTE_PROVIDER_ID_TYPE, 
-							XformBuilder.VALUE_PROVIDER_ID_TYPE_PROV_ID);
+						((Element) child).setAttribute(null, XformBuilder.ATTRIBUTE_PROVIDER_ID_TYPE,
+						    XformBuilder.VALUE_PROVIDER_ID_TYPE_PROV_ID);
 					}
-				}
-				else if (name.equalsIgnoreCase(NODE_ENCOUNTER_ENCOUNTER_DATETIME))
+				} else if (name.equalsIgnoreCase(NODE_ENCOUNTER_ENCOUNTER_DATETIME))
 					setNodeValue(child, "'today()'"); //Set encounter date defaulting to today
 			}
 			
@@ -1025,22 +1024,21 @@ public final class XformBuilder {
 			String oldBinding = binding;
 			binding = parentName + "_" + binding;
 			
-			if(sharedRestrictions != null){
+			if (sharedRestrictions != null) {
 				List<String> bindingList = sharedRestrictions.get(oldBinding);
 				if (bindingList == null) {
 					bindingList = new ArrayList<String>();
 					sharedRestrictions.put(oldBinding, bindingList);
 				}
-			
+				
 				bindingList.add(binding);
 			}
 			
 			problemListItems.put(binding, parentName);
-		}
-		else{
-			if(!(parentName.equalsIgnoreCase("obs") || parentName.equalsIgnoreCase("patient") ||
-					parentName.equalsIgnoreCase("encounter") || parentName.equalsIgnoreCase("problem_list") ||
-					parentName.equalsIgnoreCase("orders"))) {
+		} else {
+			if (!(parentName.equalsIgnoreCase("obs") || parentName.equalsIgnoreCase("patient")
+			        || parentName.equalsIgnoreCase("encounter") || parentName.equalsIgnoreCase("problem_list") || parentName
+			        .equalsIgnoreCase("orders"))) {
 				//binding = parentName + "_" + binding;
 				//TODO Need to investigate why the above commented out code brings the no data node found error in the form designer
 			}
@@ -1078,7 +1076,7 @@ public final class XformBuilder {
 		//store the binding node with the key being its id attribute.
 		bindings.put(binding, bindNode);
 		
-		if(nodesets != null)
+		if (nodesets != null)
 			nodesets.put(binding, nodeset);
 		
 		return bindNode;
