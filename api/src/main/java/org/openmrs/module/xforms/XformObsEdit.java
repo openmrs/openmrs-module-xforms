@@ -203,7 +203,8 @@ public class XformObsEdit {
 				//XformBuilder.setNodeValue(node, "value", value);
 			}
 			
-			if (obs.getObsDatetime() != null) {
+			//If obs date is not the same as for that of the encounter, it means the user explicitly entered it.
+			if (obs.getObsDatetime() != null && !encounter.getEncounterDatetime().equals(obs.getObsDatetime())) {
 				Element dateNode = XformBuilder.getElement(node, "date");
 				if (dateNode != null) {
 					value = XformsUtil.fromDate2SubmitString(obs.getObsDatetime());
