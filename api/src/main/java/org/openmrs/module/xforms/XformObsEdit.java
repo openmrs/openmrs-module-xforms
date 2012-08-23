@@ -202,6 +202,14 @@ public class XformObsEdit {
 				node.setAttribute(null, "obsId", obs.getObsId().toString());
 				//XformBuilder.setNodeValue(node, "value", value);
 			}
+			
+			if (obs.getObsDatetime() != null) {
+				Element dateNode = XformBuilder.getElement(node, "date");
+				if (dateNode != null) {
+					value = XformsUtil.fromDate2SubmitString(obs.getObsDatetime());
+					XformBuilder.setNodeValue(dateNode, value);
+				}
+			}
 		}
 
 		//System.out.println(XformBuilder.fromDoc2String(doc));
