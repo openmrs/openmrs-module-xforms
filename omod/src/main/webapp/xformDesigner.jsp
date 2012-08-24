@@ -10,7 +10,14 @@
     
     <openmrs:htmlInclude file="/openmrs.js" />
     <openmrs:htmlInclude file="/moduleResources/xforms/formdesigner/FormDesigner.nocache.js"/>
-    <openmrs:htmlInclude file="/scripts/openmrsmessages.js" appendLocale="true" />
+    <c:choose>
+   		<c:when test="${useOpenmrsMessageTag == true}">
+    		<openmrs:htmlInclude file="/scripts/openmrsmessages.js" appendLocale="true" />
+    	</c:when>
+    	<c:otherwise>
+    		<openmrs:htmlInclude file="/moduleResources/xforms/scripts/openmrsmessagesWithSpringTags.js" />
+    	</c:otherwise>
+    </c:choose>
 
 	<c:if test="${empty DO_NOT_INCLUDE_JQUERY}">
 		<c:if test="${usingJQuery}">
@@ -173,7 +180,7 @@
 		</div>
 		<div id="searchLocations" style="height:0px;width:0px">   
 			<input type="text" id="locationId_id_selection" value="" onblur="updateLocationFields(this)"  
-				placeholder="<openmrs:message code="xforms.location.search.placeholder" javaScriptEscape="true"/>" />
+				placeholder="<spring:message code="xforms.location.search.placeholder" javaScriptEscape="true"/>" />
 		</div>
 		<script type="text/javascript">
 			var locationNameIdMap = new Object();
@@ -597,7 +604,7 @@
     			var isSearchElementNull = false;
     			if(key == 'concepts'){
     				searchInputId = 'conceptId_id_selection';
-    				placeHolderText = '<openmrs:message code="Concept.search.placeholder" javaScriptEscape="true"/>';
+    				placeHolderText = '<spring:message code="Concept.search.placeholder" javaScriptEscape="true"/>';
     				var includeC = (filterField == null ? "" : filterField).split(",");
     				var excludeC = "".split(",");
     				var includeD = "".split(",");
@@ -613,7 +620,7 @@
     				searchElement = conceptSearchElement;
     			}else if(key == 'providers'){
     				searchInputId = 'providerId_id_selection';
-    				placeHolderText = '<openmrs:message code="Provider.search.placeholder" javaScriptEscape="true"/>';
+    				placeHolderText = '<spring:message code="Provider.search.placeholder" javaScriptEscape="true"/>';
     				callback = new CreateCallback().providerCallback();
     				if(providerSearchElement == null){
     					isSearchElementNull = true;			
@@ -622,7 +629,7 @@
     				searchElement = providerSearchElement;
     			}else if(key == 'persons'){
     				searchInputId = 'personId_id_selection';
-    				placeHolderText = '<openmrs:message code="Person.search.placeholder" javaScriptEscape="true"/>';
+    				placeHolderText = '<spring:message code="Person.search.placeholder" javaScriptEscape="true"/>';
     				callback = new CreateCallback().personCallback();
     				if(personSearchElement == null){
     					isSearchElementNull = true;

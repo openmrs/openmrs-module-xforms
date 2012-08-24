@@ -96,6 +96,7 @@ public class XformDesignerController extends SimpleFormController {
 		map.put("maintainOrderingOnRefresh", Context.getAdministrationService().getGlobalProperty("xforms.maintainOrderingOnRefresh","true"));
 		map.put("usingJQuery", XformsUtil.usesJquery());
 		map.put("locations", Context.getLocationService().getAllLocations(false));
+		map.put("useOpenmrsMessageTag", XformsUtil.isOnePointNineOneAndAbove());
 
 		String url = request.getRequestURI();
 		url = url.substring(0, url.indexOf("module/xforms/xformDesigner.form"));
