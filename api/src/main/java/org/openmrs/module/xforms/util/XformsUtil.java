@@ -36,7 +36,6 @@ import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Form;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
@@ -50,6 +49,7 @@ import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
+import org.openmrs.web.taglib.HtmlIncludeTag;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -794,6 +794,14 @@ public class XformsUtil {
 			return true;
 		}
 		catch (ClassNotFoundException e) {}
+		return false;
+	}
+	
+	public static boolean addAppendLocaleAttribute() {
+		try {
+			return HtmlIncludeTag.class.getField("appendLocale") != null;
+		}
+		catch (Exception e) {}
 		return false;
 	}
 }

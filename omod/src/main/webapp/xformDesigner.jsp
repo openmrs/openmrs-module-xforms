@@ -12,7 +12,14 @@
     <openmrs:htmlInclude file="/moduleResources/xforms/formdesigner/FormDesigner.nocache.js"/>
     <c:choose>
    		<c:when test="${useOpenmrsMessageTag == true}">
-    		<openmrs:htmlInclude file="/scripts/openmrsmessages.js" appendLocale="true" />
+    		<c:choose>
+   				<c:when test="${addAppendLocaleAttribute == true}">
+    				<openmrs:htmlInclude file="/scripts/openmrsmessages.js" appendLocale="true" />
+    			</c:when>
+    			<c:otherwise>
+    				<openmrs:htmlInclude file="/scripts/openmrsmessages.js" />
+    			</c:otherwise>
+    		</c:choose>
     	</c:when>
     	<c:otherwise>
     		<openmrs:htmlInclude file="/moduleResources/xforms/scripts/openmrsmessagesWithSpringTags.js" />
