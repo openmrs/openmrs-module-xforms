@@ -628,7 +628,7 @@
 			txtElement.innerHTML = selectedObj.providerId;
 		}else if(key == 'persons'){
 			valElement.value = selectedObj.personName;
-			txtElement.innerHTML = selectedObj.personId;
+			txtElement.innerHTML = selectedObj.uuid;
 		}
 		
 		var parent = searchElement.parentNode;
