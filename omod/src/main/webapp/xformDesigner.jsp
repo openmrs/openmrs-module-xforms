@@ -627,7 +627,7 @@
     				new AutoComplete(searchInputId, callback, {
     					select: function(event, ui) {
     						if (ui.item.object) {
-    							funcItemIdAutoCompleteOnSelect(ui.item.object, ui.item, key, callback);
+    							funcItemIdAutoCompleteOnSelect(ui.item.object, ui.item, key);
     						}
     					},
     		           	placeholder:placeHolderText,
