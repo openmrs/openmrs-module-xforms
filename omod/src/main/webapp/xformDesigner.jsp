@@ -84,6 +84,9 @@
 		padding: 1px;
 		cursor: pointer;
 	}
+	
+	#proposeConceptForm { display: none; }
+	.alert { color: red; }
 
 </style>
 
@@ -143,6 +146,18 @@
     <div id="overwriteValidationsOnRefresh" style="visibility:hidden;">${overwriteValidationsOnRefresh}</div>
     <div id="maintainOrderingOnRefresh" style="visibility:hidden;">${maintainOrderingOnRefresh}</div>
         
+    <div id="proposeConceptForm">
+		<br />
+		<spring:message code="ConceptProposal.proposeInfo" />
+		<br /><br />
+		<b><spring:message code="ConceptProposal.originalText" /></b><br />
+		<textarea name="originalText" id="proposedText" rows="4" cols="60" /></textarea><br />
+		<br />
+		<span class="alert">
+			<spring:message code="ConceptProposal.proposeWarning" />
+		</span>
+	</div>
+
     <c:choose>
 		<c:when test="${usingJQuery}">
 	    <div id="searchConcepts" style="height:0px;width:">
@@ -150,7 +165,7 @@
 			<input type="hidden" name="conceptId" id="conceptId_id" />
 			<input type="text" name="conceptId_other" id="conceptId_id_other" style="display:none" value=""/>
 		</div>
-		<div id="searchProviders">
+		<div id="searchProviders" style="height:0px;width:0px">
 		    <input type="text" id="providerId_id_selection" />
 		</div>
 		<div id="searchPersons" style="height:0px;width:0px">
@@ -578,6 +593,7 @@
     			var searchInputId;
     			var placeHolderText;
     			var callback;
+    			var createCallback;
     			var isSearchElementNull = false;
     			if(key == 'concepts'){
     				searchInputId = 'conceptId_id_selection';
@@ -588,7 +604,8 @@
     				var excludeD = "".split(",");
 
     				// the typical callback
-    				callback = new CreateCallback({includeClasses:includeC, excludeClasses:excludeC, includeDatatypes:includeD, excludeDatatypes:excludeD}).conceptCallback();
+    				createCallback = new CreateCallback({includeClasses:includeC, excludeClasses:excludeC, includeDatatypes:includeD, excludeDatatypes:excludeD});
+    				callback = createCallback.conceptCallback();
     				if(conceptSearchElement == null){
     					isSearchElementNull = true;
     					conceptSearchElement = document.getElementById(searchInputId);
@@ -618,6 +635,35 @@
     					locationSearchElement = document.getElementById('locationId_id_selection');
     				}
     				searchElement = locationSearchElement;
+    			}
+    			
+    			if (createCallback) {
+	    			// a 'private' method
+	    			// This is what maps each ConceptListItem or LocationListItem returned object to a name in the dropdown
+	    			createCallback.displayNamedObject = function(origQuery) { return function(item) {
+	    				// dwr sometimes puts strings into the results, just display those
+	    				if (typeof item == 'string') {
+	    					item += "<a href='#proposeConcept' onclick='javascript:return showProposeConceptForm();'> <spring:message code="ConceptProposal.propose.new"/> </a>";
+	    					return { label: item, value: "" };
+	    				}
+	    				
+	    				// item is a ConceptListItem or LocationListItem object
+	    				// add a space so the term highlighter below thinks the first word is a word
+	    				var textShown = " " + item.name;
+	    				
+	    				// highlight each search term in the results
+	    				textShown = highlightWords(textShown, origQuery);
+	    				
+	    				var value = item.name;
+	    				if (item.preferredName) {
+	    					textShown += "<span class='preferredname'> &rArr; " + item.preferredName + "</span>";
+	    					//value = item.preferredName;
+	    				}
+	    				
+	    				textShown = "<span class='autocompleteresult'>" + textShown + "</span>";
+	    				
+	    				return { label: textShown, value: value, object: item};
+	    			}; };
     			}
     			
     			//we use a custom autocomplete for location widget since there is 
@@ -685,9 +731,92 @@
 		function getOptionBinding(id, pos){
 			  return null;
 		}
+		
+		function showProposeConceptForm() {
+			$j('#proposedText').val("");
+			$j('#proposeConceptForm').dialog('open');
+			document.getElementById('proposedText').focus();
+			$j('#proposedText').focus();
+
+			return false;
+		}
+
+		/*
+		 * Private method, used when display persons or concepts to show 
+		 * which part of the word was a match.
+		 * 
+		 * Each separate word in "origQuery" will be highlighted with a 'hit' class in 
+		 * the "textShown" string.   
+		 */
+		function highlightWords(textShown, origQuery) {
+			var words = origQuery.split(" ");
+			for (var x=0; x<words.length; x++) {
+				if (jQuery.trim(words[x]).length > 0) {
+					var word = " " + words[x]; // only match the beginning of words
+					// replace each occurrence case insensitively while replacing with original case
+					textShown = textShown.replace(word, function(matchedTxt) { return "{{{{" + matchedTxt + "}}}}"}, "gi");
+				}
+			}
+			
+			textShown = textShown.replace(/{{{{/g, "<span class='hit'>");
+			textShown = textShown.replace(/}}}}/g, "</span>");
+			
+			return textShown;
+		}
+
+		function proposeConcept() {
+			var box = document.getElementById('proposedText');
+			if (box.value == '')  {
+				alert("Proposed Concept text must be entered. Or simply click Cancel");
+				box.focus();
+			}
+			else {
+				$j('#proposeConceptForm').dialog("close");
+				DWRConceptService.findProposedConcepts(box.value, preProposedConcepts);
+			}
+		}
+
+		function preProposedConcepts(concepts) {
+			if (concepts.length == 0) {
+				var conceptName = document.getElementById('proposedText').value;
+				valElement.value = conceptName;
+	    		txtElement.innerHTML = 'PROPOSED' + "^" + conceptName + "^99DCT";
+				var parent = searchElement.parentNode;
+	    		parent.removeChild(searchElement);
+	    		parent.appendChild(valElement);
+	    		
+	    		valElement.focus();
+			}
+			else {
+				//display a box telling them to pick a preposed concept:
+				alert('<spring:message code="ConceptProposal.proposeDuplicate" />');
+				removeAutoCompleteWidget();
+			}
+		}
+
+	    function removeAutoCompleteWidget() {
+			var parent = searchElement.parentNode;
+	    	parent.removeChild(searchElement);
+	    	parent.appendChild(valElement);
+			valElement.focus();
+	    }
+
+	    $j(document).ready(function() {
+			$j('#proposeConceptForm').dialog({
+				autoOpen: false,
+				modal: true,
+				title: '<spring:message code="ConceptProposal.proposeNewConcept" javaScriptEscape="true"/>',
+				width: '30%',
+				zIndex: 100,
+				close: function() { $j("#problem_concept").autocomplete("close"); },
+				buttons: { '<spring:message code="ConceptProposal.propose" />': function() { proposeConcept(); },
+						   '<spring:message code="general.cancel"/>': function() { $j(this).dialog("close"); removeAutoCompleteWidget();}
+				}
+			});
+			
+		});
     	
     </script>
-    
     
   </body>
 </html>
