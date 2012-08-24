@@ -95,6 +95,7 @@ public class XformDesignerController extends SimpleFormController {
 		map.put("overwriteValidationsOnRefresh", Context.getAdministrationService().getGlobalProperty("xforms.overwriteValidationsOnRefresh","false"));
 		map.put("maintainOrderingOnRefresh", Context.getAdministrationService().getGlobalProperty("xforms.maintainOrderingOnRefresh","true"));
 		map.put("usingJQuery", XformsUtil.usesJquery());
+		map.put("locations", Context.getLocationService().getAllLocations(false));
 
 		String url = request.getRequestURI();
 		url = url.substring(0, url.indexOf("module/xforms/xformDesigner.form"));

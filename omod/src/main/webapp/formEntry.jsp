@@ -8,6 +8,8 @@
 
 <c:if test="${usingJQuery}">
 	<openmrs:htmlInclude file="/dwr/interface/DWRConceptService.js" />
+	<openmrs:htmlInclude file="/dwr/interface/DWRPersonService.js" />
+	<openmrs:htmlInclude file="/dwr/interface/DWRProviderService.js" />
 	<openmrs:htmlInclude file="/scripts/jquery/autocomplete/OpenmrsAutoComplete.js" />
 	<openmrs:htmlInclude file="/scripts/jquery/autocomplete/jquery.ui.autocomplete.autoSelect.js" />
 </c:if>
@@ -107,6 +109,45 @@
 			<input type="hidden" name="conceptId" id="conceptId_id" />
 			<input type="text" name="conceptId_other" id="conceptId_id_other" style="display:none" value=""/>
 		</div>
+		<div id="searchProviders">
+		    <input type="text" id="providerId_id_selection" />
+		</div>
+		<div id="searchPersons" style="height:0px;width:0px">
+		    <input type="text" id="personId_id_selection" />
+		</div>
+		<div id="searchLocations" style="height:0px;width:0px">   
+			<input type="text" id="locationId_id_selection" value="" onblur="updateLocationFields(this)"  
+				placeholder="<openmrs:message code="xforms.location.search.placeholder" javaScriptEscape="true"/>" />
+		</div>
+		<script type="text/javascript">
+			var locationNameIdMap = new Object();
+			var locationNames = [];
+			<c:forEach items="${locations}" var="loc">
+				locationNames.push("${loc.name}");
+				locationNameIdMap["${loc.name}"] = "${loc.locationId}";
+			</c:forEach>
+			
+			$j('input#locationId_id_selection').autocomplete({
+				source: locationNames,
+				select: function(event, ui) {
+							valElement.value = ui.item.value;
+							txtElement.innerHTML = locationNameIdMap[ui.item.value];
+							
+							var parent = searchElement.parentNode;
+							parent.removeChild(searchElement);
+							parent.appendChild(valElement);
+							
+							valElement.focus();
+						}
+			});
+			
+			function updateLocationFields(searchField){
+				if(locationNameIdMap[$j.trim($j(searchField).val())] == undefined)
+					$j(searchField).val('');
+				if($j.trim($j(searchField).val()) == '')
+					$j(valElement).val('');
+			}
+		</script>
 	</c:when>
 	<c:otherwise>
 		<div id="searchConcepts" style="height:0px;width:"><openmrs_tag:conceptField formFieldName="conceptId" searchLabel="Search Concept" initialValue="" /></div>
@@ -114,8 +155,12 @@
 </c:choose>
 
 <script language="javascript">
-
-	var txtConcept;
+	
+	var searchElement;
+	var conceptSearchElement;
+	var providerSearchElement;
+	var locationSearchElement;
+	var personSearchElement;
 
 	var PurcformsText = {
 	    	file: "<spring:message code="xforms.file" />",
@@ -440,52 +485,85 @@
 			searchWidget.inputNode.value = value;
 		}
 		else{
+			key = $j.trim(key);
+			if(key != 'concepts' && key != 'locations' && key != 'providers' && key != 'persons'){
+				alert("The external source property '"+key+"' is invalid, you need to specify the appropriate one "+
+						"from the following from the xforms design page: concepts, locations, providers and persons");
+				return;
+			}
+			
 			valElement = valueElement;
 			txtElement = textElement;
 			
-			if(txtConcept == null){
-				
+			var searchInputId;
+			var placeHolderText;
+			var callback;
+			var isSearchElementNull = false;
+			if(key == 'concepts'){
+				searchInputId = 'conceptId_id_selection';
+				placeHolderText = '<openmrs:message code="Concept.search.placeholder" javaScriptEscape="true"/>';
 				var includeC = (filterField == null ? "" : filterField).split(",");
 				var excludeC = "".split(",");
 				var includeD = "".split(",");
 				var excludeD = "".split(",");
 
 				// the typical callback
-				var callback = new CreateCallback({includeClasses:includeC, excludeClasses:excludeC, includeDatatypes:includeD, excludeDatatypes:excludeD}).conceptCallback();
-
-				// set up the autocomplete
-				new AutoComplete("conceptId_id_selection", callback, {
-					select: function(event, ui) {
-						funcconceptIdAutoCompleteOnSelect(ui.item.object, ui.item);
-					},
-		            placeholder:'Enter concept name or id',
-		            autoSelect: true
-				});
-				
-				
-				
-				txtConcept = document.getElementById("conceptId_id_selection");
-				txtConcept.parentNode.removeChild(txtConcept);
-				
-				/*blurEventHandler = txtConcept.onblur;
-				
-				txtConcept.onblur=function(){
-					//alert('yo men')
-					var parent = txtConcept.parentNode;
-		    		parent.removeChild(txtConcept);
-		    		parent.appendChild(valElement);
-		    		
-		    		txtConcept.onblur = blurEventHandler;
-		    		txtConcept.onblur();
-				};*/
-			}
-			else{
-				valElement.value = '';
-	    		txtElement.innerHTML = '';
+				callback = new CreateCallback({includeClasses:includeC, excludeClasses:excludeC, includeDatatypes:includeD, excludeDatatypes:excludeD}).conceptCallback();
+				if(conceptSearchElement == null){
+					isSearchElementNull = true;
+					conceptSearchElement = document.getElementById(searchInputId);
+				}
+				searchElement = conceptSearchElement;
+			}else if(key == 'providers'){
+				searchInputId = 'providerId_id_selection';
+				placeHolderText = '<openmrs:message code="Provider.search.placeholder" javaScriptEscape="true"/>';
+				callback = new CreateCallback().providerCallback();
+				if(providerSearchElement == null){
+					isSearchElementNull = true;			
+					providerSearchElement = document.getElementById(searchInputId);
+				}
+				searchElement = providerSearchElement;
+			}else if(key == 'persons'){
+				searchInputId = 'personId_id_selection';
+				placeHolderText = '<openmrs:message code="Person.search.placeholder" javaScriptEscape="true"/>';
+				callback = new CreateCallback().personCallback();
+				if(personSearchElement == null){
+					isSearchElementNull = true;
+					personSearchElement = document.getElementById(searchInputId);
+				}
+				searchElement = personSearchElement;
+			}else if(key == 'locations'){
+				if(locationSearchElement == null){
+					isSearchElementNull = true;
+					locationSearchElement = document.getElementById('locationId_id_selection');
+				}
+				searchElement = locationSearchElement;
 			}
 			
-			txtConcept.style.height = valueElement.parentNode.parentNode.parentNode.parentNode.style.height;
-			txtConcept.style.width = valueElement.parentNode.parentNode.parentNode.parentNode.style.width;
+			//we use a custom autocomplete for location widget since there is 
+			//no autocomplete call back for locations in the core
+			if(key != 'locations'){
+				// set up the autocomplete
+				new AutoComplete(searchInputId, callback, {
+					select: function(event, ui) {
+						if (ui.item.object) {
+							funcItemIdAutoCompleteOnSelect(ui.item.object, ui.item, key, callback);
+						}
+					},
+		           	placeholder:placeHolderText,
+		           	autoSelect: true
+				});
+			}
+				
+			if(isSearchElementNull == true)
+				searchElement.parentNode.removeChild(searchElement);
+			else{
+				//valElement.value = '';
+		    	//txtElement.innerHTML = '';
+			}
+			
+			searchElement.style.height = valueElement.parentNode.parentNode.parentNode.parentNode.style.height;
+			searchElement.style.width = valueElement.parentNode.parentNode.parentNode.parentNode.style.width;
 			
 			var parent = valueElement.parentNode;
 			parent.removeChild(valueElement);
@@ -494,9 +572,9 @@
 			//valueElement.style.height = "0px";
 			//valueElement.style.width = "0px";
 			
-			parent.appendChild(txtConcept);
-			txtConcept.focus();
-			txtConcept.value = value;
+			parent.appendChild(searchElement);
+			searchElement.focus();
+			searchElement.value = value;
 		}
 	}
 	
@@ -535,15 +613,26 @@
 		}
 		else{
 			document.getElementById("searchConcepts").style.visibility="hidden";
+			document.getElementById("searchProviders").style.visibility="hidden";
+			document.getElementById("searchPersons").style.visibility="hidden";
+			document.getElementById("searchLocations").style.visibility="hidden";
 		}
 	}
 	
-	function funcconceptIdAutoCompleteOnSelect(concept, item) {	
-		valElement.value = concept.name;
-		txtElement.innerHTML = concept.conceptId + "^" + concept.name + "^99DCT";
+	function funcItemIdAutoCompleteOnSelect(selectedObj, item, key) {
+		if(key == 'concepts'){
+			valElement.value = selectedObj.name;
+			txtElement.innerHTML = selectedObj.conceptId + "^" + selectedObj.name + "^99DCT";
+		}else if(key == 'providers'){
+			valElement.value = selectedObj.displayName;
+			txtElement.innerHTML = selectedObj.providerId;
+		}else if(key == 'persons'){
+			valElement.value = selectedObj.personName;
+			txtElement.innerHTML = selectedObj.personId;
+		}
 		
-		var parent = txtConcept.parentNode;
-		parent.removeChild(txtConcept);
+		var parent = searchElement.parentNode;
+		parent.removeChild(searchElement);
 		parent.appendChild(valElement);
 		
 		//valElement.style.visibility="visible";

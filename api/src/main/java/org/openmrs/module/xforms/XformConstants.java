@@ -366,4 +366,12 @@ public class XformConstants {
 	public static final String REQUEST_ATTRIBUTE_ID_PATIENT_ID = "PATIENT_ID";
 	
 	public static final String XFORM_XSLT_FORM_RESOURCE_NAME_SUFFIX = ".xFormXslt";
+	
+	//Specifies that when creating a new xform the location selection element should use autocomplete,
+	//Note that this only applies for OpenMRS Versions 1.8 and above
+	public static final String XFORM_GP_USE_AUTOCOMPLETE_FOR_LOCATIONS = "xforms.useAutocompleteForLocations";
+	
+	//Specifies that when creating a new xform the provider selection element should use autocomplete,
+	//Note that this only applies for OpenMRS Versions 1.9 and above
+	public static final String XFORM_GP_USE_AUTOCOMPLETE_FOR_PROVIDERS = "xforms.useAutocompleteForProviders";
 }

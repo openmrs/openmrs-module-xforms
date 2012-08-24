@@ -35,6 +35,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.ConceptSource;
 import org.openmrs.Encounter;
 import org.openmrs.Form;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
@@ -45,6 +46,7 @@ import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.FormService;
+import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.formentry.FormEntryWrapper;
 import org.openmrs.module.xforms.util.XformBuilderUtil;
@@ -62,7 +64,7 @@ import org.xmlpull.v1.XmlPullParser;
  * 
  * @author Daniel Kayiwa
  */
-public final class XformBuilder {
+public final class XformBuilder implements GlobalPropertyListener {
 	
 	/** Namespace for XForms. */
 	public static final String NAMESPACE_XFORMS = "http://www.w3.org/2002/xforms";
@@ -405,6 +407,10 @@ public final class XformBuilder {
 	private static String PRELOAD_PATIENT = "patient";
 	
 	private static Log log = LogFactory.getLog(XformBuilder.class);
+	
+	private static Boolean useAutoCompleteForLocations;
+	
+	private static Boolean useAutoCompleteForProviders;
 	
 	/**
 	 * Builds an Xform from an openmrs schema and template xml.
@@ -887,7 +893,7 @@ public final class XformBuilder {
 			if (isTableFieldNode(child)) {
 				Element controlNode = buildTableFieldUIControlNode(child, bodyNode);
 				
-				if (name.equalsIgnoreCase(NODE_ENCOUNTER_LOCATION_ID))
+				if (name.equalsIgnoreCase(NODE_ENCOUNTER_LOCATION_ID) && CONTROL_SELECT1.equals(controlNode.getName()))
 					populateLocations(controlNode);
 				else if (name.equalsIgnoreCase(NODE_ENCOUNTER_PROVIDER_ID)) {
 					populateProviders(controlNode, formNode, modelElement, bodyNode);
@@ -920,10 +926,14 @@ public final class XformBuilder {
 		String name = node.getName();
 		
 		//location and provider are not free text.
-		if (name.equalsIgnoreCase(NODE_ENCOUNTER_LOCATION_ID) || name.equalsIgnoreCase(NODE_ENCOUNTER_PROVIDER_ID))
-			controlNode.setName(CONTROL_SELECT1);
-		else
+		if (name.equalsIgnoreCase(NODE_ENCOUNTER_LOCATION_ID) || name.equalsIgnoreCase(NODE_ENCOUNTER_PROVIDER_ID)) {
+			if (useAutoCompleteForNode(name))
+				controlNode.setName(CONTROL_INPUT);
+			else
+				controlNode.setName(CONTROL_SELECT1);
+		} else {
 			controlNode.setName(CONTROL_INPUT);
+		}
 		
 		controlNode.setAttribute(null, ATTRIBUTE_BIND, name);
 		
@@ -3466,5 +3476,61 @@ public final class XformBuilder {
 			    "Identifier Location", "The patient's other identifier location", false, false, CONTROL_SELECT1, items,
 			    itemValues, true, "/" + NODE_PATIENT + "/" + name + "/other_identifier_location_id");
 		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.GlobalPropertyListener#globalPropertyChanged(org.openmrs.GlobalProperty)
+	 */
+	@Override
+	public void globalPropertyChanged(GlobalProperty gp) {
+		if (XformConstants.XFORM_GP_USE_AUTOCOMPLETE_FOR_LOCATIONS.equals(gp.getProperty()))
+			useAutoCompleteForLocations = null;
+		else
+			useAutoCompleteForProviders = null;
+	}
+	
+	/**
+	 * @see org.openmrs.api.GlobalPropertyListener#globalPropertyDeleted(java.lang.String)
+	 */
+	@Override
+	public void globalPropertyDeleted(String gpName) {
+		if (XformConstants.XFORM_GP_USE_AUTOCOMPLETE_FOR_LOCATIONS.equals(gpName))
+			useAutoCompleteForLocations = null;
+		else
+			useAutoCompleteForProviders = null;
+	}
+	
+	/**
+	 * @see org.openmrs.api.GlobalPropertyListener#supportsPropertyName(java.lang.String)
+	 */
+	@Override
+	public boolean supportsPropertyName(String gpName) {
+		return XformConstants.XFORM_GP_USE_AUTOCOMPLETE_FOR_LOCATIONS.equals(gpName)
+		        || XformConstants.XFORM_GP_USE_AUTOCOMPLETE_FOR_PROVIDERS.equals(gpName);
+	}
+	
+	/**
+	 * Determines whether to use an autocomplete field or a select for an xforms UI node
+	 * 
+	 * @param nodeName the name of the xforms node
+	 * @return true if it should be an autocomplete otherwise false
+	 */
+	private static boolean useAutoCompleteForNode(String nodeName) {
+		if (nodeName.equalsIgnoreCase(NODE_ENCOUNTER_LOCATION_ID) && XformsUtil.usesJquery()) {
+			if (useAutoCompleteForLocations == null) {
+				useAutoCompleteForLocations = Boolean.valueOf(Context.getAdministrationService().getGlobalProperty(
+				    XformConstants.XFORM_GP_USE_AUTOCOMPLETE_FOR_LOCATIONS));
+			}
+			return useAutoCompleteForLocations;
+		} else if (nodeName.equalsIgnoreCase(NODE_ENCOUNTER_PROVIDER_ID) && XformsUtil.isOnePointNineAndAbove()) {
+			if (useAutoCompleteForProviders == null) {
+				useAutoCompleteForProviders = Boolean.valueOf(Context.getAdministrationService().getGlobalProperty(
+				    XformConstants.XFORM_GP_USE_AUTOCOMPLETE_FOR_PROVIDERS));
+			}
+			return useAutoCompleteForProviders;
+		}
+		
+		//This is not a location or provider element
+		return false;
 	}
 }

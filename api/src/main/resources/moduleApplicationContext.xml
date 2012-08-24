@@ -38,5 +38,16 @@
 			</list>
 		</property>
 	</bean>
+	
+	<!-- Module global property listeners -->
+	
+	<!-- Actually this won't work in older versions before the bug when loading module GP listeners was fixed -->
+	<bean id="xformsEventListeners" parent="openmrsEventListeners">
+	    <property name="globalPropertyListeners">
+	        <list>
+	            <bean class="org.openmrs.module.xforms.XformBuilder" />
+	        </list>
+	    </property>
+	</bean>
 
 </beans>

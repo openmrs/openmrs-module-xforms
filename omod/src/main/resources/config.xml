@@ -345,6 +345,24 @@
 		<description>Set to true if you want to maintain the ordering of items when you refresh a form in the form designer. Else set to false.</description>
 	</globalProperty>
 	
+	<globalProperty>
+		<property>@MODULE_ID@.useAutocompleteForLocations</property>
+		<defaultValue>false</defaultValue>
+		<description>
+			Specifies that when creating a new xform the location selection element should use autocomplete,
+			Note that this only applies for OpenMRS Versions 1.8 and above
+		</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>@MODULE_ID@.useAutocompleteForProviders</property>
+		<defaultValue>false</defaultValue>
+		<description>
+			Specifies that when creating a new xform the provider selection element should use autocomplete,
+			Note that this only applies for OpenMRS Versions 1.9 and above
+		</description>
+	</globalProperty>
+	
 	<!-- /Required Global Properties -->
 
 	<!-- /Xforms Module Properties -->
