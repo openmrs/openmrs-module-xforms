@@ -88,7 +88,10 @@ public class XformObsEdit {
 		}
 		
 		XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_ENCOUNTER_DATETIME, XformsUtil.encounterDateIncludesTime() ? XformsUtil.fromDateTime2SubmitString(encounter.getEncounterDatetime()) : XformsUtil.fromDate2SubmitString(encounter.getEncounterDatetime()));
-		XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_PROVIDER_ID, XformsUtil.getProviderId(encounter).toString());
+		Integer providerId = XformsUtil.getProviderId(encounter);
+		if (providerId != null) {
+			XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_PROVIDER_ID, providerId.toString());
+		}
 
 		List<String> complexObs = DOMUtil.getXformComplexObsNodeNames(xml);
 
@@ -371,13 +374,18 @@ public class XformObsEdit {
 		encounter.setLocation(Context.getLocationService().getLocation(Integer.valueOf(XformBuilder.getNodeValue(formNode, XformBuilder.NODE_ENCOUNTER_LOCATION_ID))));
 		
 		Integer id = Integer.valueOf(XformBuilder.getNodeValue(formNode, XformBuilder.NODE_ENCOUNTER_PROVIDER_ID));
-		Person person = Context.getPersonService().getPerson(id);
-		try{
-			Method method = encounter.getClass().getMethod("setProvider", new Class[]{Person.class});
-			method.invoke(encounter, new Object[]{person});
+		if (XformsUtil.isOnePointNineAndAbove()) {
+			XformsUtil.setProvider(encounter, id);
 		}
-		catch(NoSuchMethodError ex){
-			encounter.setProvider(Context.getUserService().getUser(id));
+		else {
+			Person person = Context.getPersonService().getPerson(id);
+			try{
+				Method method = encounter.getClass().getMethod("setProvider", new Class[]{Person.class});
+				method.invoke(encounter, new Object[]{person});
+			}
+			catch(NoSuchMethodError ex){
+				encounter.setProvider(Context.getUserService().getUser(id));
+			}
 		}
 		
 		String submitString = XformBuilder.getNodeValue(formNode, XformBuilder.NODE_ENCOUNTER_ENCOUNTER_DATETIME);

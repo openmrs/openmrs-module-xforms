@@ -9,10 +9,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,6 +41,7 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
+import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.module.xforms.XformBuilder;
@@ -627,16 +630,15 @@ public class XformsUtil {
 	 */
 	public static Integer getProviderId(Encounter encounter) throws Exception {
 		try {
-			return encounter.getProvider().getPersonId();
+			if (isOnePointNineAndAbove())
+				return getOnePointNineProviderId(encounter);
+			else
+				return encounter.getProvider().getPersonId();
 		}
 		catch (NoSuchMethodError ex) {
 			Method method = encounter.getClass().getMethod("getProvider", null);
 			return ((User) method.invoke(encounter, null)).getUserId();
 		}
-		/*List<User>  users = Context.getUserService().getUsersByPerson(encounter.getProvider(), false);
-		    // deal with multiples by tossing exceptions if you like
-		    if (!users.isEmpty()).
-		        return users.get(0).getUserId();*/
 	}
 	
 	/**
@@ -803,5 +805,62 @@ public class XformsUtil {
 		}
 		catch (Exception e) {}
 		return false;
+	}
+	
+	private static Integer getOnePointNineProviderId(Encounter encounter) {
+		try {
+			Field field = encounter.getClass().getDeclaredField("encounterProviders");
+			field.setAccessible(true);
+			Set encounterProviders = (Set)field.get(encounter);
+			if (encounterProviders.size() == 0) {
+				return null;
+			}
+			
+			Object encounterProvider = encounterProviders.toArray()[0];
+			Method method = encounterProvider.getClass().getMethod("getProvider", null);
+			Object provider =  method.invoke(encounterProvider, null);
+			method = provider.getClass().getMethod("getProviderId", null);
+			return (Integer) method.invoke(provider, null);
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	public static void setProvider(Encounter encounter, Integer providerId) throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		Method method = encounterService.getClass().getMethod("getEncounterRoleByUuid", new Class[]{String.class});
+		Object unknownEncounterRole = method.invoke(encounterService, new String[]{"a0b03050-c99b-11e0-9572-0800200c9a66"});
+		
+		Field field = encounter.getClass().getDeclaredField("encounterProviders");
+		field.setAccessible(true);
+		Set encounterProviders = (Set)field.get(encounter);
+		if (encounterProviders.size() == 1) { //for now, we do not deal with multiple providers.
+			Object encounterProvider = encounterProviders.toArray()[0];
+			method = encounterProvider.getClass().getMethod("getEncounterRole", null);
+			Object encounterRole = method.invoke(encounterProvider, null);
+			if (encounterRole.equals(unknownEncounterRole)) {
+				method = encounterProvider.getClass().getMethod("getProvider", null);
+				Object provider = method.invoke(encounterProvider, null);
+				method = provider.getClass().getMethod("getProviderId", null);
+				Object id = method.invoke(provider, null);
+				if (id.equals(providerId)) {
+					return; //Provider has not changed for the unknown encounter role
+				}
+				
+				//clear since user is changing the provider for unknown encounter role
+				encounterProviders.clear();
+			}
+		}
+		
+		method = Context.class.getMethod("getProviderService", null);
+		Object providerService = method.invoke(null, null);
+		method = providerService.getClass().getMethod("getProvider", new Class[]{Integer.class});
+		Object provider = method.invoke(providerService, new Integer[]{providerId});
+		
+		method = encounter.getClass().getMethod("setProvider", new Class[]{Class.forName("org.openmrs.EncounterRole"), Class.forName("org.openmrs.Provider")});
+		method.invoke(encounter, new Object[]{unknownEncounterRole, provider});
 	}
 }
