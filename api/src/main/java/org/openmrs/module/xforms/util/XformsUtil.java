@@ -13,6 +13,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
@@ -855,5 +856,28 @@ public class XformsUtil {
 		method = encounter.getClass().getMethod("setProvider",
 		    new Class[] { Class.forName("org.openmrs.EncounterRole"), Class.forName("org.openmrs.Provider") });
 		method.invoke(encounter, new Object[] { unknownEncounterRole, provider });
+	}
+	
+	public static Integer getProviderId(User user) throws Exception {
+		if (isOnePointNineAndAbove()) {
+			Method method = user.getClass().getMethod("getPerson", null);
+			Object person = method.invoke(user, null);
+			if (person == null)
+				return null;
+			
+			method = Context.class.getMethod("getProviderService", null);
+			Object providerService = method.invoke(null, null);
+			method = providerService.getClass().getMethod("getProvidersByPerson", new Class[]{Class.forName("org.openmrs.Person")});
+			Collection providers = (Collection)method.invoke(providerService, new Object[]{ person });
+			if (providers.size() == 0)
+				return null;
+			
+			Object provider = providers.toArray()[0];
+			method = provider.getClass().getMethod("getProviderId", null);
+			return (Integer)method.invoke(provider, null);
+		}
+		else {
+			return getPersonId(user);
+		}
 	}
 }

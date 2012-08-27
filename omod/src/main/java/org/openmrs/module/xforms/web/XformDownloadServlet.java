@@ -349,8 +349,12 @@ public class XformDownloadServlet extends HttpServlet {
 			//Set default provider to the logged on user of no default value is already set in the xform.
 			if(user.hasRole(OpenmrsConstants.PROVIDER_ROLE)){
 				String providerId = XformBuilder.getNodeValue(doc.getRootElement(), XformBuilder.NODE_ENCOUNTER_PROVIDER_ID);
-				if(providerId == null || providerId.trim().length() == 0)
-					XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_PROVIDER_ID, XformsUtil.getPersonId(user).toString());
+				if(providerId == null || providerId.trim().length() == 0) {
+					Integer id = XformsUtil.getProviderId(user);
+					if (id != null) {
+						XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_PROVIDER_ID, id.toString());
+					}
+				}
 			}
 		}
 
@@ -483,8 +487,12 @@ public class XformDownloadServlet extends HttpServlet {
 				//Set default provider to the logged on user of no default value is already set in the xform.
 				if(user.hasRole(OpenmrsConstants.PROVIDER_ROLE)){
 					String providerId = XformBuilder.getNodeValue(doc.getRootElement(), XformBuilder.NODE_ENCOUNTER_PROVIDER_ID);
-					if(providerId == null || providerId.trim().length() == 0)
-						XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_PROVIDER_ID, XformsUtil.getPersonId(user).toString());
+					if(providerId == null || providerId.trim().length() == 0) {
+						Integer id = XformsUtil.getProviderId(user);
+						if (id != null) {
+							XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_PROVIDER_ID, id.toString());
+						}
+					}
 				}
 			}
 
