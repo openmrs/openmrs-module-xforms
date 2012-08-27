@@ -588,9 +588,9 @@
     		}
     		else{
     			key = $j.trim(key);
-    			if(key != 'concepts' && key != 'locations' && key != 'providers' && key != 'persons'){
+    			if(key != 'concept' && key != 'location' && key != 'provider' && key != 'person'){
     				alert("The external source property '"+key+"' is invalid, you need to specify the appropriate one "+
-    						"from the following from the xforms design page: concepts, locations, providers and persons");
+    						"from the following from the xforms design page: concept, location, provider and person");
     				return;
     			}
     			
@@ -602,7 +602,7 @@
     			var callback;
     			var createCallback;
     			var isSearchElementNull = false;
-    			if(key == 'concepts'){
+    			if(key == 'concept'){
     				searchInputId = 'conceptId_id_selection';
     				placeHolderText = '<spring:message code="Concept.search.placeholder" javaScriptEscape="true"/>';
     				var includeC = (filterField == null ? "" : filterField).split(",");
@@ -618,7 +618,7 @@
     					conceptSearchElement = document.getElementById(searchInputId);
     				}
     				searchElement = conceptSearchElement;
-    			}else if(key == 'providers'){
+    			}else if(key == 'provider'){
     				searchInputId = 'providerId_id_selection';
     				placeHolderText = '<spring:message code="Provider.search.placeholder" javaScriptEscape="true"/>';
     				callback = new CreateCallback().providerCallback();
@@ -627,7 +627,7 @@
     					providerSearchElement = document.getElementById(searchInputId);
     				}
     				searchElement = providerSearchElement;
-    			}else if(key == 'persons'){
+    			}else if(key == 'person'){
     				searchInputId = 'personId_id_selection';
     				placeHolderText = '<spring:message code="Person.search.placeholder" javaScriptEscape="true"/>';
     				callback = new CreateCallback().personCallback();
@@ -636,7 +636,7 @@
     					personSearchElement = document.getElementById(searchInputId);
     				}
     				searchElement = personSearchElement;
-    			}else if(key == 'locations'){
+    			}else if(key == 'location'){
     				if(locationSearchElement == null){
     					isSearchElementNull = true;
     					locationSearchElement = document.getElementById('locationId_id_selection');
@@ -675,7 +675,7 @@
     			
     			//we use a custom autocomplete for location widget since there is 
     			//no autocomplete call back for locations in the core
-    			if(key != 'locations'){
+    			if(key != 'location'){
     				// set up the autocomplete
     				new AutoComplete(searchInputId, callback, {
     					select: function(event, ui) {
@@ -708,13 +708,13 @@
     	}
     	
     	function funcItemIdAutoCompleteOnSelect(selectedObj, item, key) {	
-    		if(key == 'concepts'){
+    		if(key == 'concept'){
     			valElement.value = selectedObj.name;
     			txtElement.innerHTML = selectedObj.conceptId + "^" + selectedObj.name + "^99DCT";
-    		}else if(key == 'providers'){
+    		}else if(key == 'provider'){
     			valElement.value = selectedObj.displayName;
     			txtElement.innerHTML = selectedObj.providerId;
-    		}else if(key == 'persons'){
+    		}else if(key == 'person'){
     			valElement.value = selectedObj.personName;
     			txtElement.innerHTML = selectedObj.uuid;
     		}
