@@ -97,7 +97,6 @@ public class XformDesignerController extends SimpleFormController {
 		map.put("usingJQuery", XformsUtil.usesJquery());
 		map.put("locations", Context.getLocationService().getAllLocations(false));
 		map.put("useOpenmrsMessageTag", XformsUtil.isOnePointNineOneAndAbove());
-		map.put("addAppendLocaleAttribute", XformsUtil.addAppendLocaleAttribute());
 
 		String url = request.getRequestURI();
 		url = url.substring(0, url.indexOf("module/xforms/xformDesigner.form"));

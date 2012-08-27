@@ -52,7 +52,6 @@ import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
-import org.openmrs.web.taglib.HtmlIncludeTag;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -799,30 +798,22 @@ public class XformsUtil {
 		return false;
 	}
 	
-	public static boolean addAppendLocaleAttribute() {
-		try {
-			return HtmlIncludeTag.class.getField("appendLocale") != null;
-		}
-		catch (Exception e) {}
-		return false;
-	}
-	
 	private static Integer getOnePointNineProviderId(Encounter encounter) {
 		try {
 			Field field = encounter.getClass().getDeclaredField("encounterProviders");
 			field.setAccessible(true);
-			Set encounterProviders = (Set)field.get(encounter);
+			Set encounterProviders = (Set) field.get(encounter);
 			if (encounterProviders.size() == 0) {
 				return null;
 			}
 			
 			Object encounterProvider = encounterProviders.toArray()[0];
 			Method method = encounterProvider.getClass().getMethod("getProvider", null);
-			Object provider =  method.invoke(encounterProvider, null);
+			Object provider = method.invoke(encounterProvider, null);
 			method = provider.getClass().getMethod("getProviderId", null);
 			return (Integer) method.invoke(provider, null);
 		}
-		catch(Exception ex) {
+		catch (Exception ex) {
 			ex.printStackTrace();
 		}
 		
@@ -831,12 +822,13 @@ public class XformsUtil {
 	
 	public static void setProvider(Encounter encounter, Integer providerId) throws Exception {
 		EncounterService encounterService = Context.getEncounterService();
-		Method method = encounterService.getClass().getMethod("getEncounterRoleByUuid", new Class[]{String.class});
-		Object unknownEncounterRole = method.invoke(encounterService, new String[]{"a0b03050-c99b-11e0-9572-0800200c9a66"});
+		Method method = encounterService.getClass().getMethod("getEncounterRoleByUuid", new Class[] { String.class });
+		Object unknownEncounterRole = method.invoke(encounterService,
+		    new String[] { "a0b03050-c99b-11e0-9572-0800200c9a66" });
 		
 		Field field = encounter.getClass().getDeclaredField("encounterProviders");
 		field.setAccessible(true);
-		Set encounterProviders = (Set)field.get(encounter);
+		Set encounterProviders = (Set) field.get(encounter);
 		if (encounterProviders.size() == 1) { //for now, we do not deal with multiple providers.
 			Object encounterProvider = encounterProviders.toArray()[0];
 			method = encounterProvider.getClass().getMethod("getEncounterRole", null);
@@ -857,10 +849,11 @@ public class XformsUtil {
 		
 		method = Context.class.getMethod("getProviderService", null);
 		Object providerService = method.invoke(null, null);
-		method = providerService.getClass().getMethod("getProvider", new Class[]{Integer.class});
-		Object provider = method.invoke(providerService, new Integer[]{providerId});
+		method = providerService.getClass().getMethod("getProvider", new Class[] { Integer.class });
+		Object provider = method.invoke(providerService, new Integer[] { providerId });
 		
-		method = encounter.getClass().getMethod("setProvider", new Class[]{Class.forName("org.openmrs.EncounterRole"), Class.forName("org.openmrs.Provider")});
-		method.invoke(encounter, new Object[]{unknownEncounterRole, provider});
+		method = encounter.getClass().getMethod("setProvider",
+		    new Class[] { Class.forName("org.openmrs.EncounterRole"), Class.forName("org.openmrs.Provider") });
+		method.invoke(encounter, new Object[] { unknownEncounterRole, provider });
 	}
 }
