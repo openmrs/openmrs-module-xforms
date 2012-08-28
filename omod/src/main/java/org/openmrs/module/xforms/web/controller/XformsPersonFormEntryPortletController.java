@@ -1,8 +1,10 @@
 package org.openmrs.module.xforms.web.controller;
 
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -11,6 +13,7 @@ import java.util.TreeMap;
 import javax.servlet.http.HttpServletRequest;
 
 import org.openmrs.Form;
+import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.module.Extension;
 import org.openmrs.module.Extension.MEDIA_TYPE;
@@ -18,6 +21,7 @@ import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.web.FormEntryContext;
 import org.openmrs.module.web.extension.FormEntryHandler;
 import org.openmrs.module.xforms.FormModuleHandler;
+import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.controller.PortletController;
 
@@ -82,6 +86,9 @@ public class XformsPersonFormEntryPortletController extends PortletController {
 			}
 		}
 		
+		//If the formfilter module is installed, filter forms.
+		filterForms(entryUrlMap, (Patient)model.get("patient"));
+		
 		//Make sure we do not append module id when displaying forms that are not handled by more than one module.
 		Set<FormModuleHandler> keys = entryUrlMap.keySet();
 		for(FormModuleHandler key : keys) {
@@ -91,5 +98,23 @@ public class XformsPersonFormEntryPortletController extends PortletController {
 		model.put("formToEntryUrlMap", entryUrlMap);
 		model.put("anyUpdatedFormEntryModules",
 				handlers != null && handlers.size() > 0);
+	}
+	
+	private void filterForms(Map<FormModuleHandler, FormEntryHandler> entryUrlMap, Patient patient) {
+		try {
+			Object instance = OpenmrsClassLoader.getInstance().loadClass("org.openmrs.module.formfilter.web.controller.PersonFormFilterEntryPortletController").newInstance();
+			Method method = instance.getClass().getDeclaredMethod("filterForm", new Class[]{Form.class, Patient.class});
+			method.setAccessible(true);
+			
+			for (Iterator<FormModuleHandler> iterator = entryUrlMap.keySet().iterator(); iterator.hasNext();) {
+				Form form = ((FormModuleHandler) iterator.next()).getForm();
+				if (!(Boolean)method.invoke(instance, new Object[]{form, patient})) {
+					iterator.remove();
+				}
+			}
+		}
+		catch(Exception ex) {
+			//ignore if module is not installed
+		}
 	}
 }
