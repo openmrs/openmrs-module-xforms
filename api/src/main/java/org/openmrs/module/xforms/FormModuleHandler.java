@@ -8,6 +8,7 @@ public class FormModuleHandler extends Form {
 
 	private Form form;
 	private String moduleId;
+	private boolean appendModuleId;
 
 	public FormModuleHandler(Form form, String moduleId) {
 		this.form = form;
@@ -15,10 +16,26 @@ public class FormModuleHandler extends Form {
 	}
 
 	public String getName() {
-		return form.getName() + " - (" + moduleId + ")";
+		return form.getName() + (appendModuleId ? " - (" + moduleId + ")" : "");
 	}
 
 	public Integer getFormId() {
 		return form.getFormId();
+	}
+
+	public boolean isAppendModuleId() {
+		return appendModuleId;
+	}
+
+	public void setAppendModuleId(boolean appendModuleId) {
+		this.appendModuleId = appendModuleId;
+	}
+
+	public Form getForm() {
+		return form;
+	}
+
+	public void setForm(Form form) {
+		this.form = form;
 	}
 }

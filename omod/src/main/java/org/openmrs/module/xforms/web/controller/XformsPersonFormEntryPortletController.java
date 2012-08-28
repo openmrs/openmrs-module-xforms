@@ -2,8 +2,10 @@ package org.openmrs.module.xforms.web.controller;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -55,6 +57,9 @@ public class XformsPersonFormEntryPortletController extends PortletController {
 		List<Extension> handlers = ModuleFactory.getExtensions(
 				"org.openmrs.module.web.extension.FormEntryHandler",
 				MEDIA_TYPE.html);
+		
+		HashMap<Form, Integer> formHandlerCount = new HashMap<Form, Integer>();
+		
 		if (handlers != null) {
 			for (Extension ext : handlers) {
 				FormEntryHandler handler = (FormEntryHandler) ext;
@@ -64,10 +69,25 @@ public class XformsPersonFormEntryPortletController extends PortletController {
 						entryUrlMap.put(
 								new FormModuleHandler(form, ext.getModuleId()),
 								handler);
+						
+						Integer count = formHandlerCount.get(form);
+						if(count == null)
+							count = 1;
+						else
+							count++;
+						
+						formHandlerCount.put(form, count);
 					}
 				}
 			}
 		}
+		
+		//Make sure we do not append module id when displaying forms that are not handled by more than one module.
+		Set<FormModuleHandler> keys = entryUrlMap.keySet();
+		for(FormModuleHandler key : keys) {
+			key.setAppendModuleId(formHandlerCount.get(key.getForm()) > 1);
+		}
+		
 		model.put("formToEntryUrlMap", entryUrlMap);
 		model.put("anyUpdatedFormEntryModules",
 				handlers != null && handlers.size() > 0);
