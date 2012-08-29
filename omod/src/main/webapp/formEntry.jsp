@@ -94,6 +94,7 @@
 
 <div id="defaultFontFamily" style="visibility:hidden;">${defaultFontFamily}</div>
 <div id="defaultFontSize" style="visibility:hidden;">${defaultFontSize}</div>
+<div id="defaultGroupBoxHeaderBgColor" style="visibility:hidden;">${defaultGroupBoxHeaderBgColor}</div>
 
 <div id="appendEntityIdAfterSubmit" style="visibility:hidden;">1</div>
 <div id="appendEntityIdAfterCancel" style="visibility:hidden;">1</div>
