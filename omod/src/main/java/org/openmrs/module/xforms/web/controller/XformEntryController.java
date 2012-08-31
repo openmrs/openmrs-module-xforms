@@ -85,6 +85,7 @@ public class XformEntryController extends SimpleFormController{
 		map.put(XformConstants.FORM_DESIGNER_KEY_DECIMAL_SEPARATORS, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DECIMAL_SEPARATORS, XformConstants.DEFAULT_DECIMAL_SEPARATORS));
 		map.put("usingJQuery", XformsUtil.usesJquery());
 		map.put("locations", Context.getLocationService().getAllLocations(false));
+		map.put("formatXml", "false");
 		
 		return map;
 	}

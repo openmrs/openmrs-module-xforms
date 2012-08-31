@@ -12,7 +12,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
+import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.app.event.EventCartridge;
+import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.runtime.log.CommonsLogLogChute;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.Drug;
@@ -21,6 +24,7 @@ import org.openmrs.Field;
 import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.Patient;
+import org.openmrs.Relationship;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.FormConstants;
@@ -37,6 +41,8 @@ import org.springframework.util.StringUtils;
 public class FormXmlTemplateBuilder {
 
 	protected final Log log = LogFactory.getLog(getClass());
+	
+	private VelocityEngine ve;
 
 	Form form;
 	String url;
@@ -59,11 +65,8 @@ public class FormXmlTemplateBuilder {
 	}
 	
 	public synchronized String getXmlTemplate(Patient patient) {
-		try {
-			Velocity.init();
-		} catch (Exception e) {
-			log.error("Error initializing Velocity engine", e);
-		}
+		initializeVelocity();
+		
 		VelocityContext velocityContext = new VelocityContext();
 
 		if (patient != null) {
@@ -86,6 +89,9 @@ public class FormXmlTemplateBuilder {
 			
 			List<Encounter> encounters = Context.getEncounterService().getEncountersByPatientId(patient.getPatientId(), false);
 			velocityContext.put("patientEncounters", encounters);
+			
+			List<Relationship> relationships = Context.getPersonService().getRelationshipsByPerson(patient);
+			velocityContext.put("relationships", relationships);
 		}
 		
 		// adding the error handler for velocity
@@ -104,6 +110,28 @@ public class FormXmlTemplateBuilder {
 					+ form.getName() + "[" + form.getFormId() + "]", e);
 		}
 		return template;
+	}
+	
+	/**
+	 * A utility method to initialize Velocity. This could be
+	 * called in the constructor, but putting it in a separate
+	 * method like this allows for late-initialization only
+	 * when someone actually uses this servlet.
+	 */
+	private void initializeVelocity() {
+		if (ve == null) {
+			ve = new VelocityEngine();
+
+			ve.setProperty( RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,
+				"org.apache.velocity.runtime.log.CommonsLogLogChute" );
+			ve.setProperty(CommonsLogLogChute.LOGCHUTE_COMMONS_LOG_NAME, 
+					"xforms_velocity");
+			try {
+				ve.init();
+			} catch (Exception e) {
+				log.error("velocity init failed", e);
+			}		
+		}
 	}
 
 	/**

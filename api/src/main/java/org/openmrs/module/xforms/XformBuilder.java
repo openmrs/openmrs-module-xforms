@@ -39,6 +39,7 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.Person;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.Relationship;
@@ -3219,7 +3220,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 		return CONTROL_INPUT;
 	}
 	
-	public static void setPatientFieldValues(Patient patient, Form form, Element parentNode, XformsService xformsService)
+	public static Document setPatientFieldValues(Patient patient, Form form, Document doc, XformsService xformsService)
 	    throws Exception {
 		//EasyFactoryConfiguration config = new EasyFactoryConfiguration();
 		
@@ -3250,13 +3251,45 @@ public final class XformBuilder implements GlobalPropertyListener {
 		velocityContext.put("patientEncounters", encounters);
 		
 		List<Relationship> relationships = Context.getPersonService().getRelationshipsByPerson(patient);
+		// change Person objects to Patient objects if applicable
+		for (Relationship rel : relationships) {
+			Person otherPerson = null;
+			if (rel.getPersonA().equals(patient)) {
+				otherPerson = rel.getPersonB();
+				if (otherPerson.isPatient())
+					rel.setPersonB(Context.getPatientService().getPatient(otherPerson.getPersonId()));
+			}
+			else {
+				otherPerson = rel.getPersonA();
+				if (otherPerson.isPatient())
+					rel.setPersonA(Context.getPatientService().getPatient(otherPerson.getPersonId()));
+			}
+		}
+		// we need at least one empty relationship in InfoPath
+		if (relationships.isEmpty()) {
+			relationships = new ArrayList();
+			relationships.add(new Relationship());
+		}
 		velocityContext.put("relationships", relationships);
 		
 		EventCartridge eventCartridge = new EventCartridge();
 		eventCartridge.addEventHandler(new VelocityExceptionHandler());
 		velocityContext.attachEventCartridge(eventCartridge);
 		
-		setPatientTableFieldValues(form.getFormId(), parentNode, xformsService, velocityEngine, velocityContext);
+		String xml = fromDoc2String(doc);
+		try {
+			StringWriter w = new StringWriter();
+			velocityEngine.evaluate(velocityContext, w, XformBuilder.class.getName(), xml);
+			doc = getDocument(w.toString());
+		}
+		catch (Exception e) {
+			log.error("Error evaluating default values for form " + form.getName() + "["
+			    + form.getFormId() + "]", e);
+		}
+		
+		setPatientTableFieldValues(form.getFormId(), doc.getRootElement(), xformsService, velocityEngine, velocityContext);
+	
+		return doc;
 	}
 	
 	public static Element createCopy(Element element, List<String> nonCopyAttributes) {

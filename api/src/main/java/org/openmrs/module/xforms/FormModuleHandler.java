@@ -22,6 +22,14 @@ public class FormModuleHandler extends Form {
 	public Integer getFormId() {
 		return form.getFormId();
 	}
+	
+	public Boolean getPublished() {
+		return form.getPublished();
+	}
+	
+	public Boolean getRetired() {
+		return form.getRetired();
+	}
 
 	public boolean isAppendModuleId() {
 		return appendModuleId;

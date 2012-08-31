@@ -52,7 +52,7 @@ public class FormEntryWrapper {
 	 * @return the xml template of the form.
 	 */
 	public static String getFormTemplate(Form form){
-		return new FormXmlTemplateBuilder(form,getFormAbsoluteUrl(form)).getXmlTemplate(false);
+		return new FormXmlTemplateBuilder(form,getFormAbsoluteUrl(form)).getXmlTemplate(true);
 	}
 	
 	/**

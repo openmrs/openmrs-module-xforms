@@ -106,6 +106,7 @@
 
 <div id="localeKey" style="visibility:hidden;">${localeKey}</div>
 <div id="decimalSeparators" style="visibility:hidden;">${decimalSeparators}</div>
+<div id="formatXml" style="visibility:hidden;">${formatXml}</div>
 
 <div id="proposeConceptForm">
 	<br />

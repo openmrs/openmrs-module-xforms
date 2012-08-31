@@ -152,6 +152,7 @@
     
     <div id="overwriteValidationsOnRefresh" style="visibility:hidden;">${overwriteValidationsOnRefresh}</div>
     <div id="maintainOrderingOnRefresh" style="visibility:hidden;">${maintainOrderingOnRefresh}</div>
+    <div id="formatXml" style="visibility:hidden;">${formatXml}</div>
         
     <div id="proposeConceptForm">
 		<br />

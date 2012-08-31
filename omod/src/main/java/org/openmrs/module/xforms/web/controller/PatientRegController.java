@@ -102,6 +102,7 @@ public class PatientRegController extends SimpleFormController{
 		
 		map.put("usingJQuery", XformsUtil.usesJquery());
 		map.put("locations", Context.getLocationService().getAllLocations(false));
+		map.put("formatXml", "false");
 		
 		return map;
 	}

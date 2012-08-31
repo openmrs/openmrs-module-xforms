@@ -117,7 +117,7 @@ public class RelationshipBuilder {
 		bindNode = modelElement.createElement(XformBuilder.NAMESPACE_XFORMS, null);
 		bindNode.setName(XformBuilder.NODE_BIND);
 		bindNode.setAttribute(null, XformBuilder.ATTRIBUTE_ID, NODE_RELATIVE);
-		bindNode.setAttribute(null, XformBuilder.ATTRIBUTE_NODESET, "/form/patient/patient_relationship/relative");
+		bindNode.setAttribute(null, XformBuilder.ATTRIBUTE_NODESET, "/form/patient/patient_relationship/relative/relative.uuid");
 		modelElement.addChild(Element.ELEMENT, bindNode);
 	}
 	
@@ -144,13 +144,13 @@ public class RelationshipBuilder {
 			
 			patientRelationShipNode.setAttribute(null, XformBuilder.ATTRIBUTE_UUID, relationship.getUuid());
 			
-			//This sets the display field and not really the hidden field for the personId/uuid
-			//TODO Add logic to set the person id/uuid as the  value id the hidden field
-			XformBuilder.setNodeValue(patientRelationShipNode, NODE_RELATIVE, relative);
+			XformBuilder.getElement(patientRelationShipNode, "relative.uuid").setAttribute(null, "displayValue", relative);
+			
 			XformBuilder.setNodeValue(patientRelationShipNode, BIND_RELATIONSHIP_TYPE_ID, relationship.getRelationshipType()
 			        .getRelationshipTypeId()
-			        + ":"
 			        + ((relationship.getPersonA().getPersonId().equals(patient.getPersonId())) ? "B" : "A"));
+			
+			XformBuilder.setNodeValue(patientRelationShipNode, "patient_relationship.exists", "1");
 		}
 	}
 	
@@ -217,7 +217,7 @@ public class RelationshipBuilder {
 		
 		node = itemNode.createElement(XformBuilder.NAMESPACE_XFORMS, null);
 		node.setName(XformBuilder.NODE_VALUE);
-		node.addChild(Element.TEXT, relationshipType.getRelationshipTypeId() + ":" + ((isA) ? "A" : "B"));
+		node.addChild(Element.TEXT, relationshipType.getRelationshipTypeId() + ((isA) ? "A" : "B"));
 		itemNode.addChild(Element.ELEMENT, node);
 		return itemNode;
 	}

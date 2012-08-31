@@ -400,7 +400,7 @@ public class XformDownloadServlet extends HttpServlet {
 				patientParam += "&"+XformConstants.REQUEST_PARAM_PATIENT_SEARCH_PHRASE+"=" + phrase;
 
 			//XformBuilder.setPatientTableFieldValues(form.getFormId(),doc.getRootElement(), patient, xformsService);
-			XformBuilder.setPatientFieldValues(patient, form, doc.getRootElement(), xformsService);
+			doc = XformBuilder.setPatientFieldValues(patient, form, doc, xformsService);
 
 			XformBuilder.setNodeAttributeValue(doc, XformBuilder.NODE_PATIENT, XformBuilder.ATTRIBUTE_UUID, patient.getUuid());
 			
