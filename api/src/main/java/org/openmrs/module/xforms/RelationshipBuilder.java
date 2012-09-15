@@ -126,11 +126,13 @@ public class RelationshipBuilder {
 		if (patientRelationShipNode == null)
 			return; //For does not need relationships.
 			
+		Element emptyPatientRelationShipNode = XformBuilder.createCopy(patientRelationShipNode, new ArrayList<String>());
+		
 		int index = 0;
 		List<Relationship> relationships = Context.getPersonService().getRelationshipsByPerson(patient);
 		for (Relationship relationship : relationships) {
 			if (++index > 1)
-				patientRelationShipNode = XformBuilder.createCopy(patientRelationShipNode, new ArrayList<String>());
+				patientRelationShipNode = XformBuilder.createCopy(emptyPatientRelationShipNode, new ArrayList<String>());
 			
 			String relative;
 			

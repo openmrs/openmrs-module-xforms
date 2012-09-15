@@ -7,11 +7,8 @@ This XSLT is used to translate OpenMRS forms from XML into HL7 2.5 format
 
 @author Burke Mamlin, MD
 @author Ben Wolfe
-@author Jeremy Keiper
-@version 1.9.9
+@version 1.9.7
 
-1.9.9 - added nk1 (relationship) segment encoding template
-1.9.8 - escape strings according to HL7 encoding rules
 1.9.7 - moved encounter/encounter.encounter_id to use PV1-19 instead
 1.9.6 - added encounter/encounter.encounter_id to PV1-1
 1.9.5 - allow for organizing sections under "obs" section
@@ -29,11 +26,6 @@ This XSLT is used to translate OpenMRS forms from XML into HL7 2.5 format
 <xsl:variable name="RECEIVING-FACILITY">AMRS.ELD</xsl:variable>
 <xsl:variable name="PATIENT-AUTHORITY"></xsl:variable> <!-- leave blank for internal id, max 20 characters -->
                                                        <!-- for now, must match patient_identifier_type.name -->
-<xsl:variable name="LOCAL-AUTHORITY">L</xsl:variable>
-<xsl:variable name="PATIENT-ID-TYPE">PI</xsl:variable>
-<xsl:variable name="PERSON-ID-TYPE">PN</xsl:variable>
-<xsl:variable name="EXTERNAL-ID-TYPE">PT</xsl:variable>
-<xsl:variable name="UUID-VERSION">v4</xsl:variable>
 <xsl:variable name="FORM-AUTHORITY">AMRS.ELD.FORMID</xsl:variable> <!-- max 20 characters -->
 
 <xsl:template match="/">
@@ -93,15 +85,15 @@ This XSLT is used to translate OpenMRS forms from XML into HL7 2.5 format
 	<xsl:text>|</xsl:text>              <!-- PID-3 Patient Identifier List -->
 	<xsl:call-template name="patient_id">
 		<xsl:with-param name="pid" select="patient/patient.patient_id" />
-		<xsl:with-param name="auth" select="$LOCAL-AUTHORITY" />
-		<xsl:with-param name="type" select="$PATIENT-ID-TYPE" />
+		<xsl:with-param name="auth" select="$PATIENT-AUTHORITY" />
+		<xsl:with-param name="type" select="L" />
 	</xsl:call-template>
 	<xsl:if test="patient/patient.previous_mrn and string-length(patient/patient.previous_mrn) > 0">
 		<xsl:text>~</xsl:text>
 		<xsl:call-template name="patient_id">
 			<xsl:with-param name="pid" select="patient/patient.previous_mrn" />
-			<xsl:with-param name="auth" select="$LOCAL-AUTHORITY" />
-			<xsl:with-param name="type" select="'PRIOR'" />
+			<xsl:with-param name="auth" select="$PATIENT-AUTHORITY" />
+			<xsl:with-param name="type" select="PRIOR" />
 		</xsl:call-template>
 	</xsl:if>
 	<!-- Additional patient identifiers -->
@@ -110,8 +102,8 @@ This XSLT is used to translate OpenMRS forms from XML into HL7 2.5 format
 		<xsl:text>~</xsl:text>
 		<xsl:call-template name="patient_id">
 			<xsl:with-param name="pid" select="patient/patient.mtctplus_id" />
-			<xsl:with-param name="auth" select="'MTCTPLUS'" />
-			<xsl:with-param name="type" select="$EXTERNAL-ID-TYPE" />
+			<xsl:with-param name="auth" select="$PATIENT-AUTHORITY" />
+			<xsl:with-param name="type" select="MTCTPLUS" />
 		</xsl:call-template>
 	</xsl:if>
 	<xsl:text>|</xsl:text>              <!-- PID-4 (deprecated) Alternate patient ID -->
@@ -126,23 +118,7 @@ This XSLT is used to translate OpenMRS forms from XML into HL7 2.5 format
 	<xsl:text>|</xsl:text>              <!-- PID-7 Date/Time of Birth -->
 	<xsl:value-of select="patient/patient.date_of_birth" />
 	<xsl:text>&#x000d;</xsl:text>       <!-- new line -->
-
-	<!-- Relationship(s) -->
-	<xsl:variable name="nk1List" select="patient/patient_relationship[patient_relationship.exists = 0]" />
-	<!-- Relationship NK1(s) -->
-	<xsl:for-each select="$nk1List">
-		<xsl:if test="string-length(patient_relationship.relationship_type_id) > 0">
-			<xsl:call-template name="nk1">
-				<xsl:with-param name="setId" select="position()" />
-				<xsl:with-param name="relationshipType" select="patient_relationship.relationship_type_id" />
-				<xsl:with-param name="relationshipSide" select="patient_relationship.a_or_b" />
-				<xsl:with-param name="relationshipDescription" select="patient_relationship.description" />
-				<xsl:with-param name="relationshipVoided" select="patient_relationship.voided" />
-				<xsl:with-param name="relative" select="relative" />
-			</xsl:call-template>
-		</xsl:if>
-	</xsl:for-each>
-
+	
 	<!-- PV1 header -->
 	<xsl:text>PV1</xsl:text>            <!-- Message type -->
 	<xsl:text>|</xsl:text>              <!-- PV1-1 Sub ID -->
@@ -154,7 +130,16 @@ This XSLT is used to translate OpenMRS forms from XML into HL7 2.5 format
 	<xsl:text>|</xsl:text>              <!-- PV1-6 Prior Patient Location -->
 	<xsl:text>|</xsl:text>              <!-- PV1-7 Attending Doctor -->
 	<xsl:value-of select="encounter/encounter.provider_id" />
-	<xsl:text>^name^^^^^^^&amp;PROVIDER.ID&amp;L</xsl:text>
+	
+	<!-- 
+		If we have 'provider_id_type' attribute, this is 1.9+, specify the assigning authority
+		Output will be like: 1^^^^^^^^&PROVIDER.ID&L
+	-->
+	<xsl:if test="encounter/encounter.provider_id/@provider_id_type">
+		<xsl:text>^^^^^^^^&amp;</xsl:text>
+		<xsl:value-of select="encounter/encounter.provider_id/@provider_id_type" />
+		<xsl:text>&amp;L</xsl:text>
+	</xsl:if>
 	<xsl:text>|</xsl:text>              <!-- PV1-8 Referring Doctor -->
 	<xsl:text>|</xsl:text>              <!-- PV1-9 Consulting Doctor -->
 	<xsl:text>|</xsl:text>              <!-- PV1-10 Hospital Service -->
@@ -180,7 +165,7 @@ This XSLT is used to translate OpenMRS forms from XML into HL7 2.5 format
 	<xsl:text>|</xsl:text>              <!-- PV1-29 Transfer to Bad Debt Code -->
 	<xsl:text>|</xsl:text>              <!-- PV1-30 Transfer to Bad Debt Date -->
 	<xsl:text>|</xsl:text>              <!-- PV1-31 Bad Debt Agency Code -->
-	<xsl:text>|</xsl:text>              <!-- PV1-31 Bad Debt Transfer Amount -->
+  <xsl:text>|</xsl:text>              <!-- PV1-31 Bad Debt Transfer Amount -->
 	<xsl:text>|</xsl:text>              <!-- PV1-33 Bad Debt Recovery Amount -->
 	<xsl:text>|</xsl:text>              <!-- PV1-34 Delete Account Indicator -->
 	<xsl:text>|</xsl:text>              <!-- PV1-35 Delete Account Date -->
@@ -234,6 +219,7 @@ This XSLT is used to translate OpenMRS forms from XML into HL7 2.5 format
 	<xsl:text>&#x000d;</xsl:text>       <!-- new line -->
 
 	<!-- Observation(s) -->
+	<!-- <xsl:variable name="obsList" select="obs/*[(@openmrs_concept and value and value/text() != '') or *[@openmrs_concept and text()='true']]" /> -->
 	<xsl:variable name="obsList" select="obs/*[(@openmrs_concept and value and value/text() != '') or *[@openmrs_concept and text()='true']]|obs/*[not(@openmrs_concept)]/*[(@openmrs_concept and value and value/text() != '') or *[@openmrs_concept and text()='true']]" />
 	<xsl:variable name="obsListCount" select="count($obsList)" as="xs:integer" />
 	<!-- Observation OBR -->
@@ -281,6 +267,7 @@ This XSLT is used to translate OpenMRS forms from XML into HL7 2.5 format
 	</xsl:for-each>
 	
 	<!-- Grouped observation(s) -->
+	<!-- <xsl:variable name="obsGroupList" select="obs/*[@openmrs_concept and not(date) and *[(@openmrs_concept and value and value/text() != '') or *[@openmrs_concept and text()='true']]]" /> -->
 	<xsl:variable name="obsGroupList" select="obs/*[@openmrs_concept and not(date) and *[(@openmrs_concept and value and value/text() != '') or *[@openmrs_concept and text()='true']]]|obs/*[not(@openmrs_concept)]/*[@openmrs_concept and not(date) and *[(@openmrs_concept and value and value/text() != '') or *[@openmrs_concept and text()='true']]]" />
 	<xsl:variable name="obsGroupListCount" select="count($obsGroupList)" as="xs:integer" />
 	<xsl:for-each select="$obsGroupList">
@@ -423,85 +410,6 @@ This XSLT is used to translate OpenMRS forms from XML into HL7 2.5 format
 	<xsl:value-of select="$type" />
 </xsl:template>
 
-<!-- Next of Kin (NK1) generator -->
-<xsl:template name="nk1">
-	<xsl:param name="setId" />
-	<xsl:param name="relationshipType" />
-	<xsl:param name="relationshipSide" />
-	<xsl:param name="relationshipDescription" />
-	<xsl:param name="relationshipVoided" />
-	<xsl:param name="relative" />
-	<xsl:text>NK1</xsl:text>       <!-- message type -->
-	<xsl:text>|</xsl:text>              <!-- NK1-1  Set Id -->
-	<xsl:value-of select="$setId" />
-	<xsl:text>|</xsl:text>              <!-- NK1-2  Next of Kin Name -->
-	<xsl:value-of select="$relative/relative.family_name" />
-	<xsl:text>^</xsl:text>              <!-- Given name -->
-	<xsl:value-of select="$relative/relative.given_name" />
-	<xsl:text>^</xsl:text>              <!-- Middle name -->
-	<xsl:value-of select="$relative/relative.middle_name" />
-	<xsl:text>|</xsl:text>              <!-- NK1-3  Next of Kin Relation -->
-	<xsl:value-of select="$relationshipType" />
-	<xsl:text>^</xsl:text>
-	<xsl:value-of select="$relationshipDescription" />
-	<xsl:text>^99REL</xsl:text>
-	<xsl:text>|</xsl:text>              <!-- NK1-4  Next of Kin Address -->
-	<xsl:text>|</xsl:text>              <!-- NK1-5  Next of Kin Phone -->
-	<xsl:text>|</xsl:text>              <!-- NK1-6  Business Phone No. -->
-	<xsl:text>|</xsl:text>              <!-- NK1-7  Contact Role -->
-	<xsl:text>|</xsl:text>              <!-- NK1-8  Start Date -->
-	<xsl:text>|</xsl:text>              <!-- NK1-9  End Date -->
-	<xsl:text>|</xsl:text>              <!-- NK1-10 Assoc. Party's Job Title -->
-	<xsl:text>|</xsl:text>              <!-- NK1-11 Assoc. Party's Job Class -->
-	<xsl:text>|</xsl:text>              <!-- NK1-12 Assoc. Party's Employee Number -->
-	<xsl:text>|</xsl:text>              <!-- NK1-13 Organization Name -->
-	<xsl:text>|</xsl:text>              <!-- NK1-14 Marital Status -->
-	<xsl:text>|</xsl:text>              <!-- NK1-15 Sex -->
-	<xsl:value-of select="$relative/relative.gender"/>
-	<xsl:text>|</xsl:text>              <!-- NK1-16 Date Time of Birth -->
-	<xsl:value-of select="$relative/relative.birthdate" />
-	<xsl:text>|</xsl:text>              <!-- NK1-17 Living Dependency -->
-	<xsl:text>|</xsl:text>              <!-- NK1-18 Ambulatory Status -->
-	<xsl:text>|</xsl:text>              <!-- NK1-19 Citizenship -->
-	<xsl:text>|</xsl:text>              <!-- NK1-20 Primary Language -->
-	<xsl:text>|</xsl:text>              <!-- NK1-21 Living Arrangement -->
-	<xsl:text>|</xsl:text>              <!-- NK1-22 Publicity Ind. -->
-	<xsl:text>|</xsl:text>              <!-- NK1-23 Protection Ind. -->
-	<xsl:text>|</xsl:text>              <!-- NK1-24 Student Ind. -->
-	<xsl:text>|</xsl:text>              <!-- NK1-25 Religion -->
-	<xsl:text>|</xsl:text>              <!-- NK1-26 Mother's Maiden Name -->
-	<xsl:text>|</xsl:text>              <!-- NK1-27 Nationality -->
-	<xsl:text>|</xsl:text>              <!-- NK1-28 Ethnic Group -->
-	<xsl:text>|</xsl:text>              <!-- NK1-29 Contact Reason -->
-	<xsl:text>|</xsl:text>              <!-- NK1-30 Contact Person's Name -->
-	<xsl:text>|</xsl:text>              <!-- NK1-31 Contact Person's Phone Number -->
-	<xsl:text>|</xsl:text>              <!-- NK1-32 Contact Person's Address -->
-	<xsl:text>|</xsl:text>              <!-- NK1-33 Assoc. Party's Identifiers -->
-	<xsl:if test="relative/relative.identifier and string-length(relative/relative.identifier) > 0">
-		<xsl:call-template name="patient_id">
-			<xsl:with-param name="pid" select="$relative/relative.identifier" />
-			<xsl:with-param name="auth" select="$relative/relative.identifier_type" />
-			<xsl:with-param name="type" select="$EXTERNAL-ID-TYPE"/>
-		</xsl:call-template>
-	</xsl:if>
-	<!-- UUID only if present -->
-	<xsl:if test="relative/relative.uuid and string-length(relative/relative.uuid) > 0">
-		<xsl:if test="relative/relative.identifier and string-length(relative/relative.identifier) > 0">
-			<xsl:text>~</xsl:text>
-		</xsl:if>
-		<xsl:call-template name="patient_id">
-			<xsl:with-param name="pid" select="$relative/relative.uuid" />
-			<xsl:with-param name="auth" select="'UUID'" />
-			<xsl:with-param name="type" select="$UUID-VERSION"/>
-		</xsl:call-template>
-	</xsl:if>
-	<xsl:text>|</xsl:text>              <!-- NK1-34 Job Status -->
-	<xsl:text>|</xsl:text>              <!-- NK1-35 Race -->
-	<xsl:text>|</xsl:text>              <!-- NK1-36 Handicap -->
-	<xsl:text>|</xsl:text>              <!-- NK1-37 Contact Person's Social Security Number -->
-	<xsl:text>&#x000d;</xsl:text>       <!-- new line -->
-</xsl:template>
-
 <!-- OBX Generator -->
 <xsl:template name="obsObx">
 	<xsl:param name="setId" required="no"></xsl:param>
@@ -551,11 +459,6 @@ This XSLT is used to translate OpenMRS forms from XML into HL7 2.5 format
 				<xsl:when test="$value = '0' or upper-case($value) = 'FALSE'">0</xsl:when>
 				<xsl:otherwise>1</xsl:otherwise>
 			</xsl:choose>
-		</xsl:when>
-		<xsl:when test="$datatype = 'ST'">
-			<xsl:call-template name="encodeString">
-				<xsl:with-param name="value" select="$value" />
-			</xsl:call-template>
 		</xsl:when>
 		<xsl:otherwise>
 			<xsl:value-of select="$value" />
@@ -619,14 +522,6 @@ This XSLT is used to translate OpenMRS forms from XML into HL7 2.5 format
 	<xsl:param name="time" />
 	<xsl:if test="$time != ''">
 		<xsl:value-of select="concat(format-number(hours-from-time($time),'00'),format-number(minutes-from-time($time),'00'),format-number(floor(seconds-from-time($time)),'00'))" />
-	</xsl:if>
-</xsl:template>
-
-<!-- Escape text according to HL7 encoding rules -->
-<xsl:template name="encodeString">
-	<xsl:param name="value" />
-	<xsl:if test="$value != ''">
-		<xsl:value-of  select="replace(replace(replace(replace(replace($value,'\\','\\E\\'),'\|','\\F\\'),'\^','\\S\\'),'&amp;','\\T\\'),'~','\\R\\')" />
 	</xsl:if>
 </xsl:template>
 

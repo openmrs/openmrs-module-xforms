@@ -18,6 +18,7 @@ import org.openmrs.FormField;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.xforms.util.XformsUtil;
 import org.openmrs.util.OpenmrsConstants;
 
 
@@ -243,8 +244,9 @@ public class BasicFormBuilder {
 	public static String getFormXslt(){
 		
 		try{
+			String fileName = XformsUtil.isOnePointNineAndAbove() ? "form_xslt.xml" : "form_xslt_pre19.xml";
 			StringBuffer fileData = new StringBuffer(1000);
-			BufferedReader reader = new BufferedReader(new InputStreamReader(BasicFormBuilder.class.getResourceAsStream("form_xslt.xml"), XformConstants.DEFAULT_CHARACTER_ENCODING));
+			BufferedReader reader = new BufferedReader(new InputStreamReader(BasicFormBuilder.class.getResourceAsStream(fileName), XformConstants.DEFAULT_CHARACTER_ENCODING));
 			
 			char[] buf = new char[1024];
 			int numRead = 0;

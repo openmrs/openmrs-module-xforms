@@ -404,7 +404,7 @@ public class XformDownloadServlet extends HttpServlet {
 
 			XformBuilder.setNodeAttributeValue(doc, XformBuilder.NODE_PATIENT, XformBuilder.ATTRIBUTE_UUID, patient.getUuid());
 			
-			RelationshipBuilder.fillRelationships(patient, doc.getRootElement());
+			//RelationshipBuilder.fillRelationships(patient, doc.getRootElement());
 		}
 
 		//clear any previously stored form session data

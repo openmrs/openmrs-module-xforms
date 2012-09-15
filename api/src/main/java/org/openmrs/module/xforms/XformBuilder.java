@@ -3272,7 +3272,9 @@ public final class XformBuilder implements GlobalPropertyListener {
 		}
 		velocityContext.put("relationships", relationships);
 		
-		EventCartridge eventCartridge = new EventCartridge();
+		//TODO Uncomment this after relation ship widget ticket is done.
+		//and fully test to see if forms still submit all the way from OpenMRS 1.6
+		/*EventCartridge eventCartridge = new EventCartridge();
 		eventCartridge.addEventHandler(new VelocityExceptionHandler());
 		velocityContext.attachEventCartridge(eventCartridge);
 		
@@ -3285,7 +3287,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 		catch (Exception e) {
 			log.error("Error evaluating default values for form " + form.getName() + "["
 			    + form.getFormId() + "]", e);
-		}
+		}*/
 		
 		setPatientTableFieldValues(form.getFormId(), doc.getRootElement(), xformsService, velocityEngine, velocityContext);
 	
