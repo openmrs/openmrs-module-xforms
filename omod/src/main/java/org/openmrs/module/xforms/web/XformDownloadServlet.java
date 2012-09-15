@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kxml2.kdom.Document;
@@ -711,8 +712,12 @@ public class XformDownloadServlet extends HttpServlet {
 	 * @param age
 	 */
 	public <P extends Person> void getMiniPerson(P person, String name, String gender, String date, String age) {
-
-		person.addName(Context.getPersonService().parsePersonName(name));
+		//Check null for name, since parsePersonName throws NullPointerExceptin if name == null
+		if (StringUtils.isEmpty(name)){
+			person.addName(new PersonName());
+		} else {
+			person.addName(Context.getPersonService().parsePersonName(name));
+		}
 
 		person.setGender(gender);
 		Date birthdate = null;
