@@ -1,6 +1,6 @@
 package org.openmrs.module.xforms.web.extension.html;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.openmrs.api.context.Context;
@@ -33,7 +33,7 @@ public class XformsAdminExt extends AdministrationSectionExt {
 	}
 	
 	public Map<String, String> getLinks() {
-		Map<String, String> map = new HashMap<String, String>();
+		LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
 		
 		if ("true".equals(Context.getAdministrationService().getGlobalProperty("xforms.showOfflineFormDesigner", "false")))
 			map.put("module/xforms/xformDesigner.form", "xforms.designer");

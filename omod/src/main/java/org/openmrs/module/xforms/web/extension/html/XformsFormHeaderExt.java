@@ -1,7 +1,7 @@
 package org.openmrs.module.xforms.web.extension.html;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.openmrs.Form;
 import org.openmrs.api.APIException;
@@ -9,7 +9,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.Extension;
 import org.openmrs.module.xforms.BasicFormBuilder;
 import org.openmrs.module.xforms.XformsService;
-import org.openmrs.util.InsertedOrderComparator;
 
 /**
  * Adds XForm links to the form schema design page.
@@ -32,7 +31,7 @@ public class XformsFormHeaderExt extends Extension {
 
 	public Map<String, String> getLinks() {
 		
-		Map<String, String> map = new TreeMap<String, String>(new InsertedOrderComparator());
+		LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
 		
 		if (formId != null && formId.trim().length() > 0) {
 			map.put("moduleServlet/xforms/xformDownload?target=xform&formId=" + formId, "xforms.downloadXform");
