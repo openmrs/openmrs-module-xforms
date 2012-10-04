@@ -128,3 +128,9 @@ body, html {
 .gwt-Label::-moz-selection { background: transparent; }
 .gwt-Button::selection { background: transparent; }
 .gwt-Button::-moz-selection { background: transparent; }
+
+.purcforms-vertical-grid-line {
+  border-left-color: rgb(224, 224, 224); /* very light gray */
+  border-left-width: thin;
+  border-left-style: solid;
+}
