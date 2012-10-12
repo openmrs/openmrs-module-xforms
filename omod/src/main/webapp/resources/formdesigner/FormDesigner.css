@@ -134,3 +134,9 @@ body, html {
   border-left-width: thin;
   border-left-style: solid;
 }
+
+.purcforms-horizontal-grid-line {
+  border-top-color: rgb(224, 224, 224); /* very light gray */
+  border-top-width: thin;
+  border-top-style: solid;
+}
