@@ -10,3 +10,15 @@ body {
   border: 1px dashed navy;
   background-color: white;
 }
+
+.purcforms-vertical-grid-line {
+  border-left-color: black;
+  border-left-width: thin;
+  border-left-style: solid;
+}
+
+.purcforms-horizontal-grid-line {
+  border-top-color: black;
+  border-top-width: thin;
+  border-top-style: solid;
+}

@@ -461,6 +461,9 @@
        		formKey: "<spring:message code="xforms.formKey" />",
        		logo: "<spring:message code="xforms.logo" />",
        		filterField: "<spring:message code="xforms.filterField" />",
+       		table: "<spring:message code="xforms.table" />",
+      		horizontalLine: "<spring:message code="xforms.horizontalLine" />",
+       		verticalLine: "<spring:message code="xforms.verticalLine" />",
        		repeatChildDataNodeNotFound: "<spring:message code="xforms.repeatChildDataNodeNotFound" />",
        		selectedFormField: "<spring:message code="xforms.selectedFormField" />"
 	};
