@@ -712,53 +712,58 @@ public class XformDownloadServlet extends HttpServlet {
 	 * @param age
 	 */
 	public <P extends Person> void getMiniPerson(P person, String name, String gender, String date, String age) {
-		//Check null for name, since parsePersonName throws NullPointerExceptin if name == null
-		if (StringUtils.isEmpty(name)){
-			person.addName(new PersonName());
-		} else {
-			person.addName(Context.getPersonService().parsePersonName(name));
-		}
 
-		person.setGender(gender);
-		Date birthdate = null;
-		boolean birthdateEstimated = false;
-		if (date != null && !date.equals("")) {
-			try {
-				// only a year was passed as parameter
-				if (date.length() < 5) {
-					Calendar c = new GregorianCalendar();
-					c.set(Calendar.YEAR, Integer.valueOf(date));
-					c.set(Calendar.MONTH, 0);
-					c.set(Calendar.DATE, 1);
-					birthdate = c.getTime();
-					birthdateEstimated = true;
-				}
-				// a full birthdate was passed as a parameter
-				else {
-					birthdate = Context.getDateFormat().parse(date);
-					birthdateEstimated = false;
-				}
-			}
-			catch (ParseException e) {
-				log.debug("Error getting date from birthdate", e);
-			}
-		} else if (age != null && !age.equals("")) {
-			Calendar c = Calendar.getInstance();
-			c.setTime(new Date());
-			Integer d = c.get(Calendar.YEAR);
-			d = d - Integer.parseInt(age);
-			try {
-				birthdate = DateFormat.getDateInstance(DateFormat.SHORT).parse("01/01/" + d);
-				birthdateEstimated = true;
-			}
-			catch (ParseException e) {
-				log.debug("Error getting date from age", e);
-			}
-		}
-		if (birthdate != null)
-			person.setBirthdate(birthdate);
-		person.setBirthdateEstimated(birthdateEstimated);
+        try {
+            //Check null for name, since parsePersonName throws NullPointerExceptin if name == null
+            if (StringUtils.isEmpty(name)){
+                person.addName(new PersonName());
+            } else {
+                person.addName(Context.getPersonService().parsePersonName(name));
+            }
 
+            person.setGender(gender);
+            Date birthdate = null;
+            boolean birthdateEstimated = false;
+            if (date != null && !date.equals("")) {
+                try {
+                    // only a year was passed as parameter
+                    if (date.length() < 5) {
+                        Calendar c = new GregorianCalendar();
+                        c.set(Calendar.YEAR, Integer.valueOf(date));
+                        c.set(Calendar.MONTH, 0);
+                        c.set(Calendar.DATE, 1);
+                        birthdate = c.getTime();
+                        birthdateEstimated = true;
+                    }
+                    // a full birthdate was passed as a parameter
+                    else {
+                        birthdate = Context.getDateFormat().parse(date);
+                        birthdateEstimated = false;
+                    }
+                }
+                catch (ParseException e) {
+                    log.debug("Error getting date from birthdate", e);
+                }
+            } else if (age != null && !age.equals("")) {
+                Calendar c = Calendar.getInstance();
+                c.setTime(new Date());
+                Integer d = c.get(Calendar.YEAR);
+                d = d - Integer.parseInt(age);
+                try {
+                    birthdate = DateFormat.getDateInstance(DateFormat.SHORT).parse("01/01/" + d);
+                    birthdateEstimated = true;
+                }
+                catch (ParseException e) {
+                    log.debug("Error getting date from age", e);
+                }
+            }
+            if (birthdate != null)
+                person.setBirthdate(birthdate);
+            person.setBirthdateEstimated(birthdateEstimated);
+
+        } catch(Exception e){
+            log.debug("Error occurred while receiving MiniPerson attributes.", e);
+        }
 	}
 
 	public String formatXml(String aText){
