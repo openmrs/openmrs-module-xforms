@@ -215,9 +215,11 @@ public class XformsQueueProcessor {
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 
-			if(!propagateErrors)
+			//TODO Joaquin had a problem where there were errors but form was not saved in error folder
+			//so lets enforce this for now regardless of the error flag
+			//if(!propagateErrors)
 				saveFormInError(xmlOriginal,pathName, null);
-			else
+			//else
 				throw e;
 		}
 	}
@@ -296,9 +298,11 @@ public class XformsQueueProcessor {
 
 			log.error(e.getMessage(), e);
 
-			if(!propagateErrors)
+			//TODO Joaquin had a problem where there were errors but form was not saved in error folder
+			//so lets enforce this for now regardless of the error flag
+			//if(!propagateErrors)
 				saveFormInError(xmlOriginal,pathName, e);
-			else
+			//else
 				throw e;
 		}
 	}
