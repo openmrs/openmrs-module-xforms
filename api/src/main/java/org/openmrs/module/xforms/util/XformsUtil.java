@@ -784,6 +784,9 @@ public class XformsUtil {
 	}
 	
 	public static boolean usesJquery() {
+		if (OpenmrsConstants.OPENMRS_VERSION_SHORT == null)
+			return true;
+		
 		int pos = OpenmrsConstants.OPENMRS_VERSION_SHORT.indexOf('.');
 		pos = OpenmrsConstants.OPENMRS_VERSION_SHORT.indexOf('.', pos + 1);
 		double version = Double.parseDouble(OpenmrsConstants.OPENMRS_VERSION_SHORT.substring(0, pos));
