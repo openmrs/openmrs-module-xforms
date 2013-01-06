@@ -19,6 +19,7 @@ import org.kxml2.kdom.Element;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.Field;
 import org.openmrs.Form;
@@ -206,7 +207,12 @@ public class XformBuilderEx {
 		//create the label
 		Element labelNode = bodyNode.createElement(XformBuilder.NAMESPACE_XFORMS, null);
 		labelNode.setName(XformBuilder.NODE_LABEL);
-		labelNode.addChild(Element.TEXT, concept.getBestName(locale).getName());
+		ConceptName name = concept.getBestName(locale);
+		if (name == null) {
+			name = concept.getName();
+		}
+		
+		labelNode.addChild(Element.TEXT, name.getName());
 		controlNode.addChild(Element.ELEMENT, labelNode);
 		
 		addHintNode(labelNode, concept);
