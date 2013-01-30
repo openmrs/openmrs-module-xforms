@@ -3247,6 +3247,19 @@ public final class XformBuilder implements GlobalPropertyListener {
 		    new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(
 		        XformConstants.GLOBAL_PROP_KEY_TIME_SUBMIT_FORMAT, XformConstants.DEFAULT_TIME_SUBMIT_FORMAT)));
 		
+		velocityContext.put(
+		    "displayTimestamp",
+		    new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(
+		        XformConstants.GLOBAL_PROP_KEY_DATE_TIME_DISPLAY_FORMAT, XformConstants.DEFAULT_DATE_TIME_DISPLAY_FORMAT)));
+		velocityContext.put(
+		    "displayDate",
+		    new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(
+		        XformConstants.GLOBAL_PROP_KEY_DATE_DISPLAY_FORMAT, XformConstants.DEFAULT_DATE_DISPLAY_FORMAT)));
+		velocityContext.put(
+		    "displayTime",
+		    new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(
+		        XformConstants.GLOBAL_PROP_KEY_TIME_DISPLAY_FORMAT, XformConstants.DEFAULT_TIME_DISPLAY_FORMAT)));
+		
 		List<Encounter> encounters = Context.getEncounterService().getEncountersByPatientId(patient.getPatientId(), false);
 		velocityContext.put("patientEncounters", encounters);
 		

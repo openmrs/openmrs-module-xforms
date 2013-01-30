@@ -1,5 +1,7 @@
 package org.openmrs.module.xforms;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
@@ -130,5 +132,37 @@ public class ObsHistory {
 		}
 
 		return null;
+	}
+	
+	public Date getObsDatetime(int conceptId){
+		Obs obs = getObs(1, conceptId);
+		if (obs != null)
+			return obs.getObsDatetime();
+		else
+			return null;
+	}
+	
+	public Date getObsDatetime(int encounterIndex, int conceptId){
+		Obs obs = getObs(encounterIndex, conceptId);
+		if (obs != null)
+			return obs.getObsDatetime();
+		else
+			return null;
+	}
+	
+	public String getObsDatetime(int conceptId, String format){
+		Obs obs = getObs(1, conceptId);
+		if (obs != null)
+			return new SimpleDateFormat(format).format(obs.getObsDatetime());
+		else
+			return null;
+	}
+	
+	public String getObsDatetime(int encounterIndex, int conceptId, String format){
+		Obs obs = getObs(encounterIndex, conceptId);
+		if (obs != null)
+			return new SimpleDateFormat(format).format(obs.getObsDatetime());
+		else
+			return null;
 	}
 }
