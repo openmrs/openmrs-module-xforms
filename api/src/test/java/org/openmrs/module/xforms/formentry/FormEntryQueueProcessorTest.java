@@ -46,7 +46,7 @@ public class FormEntryQueueProcessorTest extends BaseModuleContextSensitiveTest 
 			formEntryQueue.setFormData(xml);
 			formEntryQueue.setFileSystemUrl("/path");
 			
-			HL7InQueue hl7inQueue = new FormEntryQueueProcessor().transformFormEntryQueue(formEntryQueue, false);
+			HL7InQueue hl7inQueue = new FormEntryQueueProcessor().transformFormEntryQueue(formEntryQueue, true);
 			Assert.assertEquals(2, StringUtils.countMatches(hl7inQueue.getHL7Data(), "OBX"));
 			Assert.assertTrue(hl7inQueue.getHL7Data().indexOf("{\"firstname\":\"Horatio\", \"lastname\":\"Hornblower\"}") > 0);
 			Assert.assertTrue(hl7inQueue.getHL7Data().indexOf("{\"firstname\":\"John\", \"lastname\":\"Doe\"}") > 0);

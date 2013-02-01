@@ -83,7 +83,7 @@ public class FormEntryQueueProcessor {
 			XPathFactory xpf = getXPathFactory();
 			XPath xp = xpf.newXPath();
 			Document doc = db.parse(new InputSource(new StringReader(formData)));
-			formId = 1;//Integer.parseInt(xp.evaluate("/form/@id", doc));
+			formId = Integer.parseInt(xp.evaluate("/form/@id", doc));
 			hl7SourceKey = xp.evaluate("/form/header/uid", doc);
 		}
 		catch (Exception e) {
