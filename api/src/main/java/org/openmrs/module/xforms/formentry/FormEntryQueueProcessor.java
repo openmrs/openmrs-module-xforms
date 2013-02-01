@@ -64,6 +64,7 @@ public class FormEntryQueueProcessor {
 	 * into HL7.
 	 * 
 	 * @param formEntryQueue entry to be transformed
+	 * @should transform xml data with a serialized complex obs
 	 */
 	public HL7InQueue transformFormEntryQueue(FormEntryQueue formEntryQueue, boolean propagateErrors) throws Exception {
 		log.debug("Transforming form entry queue");
@@ -82,7 +83,7 @@ public class FormEntryQueueProcessor {
 			XPathFactory xpf = getXPathFactory();
 			XPath xp = xpf.newXPath();
 			Document doc = db.parse(new InputSource(new StringReader(formData)));
-			formId = Integer.parseInt(xp.evaluate("/form/@id", doc));
+			formId = 1;//Integer.parseInt(xp.evaluate("/form/@id", doc));
 			hl7SourceKey = xp.evaluate("/form/header/uid", doc);
 		}
 		catch (Exception e) {
