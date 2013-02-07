@@ -161,10 +161,10 @@ public class XformsServiceImpl implements XformsService {
 					Object formResource = ReflectionUtils.invokeMethod(getFormResourceMethod, Context.getFormService(),
 					    new Object[] { form, form.getName() + XformConstants.XFORM_XSLT_FORM_RESOURCE_NAME_SUFFIX });
 					if (formResource != null) {
-						Method valueReferenceMethod = ClassUtils.getMethodIfAvailable(formResource.getClass(), "getValueReference", null);
-						if (valueReferenceMethod != null){
+						Method valueMethod = ClassUtils.getMethodIfAvailable(formResource.getClass(), "getValue", null);
+						if (valueMethod != null){
 							try{
-								return (String) ReflectionUtils.invokeMethod(valueReferenceMethod, formResource);
+								return (String) ReflectionUtils.invokeMethod(valueMethod, formResource);
 							}catch(APIException e){
 								if("org.openmrs.customdatatype.NotYetPersistedException".equals(e.getClass().getName()))
 									return null;//ignore
