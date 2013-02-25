@@ -25,7 +25,7 @@ public class XformsAdminExt extends AdministrationSectionExt {
 	 * @return Privilege string
 	 */
 	public String getRequiredPrivilege() {
-		return "";
+		return "View XForms Menu";
 	}
 	
 	public String getTitle() {

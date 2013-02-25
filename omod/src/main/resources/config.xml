@@ -468,5 +468,10 @@
 		MedicalHistoryField.hbm.xml
 		FormEntryError.hbm.xml
 	</mappingFiles>
-	
+	<privilege>
+		<name>View XForms Menu</name>
+		<description>
+			View XForms Menu in admin panel
+		</description>
+	</privilege>
 </module>
