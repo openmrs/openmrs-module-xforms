@@ -2609,11 +2609,16 @@ public final class XformBuilder implements GlobalPropertyListener {
 				
 				if (value != null && value.trim().length() > 0) {
 					StringWriter w = new StringWriter();
-					velocityEngine.evaluate(velocityContext, w, XformBuilder.class.getName(), value);
-					value = w.toString();
-					
-					if (value != null && value.trim().length() > 0)
-						setNodeValue(child, value.toString());
+					try {
+						velocityEngine.evaluate(velocityContext, w, XformBuilder.class.getName(), value);
+						value = w.toString();
+						
+						if (value != null && value.trim().length() > 0)
+							setNodeValue(child, value.toString());
+					}
+					catch (Exception ex) {
+						log.error("Failed to evaluate: " + value + " for field: " + name, ex);
+					}
 				}
 			}
 			

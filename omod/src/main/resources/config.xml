@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>xforms</id>
 	<name>XForms</name>
-	<version>4.1.0.0</version>
+	<version>4.1.0.1</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Daniel Kayiwa</author>
 	<description>
