@@ -468,6 +468,12 @@
        		table: "<spring:message code="xforms.table" />",
       		horizontalLine: "<spring:message code="xforms.horizontalLine" />",
        		verticalLine: "<spring:message code="xforms.verticalLine" />",
+       		addRowsBelow: "<spring:message code="xforms.addRowsBelow" />",
+       		addRowsAbove: "<spring:message code="xforms.addRowsAbove" />",
+       		addColumnsRight: "<spring:message code="xforms.addColumnsRight" />",
+       		addColumnsLeft: "<spring:message code="xforms.addColumnsLeft" />",
+       		numberOfRowsPrompt: "<spring:message code="xforms.numberOfRowsPrompt" />",
+       		numberOfColumnsPrompt: "<spring:message code="xforms.numberOfColumnsPrompt" />",
        		repeatChildDataNodeNotFound: "<spring:message code="xforms.repeatChildDataNodeNotFound" />",
        		selectedFormField: "<spring:message code="xforms.selectedFormField" />"
 	};
