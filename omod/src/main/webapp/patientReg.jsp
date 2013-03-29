@@ -470,6 +470,8 @@
        		addColumnsLeft: "<spring:message code="xforms.addColumnsLeft" />",
        		numberOfRowsPrompt: "<spring:message code="xforms.numberOfRowsPrompt" />",
        		numberOfColumnsPrompt: "<spring:message code="xforms.numberOfColumnsPrompt" />",
+       		deleteColumn: "<spring:message code="xforms.deleteColumn" />",
+       		deleteRow: "<spring:message code="xforms.deleteRow" />",
        		repeatChildDataNodeNotFound: "<spring:message code="xforms.repeatChildDataNodeNotFound" />",
        		selectedFormField: "<spring:message code="xforms.selectedFormField" />"
 	};
