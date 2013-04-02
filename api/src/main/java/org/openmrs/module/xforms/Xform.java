@@ -28,6 +28,9 @@ public class Xform extends BaseOpenmrsObject {
     /** The form javascript scource. */
     private String javaScriptSrc;
     
+    /** The form css scource. */
+    private String css;
+    
 	/** The formId of the form that this XForms represents. */
 	private int formId = -1;
 	
@@ -74,11 +77,12 @@ public class Xform extends BaseOpenmrsObject {
      * @param layoutXml - xml layout of the form.
      * @param localeXml - xml for form localization.
 	 */
-	public Xform(Integer formId, String xformXml, String layoutXml, String localeXml, String javaScriptSrc) {
+	public Xform(Integer formId, String xformXml, String layoutXml, String localeXml, String javaScriptSrc, String css) {
         this(formId,xformXml);
         setLayoutXml(layoutXml);
         setLocaleXml(localeXml);
         setJavaScriptSrc(javaScriptSrc);
+        setCss(css);
 		setCreator(Context.getAuthenticatedUser());
 	}
 	
@@ -221,6 +225,13 @@ public class Xform extends BaseOpenmrsObject {
 		this.javaScriptSrc = javaScriptSrc;
 	}
 	
+    public String getCss() {
+    	return css;
+    }
+
+    public void setCss(String css) {
+    	this.css = css;
+    }
 
 	@Override
 	public Integer getId() {

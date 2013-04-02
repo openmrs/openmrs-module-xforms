@@ -21,6 +21,8 @@
 		
 		<property name="javaScriptSrc" type="java.lang.String" not-null="false" column="javascript_src" length="2147483647" />
 		
+		<property name="css" type="java.lang.String" not-null="false" column="css_text" length="2147483647" />
+		
 		<many-to-one name="creator" class="org.openmrs.User" not-null="true" />
 
 		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />

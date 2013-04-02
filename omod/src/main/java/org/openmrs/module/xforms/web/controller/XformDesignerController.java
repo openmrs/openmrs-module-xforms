@@ -98,6 +98,7 @@ public class XformDesignerController extends SimpleFormController {
 		map.put("locations", Context.getLocationService().getAllLocations(false));
 		map.put("useOpenmrsMessageTag", XformsUtil.isOnePointNineOneAndAbove());
 		map.put("formatXml", "false");
+		map.put("showCSSTab", Context.getAdministrationService().getGlobalProperty("xforms.showCSSTab","false"));
 
 		String url = request.getRequestURI();
 		url = url.substring(0, url.indexOf("module/xforms/xformDesigner.form"));

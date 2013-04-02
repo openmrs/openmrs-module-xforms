@@ -254,6 +254,10 @@ public class XformDownloadServlet extends HttpServlet {
 				xml = xform.getJavaScriptSrc();
 				if(xml != null && xml.length() > 0)
 					xformXml += XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR + xml;
+				
+				xml = xform.getCss();
+				if(xml != null && xml.length() > 0)
+					xformXml += XformConstants.PURCFORMS_FORMDEF_CSS_SEPARATOR + xml;
 			}
 		}
 
@@ -285,6 +289,10 @@ public class XformDownloadServlet extends HttpServlet {
 				String javaScriptSrc = xform.getJavaScriptSrc();
 				if(javaScriptSrc != null && javaScriptSrc.length() > 0)
 					xml += XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR + javaScriptSrc;
+				
+				String css = xform.getCss();
+				if(css != null && css.length() > 0)
+					xml += XformConstants.PURCFORMS_FORMDEF_CSS_SEPARATOR + css;
 			}
 		}
 
@@ -444,6 +452,10 @@ public class XformDownloadServlet extends HttpServlet {
 			String javaScriptSrc = xform.getJavaScriptSrc();
 			if(javaScriptSrc != null && javaScriptSrc.length() > 0)
 				xml += XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR + javaScriptSrc;
+			
+			String css = xform.getCss();
+			if(css != null && css.length() > 0)
+				xml += XformConstants.PURCFORMS_FORMDEF_CSS_SEPARATOR + css;
 		}
 
 		//request.getRequestDispatcher("/xform.jsp").forward(request, response);
@@ -623,6 +635,10 @@ public class XformDownloadServlet extends HttpServlet {
 			String javaScriptSrc = xform.getJavaScriptSrc();
 			if(javaScriptSrc != null && javaScriptSrc.length() > 0)
 				xml += XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR + javaScriptSrc;
+			
+			String css = xform.getCss();
+			if(css != null && css.length() > 0)
+				xml += XformConstants.PURCFORMS_FORMDEF_CSS_SEPARATOR + css;
 		}
 
 		//request.getRequestDispatcher("/xform.jsp").forward(request, response);

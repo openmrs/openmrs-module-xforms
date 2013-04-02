@@ -143,4 +143,16 @@
 		</sql>
 	</diff>
 	
+	<diff>
+		<version>4.1.1.0</version>
+		<author>Daniel Kayiwa</author>
+		<date>April 1st 2013</date>
+		<description>
+			Adding css_text field to the xform table.
+		</description>
+		<sql>
+			ALTER TABLE xforms_xform ADD css_text longtext;	
+		</sql>
+	</diff>
+	
 </sqldiff>

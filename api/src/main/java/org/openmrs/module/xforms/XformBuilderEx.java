@@ -389,6 +389,12 @@ public class XformBuilderEx {
 				String sectionName = FormUtil.getXmlToken(formField.getField().getName());
 				String token = FormUtil.getNewTag(sectionName, tagList);
 				
+				if(formField.getParent() != null && fieldTokens.values().contains(token)){
+					sectionName = FormUtil.getXmlToken(formField.getParent().getField().getName());
+					String s = FormUtil.getNewTag(sectionName, tagList);
+					token = s + "_" + token;
+				}
+				
 				fieldTokens.put(formField, token);
 				
 				//This block is for nodes shared in more than one repeat question and hence get different bindings
@@ -398,7 +404,9 @@ public class XformBuilderEx {
 					if(s != null){
 						s = s + "_" + token;
 						if(bindings.containsKey(s)){
-							token = s;
+							//Commented out while fixing XFRM-139
+							//Turn back on if it brings problems.
+							//token = s;
 						}
 					}
 				}

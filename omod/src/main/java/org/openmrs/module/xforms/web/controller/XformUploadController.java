@@ -81,7 +81,7 @@ public class XformUploadController extends SimpleFormController {
 			if ("true".equals(request.getParameter("localeXml")))
 				xform.setLocaleXml(xml);
 			else {
-				String xformXml, layoutXml = null, localeXml = null, javaScriptSrc = null;
+				String xformXml, layoutXml = null, localeXml = null, javaScriptSrc = null, css = null;
 				
 				/*int pos = xml.indexOf(XformConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR);
 				int pos2 = xml.indexOf(XformConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR);
@@ -102,30 +102,67 @@ public class XformUploadController extends SimpleFormController {
 				int pos = xml.indexOf(XformConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR);
 				int pos2 = xml.indexOf(XformConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR);
 				int pos3 = xml.indexOf(XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR);
+				int pos4 = xml.indexOf(XformConstants.PURCFORMS_FORMDEF_CSS_SEPARATOR);
 				if (pos > 0) {
 					xformXml = xml.substring(0, pos);
-					layoutXml = xml.substring(pos + XformConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR.length(),
-					    (pos2 > 0 ? pos2 : (pos3 > 0 ? pos3 : xml.length())));
+					
+					int endIndex = pos2;
+					if(endIndex == -1) endIndex = pos3;
+					if(endIndex == -1) endIndex = pos4;
+					if(endIndex == -1) endIndex = xml.length();
+					
+					layoutXml = xml.substring(pos + XformConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR.length(), endIndex);
 					
 					if (pos2 > 0)
-						localeXml = xml.substring(pos2 + XformConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR.length(),
-						    pos3 > 0 ? pos3 : xml.length());
+						
+						endIndex = pos3;
+						if(endIndex == -1) endIndex = pos4;
+						if(endIndex == -1) endIndex = xml.length();
+					
+						localeXml = xml.substring(pos2 + XformConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR.length(), endIndex);
 					
 					if (pos3 > 0)
 						javaScriptSrc = xml.substring(
-						    pos3 + XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR.length(), xml.length());
+						    pos3 + XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR.length(),
+						    pos4 > 0 ? pos4 : xml.length());
+					
+					if (pos4 > 0)
+						css = xml.substring(
+						    pos4 + XformConstants.PURCFORMS_FORMDEF_CSS_SEPARATOR.length(), xml.length());
+					
 				} else if (pos2 > 0) {
 					xformXml = xml.substring(0, pos2);
-					localeXml = xml.substring(pos2 + XformConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR.length(),
-					    pos3 > 0 ? pos3 : xml.length());
 					
-					if (pos3 > 0)
+					int endIndex = pos3;
+					if(endIndex == -1) endIndex = pos4;
+					if(endIndex == -1) endIndex = xml.length();
+					
+					localeXml = xml.substring(pos2 + XformConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR.length(),
+						endIndex);
+					
+					if (pos3 > 0) {
 						javaScriptSrc = xml.substring(
-						    pos3 + XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR.length(), xml.length());
+						    pos3 + XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR.length(),
+						    pos4 > 0 ? pos4 : xml.length());
+					}
+					
+					if (pos4 > 0) {
+						css = xml.substring(
+						    pos4 + XformConstants.PURCFORMS_FORMDEF_CSS_SEPARATOR.length(), xml.length());
+					}
 				} else if (pos3 > 0) {
 					xformXml = xml.substring(0, pos3);
 					javaScriptSrc = xml.substring(pos3 + XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR.length(),
-					    xml.length());
+						pos4 > 0 ? pos4 : xml.length());
+					
+					if (pos4 > 0) {
+						css = xml.substring(pos4 + XformConstants.PURCFORMS_FORMDEF_CSS_SEPARATOR.length(),
+						    xml.length());
+					}
+				} else if (pos4 > 0) {
+					xformXml = xml.substring(0, pos4);
+					css = xml.substring(pos4 + XformConstants.PURCFORMS_FORMDEF_CSS_SEPARATOR.length(),
+						xml.length());
 				} else
 					xformXml = xml;
 				
@@ -133,6 +170,7 @@ public class XformUploadController extends SimpleFormController {
 				xform.setLayoutXml(layoutXml);
 				xform.setLocaleXml(localeXml);
 				xform.setJavaScriptSrc(javaScriptSrc);
+				xform.setCss(css);
 			}
 			
 			xformsService.saveXform(xform);

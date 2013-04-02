@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>xforms</id>
 	<name>XForms</name>
-	<version>4.1.0.4</version>
+	<version>4.1.0.5</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Daniel Kayiwa</author>
 	<description>
@@ -230,6 +230,11 @@
 		<property>@MODULE_ID@.showJavaScriptTab</property>
 		<defaultValue>false</defaultValue>
 		<description>Set to true if you want to display the JavaScript tab of the form designer.</description>
+	</globalProperty>
+	<globalProperty>
+		<property>@MODULE_ID@.showCSSTab</property>
+		<defaultValue>false</defaultValue>
+		<description>Set to true if you want to display the CSS tab of the form designer.</description>
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.setDefaultProvider</property>

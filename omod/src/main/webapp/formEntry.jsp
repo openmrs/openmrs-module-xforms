@@ -477,7 +477,10 @@
        		deleteColumn: "<spring:message code="xforms.deleteColumn" />",
        		deleteRow: "<spring:message code="xforms.deleteRow" />",
        		repeatChildDataNodeNotFound: "<spring:message code="xforms.repeatChildDataNodeNotFound" />",
-       		selectedFormField: "<spring:message code="xforms.selectedFormField" />"
+       		selectedFormField: "<spring:message code="xforms.selectedFormField" />",
+       		edit: "<spring:message code="xforms.edit" />",
+       		find: "<spring:message code="xforms.find" />",
+       		css: "<spring:message code="xforms.css" />"
 	};
 
 	function searchExternal(key,value,parentElement,textElement,valueElement,filterField){

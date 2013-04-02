@@ -139,6 +139,7 @@
     <div id="showLayoutXmlTab" style="visibility:hidden;">${showLayoutXmlTab}</div>
     <div id="showModelXmlTab" style="visibility:hidden;">${showModelXmlTab}</div>
     <div id="showJavaScriptTab" style="visibility:hidden;">${showJavaScriptTab}</div>
+    <div id="showCSSTab" style="visibility:hidden;">${showCSSTab}</div>
     <div id="showDesignSurfaceTab" style="visibility:hidden;">${showDesignSurfaceTab}</div>
     <div id="showPreviewTab" style="visibility:hidden;">${showPreviewTab}</div>
     <div id="saveFormat" style="visibility:hidden;">${saveFormat}</div>
@@ -523,7 +524,10 @@
            		deleteColumn: "<spring:message code="xforms.deleteColumn" />",
            		deleteRow: "<spring:message code="xforms.deleteRow" />",
            		repeatChildDataNodeNotFound: "<spring:message code="xforms.repeatChildDataNodeNotFound" />",
-           		selectedFormField: "<spring:message code="xforms.selectedFormField" />"
+           		selectedFormField: "<spring:message code="xforms.selectedFormField" />",
+           		edit: "<spring:message code="xforms.edit" />",
+           		find: "<spring:message code="xforms.find" />",
+           		css: "<spring:message code="xforms.css" />"
     	};
 
     	function isUserAuthenticated(){
