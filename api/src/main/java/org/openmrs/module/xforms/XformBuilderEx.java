@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -104,7 +103,7 @@ public class XformBuilderEx {
 		//     parsing the template document.
 		Hashtable<String, String> problemList = new Hashtable<String, String>();
 		Hashtable<String, String> problemListItems = new Hashtable<String, String>();
-		XformBuilder.parseTemplate(modelNode, formNode, formNode, bindings, groupNode, problemList, problemListItems);
+		XformBuilder.parseTemplate(modelNode, formNode, formNode, bindings, groupNode, problemList, problemListItems, 0);
 		
 		buildUInodes(form);
 		
@@ -373,85 +372,83 @@ public class XformBuilderEx {
 	private static void buildUInodes(Form form) {	
 		Locale locale = Context.getLocale();
 		TreeMap<Integer, TreeSet<FormField>> formStructure = FormUtil.getFormStructure(form);
-		Vector<String> tagList = new Vector<String>(); 
+		buildUInodes(form, formStructure, 0, locale);
+	}
+	
+	private static void buildUInodes(Form form, TreeMap<Integer, TreeSet<FormField>> formStructure, Integer sectionId, Locale locale) {	
 		
-		for(Entry<Integer, TreeSet<FormField>> entry : formStructure.entrySet()){
-			Integer formFieldId = entry.getKey();
-			TreeSet<FormField> formFields = entry.getValue();
-			
-			if(formFieldId.intValue() == 0)
-				continue;
-			
-			tagList.clear();
-			
-			for(FormField formField : formFields){	
-				
-				String sectionName = FormUtil.getXmlToken(formField.getField().getName());
-				String token = FormUtil.getNewTag(sectionName, tagList);
-				
-				if(formField.getParent() != null && fieldTokens.values().contains(token)){
-					sectionName = FormUtil.getXmlToken(formField.getParent().getField().getName());
-					String s = FormUtil.getNewTag(sectionName, tagList);
-					token = s + "_" + token;
-				}
-				
-				fieldTokens.put(formField, token);
-				
-				//This block is for nodes shared in more than one repeat question and hence get different bindings
-				//e.g weight_kg & gu_conv_set_weight_kg
-				if(formField.getParent() != null){
-					String s = fieldTokens.get(formField.getParent());
-					if(s != null){
-						s = s + "_" + token;
-						if(bindings.containsKey(s)){
-							//Commented out while fixing XFRM-139
-							//Turn back on if it brings problems.
-							//token = s;
-						}
-					}
-				}
+		if (!formStructure.containsKey(sectionId))
+			return;
+		
+		TreeSet<FormField> section = formStructure.get(sectionId);
+		if (section == null || section.size() < 1)
+			return;
+		
+		Vector<String> tagList = new Vector<String>();
+		
+		for(FormField formField : section){	
+			Integer subSectionId = formField.getFormFieldId();
+			String sectionName = FormUtil.getXmlToken(formField.getField().getName());
+			String name = FormUtil.getNewTag(sectionName, tagList);
 
-				Field field = formField.getField();
-				boolean required = formField.isRequired();
+			if(formField.getParent() != null && fieldTokens.values().contains(name)){
+				String parentName = fieldTokens.get(formField.getParent());
+				String token = parentName + "_" + name;
 				
-				if (field.getFieldType().getFieldTypeId().equals(
-						FormConstants.FIELD_TYPE_CONCEPT)) {
+				if(!bindings.containsKey(token)) {
+					token = FormUtil.getNewTag(FormUtil.getXmlToken(formField.getParent().getField().getName()),  new Vector<String>());
+					token = token + "_" + name;
+				}
+				
+				name = token;
+			}
+			
+			fieldTokens.put(formField, name);
+
+			Field field = formField.getField();
+			boolean required = formField.isRequired();
+			
+			if (field.getFieldType().getFieldTypeId().equals(
+					FormConstants.FIELD_TYPE_CONCEPT)) {
+				
+				Concept concept = field.getConcept();
+				ConceptDatatype datatype = concept.getDatatype();
+				
+				if (name.contains("problem_added") || name.contains("problem_resolved")){
+					addProblemList(name, concept, required, locale, formField);
+				}
+				else if (datatype.getHl7Abbreviation().equals(FormConstants.HL7_BOOLEAN)){
+					booleanConcept(name, concept, required, locale, formField);
+				}
+				else if (FormConstants.simpleDatatypes.containsKey(datatype.getHl7Abbreviation())){
+					simpleConcept(name, concept, XformBuilder.DATA_TYPE_TEXT, required, locale, formField);
+				}
+				else if (datatype.getHl7Abbreviation().equals(FormConstants.HL7_NUMERIC)) {
+					ConceptNumeric conceptNumeric = Context.getConceptService().getConceptNumeric(concept.getConceptId());
+					numericConcept(name, conceptNumeric, required, locale, formField);
+				} 
+				else if (datatype.getHl7Abbreviation().equals(FormConstants.HL7_CODED)
+						|| datatype.getHl7Abbreviation().equals(FormConstants.HL7_CODED_WITH_EXCEPTIONS)) {
 					
-					Concept concept = field.getConcept();
-					ConceptDatatype datatype = concept.getDatatype();
+					//Collection<ConceptAnswer> answers = concept.getAnswers(false);
+					List answers = new ArrayList<ConceptAnswer>(concept.getAnswers(false));
+					if(answers != null && answers.size() > 0 && answers.get(0) instanceof Comparable)
+						Collections.sort(answers);
 					
-					if (token.contains("problem_added") || token.contains("problem_resolved")){
-						addProblemList(token, concept, required, locale, formField);
+					if (field.getSelectMultiple()){
+						selectMultiple(name, concept, answers, locale, formField);
 					}
-					else if (datatype.getHl7Abbreviation().equals(FormConstants.HL7_BOOLEAN)){
-						booleanConcept(token, concept, required, locale, formField);
-					}
-					else if (FormConstants.simpleDatatypes.containsKey(datatype.getHl7Abbreviation())){
-						simpleConcept(token, concept, XformBuilder.DATA_TYPE_TEXT, required, locale, formField);
-					}
-					else if (datatype.getHl7Abbreviation().equals(FormConstants.HL7_NUMERIC)) {
-						ConceptNumeric conceptNumeric = Context.getConceptService().getConceptNumeric(concept.getConceptId());
-						numericConcept(token, conceptNumeric, required, locale, formField);
-					} 
-					else if (datatype.getHl7Abbreviation().equals(FormConstants.HL7_CODED)
-							|| datatype.getHl7Abbreviation().equals(FormConstants.HL7_CODED_WITH_EXCEPTIONS)) {
-						
-						//Collection<ConceptAnswer> answers = concept.getAnswers(false);
-						List answers = new ArrayList<ConceptAnswer>(concept.getAnswers(false));
-						if(answers != null && answers.size() > 0 && answers.get(0) instanceof Comparable)
-							Collections.sort(answers);
-						
-						if (field.getSelectMultiple()){
-							selectMultiple(token, concept, answers, locale, formField);
-						}
-						else {
-							selectSingle(token, concept, answers, required, locale, formField);
-						}
-					}
-					else if ("ED".equals(datatype.getHl7Abbreviation())){
-						simpleConcept(token, concept, XformBuilder.DATA_TYPE_BASE64BINARY, required, locale, formField);
+					else {
+						selectSingle(name, concept, answers, required, locale, formField);
 					}
 				}
+				else if ("ED".equals(datatype.getHl7Abbreviation())){
+					simpleConcept(name, concept, XformBuilder.DATA_TYPE_BASE64BINARY, required, locale, formField);
+				}
+			}
+			
+			if (formStructure.containsKey(subSectionId)) {
+				buildUInodes(form, formStructure, subSectionId, locale);
 			}
 		}
 	}

@@ -721,7 +721,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 		Hashtable bindings = new Hashtable();
 		Hashtable<String, String> problemList = new Hashtable<String, String>();
 		Hashtable<String, String> problemListItems = new Hashtable<String, String>();
-		parseTemplate(modelNode, formNode, formNode, bindings, groupNode, problemList, problemListItems);
+		parseTemplate(modelNode, formNode, formNode, bindings, groupNode, problemList, problemListItems, 0);
 		parseSchema(schemaDoc.getRootElement(), groupNode, modelNode, xformSchemaNode, bindings, problemList,
 		    problemListItems);
 		
@@ -842,7 +842,8 @@ public final class XformBuilder implements GlobalPropertyListener {
 	 */
 	public static void parseTemplate(Element modelElement, Element formNode, Element formChild, Hashtable bindings,
 	                                 Element bodyNode, Hashtable<String, String> problemList,
-	                                 Hashtable<String, String> problemListItems) {
+	                                 Hashtable<String, String> problemListItems, int level) {
+		level++;
 		int numOfEntries = formChild.getChildCount();
 		for (int i = 0; i < numOfEntries; i++) {
 			if (formChild.isText(i))
@@ -864,7 +865,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 			
 			//If the node has an openmrs_concept attribute but is not called obs,
 			//Or has the openmrs_attribite and openmrs_table attributes. 
-			if ((child.getAttributeValue(null, ATTRIBUTE_OPENMRS_CONCEPT) != null && !child.getName().equals(NODE_OBS))
+			if ((child.getAttributeValue(null, ATTRIBUTE_OPENMRS_CONCEPT) != null && level > 1 /*!child.getName().equals(NODE_OBS)*/)
 			        || (child.getAttributeValue(null, ATTRIBUTE_OPENMRS_ATTRIBUTE) != null && child.getAttributeValue(null,
 			            ATTRIBUTE_OPENMRS_TABLE) != null)) {
 				
@@ -910,7 +911,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 					setNodeValue(child, "'today()'"); //Set encounter date defaulting to today
 			}
 			
-			parseTemplate(modelElement, formNode, child, bindings, bodyNode, problemList, problemListItems);
+			parseTemplate(modelElement, formNode, child, bindings, bodyNode, problemList, problemListItems, level);
 		}
 	}
 	
@@ -3391,7 +3392,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 		Hashtable bindings = new Hashtable();
 		Hashtable<String, String> problemList = new Hashtable<String, String>();
 		Hashtable<String, String> problemListItems = new Hashtable<String, String>();
-		parseTemplate(modelNode, formNode, formNode, bindings, groupNode, problemList, problemListItems);
+		parseTemplate(modelNode, formNode, formNode, bindings, groupNode, problemList, problemListItems, 0);
 		
 		Document schemaDoc = XformBuilder.getDocument(XformsUtil.getSchema(form));
 		parseSchema(schemaDoc.getRootElement(), groupNode, modelNode, xformSchemaNode, bindings, problemList,

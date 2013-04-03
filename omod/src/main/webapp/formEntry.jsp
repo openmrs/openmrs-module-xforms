@@ -480,7 +480,10 @@
        		selectedFormField: "<spring:message code="xforms.selectedFormField" />",
        		edit: "<spring:message code="xforms.edit" />",
        		find: "<spring:message code="xforms.find" />",
-       		css: "<spring:message code="xforms.css" />"
+       		css: "<spring:message code="xforms.css" />",
+       		bold: "<spring:message code="xforms.bold" />",
+       		italic: "<spring:message code="xforms.italic" />",
+       		underline: "<spring:message code="xforms.underline" />"
 	};
 
 	function searchExternal(key,value,parentElement,textElement,valueElement,filterField){
