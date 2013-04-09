@@ -530,7 +530,8 @@
            		css: "<spring:message code="xforms.css" />",
            		bold: "<spring:message code="xforms.bold" />",
            		italic: "<spring:message code="xforms.italic" />",
-           		underline: "<spring:message code="xforms.underline" />"
+           		underline: "<spring:message code="xforms.underline" />",
+           		mergeCells: "<spring:message code="xforms.mergeCells" />"
     	};
 
     	function isUserAuthenticated(){
