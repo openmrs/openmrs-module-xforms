@@ -156,13 +156,14 @@ public class XformsQueueProcessor {
 	 */
 	public void processXForm(String xml, String pathName, boolean propagateErrors,HttpServletRequest request) throws Exception {
 		String xmlOriginal = xml;
+		Patient patient = null;
 		try{	
 			Document doc = db.parse(IOUtils.toInputStream(xml,XformConstants.DEFAULT_CHARACTER_ENCODING));
 			Element root = doc.getDocumentElement();
 
 			//Check if new patient doc
 			if(DOMUtil.isPatientDoc(doc)){
-				Patient patient = saveNewPatient(root,getCreator(doc),propagateErrors,request);
+				patient = saveNewPatient(root,getCreator(doc),propagateErrors,request);
 				if(patient == null)
 					saveFormInError(xml,pathName, null);
 				else{
@@ -185,8 +186,6 @@ public class XformsQueueProcessor {
 				//   <form/>
 				//  < etc.../>
 				//</openmrs_data>
-
-				Patient patient = null;
 
 				NodeList list = doc.getDocumentElement().getChildNodes();
 				for(int index = 0; index < list.getLength(); index++){
@@ -215,6 +214,10 @@ public class XformsQueueProcessor {
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 
+			//If we created a new patient, remove them. XFRM-135
+			if (patient != null)
+				Context.getPatientService().purgePatient(patient);
+			
 			//TODO Joaquin had a problem where there were errors but form was not saved in error folder
 			//so lets enforce this for now regardless of the error flag
 			//if(!propagateErrors)
