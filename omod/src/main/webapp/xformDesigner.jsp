@@ -4,6 +4,9 @@
 <script type="text/javascript" src='${pageContext.request.contextPath}/dwr/util.js'></script>
 <script type="text/javascript" src='${pageContext.request.contextPath}/dwr/interface/DWRXformsService.js'></script>
 
+<openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
+<openmrs:htmlInclude file="/scripts/timepicker/timepicker.js" />
+
 <html>
   <head>
     <title>OpenMRS XForms Designer</title>
@@ -33,6 +36,10 @@
 				<c:if test="${empty DO_NOT_INCLUDE_JQUERY}">
 					var $j = jQuery.noConflict();
 				</c:if>
+				
+				var jsDateFormat = '<openmrs:datePattern localize="false"/>';
+				var jsTimeFormat = '<openmrs:timePattern format="jquery" localize="false"/>';
+				var jsLocale = '<%= org.openmrs.api.context.Context.getLocale() %>';
 			</script>
 		</c:if>
 	</c:if>
@@ -504,6 +511,7 @@
     			unLockWidgets: "<spring:message code="xforms.unLockWidgets" />",
     			changeWidgetH: "<spring:message code="xforms.changeWidgetH" />",
     			changeWidgetV: "<spring:message code="xforms.changeWidgetV" />",
+    			changeToTextBoxWidget: "<spring:message code="xforms.changeToTextBoxWidget" />",
     			saveAsPurcForm: "<spring:message code="xforms.saveAsPurcForm" />",
     			localeChangePrompt: "<spring:message code="xforms.localeChangePrompt" />",
     			javaScriptSource: "<spring:message code="xforms.javaScriptSource" />",
@@ -574,6 +582,19 @@
       	}
 
     	function searchExternal(key,value,parentElement,textElement,valueElement,filterField){
+    		if (key == 'date') {
+    			showCalendar(valueElement);
+    			return;
+    		}
+    		else if (key == 'datetime') {
+    			showDateTimePicker(valueElement);
+    			return;
+    		}
+    		else if (key == 'time') {
+    			showTimePicker(valueElement);
+    			return;
+    		}
+    		
     		if (typeof(dojo) != "undefined"){
 	    		var searchWidget = dojo.widget.manager.getWidgetById("conceptId_search");
 	    		searchWidget.includeClasses = (filterField == null ? [] : filterField.split(","));
