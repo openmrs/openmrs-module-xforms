@@ -583,15 +583,15 @@
 
     	function searchExternal(key,value,parentElement,textElement,valueElement,filterField){
     		if (key == 'date') {
-    			showCalendar(valueElement);
+    			showCalendar(valueElement, 100);
     			return;
     		}
     		else if (key == 'datetime') {
-    			showDateTimePicker(valueElement);
+    			showDateTimePicker(valueElement, 100);
     			return;
     		}
     		else if (key == 'time') {
-    			showTimePicker(valueElement);
+    			showTimePicker(valueElement, 100);
     			return;
     		}
     		
