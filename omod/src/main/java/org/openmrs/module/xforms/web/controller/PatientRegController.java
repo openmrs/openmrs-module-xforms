@@ -100,6 +100,7 @@ public class PatientRegController extends SimpleFormController{
 			map.put("afterCancelUrlSuffix", "findPatient.htm?");
 		}
 		
+		map.put("useOpenmrsMessageTag", XformsUtil.isOnePointNineOneAndAbove());
 		map.put("usingJQuery", XformsUtil.usesJquery());
 		map.put("locations", Context.getLocationService().getAllLocations(false));
 		map.put("formatXml", "false");

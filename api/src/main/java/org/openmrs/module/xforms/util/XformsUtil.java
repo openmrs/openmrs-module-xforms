@@ -795,6 +795,9 @@ public class XformsUtil {
 	
 	public static boolean isOnePointNineOneAndAbove() {
 		try {
+			if (!isOnePointNineAndAbove())
+				return false;
+			
 			Context.loadClass("org.openmrs.web.taglib.OpenmrsMessageTag");
 			return true;
 		}

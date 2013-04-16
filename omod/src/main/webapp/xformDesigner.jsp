@@ -16,6 +16,11 @@
     <c:choose>
    		<c:when test="${useOpenmrsMessageTag == true}">
    			<openmrs:htmlInclude file="/scripts/openmrsmessages.js" />
+   			
+   			<script type="text/javascript">
+   				
+   			</script>
+   			
     	</c:when>
     	<c:otherwise>
     		<openmrs:htmlInclude file="/moduleResources/xforms/scripts/openmrsmessagesWithSpringTags.js" />
@@ -38,7 +43,6 @@
 				</c:if>
 				
 				var jsDateFormat = '<openmrs:datePattern localize="false"/>';
-				var jsTimeFormat = '<openmrs:timePattern format="jquery" localize="false"/>';
 				var jsLocale = '<%= org.openmrs.api.context.Context.getLocale() %>';
 			</script>
 		</c:if>
@@ -233,6 +237,7 @@
 		var providerSearchElement;
 		var locationSearchElement;
 		var personSearchElement;
+		var options;
    		
     	var PurcformsText = {
      	    	file: "<spring:message code="xforms.file" />",
@@ -635,6 +640,13 @@
     				return;
     			}
     			
+    			//If we had previously displayed a search widget, remove it and add the original value widget.
+    			if (searchElement != null) {
+    				var parent = searchElement.parentNode;
+    		    	parent.removeChild(searchElement);
+    		    	parent.appendChild(valElement);
+    			}
+    			
     			valElement = valueElement;
     			txtElement = textElement;
     			
@@ -650,9 +662,14 @@
     				var excludeC = "".split(",");
     				var includeD = "".split(",");
     				var excludeD = "".split(",");
-
+        			
     				// the typical callback
-    				createCallback = new CreateCallback({includeClasses:includeC, excludeClasses:excludeC, includeDatatypes:includeD, excludeDatatypes:excludeD});
+    				if (options == null)
+    					options = {includeClasses:includeC, excludeClasses:excludeC, includeDatatypes:includeD, excludeDatatypes:excludeD};
+    				else
+    					options.includeClasses = includeC;
+    				
+    				createCallback = new CreateCallback(options);
     				callback = createCallback.conceptCallback();
     				if(conceptSearchElement == null){
     					isSearchElementNull = true;
@@ -738,10 +755,6 @@
     			var parent = valueElement.parentNode;
     			parent.removeChild(valueElement);
     			
-    			//valueElement.style.visibility="hidden";
-    			//valueElement.style.height = "0px";
-    			//valueElement.style.width = "0px";
-    			
     			parent.appendChild(searchElement);
     			searchElement.focus();
     			searchElement.value = value;
@@ -764,11 +777,10 @@
     		parent.removeChild(searchElement);
     		parent.appendChild(valElement);
     		
-    		//valElement.style.visibility="visible";
-    		//valElement.style.height = txtConcept.style.height;
-    		//valElement.style.width = txtConcept.style.width;
-    		
     		valElement.focus();
+    		
+    		searchElement = null;
+    		valElement = null;
     	}
 
 
@@ -834,6 +846,9 @@
 	    		parent.appendChild(valElement);
 	    		
 	    		valElement.focus();
+	    		
+	    		searchElement = null;
+	    		valElement = null;
 			}
 			else {
 				//display a box telling them to pick a preposed concept:
@@ -847,6 +862,9 @@
 	    	parent.removeChild(searchElement);
 	    	parent.appendChild(valElement);
 			valElement.focus();
+			
+			searchElement = null;
+    		valElement = null;
 	    }
 
 	    $j(document).ready(function() {

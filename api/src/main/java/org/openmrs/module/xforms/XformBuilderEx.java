@@ -414,7 +414,10 @@ public class XformBuilderEx {
 				Concept concept = field.getConcept();
 				ConceptDatatype datatype = concept.getDatatype();
 				
-				if (name.contains("problem_added") || name.contains("problem_resolved")){
+				if ( (name.contains("problem_added") || name.contains("problem_resolved")) &&
+						formField.getParent() != null &&
+						(formField.getParent().getField().getName().contains("PROBLEM LIST")) ){
+					
 					addProblemList(name, concept, required, locale, formField);
 				}
 				else if (datatype.getHl7Abbreviation().equals(FormConstants.HL7_BOOLEAN)){

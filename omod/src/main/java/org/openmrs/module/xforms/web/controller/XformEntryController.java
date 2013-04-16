@@ -86,6 +86,7 @@ public class XformEntryController extends SimpleFormController{
 		map.put("usingJQuery", XformsUtil.usesJquery());
 		map.put("locations", Context.getLocationService().getAllLocations(false));
 		map.put("formatXml", "false");
+		map.put("useOpenmrsMessageTag", XformsUtil.isOnePointNineOneAndAbove());
 		
 		return map;
 	}
