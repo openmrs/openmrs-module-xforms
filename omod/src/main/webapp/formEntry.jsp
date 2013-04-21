@@ -560,8 +560,10 @@
 			//If we had previously displayed a search widget, remove it and add the original value widget.
 			if (searchElement != null) {
 				var parent = searchElement.parentNode;
-		    	parent.removeChild(searchElement);
-		    	parent.appendChild(valElement);
+				if (parent != null) {
+			    	parent.removeChild(searchElement);
+			    	parent.appendChild(valElement);
+				}
 			}
 			
 			valElement = valueElement;
