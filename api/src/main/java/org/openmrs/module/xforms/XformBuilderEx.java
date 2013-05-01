@@ -433,16 +433,21 @@ public class XformBuilderEx {
 				else if (datatype.getHl7Abbreviation().equals(FormConstants.HL7_CODED)
 						|| datatype.getHl7Abbreviation().equals(FormConstants.HL7_CODED_WITH_EXCEPTIONS)) {
 					
-					//Collection<ConceptAnswer> answers = concept.getAnswers(false);
-					List answers = new ArrayList<ConceptAnswer>(concept.getAnswers(false));
-					if(answers != null && answers.size() > 0 && answers.get(0) instanceof Comparable)
-						Collections.sort(answers);
-					
-					if (field.getSelectMultiple()){
-						selectMultiple(name, concept, answers, locale, formField);
+					if (formField.getMaxOccurs() != null && formField.getMaxOccurs().intValue() == -1) {
+						addProblemList(name, concept, required, locale, formField);
 					}
 					else {
-						selectSingle(name, concept, answers, required, locale, formField);
+						//Collection<ConceptAnswer> answers = concept.getAnswers(false);
+						List answers = new ArrayList<ConceptAnswer>(concept.getAnswers(false));
+						if(answers != null && answers.size() > 0 && answers.get(0) instanceof Comparable)
+							Collections.sort(answers);
+						
+						if (field.getSelectMultiple()){
+							selectMultiple(name, concept, answers, locale, formField);
+						}
+						else {
+							selectSingle(name, concept, answers, required, locale, formField);
+						}
 					}
 				}
 				else if ("ED".equals(datatype.getHl7Abbreviation())){
