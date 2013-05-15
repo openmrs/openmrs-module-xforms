@@ -7,7 +7,7 @@ import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.module.xforms.MedicalHistoryField;
 import org.openmrs.module.xforms.Xform;
-import org.openmrs.module.xforms.formentry.FormEntryError;
+import org.openmrs.module.xforms.formentry.XformsFormEntryError;
 import org.openmrs.module.xforms.model.PatientMedicalHistory;
 import org.openmrs.module.xforms.model.PersonRepeatAttribute;
 import org.openmrs.module.xforms.model.XformUser;
@@ -100,7 +100,7 @@ public interface XformsDAO {
 	public void deleteMedicalHistoryField(MedicalHistoryField field);
 	public void deleteMedicalHistoryField(Integer fieldId);
 	
-	public void createFormEntryError(FormEntryError formEntryError);
+	public void createFormEntryError(XformsFormEntryError formEntryError);
 
 	public List<GlobalProperty> getXFormsGlobalProperties();
 	

@@ -5,7 +5,7 @@
 
 <hibernate-mapping package="@MODULE_PACKAGE@.formentry">
 
-	<class name="FormEntryError" table="formentry_error">
+	<class name="XformsFormEntryError" table="formentry_error">
 
 		<id name="formEntryErrorId" type="int" column="formentry_error_id" 
 			unsaved-value="0">

@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>xforms</id>
 	<name>XForms</name>
-	<version>4.2.0.9</version>
+	<version>4.2.0.10</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Daniel Kayiwa</author>
 	<description>
@@ -471,7 +471,7 @@
 		Xform.hbm.xml
 		PersonRepeatAttribute.hbm.xml
 		MedicalHistoryField.hbm.xml
-		FormEntryError.hbm.xml
+		XformsFormEntryError.hbm.xml
 	</mappingFiles>
 	<privilege>
 		<name>View XForms Menu</name>

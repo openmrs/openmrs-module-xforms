@@ -5,7 +5,7 @@ import java.util.Date;
 import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.User;
 
-public class FormEntryError  extends BaseOpenmrsObject {
+public class XformsFormEntryError  extends BaseOpenmrsObject {
 
 	private Integer formEntryErrorId;
 	private String formData;

@@ -6,7 +6,7 @@ import java.util.Locale;
 import org.openmrs.Form;
 import org.openmrs.GlobalProperty;
 import org.openmrs.module.xforms.db.XformsDAO;
-import org.openmrs.module.xforms.formentry.FormEntryError;
+import org.openmrs.module.xforms.formentry.XformsFormEntryError;
 import org.openmrs.module.xforms.model.PatientMedicalHistory;
 import org.openmrs.module.xforms.model.PersonRepeatAttribute;
 import org.openmrs.module.xforms.model.XformUser;
@@ -238,7 +238,7 @@ public interface XformsService {
 	 * @param formEntryError
 	 *            to save to the db
 	 */
-	public void createFormEntryError(FormEntryError formEntryError);
+	public void createFormEntryError(XformsFormEntryError formEntryError);
 
 	/**
 	 * Gets the name of a location with a given id.

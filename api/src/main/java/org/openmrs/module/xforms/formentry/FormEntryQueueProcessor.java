@@ -242,7 +242,7 @@ public class FormEntryQueueProcessor {
 	private void setFatalError(FormEntryQueue formEntryQueue, String error, String errorDetails, boolean propagateErrors) {
 		
 		if (!propagateErrors) {
-			FormEntryError formEntryError = new FormEntryError();
+			XformsFormEntryError formEntryError = new XformsFormEntryError();
 			formEntryError.setFormData(formEntryQueue.getFormData());
 			formEntryError.setError(error);
 			formEntryError.setErrorDetails(errorDetails);
@@ -252,7 +252,7 @@ public class FormEntryQueueProcessor {
 		deleteFormEntryQueue(formEntryQueue);
 	}
 	
-	public void createFormEntryError(FormEntryError formEntryError) {
+	public void createFormEntryError(XformsFormEntryError formEntryError) {
 		formEntryError.setCreator(Context.getAuthenticatedUser());
 		formEntryError.setDateCreated(new Date());
 		((XformsService) Context.getService(XformsService.class)).createFormEntryError(formEntryError);

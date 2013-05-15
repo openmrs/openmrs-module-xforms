@@ -21,7 +21,7 @@ import org.openmrs.module.xforms.XformBuilderEx;
 import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformsService;
 import org.openmrs.module.xforms.db.XformsDAO;
-import org.openmrs.module.xforms.formentry.FormEntryError;
+import org.openmrs.module.xforms.formentry.XformsFormEntryError;
 import org.openmrs.module.xforms.model.PatientMedicalHistory;
 import org.openmrs.module.xforms.model.PersonRepeatAttribute;
 import org.openmrs.module.xforms.model.XformUser;
@@ -314,7 +314,7 @@ public class XformsServiceImpl implements XformsService {
 		getXformsDAO().deleteMedicalHistoryField(fieldId);
 	}
 
-	public void createFormEntryError(FormEntryError formEntryError) {
+	public void createFormEntryError(XformsFormEntryError formEntryError) {
 		getXformsDAO().createFormEntryError(formEntryError);
 	}
 
