@@ -17,7 +17,8 @@ This XSLT is used to translate OpenMRS forms from XML into HL7 2.5 format
 1.9.2 - first generally useful version
 -->
 
-<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fn="http://www.w3.org/2005/xpath-functions" xmlns:xdt="http://www.w3.org/2005/xpath-datatypes">
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fn="http://www.w3.org/2005/xpath-functions" xmlns:xdt="http://www.w3.org/2005/xpath-datatypes"
+	xmlns:XformsUtil="org.openmrs.module.xforms.util.XformsUtil">
 	<xsl:output method="text" version="1.0" encoding="UTF-8" indent="no"/>
 
 <xsl:variable name="SENDING-APPLICATION">FORMENTRY</xsl:variable>
@@ -264,6 +265,16 @@ This XSLT is used to translate OpenMRS forms from XML into HL7 2.5 format
 				</xsl:for-each>
 			</xsl:otherwise>
 		</xsl:choose>
+	</xsl:for-each>
+	
+	<xsl:for-each select="obs/*[@openmrs_datatype='ED']">
+		<xsl:call-template name="obsObx">
+			<xsl:with-param name="setId" select="position()" />
+			<xsl:with-param name="datatype" select="@openmrs_datatype" />
+			<xsl:with-param name="concept" select="@openmrs_concept" />
+			<xsl:with-param name="value" select="XformsUtil:serializeComplexObsData(.)" />
+			<xsl:with-param name="encounterTimestamp" select="$encounterTimestamp" />
+		</xsl:call-template>
 	</xsl:for-each>
 	
 	<!-- Grouped observation(s) -->
