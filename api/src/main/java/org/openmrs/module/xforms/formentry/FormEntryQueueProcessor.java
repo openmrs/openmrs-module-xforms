@@ -64,7 +64,6 @@ public class FormEntryQueueProcessor {
 	 * into HL7.
 	 * 
 	 * @param formEntryQueue entry to be transformed
-	 * @should transform xml data with a serialized complex obs
 	 */
 	public HL7InQueue transformFormEntryQueue(FormEntryQueue formEntryQueue, boolean propagateErrors) throws Exception {
 		log.debug("Transforming form entry queue");
