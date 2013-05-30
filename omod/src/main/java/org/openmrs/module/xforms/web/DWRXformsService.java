@@ -19,13 +19,15 @@ import org.openmrs.module.xforms.XformsService;
 import org.openmrs.web.WebUtil;
 import org.openmrs.web.dwr.FieldListItem;
 import org.openmrs.web.dwr.FormFieldListItem;
+import org.springframework.transaction.annotation.Transactional;
 
-
-public class DWRXformsService {
+@Transactional
+public class DWRXformsService{
 
 	protected final Log log = LogFactory.getLog(getClass());
 
 	public String getXform(String formId) throws Exception {
+		System.out.println("**********getXform function called!");
 		Xform xform = null;
 
 		//only fill the objects if the user has authenticated properly
@@ -58,16 +60,19 @@ public class DWRXformsService {
 	}
 
 	public Field getField(Integer fieldId) {
+		System.out.println("***** DWRXformsService getField called!");
 		Field f = new Field();
 		return f;
 	}
 
 	public FormFieldListItem getFormField(Integer formFieldId) {
+		System.out.println("***** DWRXformsService getFormField called!");
 		FormField f = new FormField();
 		return new FormFieldListItem(f, Context.getLocale());
 	}
 
 	public List<FormFieldListItem> getFormFields(Integer formId) {
+		System.out.println("***** DWRXformsService getFormFields called!");
 		List<FormFieldListItem> formFields = new Vector<FormFieldListItem>();
 		return formFields;
 	}
@@ -95,6 +100,7 @@ public class DWRXformsService {
 	}
 
 	public static TreeMap<Integer, TreeSet<FormField>> getFormStructure(Form form) {
+		System.out.println("***** DWRXformsService getFormStructure  called!");
 		TreeMap<Integer, TreeSet<FormField>> formStructure = new TreeMap<Integer, TreeSet<FormField>>();
 		Integer base = Integer.valueOf(0);
 		formStructure.put(base, new TreeSet<FormField>());
@@ -120,6 +126,7 @@ public class DWRXformsService {
 	}
 
 	public static TreeMap<Integer, TreeSet<MedicalHistoryField>> getMedicalHistoryFieldsStructure(List<MedicalHistoryField> fields) {
+		System.out.println("***** DWRXformsService getMedicalHistoryFiledsStructure called!");
 		TreeMap<Integer, TreeSet<MedicalHistoryField>> formStructure = new TreeMap<Integer, TreeSet<MedicalHistoryField>>();
 		Integer base = Integer.valueOf(0);
 		formStructure.put(base, new TreeSet<MedicalHistoryField>());
@@ -141,6 +148,15 @@ public class DWRXformsService {
 	}
 
 	public String getJSTree() {
+		System.out.println("***** DWRXformsService getJSTree called!");
+		try {
+			DWRXformsRefreshOperationImpl.refreshXforms();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// Add code to reload provider/location lists here
+		
 		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
 		List<MedicalHistoryField> fields = xformsService.getMedicalHistoryFields();
 		String s = generateJSTree(getMedicalHistoryFieldsStructure(fields), 0, Context.getLocale());
@@ -148,6 +164,7 @@ public class DWRXformsService {
 	}
 
 	private String generateJSTree(TreeMap<Integer, TreeSet<MedicalHistoryField>> formFields, Integer current, Locale locale) {
+		System.out.println("***** DWRXformsService generateJSTree called!");
 		String s = "";
 
 		if (formFields.containsKey(current)) {
@@ -163,7 +180,7 @@ public class DWRXformsService {
 	}
 
 	private String generateFormFieldJavascript(MedicalHistoryField field, Locale locale) {
-
+		System.out.println("***** DWRXformsService generateFormFieldJavascript called!");
 		String parent = "''";
 		if(field.getFieldId() != -1)
 			parent = "-1";
@@ -187,4 +204,5 @@ public class DWRXformsService {
             return false;
         }
     }
+    
 }
