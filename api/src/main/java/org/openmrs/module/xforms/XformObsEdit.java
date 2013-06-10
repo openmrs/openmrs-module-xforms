@@ -659,7 +659,7 @@ public class XformObsEdit {
 		return file.getAbsolutePath();
 	}
 
-	private static void retrieveSessionValues(HttpServletRequest request){
+	public static void retrieveSessionValues(HttpServletRequest request){
 		HttpSession session = request.getSession();
 
 		complexData = (HashMap<String,byte[]>)session.getAttribute("XformObsEdit.complexData");
@@ -682,7 +682,7 @@ public class XformObsEdit {
 		}
 	}
 
-	private static void clearSessionData(HttpServletRequest request,Integer formId){
+	public static void clearSessionData(HttpServletRequest request,Integer formId){
 		complexData.clear();
 		complexDataNodeNames.clear();
 		dirtyComplexData.clear();
@@ -734,7 +734,7 @@ public class XformObsEdit {
 
 	public static void fillPatientComplexObs(HttpServletRequest request,Document doc, String xml) throws Exception{
 		retrieveSessionValues(request);
-		clearSessionData(request,0);
+		clearSessionData(request, XformConstants.PATIENT_XFORM_FORM_ID);
 
 		Element patientNode = XformBuilder.getElement(doc.getRootElement(), "patient");
 		if(patientNode== null)

@@ -3,6 +3,8 @@ package org.openmrs.module.xforms;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kxml2.kdom.Element;
@@ -38,8 +40,11 @@ public class XformPatientEdit {
 	}
 
 
-	public static Patient getEditedPatient(Element rootNode) throws Exception {
+	public static Patient getEditedPatient(HttpServletRequest request, Element rootNode) throws Exception {
 
+		XformObsEdit.retrieveSessionValues(request);
+		XformObsEdit.clearSessionData(request, XformConstants.PATIENT_XFORM_FORM_ID);
+		
 		String patientId = XformBuilder.getNodeValue(rootNode, XformBuilder.NODE_PATIENT_ID);
 		Patient patient = Context.getPatientService().getPatient(Integer.parseInt(patientId));
 

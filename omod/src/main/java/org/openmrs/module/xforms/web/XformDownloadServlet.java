@@ -583,6 +583,9 @@ public class XformDownloadServlet extends HttpServlet {
 
 		XformBuilder.setNodeValue(doc, NODE_PATIENT_BIRTH_DATE_ESTIMATED, patient.getBirthdateEstimated() ? "true" : "false");
 
+		//clear any previously stored form session data
+		XformObsEdit.loadAndClearSessionData(request, XformConstants.PATIENT_XFORM_FORM_ID);
+				
 		PatientIdentifier identifier = patient.getPatientIdentifier();
 
 		if(identifier !=  null){

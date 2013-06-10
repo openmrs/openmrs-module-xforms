@@ -126,7 +126,7 @@ public class XformDataUploadController extends SimpleFormController {
 		xml = XformsUtil.replaceConceptMaps(xml);
 		Document doc = XformBuilder.getDocument(xml);
 		if (XformPatientEdit.isPatientElement(doc.getRootElement())) {
-			Patient patient = XformPatientEdit.getEditedPatient(doc.getRootElement());
+			Patient patient = XformPatientEdit.getEditedPatient(request, doc.getRootElement());
 			Context.getPatientService().savePatient(patient);
 		} else {
 			Set<Obs> obs2Void = new HashSet<Obs>();
