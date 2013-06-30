@@ -282,5 +282,5 @@ public interface XformsService {
 	 * @param exception
 	 */
 	@Transactional
-	public void sendStacktraceToAdminByEmail(String subject, Exception exception);
+	public void sendStacktraceToAdminByEmail(String subject, Throwable exception);
 }

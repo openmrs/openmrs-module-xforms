@@ -341,7 +341,7 @@ public class XformsServiceImpl implements XformsService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public void sendStacktraceToAdminByEmail(String subject, Exception exception) {
+	public void sendStacktraceToAdminByEmail(String subject, Throwable exception) {
 		String email = Context.getAdministrationService().getGlobalProperty(
 				XformConstants.GLOBAL_PROP_KEY_ADMIN_EMAIL);
 		if (email == null || email.isEmpty()) {

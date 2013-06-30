@@ -13,7 +13,7 @@ public class XformConstants {
 	 * The name of the global property for the directory where to put xforms that are not submitted to the formentry queue
 	 * because of errors.
 	 */
-	public static final String XFORMS_ERROR_DIR = "xforms.efrror_dir";
+	public static final String XFORMS_ERROR_DIR = "xforms.error_dir";
 	
 	/** The default xforms error directory. */
 	public static final String XFORMS_ERROR_DIR_DEFAULT = "xforms/error";

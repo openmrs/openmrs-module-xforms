@@ -600,8 +600,11 @@ public class XformsUtil {
 		        .parse(IOUtils.toInputStream(xml, XformConstants.DEFAULT_CHARACTER_ENCODING));
 	}
 	
-	public static void reportDataUploadError(Exception ex, HttpServletRequest request, HttpServletResponse response,
+	public static void reportDataUploadError(Throwable ex, HttpServletRequest request, HttpServletResponse response,
 	                                         PrintWriter writer) throws IOException {
+		
+		ex = getActualRootCause(ex, true);
+		
 		log.error(ex.getMessage(), ex);
 		
 		Context.getService(XformsService.class).sendStacktraceToAdminByEmail("XForms Error: failed to upload data", ex);
@@ -885,5 +888,23 @@ public class XformsUtil {
 		else {
 			return getPersonId(user);
 		}
+	}
+	
+	/**
+	 * Convenience method that recursively attempts to pull the root case from a Throwable
+	 * 
+	 * @param t the Throwable object
+	 * @param isOriginalError specifies if the passed in Throwable is the original Exception that
+	 *            was thrown
+	 * @return the root cause if any was found
+	 */
+	public static Throwable getActualRootCause(Throwable t, boolean isOriginalError) {
+		if (t.getCause() != null)
+			return getActualRootCause(t.getCause(), false);
+		
+		if (!isOriginalError)
+			return t;
+		
+		return null;
 	}
 }
