@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>xforms</id>
 	<name>XForms</name>
-	<version>4.2.1.1</version>
+	<version>4.2.1.2</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Daniel Kayiwa</author>
 	<description>
@@ -348,6 +348,12 @@
 		<property>@MODULE_ID@.maintainOrderingOnRefresh</property>
 		<defaultValue>true</defaultValue>
 		<description>Set to true if you want to maintain the ordering of items when you refresh a form in the form designer. Else set to false.</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>@MODULE_ID@.viewEncounterAsXform</property>
+		<defaultValue>false</defaultValue>
+		<description>Set to true if you want to view encounter observations in the same form which was used to submit the data. Else set to false.</description>
 	</globalProperty>
 	
 	<globalProperty>

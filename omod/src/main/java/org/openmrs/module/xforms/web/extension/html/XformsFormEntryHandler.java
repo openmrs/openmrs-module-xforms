@@ -35,6 +35,10 @@ public class XformsFormEntryHandler extends FormEntryHandler {
      * @see org.openmrs.module.web.extension.FormEntryModuleExtension#getViewFormUrl()
      */
     public String getViewFormUrl() {
+    	if ("true".equals(Context.getAdministrationService().getGlobalProperty("xforms.viewEncounterAsXform", "false"))) {
+    		return getEditFormUrl();
+    	}
+    	
     	return "admin/encounters/encounterDisplay.list";
     }
 
