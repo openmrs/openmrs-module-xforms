@@ -291,7 +291,7 @@ public class XformObsEdit {
 				Element valueNode = XformBuilder.getElement(node, "value");
 
 				if(valueNode != null){
-					String newValue = XformBuilder.getTextValue(valueNode);;
+					String newValue = XformBuilder.getTextValue(valueNode);
 					String oldValue = obs.getValueAsString(Context.getLocale());
 
 					if(concept.getDatatype().getHl7Abbreviation().equals(ConceptDatatype.DATETIME) && obs.getValueDatetime() != null)
@@ -357,6 +357,8 @@ public class XformObsEdit {
 			
 			addNewObs(formNode, complexObs, encounter, child, datetime, null);
 		}
+		
+		XformObsPatientEdit.updatePatientDemographics(encounter.getPatient(), formNode);
 		
 		return encounter;
 	}

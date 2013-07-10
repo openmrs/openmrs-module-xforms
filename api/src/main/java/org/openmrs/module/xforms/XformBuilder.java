@@ -276,6 +276,10 @@ public final class XformBuilder implements GlobalPropertyListener {
 	
 	public static final String NODE_BIRTH_DATE_ESTIMATED = "birth_date_estimated";
 	
+	public static final String NODE_BIRTHDATE = "birthdate";
+	
+	public static final String NODE_BIRTHDATE_ESTIMATED = "birthdate_estimated";
+	
 	public static final String NODE_LOCATION_ID = "location_id";
 	
 	public static final String NODE_PROVIDER_ID = "provider_id";

@@ -905,6 +905,6 @@ public class XformsUtil {
 		if (!isOriginalError)
 			return t;
 		
-		return null;
+		return t;
 	}
 }
