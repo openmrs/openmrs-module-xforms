@@ -3,6 +3,7 @@ package org.openmrs.module.xforms;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
+import org.kxml2.kdom.Document;
 import org.kxml2.kdom.Element;
 import org.openmrs.Patient;
 import org.openmrs.PersonAddress;
@@ -17,6 +18,15 @@ import org.openmrs.module.xforms.util.XformsUtil;
  * Updates a patient object with demographic, address and attribute data from an encounter xform.
  */
 public class XformObsPatientEdit {
+	
+	public static void updatePatientDemographics(String patientId, String xml) throws Exception {
+		Patient patient = Context.getPatientService().getPatient(Integer.parseInt(patientId));
+		Document doc = XformBuilder.getDocument(xml);
+		
+		updatePatientDemographics(patient, doc.getRootElement());
+		
+		Context.getPatientService().savePatient(patient);
+	}
 	
 	public static void updatePatientDemographics(Patient patient, Element formNode) throws Exception {
 		
@@ -53,7 +63,8 @@ public class XformObsPatientEdit {
 		}
 	}
 	
-	public static void updatePerson(Patient patient, String attributeValue, String dataValue, Element node) throws Exception {
+	private static void updatePerson(Patient patient, String attributeValue, String dataValue, Element node)
+	    throws Exception {
 		
 		if (XformBuilder.NODE_GENDER.equals(attributeValue))
 			patient.setGender(dataValue);
@@ -69,7 +80,7 @@ public class XformObsPatientEdit {
 		//patient.setChangedBy(Context.getAuthenticatedUser());
 	}
 	
-	public static void updatePersonName(Patient patient, String attributeValue, String dataValue, Element node)
+	private static void updatePersonName(Patient patient, String attributeValue, String dataValue, Element node)
 	    throws Exception {
 		
 		PersonName personName = patient.getPersonName();
@@ -94,7 +105,7 @@ public class XformObsPatientEdit {
 			throw new APIException("Cannot find person name called = " + attributeValue);
 	}
 	
-	public static void updatePersonAddress(Patient patient, String attributeValue, String dataValue, Element node) {
+	private static void updatePersonAddress(Patient patient, String attributeValue, String dataValue, Element node) {
 		boolean addressIsNew = false;
 		PersonAddress pa = patient.getPersonAddress();
 		if (pa == null) {
@@ -142,7 +153,7 @@ public class XformObsPatientEdit {
 		}
 	}
 	
-	public static void updatePersonAttribute(Patient patient, String attributeValue, String dataValue, Element node) {
+	private static void updatePersonAttribute(Patient patient, String attributeValue, String dataValue, Element node) {
 		PersonAttributeType personAttributeType = Context.getPersonService().getPersonAttributeType(
 		    Integer.parseInt(attributeValue));
 		
