@@ -96,6 +96,7 @@ body, html {
 .dragdrop-selected,.dragdrop-dragging,.dragdrop-proxy {
   filter: alpha(opacity = 50);
   opacity: 0.5;
+  color: red;
 }
 
 .purcforms-label-editor {
