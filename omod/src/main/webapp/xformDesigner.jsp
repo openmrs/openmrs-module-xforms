@@ -546,7 +546,8 @@
            		underline: "<spring:message code="xforms.underline" />",
            		mergeCells: "<spring:message code="xforms.mergeCells" />",
            		exclusiveOption: "<spring:message code="xforms.exclusiveOption" />",
-           		otherProperties: "<spring:message code="xforms.otherProperties" />"
+           		otherProperties: "<spring:message code="xforms.otherProperties" />",
+           		exclusiveQuestion: "<spring:message code="xforms.exclusiveQuestion" />"
     	};
 
     	function isUserAuthenticated(){
