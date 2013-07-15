@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>xforms</id>
 	<name>XForms</name>
-	<version>4.2.1.5</version>
+	<version>4.2.1.6</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Daniel Kayiwa</author>
 	<description>
@@ -324,6 +324,12 @@
 		<property>@MODULE_ID@.showPreviewTab</property>
 		<defaultValue>true</defaultValue>
 		<description>Set to true if you want to display the Preview tab of the form designer.</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>@MODULE_ID@.manualWidgetLayout</property>
+		<defaultValue>false</defaultValue>
+		<description>Set to true if you want to turn off automatic widget layout on loading form for the first time, else set to false</description>
 	</globalProperty>
 	
 	<globalProperty>
