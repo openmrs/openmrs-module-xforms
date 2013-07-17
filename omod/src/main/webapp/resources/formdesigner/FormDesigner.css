@@ -97,6 +97,7 @@ body, html {
   filter: alpha(opacity = 50);
   opacity: 0.5;
   color: red;
+  white-space: nowrap;
 }
 
 .purcforms-label-editor {
