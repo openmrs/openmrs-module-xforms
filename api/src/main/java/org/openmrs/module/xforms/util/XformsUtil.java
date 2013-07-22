@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -31,6 +32,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -49,6 +51,7 @@ import org.openmrs.module.xforms.XformBuilder;
 import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformsService;
 import org.openmrs.module.xforms.formentry.FormEntryWrapper;
+import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -906,5 +909,35 @@ public class XformsUtil {
 			return t;
 		
 		return t;
+	}
+	
+	/**
+	 * Calls the handler associated to the incoming complex obs to serialize the incoming data. This
+	 * method is Called by the form xslt when the incoming xml data is getting converted to hl7
+	 * 
+	 * @param complexDataNode the DOM Node that represents the complex obs tag
+	 * @return the serialized form data
+	 */
+	public static String serializeComplexObsData(Node complexDataNode) {
+		String handlerName = ((Element) complexDataNode).getAttribute("openmrs_handler");
+		if (StringUtils.isEmpty(handlerName)) {
+			//If no handler specified, just return the text content.
+			return complexDataNode.getTextContent();
+		}
+		
+		ComplexObsHandler handler = Context.getObsService().getHandler(handlerName);
+		if (handler == null)
+			throw new APIException("No complex handler found with name:" + handlerName);
+		
+		try {
+			Transformer transformer = TransformerFactory.newInstance().newTransformer();
+			transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+			StreamResult result = new StreamResult(new StringWriter());
+			transformer.transform(new DOMSource(complexDataNode), result);
+			return (String) MethodUtils.invokeExactMethod(handler, "serializeFormData", result.getWriter().toString());
+		}
+		catch (Exception e) {
+			throw new APIException("Failed to serialize the incoming data from the complex obs handler", e);
+		}
 	}
 }

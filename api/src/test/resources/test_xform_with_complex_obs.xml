@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+
+<form id="1" name="xForm3" version="0.1"
+	xmlns:openmrs="http://demo.openmrs.org/openmrs/moduleServlet/formentry/forms/schema/22-1"
+	xmlns:xd="http://schemas.microsoft.com/office/infopath/2003">
+	
+	<obs>
+		<neighbor openmrs_concept="11111^NEIGHBOR^99DCT" openmrs_datatype="ED" openmrs_handler="NeighborHandler">
+					<firstname>Horatio</firstname>
+					<lastname>Hornblower</lastname>
+		</neighbor>
+		<neighbor openmrs_concept="11111^NEIGHBOR^99DCT" openmrs_datatype="ED" openmrs_handler="NeighborHandler">
+					<firstname>John</firstname>
+					<lastname>Doe</lastname>
+		</neighbor>
+	</obs>
+ 			
+</form>
