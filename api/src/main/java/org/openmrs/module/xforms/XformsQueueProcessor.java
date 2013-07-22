@@ -294,7 +294,9 @@ public class XformsQueueProcessor {
 				processDoc(xml, pathName, propagateErrors);
 				
 				String patientid = DOMUtil.getElementValue(doc, XformBuilder.NODE_PATIENT_PATIENT_ID);
-				XformObsPatientEdit.updatePatientDemographics(patientid, xml);
+				Patient patient = XformObsPatientEdit.updatePatientDemographics(patientid, xml);
+				
+				RelativeSubmission.submit(xml, patient);
 				
 				if(archive)
 					saveFormInArchive(xmlOriginal, pathName);

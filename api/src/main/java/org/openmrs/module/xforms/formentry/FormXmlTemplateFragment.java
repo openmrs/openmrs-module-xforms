@@ -56,7 +56,7 @@ public class FormXmlTemplateFragment {
 	}
 
 	public static String closeForm() {
-		return "  <other></other>" + "</form>\n";
+		return "  </form>\n";
 	}
 
 	private static String encodeURL(String s) {

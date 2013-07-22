@@ -55,6 +55,9 @@ public class XformBuilderEx {
 		//String schemaXml = XformsUtil.getSchema(form);
 		String templateXml = FormEntryWrapper.getFormTemplate(form);
 		
+		//Add relationship data node
+		templateXml = templateXml.replace("</patient>", "  <patient_relative>\n      <patient_relative.person/>\n      <patient_relative.relationship/>\n    </patient_relative>\n  </patient>");
+		
 		Element formNode = (Element) XformBuilder.getDocument(new StringReader(templateXml)).getRootElement();
 		formNode.setAttribute(null, XformBuilder.ATTRIBUTE_UUID, form.getUuid());
 		
@@ -126,6 +129,8 @@ public class XformBuilderEx {
 				}
 			}
 		}
+		
+		RelativeBuilder.build(modelNode, groupNode, formNode);
 		
 		bindings.clear();
 		formFields.clear();

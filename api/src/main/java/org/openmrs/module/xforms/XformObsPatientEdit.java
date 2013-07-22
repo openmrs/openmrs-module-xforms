@@ -19,13 +19,15 @@ import org.openmrs.module.xforms.util.XformsUtil;
  */
 public class XformObsPatientEdit {
 	
-	public static void updatePatientDemographics(String patientId, String xml) throws Exception {
+	public static Patient updatePatientDemographics(String patientId, String xml) throws Exception {
 		Patient patient = Context.getPatientService().getPatient(Integer.parseInt(patientId));
 		Document doc = XformBuilder.getDocument(xml);
 		
 		updatePatientDemographics(patient, doc.getRootElement());
 		
 		Context.getPatientService().savePatient(patient);
+		
+		return patient;
 	}
 	
 	public static void updatePatientDemographics(Patient patient, Element formNode) throws Exception {

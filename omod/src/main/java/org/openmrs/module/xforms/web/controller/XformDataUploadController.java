@@ -20,6 +20,7 @@ import org.openmrs.Patient;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.RelationshipSubmission;
+import org.openmrs.module.xforms.RelativeSubmission;
 import org.openmrs.module.xforms.XformBuilder;
 import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformObsEdit;
@@ -139,7 +140,7 @@ public class XformDataUploadController extends SimpleFormController {
 			for (Obs obs : obs2Void)
 				obsService.voidObs(obs, "xformsmodule");
 			
-			RelationshipSubmission.submit(doc.getRootElement(), encounter.getPatient());
+			RelativeSubmission.submit(xml, encounter.getPatient());
 		}
 	}
 	
