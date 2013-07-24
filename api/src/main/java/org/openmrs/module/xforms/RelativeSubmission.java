@@ -45,8 +45,8 @@ public class RelativeSubmission {
 			
 			Element relativeNode = patientNode.getElement(i);
 			
-			if (!"true()".equals(relativeNode.getAttributeValue(null, "new"))) {
-				String relationshipUuid = relativeNode.getAttributeValue(null, XformBuilder.ATTRIBUTE_UUID);
+			String relationshipUuid = relativeNode.getAttributeValue(null, XformBuilder.ATTRIBUTE_UUID);
+			if (!("true()".equals(relativeNode.getAttributeValue(null, "new"))) && StringUtils.isNotBlank(relationshipUuid)) {
 				updateRelationship(relationshipUuid, relativeNode, patient, deletedRelationships, ps);
 				continue;
 			}
