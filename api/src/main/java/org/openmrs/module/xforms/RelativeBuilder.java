@@ -4,6 +4,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.kxml2.kdom.Element;
 import org.openmrs.Patient;
 import org.openmrs.Person;
@@ -24,6 +26,8 @@ public class RelativeBuilder {
 	public static final String BIND_PERSON = "patient_relative.person";
 	
 	public static final String BIND_RELATIONSHIP = "patient_relative.relationship";
+	
+	private static final Log log = LogFactory.getLog(RelativeBuilder.class);
 	
 	public static void build(Element modelElement, Element bodyNode, Element dataNode) {
 		buildBindNodes(modelElement);
@@ -214,9 +218,15 @@ public class RelativeBuilder {
 	}
 	
 	private static String getPatientIdentifier(Person person) throws Exception {
-		Patient patient = Context.getPatientService().getPatient(person.getPersonId());
-		if (getPersonId(patient) == person.getPersonId())
-			return patient.getPatientIdentifier().getIdentifier();
+		try {
+			Patient patient = Context.getPatientService().getPatient(person.getPersonId());
+			if (getPersonId(patient) == person.getPersonId()) {
+				return patient.getPatientIdentifier().getIdentifier();
+			}
+		}
+		catch(Exception ex) {
+			log.error(ex.getMessage(), ex);
+		}
 		
 		return "";
 	}
