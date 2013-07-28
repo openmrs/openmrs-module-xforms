@@ -153,7 +153,7 @@ public class RelativeBuilder {
 		
 		Element node = itemNode.createElement(XformBuilder.NAMESPACE_XFORMS, null);
 		node.setName(XformBuilder.NODE_LABEL);
-		node.addChild(Element.TEXT, "is the " + ((isA) ? relationshipType.getaIsToB() : relationshipType.getbIsToA()) + " ["
+		node.addChild(Element.TEXT, "is " + ((isA) ? relationshipType.getaIsToB() : relationshipType.getbIsToA()) + " ["
 		        + relationshipType.getRelationshipTypeId() + "]");
 		itemNode.addChild(Element.ELEMENT, node);
 		
