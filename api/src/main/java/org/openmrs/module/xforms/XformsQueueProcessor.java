@@ -80,7 +80,7 @@ public class XformsQueueProcessor {
 			db = dbf.newDocumentBuilder();
 		}
 		catch(Exception e){
-			log.error("Problem occured while creating document builder", e);
+			log.error(Context.getMessageSourceService().getMessage("xforms.problemDocumentBuilder"), e);
 		}
 	}
 
@@ -90,7 +90,7 @@ public class XformsQueueProcessor {
 	public void processXformsQueue() throws APIException {
 		synchronized (isRunning) {
 			if (isRunning) {
-				log.warn("XformsQueue processor aborting (another processor already running)");
+				log.warn(Context.getMessageSourceService().getMessage("xforms.problemXformsQueue"));
 				return;
 			}
 			isRunning = true;
@@ -102,12 +102,12 @@ public class XformsQueueProcessor {
 					processXForm(XformsUtil.readFile(file.getAbsolutePath()), file.getAbsolutePath(), false, null);
 				}
 				catch(Exception e){
-					log.error("Problem occured while processing Xform: " + file.getAbsolutePath(), e);
+					log.error(Context.getMessageSourceService().getMessage("xforms.problemProcessingXform") + file.getAbsolutePath(), e); 
 				}
 			}
 		}
 		catch(Exception e){
-			log.error("Problem occured while processing Xforms queue", e);
+			log.error(Context.getMessageSourceService().getMessage("xforms.problemProcessingQueue"), e); 
 		}
 		finally {
 			isRunning = false;
@@ -387,7 +387,7 @@ public class XformsQueueProcessor {
 	private String saveFormInError(String xml,String queuePathName, Exception exception){
 		String errorPath = saveForm(xml,XformsUtil.getXformsErrorDir(),queuePathName);
 		
-		Context.getService(XformsService.class).sendStacktraceToAdminByEmail("XForms Error: failed to process a form stored at " + errorPath, exception);
+		Context.getService(XformsService.class).sendStacktraceToAdminByEmail(Context.getMessageSourceService().getMessage("xforms.problemFailedProcessForm") + errorPath, exception);
 		
 		return errorPath;
 	}
@@ -459,7 +459,7 @@ public class XformsQueueProcessor {
 				return pt;
 			}
 			else if(rejectExistingPatientCreation()){
-				String message = "Tried to create patient who already exists with the identifier:"+identifier.getIdentifier()+" REJECTED.";
+				String message = Context.getMessageSourceService().getMessage("xforms.problemPatientExists")+identifier.getIdentifier()+Context.getMessageSourceService().getMessage("xforms.accepted");
 				log.error(message);
 
 				if(request != null)
@@ -471,7 +471,7 @@ public class XformsQueueProcessor {
 				return null;
 			}
 			else{
-				String message = "Tried to create patient who already exists with the identifier:"+identifier.getIdentifier()+" ACCEPTED.";
+				String message = Context.getMessageSourceService().getMessage("xforms.problemPatientExists")+identifier.getIdentifier()+Context.getMessageSourceService().getMessage("xforms.accepted");
 				log.warn(message);
 
 				if(request != null)
@@ -775,11 +775,11 @@ public class XformsQueueProcessor {
 		//Check if patient identifier is filled.
 		String patientIdentifier = getPatientIdentifier(doc);;
 		if(patientIdentifier == null || patientIdentifier.trim().length() == 0)
-			throw new Exception("Expected patient identifier value");
+			throw new Exception(Context.getMessageSourceService().getMessage(".expectedPatientID"));
 
 		List<Patient> patients = Context.getPatientService().getPatients(null, patientIdentifier, null);
 		if(patients != null && patients.size() > 1)
-			throw new Exception("More than one patient was found with identifier " + patientIdentifier);
+			throw new Exception(Context.getMessageSourceService().getMessage("xformsmoreThanOneID") + patientIdentifier); 
 
 		if(patients != null && patients.size() == 1){
 			DOMUtil.setElementValue(doc.getDocumentElement(), XformBuilder.NODE_PATIENT_PATIENT_ID, patients.get(0).getPatientId().toString());
@@ -793,24 +793,24 @@ public class XformsQueueProcessor {
 			if(identifierType == null || identifierType.trim().length() == 0){
 				identifierType = Context.getAdministrationService().getGlobalProperty("xforms.new_patient_identifier_type_id", null);
 				if(identifierType == null || identifierType.trim().length() == 0)
-					throw new Exception("Expected patient identifier type value");
+					throw new Exception(Context.getMessageSourceService().getMessage("xforms.expectedPatientIDType"));
 			}
 		}
 
 		//Check if family name is filled.
 		String familyName = DOMUtil.getElementValue(doc, XformBuilder.NODE_PATIENT_FAMILY_NAME);
 		if(familyName == null || familyName.trim().length() == 0)
-			throw new Exception("Expected patient family name value");
+			throw new Exception(Context.getMessageSourceService().getMessage("xforms.expectedFamilyName"));
 
 		//Check if gender is filled
 		String gender = DOMUtil.getElementValue(doc, XformBuilder.NODE_PATIENT_GENDER);
 		if(gender == null || gender.trim().length() == 0)
-			throw new Exception("Expected patient gender value");
+			throw new Exception(Context.getMessageSourceService().getMessage("xforms.expectedGender"));
 
 		//Check if birth date is filled
 		String birthDate = DOMUtil.getElementValue(doc, XformBuilder.NODE_PATIENT_BIRTH_DATE);
 		if(birthDate == null || birthDate.trim().length() == 0)
-			throw new Exception("Expected patient birth date value");
+			throw new Exception(Context.getMessageSourceService().getMessage("xforms.expectedBirthdate"));
 
 		Patient patient = new Patient();
 		patient.setCreator(getCreator(doc));
@@ -835,7 +835,7 @@ public class XformsQueueProcessor {
 		int id = Integer.parseInt(identifierType);
 		PatientIdentifierType idtfType = Context.getPatientService().getPatientIdentifierType(id);
 		if(idtfType == null)
-			throw new Exception("Expected an existing patient identifier type value");
+			throw new Exception(Context.getMessageSourceService().getMessage("xforms.expectedIdentifier"));
 		
 		identifier.setIdentifierType(idtfType);
 		identifier.setLocation(getLocation(DOMUtil.getElementValue(doc, XformBuilder.NODE_ENCOUNTER_LOCATION_ID)));
@@ -934,20 +934,20 @@ public class XformsQueueProcessor {
 		//Look for identifier type id
 		nodes = root.getElementsByTagName(XformBuilder.NODE_NAME_OTHER_IDENTIFIER_TYPE_ID);
 		if(nodes == null || nodes.getLength() == 0)
-			reportError("Form should have identifier type selection for identifier: " + identifierValue,  propagateErrors, request);
+			reportError(Context.getMessageSourceService().getMessage("xforms.formShouldHaveID") + identifierValue,  propagateErrors, request); 
 		
 		String identifierTypeId = nodes.item(0).getTextContent();
 		if(identifierTypeId == null || identifierTypeId.trim().length() == 0)
-			reportError("Please select identifier type for identifier: " + identifierValue,  propagateErrors, request);
+			reportError(Context.getMessageSourceService().getMessage("xforms.selectIdentifierType") + identifierValue,  propagateErrors, request);
 		
 		//Look for identifier location id
 		nodes = root.getElementsByTagName(XformBuilder.NODE_NAME_OTHER_IDENTIFIER_LOCATION_ID);
 		if(nodes == null || nodes.getLength() == 0)
-			reportError("Form should have location type selection for identifier: " + identifierValue,  propagateErrors, request);
+			reportError(Context.getMessageSourceService().getMessage("xforms.shouldHaveLocationType") + identifierValue,  propagateErrors, request); 
 		
 		String identifierLocationId = nodes.item(0).getTextContent();
 		if(identifierLocationId == null || identifierLocationId.trim().length() == 0)
-			reportError("Please select location type for identifier: " + identifierValue,  propagateErrors, request);
+			reportError(Context.getMessageSourceService().getMessage("xforms.selectLocationType") + identifierValue,  propagateErrors, request); 
 		
 		//Now try add the identifier.
 		PatientIdentifier identifier = new PatientIdentifier();
@@ -961,7 +961,7 @@ public class XformsQueueProcessor {
 		
 		for(PatientIdentifier existingIdentifier : pt.getIdentifiers()){
 			if(existingIdentifier.getIdentifierType() == identifierType){
-				reportError("Patient already has an identifier for the identifier type: "+identifierType.getName(), propagateErrors, request);
+				reportError(Context.getMessageSourceService().getMessage("xforms.patientHasIdentifier") + identifierType.getName(), propagateErrors, request);
 			}
 		}
 		
@@ -969,7 +969,7 @@ public class XformsQueueProcessor {
 		
 		Patient pt2 = patientService.identifierInUse(identifier.getIdentifier(),identifier.getIdentifierType(), pt);
 		if(pt2 != null){
-			reportError("Tried to create patient who already exists with the identifier:"+identifier.getIdentifier(), propagateErrors, request);
+			reportError(Context.getMessageSourceService().getMessage("xforms.triedCreatePatientAlreadyExists") + identifier.getIdentifier(), propagateErrors, request);
 		}
 	}
 	
