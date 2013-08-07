@@ -282,7 +282,8 @@ public class XformsQueueProcessor {
 	private void submitXForm(Document doc, String xml, String pathName, boolean archive, boolean propagateErrors) throws Exception {
 		String xmlOriginal = xml;
 		try{
-			fillPatientIdIfMissing(doc);
+            Context.getService(XformsService.class).getProcessedXformXml(xml);
+            fillPatientIdIfMissing(doc);
 			saveComplexObs(doc,true);
 			setMultipleSelectValues(doc.getDocumentElement());
 			xml = XformsUtil.doc2String(doc);
@@ -877,6 +878,7 @@ public class XformsQueueProcessor {
 	}
 
 	private void saveComplexObs(Document doc, boolean useValueNode) throws Exception {
+
 		List<String> names = DOMUtil.getModelComplexObsNodeNames(doc.getDocumentElement().getAttribute("id"));
 		for(String name : names)
 			saveComplexObsValue(DOMUtil.getElement(doc, name),useValueNode);

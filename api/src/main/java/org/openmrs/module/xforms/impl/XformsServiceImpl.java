@@ -376,4 +376,12 @@ public class XformsServiceImpl implements XformsService {
 		}
 	}
 
+    @Override
+    @Transactional(readOnly = true)
+    public String getProcessedXformXml(String xml){
+
+        return xml;
+    }
+
+
 }
