@@ -52,7 +52,9 @@ public class RelativeSubmission {
 			}
 			
 			Relationship relationship = getRelationship(relativeNode, patient, ps);
-			newRelationships.add(relationship);
+			if (relationship != null) {
+				newRelationships.add(relationship);
+			}
 		}
 		
 		for (Relationship reltnp : newRelationships) {
@@ -70,6 +72,13 @@ public class RelativeSubmission {
 		
 		String personUuid = XformBuilder.getTextValue(personNode);
 		String relationshipStr = XformBuilder.getTextValue(relationshipNode);
+		
+		if (StringUtils.isBlank(personUuid) || StringUtils.isBlank(relationshipStr)) {
+			if (StringUtils.isNotBlank(personUuid) || StringUtils.isNotBlank(relationshipStr)) {
+				throw new APIException("Both person and relationship should be null or not null");
+			}
+			return null;
+		}
 		
 		String AorB = relationshipStr.substring(relationshipStr.length() - 1);
 		String relationshipTypeId = relationshipStr.substring(0, relationshipStr.length() - 1);
