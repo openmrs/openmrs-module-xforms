@@ -146,3 +146,9 @@ label::-moz-selection { background: transparent; }
   border-top-width: thin;
   border-top-style: solid;
 }
+
+.transparentElement {
+   background: rgb(0, 0, 0); /* fallback color */
+   background: rgba(0, 0, 0, 0);
+   outline:none;
+}
