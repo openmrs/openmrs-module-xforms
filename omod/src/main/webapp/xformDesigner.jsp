@@ -105,6 +105,12 @@
 	
 	#proposeConceptForm { display: none; }
 	.alert { color: red; }
+	
+	.transparentElement {
+	   background: rgb(0, 0, 0); /* fallback color */
+	   background: rgba(0, 0, 0, 0);
+	   outline:none;
+	}
 
 </style>
 
