@@ -20,7 +20,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.app.event.EventCartridge;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.log.CommonsLogLogChute;
 import org.kxml2.io.KXmlParser;
@@ -50,9 +49,9 @@ import org.openmrs.api.FormService;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.formentry.FormEntryWrapper;
+import org.openmrs.module.xforms.util.ConceptUtil;
 import org.openmrs.module.xforms.util.XformBuilderUtil;
 import org.openmrs.module.xforms.util.XformsUtil;
-import org.openmrs.reporting.export.DataExportUtil.VelocityExceptionHandler;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.util.OpenmrsUtil;
 import org.xmlpull.v1.XmlPullParser;
@@ -3244,6 +3243,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 		velocityContext.put("patient", patient);
 		velocityContext.put("form", form);
 		velocityContext.put("obs", new ObsHistory(patient));
+		velocityContext.put("concept", new ConceptUtil());
 		velocityContext.put(
 		    "timestamp",
 		    new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(
@@ -3290,7 +3290,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 		}
 		// we need at least one empty relationship in InfoPath
 		if (relationships.isEmpty()) {
-			relationships = new ArrayList();
+			relationships = new ArrayList<Relationship>();
 			relationships.add(new Relationship());
 		}
 		velocityContext.put("relationships", relationships);
