@@ -602,9 +602,10 @@ public class XformsQueueProcessor {
 	}
 
 	private void addPersonRepeatAttributeValues(Patient pt,Node repeatNode,String attributeId,XformsService xformsService, int displayOrder){
-		NodeList nodes = repeatNode.getChildNodes();
 		if(repeatNode == null)
 			return;
+		
+		NodeList nodes = repeatNode.getChildNodes();
 
 		for(int index = 0; index < nodes.getLength(); index++){
 			Node node = nodes.item(index);

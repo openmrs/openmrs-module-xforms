@@ -1818,7 +1818,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 	 * @param conceptName - the concept name.
 	 * @return - the id
 	 */
-	private static Integer getConceptId(String conceptName) {
+	public static Integer getConceptId(String conceptName) {
 		try {
 			return Integer.parseInt(conceptName.substring(0, conceptName.indexOf("^")));
 		}

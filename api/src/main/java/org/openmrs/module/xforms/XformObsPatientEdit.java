@@ -13,6 +13,7 @@ import org.openmrs.PersonName;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.util.XformsUtil;
+import org.openmrs.util.FormUtil;
 
 /**
  * Updates a patient object with demographic, address and attribute data from an encounter xform.
@@ -170,14 +171,27 @@ public class XformObsPatientEdit {
 			personAttribute.setAttributeType(personAttributeType);
 			
 			//addAttribute will not add if value is not set.
-			personAttribute.setValue(dataValue);
+			setPersonAttributeValue(dataValue, personAttribute, personAttributeType);
 			patient.addAttribute(personAttribute);
 		}
 		
-		personAttribute.setValue(dataValue);
+		setPersonAttributeValue(dataValue, personAttribute, personAttributeType);
 		
 		if (StringUtils.isBlank(dataValue)) {
 			patient.removeAttribute(personAttribute);
 		}
+	}
+	
+	private static void setPersonAttributeValue(String dataValue, PersonAttribute personAttribute, PersonAttributeType personAttributeType) {
+		if ("org.openmrs.Concept".equals(personAttributeType.getFormat())) {
+			
+			if (!dataValue.contains("^")) {
+				return; //not edited
+			}
+			
+			dataValue = XformBuilder.getConceptId(dataValue).toString();
+		}
+		
+		personAttribute.setValue(dataValue);
 	}
 }
