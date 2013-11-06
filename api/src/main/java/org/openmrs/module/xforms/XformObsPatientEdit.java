@@ -13,7 +13,6 @@ import org.openmrs.PersonName;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.util.XformsUtil;
-import org.openmrs.util.FormUtil;
 
 /**
  * Updates a patient object with demographic, address and attribute data from an encounter xform.
