@@ -553,7 +553,7 @@
 			searchWidget.inputNode.value = value;
 		}
 		else{
-			key = $j.trim(key);
+			key = $j.trim(key).toLowerCase();
 			if(key != 'concept' && key != 'location' && key != 'provider' && key != 'person'){
 				alert("The external source property '"+key+"' is invalid, you need to specify the appropriate one "+
 						"from the following from the xforms design page: concept, location, provider and person");
