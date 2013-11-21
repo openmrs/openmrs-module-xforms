@@ -78,10 +78,10 @@ public class WidgetValueServlet extends HttpServlet {
 		
 		for(Object[] obj : list){
 			
-			if(obj[0].toString().trim().length() == 0)
+			if(obj[0] == null || obj[0].toString().trim().length() == 0)
 				continue;
 			
-			if(obj[1].toString().trim().length() == 0)
+			if(obj[1] == null || obj[1].toString().trim().length() == 0)
 				continue;
 			
 			if(result != null)
