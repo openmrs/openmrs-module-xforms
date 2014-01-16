@@ -796,7 +796,7 @@ public class XformsUtil {
 		int pos = OpenmrsConstants.OPENMRS_VERSION_SHORT.indexOf('.');
 		pos = OpenmrsConstants.OPENMRS_VERSION_SHORT.indexOf('.', pos + 1);
 		double version = Double.parseDouble(OpenmrsConstants.OPENMRS_VERSION_SHORT.substring(0, pos));
-		return version > 1.7 || version == 1.10; //TODO Need to do proper check instead of hard coding 1.10
+		return version > 1.7 || version == 1.10 || version == 1.11 || version == 1.12; //TODO Need to do proper check instead of hard coding 1.10
 	}
 	
 	public static boolean isOnePointNineOneAndAbove() {
