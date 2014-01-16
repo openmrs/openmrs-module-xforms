@@ -22,3 +22,7 @@ body {
   border-top-width: thin;
   border-top-style: solid;
 }
+
+.gwt-Label {
+    white-space: pre;
+}

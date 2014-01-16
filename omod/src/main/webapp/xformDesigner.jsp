@@ -554,7 +554,8 @@
            		mergeCells: "<spring:message code="xforms.mergeCells" />",
            		exclusiveOption: "<spring:message code="xforms.exclusiveOption" />",
            		otherProperties: "<spring:message code="xforms.otherProperties" />",
-           		exclusiveQuestion: "<spring:message code="xforms.exclusiveQuestion" />"
+           		exclusiveQuestion: "<spring:message code="xforms.exclusiveQuestion" />",
+           		cls: "<spring:message code="xforms.cls" />"
     	};
 
     	function isUserAuthenticated(){
