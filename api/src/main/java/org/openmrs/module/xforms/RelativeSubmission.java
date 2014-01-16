@@ -31,6 +31,10 @@ public class RelativeSubmission {
 		if (patientNode == null)
 			return;
 		
+		if (XformBuilder.getElement(patientNode, RelativeBuilder.NODE_RELATIVE) == null) {
+			return; //user deleted the relationships node XFRM-176
+		}
+		
 		PersonService ps = Context.getPersonService();
 		
 		//we start by assuming all relationships are deleted until found in the submission.
