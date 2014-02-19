@@ -74,7 +74,7 @@
 
 <iframe src="javascript:''" id="__gwt_historyFrame" tabIndex='-1' style="position:absolute;width:0;height:0;border:0"></iframe>
 
-<div id="purcformrunner"><div>
+<div id="purcformrunner"></div>
 
 <div id="formId" style="visibility:hidden;">${formId}</div>
 <div id="patientId" style="visibility:hidden;">${patientId}</div>

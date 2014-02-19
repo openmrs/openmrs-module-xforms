@@ -1,0 +1,23 @@
+[
+    {
+        "id": "xforms.formentry",
+        "description": "Provides form entry capabilities",
+        "order": 2,
+        "extensions": [
+            {
+                "id": "xforms.formentryHomepageLink",
+                "extensionPointId": "org.openmrs.referenceapplication.homepageLink",
+                "type": "link",
+                "label": "xforms.app.formentry.label",
+                "url": "coreapps/findpatient/findPatient.page?app=xforms.formentry",
+                "icon": "icon-file-alt",
+                "requiredPrivilege": "App: xforms.formentry"
+            }
+        ],
+        "config": {
+            "afterSelectedUrl": "/xforms/formentry/patient.page?patientId={{patientId}}",
+            "label": "xforms.app.formentry.title",
+            "heading": "xforms.app.formentry.selectPatient"
+        }
+    }
+]

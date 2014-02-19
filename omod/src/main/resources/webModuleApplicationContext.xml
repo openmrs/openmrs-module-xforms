@@ -91,5 +91,7 @@
 		<property name="formView"><value>/module/@MODULE_ID@/patientReg</value></property>
 		<property name="successView"><value>patientReg.form</value></property>
     </bean>
+        
+    <bean class="org.openmrs.module.xforms.web.RefAppConfiguration" />
     
 </beans>

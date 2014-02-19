@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>xforms</id>
 	<name>XForms</name>
-	<version>4.2.5</version>
+	<version>4.2.5.1</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Daniel Kayiwa</author>
 	<description>
@@ -20,6 +20,13 @@
 	<require_version>1.5.0</require_version>
 	<require_database_version>1.5.0</require_database_version>
 	
+	<aware_of_modules>
+	    <aware_of_module>org.openmrs.module.uiframework</aware_of_module>
+	    <aware_of_module>org.openmrs.module.appui</aware_of_module>
+	    <aware_of_module>org.openmrs.module.emrapi</aware_of_module>
+	    <aware_of_module>org.openmrs.module.appframework</aware_of_module>
+	</aware_of_modules>
+
 	<advice>
 		<point>org.openmrs.api.FormService</point>
 		<class>org.openmrs.module.xforms.aop.FormDeleteAfterAdvice</class>

@@ -63,6 +63,11 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<MODULE_ID>xforms</MODULE_ID>
 		<MODULE_PACKAGE>org.openmrs.module.xforms</MODULE_PACKAGE>
+		<appframeworkVersion>2.1</appframeworkVersion>
+        <uiframeworkVersion>3.2</uiframeworkVersion>
+        <appuiVersion>1.1</appuiVersion>
+        <uicommonsVersion>1.0</uicommonsVersion>
+        <emrapiVersion>1.1</emrapiVersion>
 	</properties>
 
 	<dependencyManagement>

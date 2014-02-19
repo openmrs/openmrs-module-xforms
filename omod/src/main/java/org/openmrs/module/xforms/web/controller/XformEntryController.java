@@ -14,6 +14,7 @@ import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.util.XformsUtil;
+import org.openmrs.web.WebConstants;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.servlet.ModelAndView;
@@ -31,6 +32,23 @@ public class XformEntryController extends SimpleFormController{
 	/** Logger for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
 
+	/**
+     * @see org.springframework.web.servlet.mvc.SimpleFormController#showForm(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.springframework.validation.BindException)
+     */
+    @Override
+    protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors)
+        throws Exception {
+	    
+    	if ("true".equals(request.getParameter("refappui"))) {
+    		response.sendRedirect("/" + WebConstants.WEBAPP_NAME + "/xforms/formentry/xformEntry.page?" + request.getQueryString());
+			return null;
+		}
+    	else {
+    		return super.showForm(request, response, errors);
+    	}
+    }
+
+
 	@Override
 	protected Map referenceData(HttpServletRequest request, Object obj, Errors err) throws Exception {
 		HashMap<String,Object> map = new HashMap<String,Object>();
@@ -42,7 +60,6 @@ public class XformEntryController extends SimpleFormController{
 			map.put("formName", ((FormService)Context.getService(FormService.class)).getForm(formId).getName());
 			map.put("entityFormDefDownloadUrlSuffix", "moduleServlet/xforms/xformDownload?target=xformentry&contentType=xml&");
 			map.put("formDataUploadUrlSuffix", "module/xforms/xformDataUpload.form");
-			map.put("afterSubmitUrlSuffix", "patientDashboard.form?");
 		}
 		else{ //editing existing form
 			Integer encounterId = Integer.parseInt(request.getParameter("encounterId"));
@@ -53,10 +70,11 @@ public class XformEntryController extends SimpleFormController{
 			map.put("formName", ((FormService)Context.getService(FormService.class)).getForm(form.getFormId()).getName());
 			map.put("entityFormDefDownloadUrlSuffix", "moduleServlet/xforms/xformDownload?target=xformentry&contentType=xml&encounterId="+encounterId+"&");
 			map.put("formDataUploadUrlSuffix", "module/xforms/xformDataUpload.form?mode=edit");
-			map.put("afterSubmitUrlSuffix", "patientDashboard.form?");
 		}
 		
-		map.put("afterCancelUrlSuffix", "patientDashboard.form?");
+		String url = "patientDashboard.form?";
+		map.put("afterSubmitUrlSuffix", url);
+		map.put("afterCancelUrlSuffix", url);
 
 		map.put(XformConstants.FORM_DESIGNER_KEY_DATE_SUBMIT_FORMAT, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_SUBMIT_FORMAT,XformConstants.DEFAULT_DATE_SUBMIT_FORMAT));
 		map.put(XformConstants.FORM_DESIGNER_KEY_DATE_DISPLAY_FORMAT, Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_DISPLAY_FORMAT,XformConstants.DEFAULT_DATE_DISPLAY_FORMAT));
@@ -91,13 +109,11 @@ public class XformEntryController extends SimpleFormController{
 		return map;
 	}
 
-
 	//Can't see current usage for this.
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object object, BindException exceptions) throws Exception {						
 		return new ModelAndView(new RedirectView(getSuccessView()));
 	}
-
 
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception { 
