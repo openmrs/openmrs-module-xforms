@@ -1,8 +1,5 @@
 <%
     ui.decorateWith("appui", "standardEmrPage")
-    
-    ui.includeCss("uicommons", "datatables/dataTables.css")
-    ui.includeJavascript("uicommons", "datatables/jquery.dataTables.min.js")
 %>
 
 <script type="text/javascript">
@@ -16,6 +13,10 @@
 
 ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient.patient ]) }
 
+<link rel="stylesheet" href="/${contextPath}/scripts/jquery-ui/css/green/jquery-ui.custom.css" type="text/css" />
+
+<script type="text/javascript" src='/${contextPath}/openmrs.js'></script>
+<script type="text/javascript" src='/${contextPath}/scripts/openmrsmessages.js'></script>
 <script type="text/javascript" src='/${contextPath}/dwr/engine.js'></script>
 <script type="text/javascript" src='/${contextPath}/dwr/util.js'></script>
 <script type="text/javascript" src='/${contextPath}/dwr/interface/DWRXformsService.js'></script>
@@ -159,13 +160,13 @@ ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient.patient ])
 
 <div id="proposeConceptForm">
 	<br />
-	<spring:message code="ConceptProposal.proposeInfo" />
+	${ ui.message("ConceptProposal.proposeInfo" )}
 	<br /><br />
-	<b><spring:message code="ConceptProposal.originalText" /></b><br />
+	<b>${ ui.message("ConceptProposal.originalText") }></b><br />
 	<textarea name="originalText" id="proposedText" rows="4" cols="60" /></textarea><br />
 	<br />
 	<span class="alert">
-		<spring:message code="ConceptProposal.proposeWarning" />
+		${ ui.message("ConceptProposal.proposeWarning") }
 	</span>
 </div>
 
@@ -516,6 +517,183 @@ ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient.patient ])
        		cls: "${ ui.message("xforms.cls") }"
 	};
 	
+	function searchExternal(key,value,parentElement,textElement,valueElement,filterField){
+		if (key == 'date') {
+			showCalendar(valueElement, 100);
+			return;
+		}
+		else if (key == 'datetime') {
+			showDateTimePicker(valueElement, 100);
+			return;
+		}
+		else if (key == 'time') {
+			showTimePicker(valueElement, 100);
+			return;
+		}
+		
+		if (typeof(dojo) != "undefined"){
+			var searchWidget = dojo.widget.manager.getWidgetById("conceptId_search");
+			//parentElement.appendChild(searchWidget.domNode.parentNode);
+			searchWidget.includeClasses = (filterField == null ? [] : filterField.split(","));
+		
+			var selectionWidget = dojo.widget.manager.getWidgetById("conceptId_selection");
+	 		selectionWidget.displayNode = textElement;
+	
+			selectionWidget.hiddenInputNode = valueElement;
+			
+			searchWidget.clearSearch();
+			searchWidget.toggleShowing();
+	
+	
+			var left = dojo.style.totalOffsetLeft(parentElement.parentNode, false) + dojo.style.getBorderBoxWidth(parentElement.parentNode) + 10;
+			if (left + dojo.style.getBorderBoxWidth(searchWidget.domNode) > dojo.html.getViewportWidth())
+				left = dojo.html.getViewportWidth() - dojo.style.getBorderBoxWidth(searchWidget.domNode) - 10 + dojo.html.getScrollLeft();
+			
+			var top = dojo.style.totalOffsetTop(parentElement.parentNode, true);
+			var scrollTop = dojo.html.getScrollTop();
+			var boxHeight = dojo.style.getBorderBoxHeight(searchWidget.domNode);
+			var viewportHeight = dojo.html.getViewportHeight();
+			if ((top + boxHeight - scrollTop) > viewportHeight - 5)
+				top = viewportHeight - boxHeight + scrollTop - 10;
+		
+			dojo.style.setPositivePixelValue(searchWidget.domNode, "top", top);
+	
+			dojo.style.setPositivePixelValue(searchWidget.domNode, "left", left);
+			
+			searchWidget.inputNode.select();
+			searchWidget.inputNode.value = value;
+		}
+		else{
+			key = jq.trim(key).toLowerCase();
+			if(key != 'concept' && key != 'location' && key != 'provider' && key != 'person'){
+				alert("The external source property '"+key+"' is invalid, you need to specify the appropriate one "+
+						"from the following from the xforms design page: concept, location, provider and person");
+				return;
+			}
+			
+			//If we had previously displayed a search widget, remove it and add the original value widget.
+			if (searchElement != null) {
+				var parent = searchElement.parentNode;
+				if (parent != null) {
+			    	parent.removeChild(searchElement);
+			    	parent.appendChild(valElement);
+				}
+			}
+			
+			valElement = valueElement;
+			txtElement = textElement;
+			
+			var searchInputId;
+			var placeHolderText;
+			var callback;
+			var createCallback;
+			var isSearchElementNull = false;
+			if(key == 'concept'){
+				searchInputId = 'conceptId_id_selection';
+				placeHolderText = '${ ui.message("Concept.search.placeholder") }';
+				var includeC = (filterField == null ? "" : filterField).split(",");
+				var excludeC = "".split(",");
+				var includeD = "".split(",");
+				var excludeD = "".split(",");
+
+				// the typical callback
+				if (options == null)
+    				options = {includeClasses:includeC, excludeClasses:excludeC, includeDatatypes:includeD, excludeDatatypes:excludeD};
+    			else
+    				options.includeClasses = includeC;
+    				
+    			createCallback = new CreateCallback(options);
+    			callback = createCallback.conceptCallback();
+				if(conceptSearchElement == null){
+					isSearchElementNull = true;
+					conceptSearchElement = document.getElementById(searchInputId);
+				}
+				searchElement = conceptSearchElement;
+			}else if(key == 'provider'){
+				searchInputId = 'providerId_id_selection';
+				placeHolderText = '${ ui.message("Provider.search.placeholder") }';
+				callback = new CreateCallback().providerCallback();
+				if(providerSearchElement == null){
+					isSearchElementNull = true;			
+					providerSearchElement = document.getElementById(searchInputId);
+				}
+				searchElement = providerSearchElement;
+			}else if(key == 'person'){
+				searchInputId = 'personId_id_selection';
+				placeHolderText = '${ ui.message("Person.search.placeholder") }';
+				callback = new CreateCallback().personCallback();
+				if(personSearchElement == null){
+					isSearchElementNull = true;
+					personSearchElement = document.getElementById(searchInputId);
+				}
+				searchElement = personSearchElement;
+			}else if(key == 'location'){
+				if(locationSearchElement == null){
+					isSearchElementNull = true;
+					locationSearchElement = document.getElementById('locationId_id_selection');
+				}
+				searchElement = locationSearchElement;
+			}
+			
+			if (createCallback) {
+				// a 'private' method
+				// This is what maps each ConceptListItem or LocationListItem returned object to a name in the dropdown
+				createCallback.displayNamedObject = function(origQuery) { return function(item) {
+					// dwr sometimes puts strings into the results, just display those
+					if (typeof item == 'string') {
+						item += "<a href='#proposeConcept' onclick='javascript:return showProposeConceptForm();'> ${ ui.message("ConceptProposal.propose.new") } </a>";
+						return { label: item, value: "" };
+					}
+					
+					// item is a ConceptListItem or LocationListItem object
+					// add a space so the term highlighter below thinks the first word is a word
+					var textShown = " " + item.name;
+					
+					// highlight each search term in the results
+					textShown = highlightWords(textShown, origQuery);
+					
+					var value = item.name;
+					if (item.preferredName) {
+						textShown += "<span class='preferredname'> &rArr; " + item.preferredName + "</span>";
+						//value = item.preferredName;
+					}
+					
+					textShown = "<span class='autocompleteresult'>" + textShown + "</span>";
+					
+					return { label: textShown, value: value, object: item};
+				}; };
+			}
+			
+			//we use a custom autocomplete for location widget since there is 
+			//no autocomplete call back for locations in the core
+			if(key != 'location'){
+				// set up the autocomplete
+				new AutoComplete(searchInputId, callback, {
+					select: function(event, ui) {
+						if (ui.item.object) {
+							funcItemIdAutoCompleteOnSelect(ui.item.object, ui.item, key);
+						}
+					},
+		           	placeholder:placeHolderText,
+		           	autoSelect: true
+				});
+			}
+				
+			if(isSearchElementNull == true)
+				searchElement.parentNode.removeChild(searchElement);
+			
+			searchElement.style.height = valueElement.parentNode.parentNode.parentNode.parentNode.style.height;
+			searchElement.style.width = valueElement.parentNode.parentNode.parentNode.parentNode.style.width;
+			
+			var parent = valueElement.parentNode;
+			parent.removeChild(valueElement);
+			
+			parent.appendChild(searchElement);
+			searchElement.focus();
+			searchElement.value = value;
+		}
+	}
+	
 	function isUserAuthenticated(){
 		DWRXformsService.isAuthenticated(checkIfLoggedInCallback);
 	}
@@ -556,5 +734,118 @@ ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient.patient ])
 			document.getElementById("searchLocations").style.visibility="hidden";
 		}
 	}
+	
+	function funcItemIdAutoCompleteOnSelect(selectedObj, item, key) {
+		if(key == 'concept'){
+			valElement.value = selectedObj.name;
+			txtElement.innerHTML = selectedObj.conceptId + "^" + selectedObj.name + "^99DCT";
+		}else if(key == 'provider'){
+			valElement.value = selectedObj.displayName;
+			txtElement.innerHTML = selectedObj.providerId;
+		}else if(key == 'person'){
+			valElement.value = selectedObj.personName;
+			txtElement.innerHTML = selectedObj.uuid;
+		}
+		
+		var parent = searchElement.parentNode;
+		parent.removeChild(searchElement);
+		parent.appendChild(valElement);
+		
+		valElement.focus();
+		
+		searchElement = null;
+		valElement = null;
+	}
+	
+	
+	function showProposeConceptForm() {
+		jq('#proposedText').val("");
+		jq('#proposeConceptForm').dialog('open');
+		document.getElementById('proposedText').focus();
+		jq('#proposedText').focus();
+
+		return false;
+	}
+
+	/*
+	 * Private method, used when display persons or concepts to show 
+	 * which part of the word was a match.
+	 * 
+	 * Each separate word in "origQuery" will be highlighted with a 'hit' class in 
+	 * the "textShown" string.   
+	 */
+	function highlightWords(textShown, origQuery) {
+		var words = origQuery.split(" ");
+		for (var x=0; x<words.length; x++) {
+			if (jQuery.trim(words[x]).length > 0) {
+				var word = " " + words[x]; // only match the beginning of words
+				// replace each occurrence case insensitively while replacing with original case
+				textShown = textShown.replace(word, function(matchedTxt) { return "{{{{" + matchedTxt + "}}}}"}, "gi");
+			}
+		}
+		
+		textShown = textShown.replace(/{{{{/g, "<span class='hit'>");
+		textShown = textShown.replace(/}}}}/g, "</span>");
+		
+		return textShown;
+	}
+
+	function proposeConcept() {
+		var box = document.getElementById('proposedText');
+		if (box.value == '')  {
+			alert("Proposed Concept text must be entered. Or simply click Cancel");
+			box.focus();
+		}
+		else {
+			jq('#proposeConceptForm').dialog("close");
+			DWRConceptService.findProposedConcepts(box.value, preProposedConcepts);
+		}
+	}
+
+	function preProposedConcepts(concepts) {
+		if (concepts.length == 0) {
+			var conceptName = document.getElementById('proposedText').value;
+			valElement.value = conceptName;
+    		txtElement.innerHTML = 'PROPOSED' + "^" + conceptName + "^99DCT";
+			var parent = searchElement.parentNode;
+    		parent.removeChild(searchElement);
+    		parent.appendChild(valElement);
+    		
+    		valElement.focus();
+    		
+    		searchElement = null;
+    		valElement = null;
+		}
+		else {
+			//display a box telling them to pick a preposed concept:
+			alert('${ ui.message("ConceptProposal.proposeDuplicate") }');
+			removeAutoCompleteWidget();
+		}
+	}
+
+    function removeAutoCompleteWidget() {
+		var parent = searchElement.parentNode;
+    	parent.removeChild(searchElement);
+    	parent.appendChild(valElement);
+		valElement.focus();
+		
+		searchElement = null;
+		valElement = null;
+    }
+
+    jq(document).ready(function() {
+		jq('#proposeConceptForm').dialog({
+			autoOpen: false,
+			modal: true,
+			title: '${ ui.message("ConceptProposal.proposeNewConcept") }',
+			width: '30%',
+			zIndex: 100,
+			close: function() { jq("#problem_concept").autocomplete("close"); },
+			buttons: { '${ ui.message("ConceptProposal.propose") }': function() { proposeConcept(); },
+					   '${ ui.message("general.cancel") }': function() { jq(this).dialog("close"); removeAutoCompleteWidget();}
+			}
+		});
+		
+	});
 	
 </script>
