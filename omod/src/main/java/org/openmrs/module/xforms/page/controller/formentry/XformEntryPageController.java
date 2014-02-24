@@ -9,30 +9,24 @@ import org.openmrs.Form;
 import org.openmrs.Patient;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.appui.UiSessionContext;
-import org.openmrs.module.emrapi.patient.PatientDomainWrapper;
 import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.util.XformsUtil;
 import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiUtils;
-import org.openmrs.ui.framework.annotation.InjectBeans;
 import org.openmrs.ui.framework.page.PageModel;
 import org.springframework.web.bind.annotation.RequestParam;
 
 public class XformEntryPageController {
 	
-	public void controller(@RequestParam("patientId") Patient patient, UiUtils ui, UiSessionContext emrContext,
-	                       PageModel model, @InjectBeans PatientDomainWrapper patientDomainWrapper,
-	                       HttpServletRequest request) {
-		
-		patientDomainWrapper.setPatient(patient);
+	public void controller(@RequestParam("patientId") Patient patient, UiUtils ui,
+	                       PageModel model, HttpServletRequest request) {
 		
 		SimpleObject appHomepageBreadcrumb = SimpleObject.create("label", ui.message("xforms.app.formentry.title"), "link",
 		    ui.pageLink("coreapps", "findpatient/findPatient?app=xforms.formentry"));
 		SimpleObject patientPageBreadcrumb = SimpleObject.create("label",
 		    patient.getFamilyName() + ", " + patient.getGivenName(), "link", ui.thisUrlWithContextPath());
 		
-		model.addAttribute("patient", patientDomainWrapper);
+		model.addAttribute("patient", patient);
 		model.addAttribute("breadcrumbOverride", ui.toJson(Arrays.asList(appHomepageBreadcrumb, patientPageBreadcrumb)));
 		
 		addFormEntryValues(model, request);

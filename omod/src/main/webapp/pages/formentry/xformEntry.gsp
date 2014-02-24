@@ -6,12 +6,12 @@
     var breadcrumbs = [
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
         { label: "${ ui.message("xforms.app.formentry.title") }", link: "${ ui.pageLink("coreapps", "findpatient/findPatient", [app: "xforms.formentry"]) }" },
-        { label: "${ ui.format(patient.patient.familyName) }, ${ ui.format(patient.patient.givenName) }" , link: '${ui.pageLink("xforms", "formentry/patient", [patientId: patient.id])}'},
+        { label: "${ ui.format(patient.familyName) }, ${ ui.format(patient.givenName) }" , link: '${ui.pageLink("xforms", "formentry/patient", [patientId: patient.patientId])}'},
         { label: "${ ui.escapeJs(ui.format(formName)) }" }
     ];
 </script>
 
-${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient.patient ]) }
+${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient ]) }
 
 <link rel="stylesheet" href="/${contextPath}/scripts/jquery-ui/css/green/jquery-ui.custom.css" type="text/css" />
 
