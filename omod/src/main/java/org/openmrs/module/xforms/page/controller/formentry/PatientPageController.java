@@ -13,6 +13,7 @@
  */
 package org.openmrs.module.xforms.page.controller.formentry;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -50,6 +51,13 @@ public class PatientPageController {
 	}
 	
 	private Map<Form, FormEntryHandler> getForms(Patient patient) {
+		List<String> excludFormUuids =  new ArrayList<String>();
+		excludFormUuids.add("a000cb34-9ec1-4344-a1c8-f692232f6edd");
+		excludFormUuids.add("c75f120a-04ec-11e3-8780-2b40bef9a44b");
+		excludFormUuids.add("d2c7532c-fb01-11e2-8ff2-fd54ab5fdb2a");
+		excludFormUuids.add("b5f8ffd8-fbde-11e2-8ff2-fd54ab5fdb2a");
+		excludFormUuids.add("a007bbfe-fbe5-11e2-8ff2-fd54ab5fdb2a");
+		
 		FormEntryContext fec = new FormEntryContext(patient);
 		Map<Form, FormEntryHandler> entryUrlMap = new TreeMap<Form, FormEntryHandler>(new Comparator<Form>() {
 			
@@ -72,6 +80,10 @@ public class PatientPageController {
 				Collection<Form> toEnter = handler.getFormsModuleCanEnter(fec);
 				if (toEnter != null) {
 					for (Form form : toEnter) {
+						if (excludFormUuids.contains(form.getUuid())) {
+							continue;
+						}
+						
 						entryUrlMap.put(form, handler);
 					}
 				}
