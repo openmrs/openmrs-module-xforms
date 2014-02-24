@@ -25,37 +25,32 @@ import org.openmrs.Patient;
 import org.openmrs.module.Extension;
 import org.openmrs.module.Extension.MEDIA_TYPE;
 import org.openmrs.module.ModuleFactory;
-import org.openmrs.module.appui.UiSessionContext;
-import org.openmrs.module.emrapi.patient.PatientDomainWrapper;
 import org.openmrs.module.web.FormEntryContext;
 import org.openmrs.module.web.extension.FormEntryHandler;
 import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiUtils;
-import org.openmrs.ui.framework.annotation.InjectBeans;
 import org.openmrs.ui.framework.page.PageModel;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.web.bind.annotation.RequestParam;
 
 public class PatientPageController {
 	
-	public void controller(@RequestParam("patientId") Patient patient, UiUtils ui, UiSessionContext emrContext,
-	                       PageModel model, @InjectBeans PatientDomainWrapper patientDomainWrapper) {
-		
-		patientDomainWrapper.setPatient(patient);
+	public void controller(@RequestParam("patientId") Patient patient, UiUtils ui,
+	                       PageModel model) {
 		
 		SimpleObject appHomepageBreadcrumb = SimpleObject.create("label", ui.message("xforms.app.formentry.title"),
 		    "link", ui.pageLink("coreapps", "findpatient/findPatient?app=xforms.formentry"));
 		SimpleObject patientPageBreadcrumb = SimpleObject.create("label",
 		    patient.getFamilyName() + ", " + patient.getGivenName(), "link", ui.thisUrlWithContextPath());
 		
-		model.addAttribute("patient", patientDomainWrapper);
+		model.addAttribute("patient", patient);
 		model.addAttribute("breadcrumbOverride", ui.toJson(Arrays.asList(appHomepageBreadcrumb, patientPageBreadcrumb)));
 		
-		model.put("formToEntryUrlMap", getForms(patientDomainWrapper));
+		model.put("formToEntryUrlMap", getForms(patient));
 	}
 	
-	private Map<Form, FormEntryHandler> getForms(PatientDomainWrapper patientDomainWrapper) {
-		FormEntryContext fec = new FormEntryContext(patientDomainWrapper.getPatient());
+	private Map<Form, FormEntryHandler> getForms(Patient patient) {
+		FormEntryContext fec = new FormEntryContext(patient);
 		Map<Form, FormEntryHandler> entryUrlMap = new TreeMap<Form, FormEntryHandler>(new Comparator<Form>() {
 			
 			public int compare(Form left, Form right) {

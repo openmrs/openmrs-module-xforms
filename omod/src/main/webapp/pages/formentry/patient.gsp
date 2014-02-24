@@ -9,11 +9,11 @@
     var breadcrumbs = [
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
         { label: "${ ui.message("xforms.app.formentry.title") }", link: "${ ui.pageLink("coreapps", "findpatient/findPatient", [app: "xforms.formentry"]) }" },
-        { label: "${ ui.format(patient.patient.familyName) }, ${ ui.format(patient.patient.givenName) }" , link: '${ui.pageLink("coreapps", "patientdashboard/patientDashboard", [patientId: patient.id])}'},
+        { label: "${ ui.format(patient.familyName) }, ${ ui.format(patient.givenName) }" , link: '${ui.pageLink("coreapps", "patientdashboard/patientDashboard", [patientId: patient.patientId])}'},
     ];
 </script>
 
-${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient.patient ]) }
+${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient ]) }
 
 <script type="text/javascript">
 
@@ -54,9 +54,9 @@ ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient.patient ])
                 <% formToEntryUrlMap.each { entry -> %>
                     <tr>
                     	<% if (entry.value.formEntryUrl.contains("?")) { %>
-                    		<td> <a href="/${ ui.contextPath() }/${entry.value.formEntryUrl}&formId=${entry.key.formId}&patientId=${patient.patient.patientId}&refappui=true">${entry.key.name}</a> </td>
+                    		<td> <a href="/${ ui.contextPath() }/${entry.value.formEntryUrl}&formId=${entry.key.formId}&patientId=${patient.patientId}&refappui=true">${entry.key.name}</a> </td>
                     	<% } else { %>
-                        	<td> <a href="/${ ui.contextPath() }/${entry.value.formEntryUrl}?formId=${entry.key.formId}&patientId=${patient.patient.patientId}&refappui=true">${entry.key.name}</a> </td>
+                        	<td> <a href="/${ ui.contextPath() }/${entry.value.formEntryUrl}?formId=${entry.key.formId}&patientId=${patient.patientId}&refappui=true">${entry.key.name}</a> </td>
                         <% } %>
                         
                         <td> ${entry.key.version} </td>
