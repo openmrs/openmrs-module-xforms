@@ -17,18 +17,20 @@ ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient ]) }
 
 <script type="text/javascript">
 
-	jq(document).ready(function() {
-		var oTable = jq("#formEntryTableParent > #formEntryTable").dataTable({
-			"bPaginate": false,
-			"bAutoWidth": false,
-			"aaSorting": [[0, 'asc']],
-			"aoColumns":
-				[
-					{ "iDataSort": 1 },
-					null
-				]
+	<% if (formToEntryUrlMap.size() > 0) { %>
+		jq(document).ready(function() {
+			var oTable = jq("#formEntryTableParent > #formEntryTable").dataTable({
+				"bPaginate": false,
+				"bAutoWidth": false,
+				"aaSorting": [[0, 'asc']],
+				"aoColumns":
+					[
+						{ "iDataSort": 1 },
+						null
+					]
+			});
 		});
-	});
+	<% } %>
 	
 </script>
 
