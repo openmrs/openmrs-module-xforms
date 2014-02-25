@@ -387,6 +387,18 @@
 		</description>
 	</globalProperty>
 	
+	<globalProperty>
+		<property>@MODULE_ID@.afterSubmitUrl</property>
+		<defaultValue>coreapps/findpatient/findPatient.page?app=xforms.formentry</defaultValue>
+		<description>The url to go to after submitting an xform.</description>
+	</globalProperty>
+	
+	<globalProperty>
+		<property>@MODULE_ID@.afterCancelUrl</property>
+		<defaultValue>xforms/formentry/patient.page?</defaultValue>
+		<description>The url to go to after cancelling an xform.</description>
+	</globalProperty>
+	
 	<!-- /Required Global Properties -->
 
 	<!-- /Xforms Module Properties -->

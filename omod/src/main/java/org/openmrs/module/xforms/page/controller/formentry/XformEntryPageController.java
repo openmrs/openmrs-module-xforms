@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.Encounter;
 import org.openmrs.Form;
 import org.openmrs.Patient;
@@ -55,12 +56,27 @@ public class XformEntryPageController {
 			model.addAttribute("formDataUploadUrlSuffix", "module/xforms/xformDataUpload.form?mode=edit");
 		}
 		
-		String url = "patientDashboard.form?";
-		if ("true".equals(request.getParameter("refappui"))) {
-			url = "xforms/formentry/patient.page?";
+		
+		String url = "coreapps/findpatient/findPatient.page?app=xforms.formentry";
+		String str = request.getParameter("afterSubmitUrl");
+		if (StringUtils.isNotBlank(str)) {
+			url = str;
+		}
+		url = Context.getAdministrationService().getGlobalProperty("xforms.afterSubmitUrl", url);
+		if ("coreapps/findpatient/findPatient.page?app=xforms.formentry".equals(url)) {
+			url += "&afterSelectedUrl=/xforms/formentry/patient.page?patientId={{patientId}}";
 		}
 		model.addAttribute("afterSubmitUrlSuffix", url);
+		
+		
+		url = "xforms/formentry/patient.page?";
+		str = request.getParameter("afterCancelUrl");
+		if (StringUtils.isNotBlank(str)) {
+			url = str;
+		}
+		url = Context.getAdministrationService().getGlobalProperty("xforms.afterCancelUrl", url);
 		model.addAttribute("afterCancelUrlSuffix", url);
+		
 		
 		model.addAttribute(
 		    XformConstants.FORM_DESIGNER_KEY_DATE_SUBMIT_FORMAT,
