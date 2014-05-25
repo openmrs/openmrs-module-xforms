@@ -26,7 +26,6 @@ import org.openmrs.module.xforms.model.PatientMedicalHistory;
 import org.openmrs.module.xforms.model.PersonRepeatAttribute;
 import org.openmrs.module.xforms.model.XformUser;
 import org.openmrs.module.xforms.util.XformsUtil;
-import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.transaction.annotation.Transactional;
@@ -369,11 +368,11 @@ public class XformsServiceImpl implements XformsService {
 		message.setTo(email);
 		message.setSubject(subject);
 		message.setText(ExceptionUtils.getFullStackTrace(exception));
-		try {
+		//try {
 			mailSender.send(message);
-		} catch (MailException e) {
-			log.error("Failed to send an e-mail to " + email, e);
-		}
+		//} catch (MailException e) {
+		//	log.error("Failed to send an e-mail to " + email, e);
+		//}
 	}
 
 }
