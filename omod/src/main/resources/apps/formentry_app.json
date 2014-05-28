@@ -17,6 +17,7 @@
         "config": {
             "afterSelectedUrl": "/xforms/formentry/patient.page?patientId={{patientId}}",
             "label": "xforms.app.formentry.title",
+            "showLastViewedPatients": true,
             "heading": "xforms.app.formentry.selectPatient"
         }
     }
