@@ -552,6 +552,11 @@ public class HibernateXformsDAO implements XformsDAO {
 		String sql = "select name from location where retired = 0 and location_id=" + locationId;
 		return (String)sessionFactory.getCurrentSession().createSQLQuery(sql).uniqueResult(); 
 	}
+        
+        public String getProviderName(Integer providerId){
+                String sql = "select name from provider where retired = 0 and provider_id=" + providerId;
+		return (String)sessionFactory.getCurrentSession().createSQLQuery(sql).uniqueResult(); 
+        }
 	
 	public String getPersonName(Integer personId){
 		try{

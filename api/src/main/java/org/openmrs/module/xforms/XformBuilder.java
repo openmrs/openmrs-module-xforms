@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -14,7 +15,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -3465,6 +3465,16 @@ public final class XformBuilder implements GlobalPropertyListener {
 		return (personName != null ? personName.toString() : provider.getUsername()) + " [" + personId + "]";
 	}
 	
+        public static String getProviderName(Object provider) throws Exception {
+                Method meth = provider.getClass().getMethod("getName", null);
+		String providerName = (String)meth.invoke(provider, null);
+                
+                meth = provider.getClass().getMethod("getProviderId", null);
+		Integer providerId = (Integer)meth.invoke(provider, null);
+                
+		return providerName+ " [" + providerId + "]";
+	}
+        
 	private static void addOtherPatientIdentifiers(Element formNode, Element modelNode, Element groupNode) {
 		
 		String name = NODE_NAME_OTHER_IDENTIFIERS;
