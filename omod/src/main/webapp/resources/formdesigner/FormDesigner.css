@@ -97,6 +97,9 @@ body, html {
   filter: alpha(opacity = 50);
   opacity: 0.5;
   color: red;
+  border-color: red;
+  border-style: dotted;
+  border-width: 1px;
   white-space: nowrap;
 }
 
@@ -154,5 +157,5 @@ label::-moz-selection { background: transparent; }
 }
 
 .gwt-Label {
-    white-space: pre;
+    white-space: pre-wrap;
 }
