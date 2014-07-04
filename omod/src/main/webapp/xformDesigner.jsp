@@ -488,6 +488,7 @@
         		qtnTypeGPS: "<spring:message code="xforms.qtnTypeGPS" />",
         		qtnTypeBarcode: "<spring:message code="xforms.qtnTypeBarcode" />",
         		qtnTypeGroup: "<spring:message code="xforms.qtnTypeGroup" />",
+        		qtnTypeSubform: "<spring:message code="xforms.qtnTypeSubform" />",
         		palette: "<spring:message code="xforms.palette" />",
         		saveAsXhtml: "<spring:message code="xforms.saveAsXhtml" />",
         		groupWidgets: "<spring:message code="xforms.groupWidgets" />",
@@ -520,6 +521,8 @@
            		timeWidget: "<spring:message code="xforms.timeWidget" />",
     			dateTimeWidget: "<spring:message code="xforms.dateTimeWidget" />",
     			lockWidgets: "<spring:message code="xforms.lockWidgets" />",
+    			lockAllWidgets: "<spring:message code="xforms.lockAllWidgets" />",
+    			unLockAllWidgets: "<spring:message code="xforms.unLockAllWidgets" />",
     			unLockWidgets: "<spring:message code="xforms.unLockWidgets" />",
     			changeWidgetH: "<spring:message code="xforms.changeWidgetH" />",
     			changeWidgetV: "<spring:message code="xforms.changeWidgetV" />",
@@ -555,7 +558,9 @@
            		exclusiveOption: "<spring:message code="xforms.exclusiveOption" />",
            		otherProperties: "<spring:message code="xforms.otherProperties" />",
            		exclusiveQuestion: "<spring:message code="xforms.exclusiveQuestion" />",
-           		cls: "<spring:message code="xforms.cls" />"
+           		cls: "<spring:message code="xforms.cls" />",
+           		resetTabOrder: "<spring:message code="xforms.resetTabOrder" />",
+           		resetTabOrderConfirmation: "<spring:message code="xforms.resetTabOrderConfirmation" />"
     	};
 
     	function isUserAuthenticated(){
