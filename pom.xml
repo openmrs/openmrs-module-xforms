@@ -4,7 +4,7 @@
 
 	<groupId>org.openmrs.module</groupId>
 	<artifactId>xforms</artifactId>
-	<version>4.2.7</version>
+	<version>4.2.8</version>
 	<packaging>pom</packaging>
 	<name>XForms Module</name>
 	<description>A browser based forms module which adds XForms support and related services to XForms clients, like user and patient download.</description>
