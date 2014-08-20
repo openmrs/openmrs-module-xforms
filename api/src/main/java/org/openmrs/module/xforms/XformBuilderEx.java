@@ -289,6 +289,9 @@ public class XformBuilderEx {
 	
 	private static Element getParentNode(FormField formField, Locale locale){
 		formField = formField.getParent();
+		if(formField == null){
+			return bodyNode; //is this problem list?
+		}
 		if(formField.getParent() == null){
 			return bodyNode;
 		}
