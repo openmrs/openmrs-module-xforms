@@ -40,7 +40,7 @@ ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient ]) }
 
     <div id="formEntryTableParent">
 
-        <table id="formEntryTable">
+        <table id="formEntryTable" width="100%" border="1" cellspacing="0" cellpadding="2">
             <thead>
                 <tr>
                     <th>${ ui.message("general.name") }</th>
