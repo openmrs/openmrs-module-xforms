@@ -73,6 +73,11 @@ ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient ]) }
 		padding: 2px 5px;
 	}
 	
+	.purcforms-horizontal-grid-line, .purcforms-vertical-grid-line {
+		display: block;
+		position: absolute;
+	}
+	
 	.popupSearchForm {
 		width: 500px;
 		height: 390px;
