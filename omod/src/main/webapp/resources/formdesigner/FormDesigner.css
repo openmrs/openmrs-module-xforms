@@ -43,6 +43,16 @@ body, html {
   background-color: white;
 }
 
+.purcforms-table-border {
+  border: 1px solid navy;
+  background-color: white;
+}
+
+.purcforms-group-border {
+  border: 1px solid navy;
+  background-color: white;
+}
+
 .getting-started-blue {
   border: 1px solid red;
 }
