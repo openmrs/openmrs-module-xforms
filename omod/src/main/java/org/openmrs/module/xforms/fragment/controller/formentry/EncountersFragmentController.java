@@ -1,6 +1,8 @@
 package org.openmrs.module.xforms.fragment.controller.formentry;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,8 +12,8 @@ import org.openmrs.Form;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Extension;
-import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.Extension.MEDIA_TYPE;
+import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.web.extension.FormEntryHandler;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.fragment.FragmentModel;
@@ -24,6 +26,7 @@ public class EncountersFragmentController {
 	                       FragmentModel model) {
 		
 		List<Encounter> encounters = Context.getEncounterService().getEncountersByPatient(patient);
+		Collections.sort(encounters, new EncounterComparator());
 		model.put("encounters", encounters);
 		
 		Map<Form, String> viewUrlMap = new HashMap<Form, String>();
@@ -63,5 +66,12 @@ public class EncountersFragmentController {
 		
 		model.put("formToViewUrlMap", viewUrlMap);
 		model.put("formToEditUrlMap", editUrlMap);
+	}
+	
+	private class EncounterComparator implements Comparator<Encounter> {
+	    @Override
+	    public int compare(Encounter e1, Encounter e2) {
+	        return e1.getEncounterDatetime().compareTo(e2.getEncounterDatetime());
+	    }
 	}
 }
