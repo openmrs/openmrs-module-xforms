@@ -197,6 +197,32 @@ ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient ]) }
 
 	var locationNameIdMap = new Object();
 	var locationNames = [];
+
+	<% locations.each { loc -> %>
+		locationNames.push("${loc.name}");
+		locationNameIdMap["${loc.name}"] = "${loc.locationId}";
+	<% } %>
+	
+	jq('input#locationId_id_selection').autocomplete({
+		source: locationNames,
+		select: function(event, ui) {
+					valElement.value = ui.item.value;
+					txtElement.innerHTML = locationNameIdMap[ui.item.value];
+					
+					var parent = searchElement.parentNode;
+					parent.removeChild(searchElement);
+					parent.appendChild(valElement);
+					
+					valElement.focus();
+				}
+	});
+	
+	function updateLocationFields(searchField){
+		if(locationNameIdMap[jq.trim(jq(searchField).val())] == undefined)
+			jq(searchField).val('');
+		if(jq.trim(jq(searchField).val()) == '')
+			jq(valElement).val('');
+	}
 	
 </script>
 
