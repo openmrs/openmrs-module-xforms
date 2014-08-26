@@ -667,29 +667,17 @@ ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient ]) }
 			}
 			
 			if (createCallback) {
-				// a 'private' method
 				// This is what maps each ConceptListItem or LocationListItem returned object to a name in the dropdown
 				createCallback.displayNamedObject = function(origQuery) { return function(item) {
 					// dwr sometimes puts strings into the results, just display those
 					if (typeof item == 'string') {
-						item += "<a href='#proposeConcept' onclick='javascript:return showProposeConceptForm();'> ${ ui.message("ConceptProposal.propose.new") } </a>";
-						return { label: item, value: "" };
+						return null;
 					}
 					
 					// item is a ConceptListItem or LocationListItem object
 					// add a space so the term highlighter below thinks the first word is a word
-					var textShown = " " + item.name;
-					
-					// highlight each search term in the results
-					textShown = highlightWords(textShown, origQuery);
-					
+					var textShown = " " + item.name;					
 					var value = item.name;
-					if (item.preferredName) {
-						textShown += "<span class='preferredname'> &rArr; " + item.preferredName + "</span>";
-						//value = item.preferredName;
-					}
-					
-					textShown = "<span class='autocompleteresult'>" + textShown + "</span>";
 					
 					return { label: textShown, value: value, object: item};
 				}; };
@@ -796,29 +784,6 @@ ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient ]) }
 		jq('#proposedText').focus();
 
 		return false;
-	}
-
-	/*
-	 * Private method, used when display persons or concepts to show 
-	 * which part of the word was a match.
-	 * 
-	 * Each separate word in "origQuery" will be highlighted with a 'hit' class in 
-	 * the "textShown" string.   
-	 */
-	function highlightWords(textShown, origQuery) {
-		var words = origQuery.split(" ");
-		for (var x=0; x<words.length; x++) {
-			if (jQuery.trim(words[x]).length > 0) {
-				var word = " " + words[x]; // only match the beginning of words
-				// replace each occurrence case insensitively while replacing with original case
-				textShown = textShown.replace(word, function(matchedTxt) { return "{{{{" + matchedTxt + "}}}}"}, "gi");
-			}
-		}
-		
-		textShown = textShown.replace(/{{{{/g, "<span class='hit'>");
-		textShown = textShown.replace(/}}}}/g, "</span>");
-		
-		return textShown;
 	}
 
 	function proposeConcept() {
