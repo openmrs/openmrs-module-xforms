@@ -143,6 +143,18 @@ public class XformBuilderEx {
 		addUInode(token, concept, type, XformBuilder.CONTROL_INPUT, locale, getParentNode(formField, locale));
 	}
 	
+	public static void dateConcept(String token, Concept concept, boolean required, Locale locale, FormField formField) {	
+		addUInode(token, concept, XformBuilder.DATA_TYPE_DATE, XformBuilder.CONTROL_INPUT, locale, getParentNode(formField, locale));
+	}
+	
+	public static void dateTimeConcept(String token, Concept concept, boolean required, Locale locale, FormField formField) {	
+		addUInode(token, concept, XformBuilder.DATA_TYPE_DATETIME, XformBuilder.CONTROL_INPUT, locale, getParentNode(formField, locale));
+	}
+	
+	public static void timeConcept(String token, Concept concept, boolean required, Locale locale, FormField formField) {	
+		addUInode(token, concept, XformBuilder.DATA_TYPE_TIME, XformBuilder.CONTROL_INPUT, locale, getParentNode(formField, locale));
+	}
+	
 	public static void numericConcept(String token, ConceptNumeric concept, boolean required, Locale locale, FormField formField) {	
 		addUInode(token, concept, XformBuilder.DATA_TYPE_DECIMAL, XformBuilder.CONTROL_INPUT, locale, getParentNode(formField, locale));
 	}
@@ -430,6 +442,15 @@ public class XformBuilderEx {
 				}
 				else if (datatype.getHl7Abbreviation().equals(FormConstants.HL7_BOOLEAN)){
 					booleanConcept(name, concept, required, locale, formField);
+				}
+				else if (datatype.getHl7Abbreviation().equals(FormConstants.HL7_DATE)){
+					dateConcept(name, concept, required, locale, formField);
+				}
+				else if (datatype.getHl7Abbreviation().equals(FormConstants.HL7_DATETIME)){
+					dateTimeConcept(name, concept, required, locale, formField);
+				}
+				else if (datatype.getHl7Abbreviation().equals(FormConstants.HL7_TIME)){
+					timeConcept(name, concept, required, locale, formField);
 				}
 				else if (FormConstants.simpleDatatypes.containsKey(datatype.getHl7Abbreviation())){
 					simpleConcept(name, concept, XformBuilder.DATA_TYPE_TEXT, required, locale, formField);

@@ -41,6 +41,7 @@ import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Form;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
@@ -647,6 +648,29 @@ public class XformsUtil {
 		}
 	}
 	
+	public static String getProviderName(Encounter encounter) throws Exception {
+		try {
+			try {
+				if (isOnePointNineAndAbove())
+					return getOnePointNineProviderName(encounter);
+				else {
+					PersonName personName = encounter.getProvider().getPersonName(); //This may be null for some users that have not last and first names.
+					return personName.toString() + " [" + encounter.getProvider().getPersonId() + "]";
+	
+				}
+			}
+			catch (NoSuchMethodError ex) {
+				Method method = encounter.getClass().getMethod("getProvider", null);
+				User user = (User) method.invoke(encounter, null);
+				return user.getUsername() + " [" + user.getUserId() + "]";
+			}
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+			return null;
+		}
+	}
+	
 	/**
 	 * Gets the id of the person that a user represents.
 	 * 
@@ -825,6 +849,28 @@ public class XformsUtil {
 			Object provider = method.invoke(encounterProvider, null);
 			method = provider.getClass().getMethod("getProviderId", null);
 			return (Integer) method.invoke(provider, null);
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	private static String getOnePointNineProviderName(Encounter encounter) {
+		try {
+			Field field = encounter.getClass().getDeclaredField("encounterProviders");
+			field.setAccessible(true);
+			Set encounterProviders = (Set) field.get(encounter);
+			if (encounterProviders.size() == 0) {
+				return null;
+			}
+			
+			Object encounterProvider = encounterProviders.toArray()[0];
+			Method method = encounterProvider.getClass().getMethod("getProvider", null);
+			Object provider = method.invoke(encounterProvider, null);
+			method = provider.getClass().getMethod("getName", null);
+			return (String) method.invoke(provider, null);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();

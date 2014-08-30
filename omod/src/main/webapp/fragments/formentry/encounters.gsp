@@ -10,7 +10,7 @@
 			var oTable = jq("#encounterTableParent > #encounterTable").dataTable({
 				"bPaginate": false,
 				"bAutoWidth": false,
-				"aaSorting": [[0, 'asc']]
+				"bSort": false
 			});
 		});
 	<% } %>

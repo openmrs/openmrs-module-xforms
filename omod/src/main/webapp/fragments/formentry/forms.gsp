@@ -10,6 +10,7 @@
 			var oTable = jq("#formEntryTableParent > #formEntryTable").dataTable({
 				"bPaginate": false,
 				"bAutoWidth": false,
+				"bSort": true,
 				"aaSorting": [[0, 'asc']],
 				"aoColumns":
 					[
