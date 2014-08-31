@@ -1,0 +1,12 @@
+[
+    {
+        "id": "xforms.formentry.cfpd",
+        "extensionPointId": "patientDashboard.overallActions",
+        "type": "link",
+        "label": "xforms.app.formentry.label",
+        "url": "xforms/formentry/patient.page?patientId={{patient.patientId}}",
+        "icon": "icon-file-alt",
+        "order": 100,
+        "requiredPrivilege": "App: xforms.formentry"
+    }
+]

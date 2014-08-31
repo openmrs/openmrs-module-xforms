@@ -43,9 +43,9 @@
                 <% formToEntryUrlMap.each { entry -> %>
                     <tr>
                     	<% if (entry.value.formEntryUrl.contains("?")) { %>
-                    		<td> <a href="/${ ui.contextPath() }/${entry.value.formEntryUrl}&formId=${entry.key.formId}&patientId=${patient.patientId}&refappui=true">${entry.key.name}</a> </td>
+                    		<td> <a href="/${ ui.contextPath() }/${entry.value.formEntryUrl}&formId=${entry.key.formId}&patientId=${patient.patientId}&refappui=true&returnUrl=${returnUrl}">${entry.key.name}</a> </td>
                     	<% } else { %>
-                        	<td> <a href="/${ ui.contextPath() }/${entry.value.formEntryUrl}?formId=${entry.key.formId}&patientId=${patient.patientId}&refappui=true">${entry.key.name}</a> </td>
+                        	<td> <a href="/${ ui.contextPath() }/${entry.value.formEntryUrl}?formId=${entry.key.formId}&patientId=${patient.patientId}&refappui=true&returnUrl=${returnUrl}">${entry.key.name}</a> </td>
                         <% } %>
                         
                         <td> ${entry.key.version} </td>

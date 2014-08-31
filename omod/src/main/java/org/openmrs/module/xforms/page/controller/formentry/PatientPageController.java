@@ -14,13 +14,13 @@
 package org.openmrs.module.xforms.page.controller.formentry;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.Form;
 import org.openmrs.Patient;
 import org.openmrs.module.Extension;
@@ -28,7 +28,6 @@ import org.openmrs.module.Extension.MEDIA_TYPE;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.web.FormEntryContext;
 import org.openmrs.module.web.extension.FormEntryHandler;
-import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.page.PageModel;
 import org.openmrs.util.OpenmrsUtil;
@@ -37,16 +36,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class PatientPageController {
 	
 	public void controller(@RequestParam("patientId") Patient patient, UiUtils ui,
+	                       @RequestParam(value = "returnUrl", required = false) String returnUrl,
 	                       PageModel model) {
 		
-		SimpleObject appHomepageBreadcrumb = SimpleObject.create("label", ui.message("xforms.app.formentry.title"),
-		    "link", ui.pageLink("coreapps", "findpatient/findPatient?app=xforms.formentry"));
-		SimpleObject patientPageBreadcrumb = SimpleObject.create("label",
-		    patient.getFamilyName() + ", " + patient.getGivenName(), "link", ui.thisUrlWithContextPath());
-		
+		model.addAttribute("returnUrl", returnUrl);
 		model.addAttribute("patient", patient);
-		model.addAttribute("breadcrumbOverride", ui.toJson(Arrays.asList(appHomepageBreadcrumb, patientPageBreadcrumb)));
-		
 		model.put("formToEntryUrlMap", getForms(patient));
 	}
 	

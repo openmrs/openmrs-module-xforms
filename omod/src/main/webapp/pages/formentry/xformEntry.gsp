@@ -9,6 +9,15 @@
         { label: "${ ui.format(patient.familyName) }, ${ ui.format(patient.givenName) }" , link: '${ui.pageLink("xforms", "formentry/patient", [patientId: patient.patientId])}'},
         { label: "${ ui.escapeJs(ui.format(formName)) }" }
     ];
+    
+    if ('${returnUrl}') {
+	    breadcrumbs = [
+	        { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
+	        { label: "${ ui.format(patient.familyName) }, ${ ui.format(patient.givenName) }" , link: '${ui.pageLink("xforms", "formentry/patient", [patientId: patient.patientId])}'},
+	        { label: "${ ui.message("xforms.app.formentry.title") }", link: "${ ui.pageLink("coreapps", "findpatient/findPatient", [app: "xforms.formentry"]) }" },
+	        { label: "${ ui.escapeJs(ui.format(formName)) }" }
+	    ];
+	 }
 </script>
 
 ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient ]) }
