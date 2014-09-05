@@ -184,12 +184,12 @@ public class RelativeBuilder {
 			String personUuid;
 			String relative;
 			if (getPersonId(patient).equals(relationship.getPersonA().getPersonId())) {
-				relative = relationship.getPersonB().getPersonName().toString() + " - "
+				relative = relationship.getPersonB().getPersonName() + " - "
 				        + getPatientIdentifier(relationship.getPersonB());
 				
 				personUuid = relationship.getPersonB().getUuid();
 			} else {
-				relative = relationship.getPersonA().getPersonName().toString() + " - "
+				relative = relationship.getPersonA().getPersonName() + " - "
 				        + getPatientIdentifier(relationship.getPersonA());
 				
 				personUuid = relationship.getPersonA().getUuid();
