@@ -6,7 +6,7 @@
 	<!-- Base Module Properties -->
 	<id>xforms</id>
 	<name>XForms</name>
-	<version>4.3.0</version>
+	<version>4.3.0.6</version>
 	<package>org.openmrs.module.@MODULE_ID@</package>
 	<author>Daniel Kayiwa</author>
 	<description>
@@ -140,7 +140,7 @@
 	</globalProperty>
 	<globalProperty>
 		<property>@MODULE_ID@.dateTimeSubmitFormat</property>
-		<defaultValue>yyyy-MM-dd'T'HH:mm:ssZ</defaultValue>
+		<defaultValue>yyyy-MM-dd'T'HH:mm:ss</defaultValue>
 		<description>The format of the datetime passed in the xml of the xforms model. Please make sure this matches with the date format of your data entry applications, else you will get wrong dates on the server.</description>
 	</globalProperty>
 	<globalProperty>

@@ -349,9 +349,11 @@ public class XformDownloadServlet extends HttpServlet {
 
 		XformBuilder.setNodeValue(doc, XformConstants.NODE_SESSION, request.getSession().getId());
 		XformBuilder.setNodeValue(doc, XformConstants.NODE_UID, FormEntryWrapper.generateFormUid());
-		XformBuilder.setNodeValue(doc, XformConstants.NODE_DATE_ENTERED, FormUtil.dateToString(new java.util.Date()));
+		XformBuilder.setNodeValue(doc, XformConstants.NODE_DATE_ENTERED, XformsUtil.fromDateTime2SubmitString(new Date()));
 		XformBuilder.setNodeValue(doc, XformConstants.NODE_ENTERER, XformsUtil.getEnterer());
 
+		setServerDateTime(doc);
+		
 		User user = Context.getAuthenticatedUser();
 
 		if("true".equals(Context.getAdministrationService().getGlobalProperty("xforms.setDefaultProvider", "false"))){
@@ -493,7 +495,8 @@ public class XformDownloadServlet extends HttpServlet {
 				XformBuilder.setNodeAttributeValue(doc, XformBuilder.NODE_PATIENT, XformBuilder.ATTRIBUTE_UUID, patient.getUuid());
 			}
 
-
+			setServerDateTime(doc);
+			
 			User user = Context.getAuthenticatedUser();
 
 			if("true".equals(Context.getAdministrationService().getGlobalProperty("xforms.setDefaultProvider", "false"))){
@@ -653,6 +656,14 @@ public class XformDownloadServlet extends HttpServlet {
 
 		//TODO New model we need to get formdef or xform and layout xml to send client
 		//formRunner.loadForm(formDef,layoutXml);
+	}
+	
+	private void setServerDateTime(Document doc) {
+		String date = XformsUtil.fromDate2SubmitString(new Date());
+		if (XformsUtil.encounterDateIncludesTime()) {
+			date = XformsUtil.fromDateTime2SubmitString(new Date());
+		}
+		XformBuilder.setNodeValue(doc, XformBuilder.NODE_ENCOUNTER_ENCOUNTER_DATETIME, date);
 	}
 
 	/**
