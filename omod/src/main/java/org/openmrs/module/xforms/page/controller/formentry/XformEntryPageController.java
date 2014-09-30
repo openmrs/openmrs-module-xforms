@@ -48,8 +48,15 @@ public class XformEntryPageController {
 		}
 		
 		String returnUrl = request.getParameter("returnUrl");
-		if (StringUtils.isNotBlank(returnUrl) && returnUrl.contains("clinicianfacing")) {
-			returnUrl = "coreapps/clinicianfacing/patient.page?";
+		if (StringUtils.isNotBlank(returnUrl)) {
+			if (returnUrl.contains("clinicianfacing")) {
+				returnUrl = "coreapps/clinicianfacing/patient.page?";
+				model.addAttribute("returnPage", "clinicianfacing/patient");
+			}
+			else if (returnUrl.contains("patientdashboard")) {
+				returnUrl = "coreapps/patientdashboard/patientDashboard.page?";
+				model.addAttribute("returnPage", "patientdashboard/patientDashboard");
+			}
 		}
 		
 		String url = "coreapps/findpatient/findPatient.page?app=xforms.formentry";
