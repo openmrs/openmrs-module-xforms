@@ -47,6 +47,10 @@ public class XformEntryPageController {
 			model.addAttribute("formDataUploadUrlSuffix", "module/xforms/xformDataUpload.form?mode=edit");
 		}
 		
+		String returnUrl = request.getParameter("returnUrl");
+		if (StringUtils.isNotBlank(returnUrl) && returnUrl.contains("clinicianfacing")) {
+			returnUrl = "coreapps/clinicianfacing/patient.page?";
+		}
 		
 		String url = "coreapps/findpatient/findPatient.page?app=xforms.formentry";
 		String str = request.getParameter("afterSubmitUrl");
@@ -57,6 +61,10 @@ public class XformEntryPageController {
 		if ("coreapps/findpatient/findPatient.page?app=xforms.formentry".equals(url)) {
 			url += "&afterSelectedUrl=/xforms/formentry/patient.page?patientId={{patientId}}";
 		}
+		
+		if(StringUtils.isNotBlank(returnUrl)) {
+			url = returnUrl;
+		}
 		model.addAttribute("afterSubmitUrlSuffix", url);
 		
 		
@@ -66,6 +74,10 @@ public class XformEntryPageController {
 			url = str;
 		}
 		url = Context.getAdministrationService().getGlobalProperty("xforms.afterCancelUrl", url);
+		
+		if(StringUtils.isNotBlank(returnUrl)) {
+			url = returnUrl;
+		}
 		model.addAttribute("afterCancelUrlSuffix", url);
 		
 		
