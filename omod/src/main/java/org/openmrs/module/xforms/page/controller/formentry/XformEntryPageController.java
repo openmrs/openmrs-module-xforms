@@ -47,15 +47,20 @@ public class XformEntryPageController {
 			model.addAttribute("formDataUploadUrlSuffix", "module/xforms/xformDataUpload.form?mode=edit");
 		}
 		
+		model.addAttribute("returnModule", "xforms");
+		model.addAttribute("returnPage", "formentry/patient");
+		
 		String returnUrl = request.getParameter("returnUrl");
 		if (StringUtils.isNotBlank(returnUrl)) {
 			if (returnUrl.contains("clinicianfacing")) {
 				returnUrl = "coreapps/clinicianfacing/patient.page?";
 				model.addAttribute("returnPage", "clinicianfacing/patient");
+				model.addAttribute("returnModule", "coreapps");
 			}
 			else if (returnUrl.contains("patientdashboard")) {
 				returnUrl = "coreapps/patientdashboard/patientDashboard.page?";
 				model.addAttribute("returnPage", "patientdashboard/patientDashboard");
+				model.addAttribute("returnModule", "coreapps");
 			}
 		}
 		

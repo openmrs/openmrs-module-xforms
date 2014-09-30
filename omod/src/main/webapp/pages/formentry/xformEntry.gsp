@@ -21,9 +21,10 @@
 	 
 	 if ('${returnUrl}') {
 	    var returnPage = '${returnPage}';
+	    var returnModule = '${returnModule}';
 	    breadcrumbs = [
 	        { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
-	        { label: "${ ui.format(patient.familyName) }, ${ ui.format(patient.givenName) }" , link: '${ui.pageLink("coreapps", returnPage, [patientId: patient.patientId])}'},
+	        { label: "${ ui.format(patient.familyName) }, ${ ui.format(patient.givenName) }" , link: '${ui.pageLink(returnModule, returnPage, [patientId: patient.patientId])}'},
 	        { label: "${ ui.escapeJs(ui.format(formName)) }" }
 	    ];
 	 }
