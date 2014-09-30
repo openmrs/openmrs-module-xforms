@@ -18,6 +18,14 @@
 	        { label: "${ ui.escapeJs(ui.format(formName)) }" }
 	    ];
 	 }
+	 
+	 if ('${returnUrl}') {
+	    breadcrumbs = [
+	        { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
+	        { label: "${ ui.format(patient.familyName) }, ${ ui.format(patient.givenName) }" , link: '${ui.pageLink("coreapps", "clinicianfacing/patient", [patientId: patient.patientId])}'},
+	        { label: "${ ui.escapeJs(ui.format(formName)) }" }
+	    ];
+	 }
 </script>
 
 ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient ]) }
