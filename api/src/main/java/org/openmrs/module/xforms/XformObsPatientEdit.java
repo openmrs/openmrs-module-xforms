@@ -53,13 +53,13 @@ public class XformObsPatientEdit {
 				continue;
 			}
 			
-			if ("person".equals(tableName)) {
+			if ("person".equals(tableName) || "patient".equals(tableName)) {
 				updatePerson(patient, attributeValue, dataValue, child);
-			} else if ("person_name".equals(tableName)) {
+			} else if ("person_name".equals(tableName) || "patient_name".equals(tableName)) {
 				updatePersonName(patient, attributeValue, dataValue, child);
-			} else if ("person_address".equals(tableName)) {
+			} else if ("person_address".equals(tableName) || "patient_address".equals(tableName)) {
 				updatePersonAddress(patient, attributeValue, dataValue, child);
-			} else if ("person_attribute".equals(tableName)) {
+			} else if ("person_attribute".equals(tableName) || "patient_attribute".equals(tableName)) {
 				updatePersonAttribute(patient, attributeValue, dataValue, child);
 			}
 		}
@@ -74,7 +74,7 @@ public class XformObsPatientEdit {
 			patient.setBirthdateEstimated("true".equals(dataValue));
 		else if (XformBuilder.NODE_BIRTHDATE.equals(attributeValue)) {
 			patient.setBirthdate(XformsUtil.fromSubmitString2Date(dataValue));
-		} else
+		} else if (!"patient_id".equals(attributeValue))
 			throw new APIException("Cannot find person field with name = " + attributeValue);
 		
 		//TODO do we need these two calls below?
