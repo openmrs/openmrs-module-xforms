@@ -50,6 +50,7 @@ import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.formentry.FormEntryWrapper;
 import org.openmrs.module.xforms.util.ConceptUtil;
+import org.openmrs.module.xforms.util.LocationUtil;
 import org.openmrs.module.xforms.util.XformBuilderUtil;
 import org.openmrs.module.xforms.util.XformsUtil;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
@@ -3244,6 +3245,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 		velocityContext.put("form", form);
 		velocityContext.put("obs", new ObsHistory(patient));
 		velocityContext.put("concept", new ConceptUtil());
+		velocityContext.put("location", new LocationUtil());
 		velocityContext.put(
 		    "timestamp",
 		    new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(
