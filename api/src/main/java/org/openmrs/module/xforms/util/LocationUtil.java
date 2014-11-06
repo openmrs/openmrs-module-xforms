@@ -12,7 +12,7 @@ public class LocationUtil {
 			return null;
 		}
 		
-		return Context.getLocationService().getLocation(locationId);
+		return Context.getLocationService().getLocation(Integer.parseInt(locationId));
 	}
 	
 	public String getName(String locationId) {
