@@ -53,7 +53,7 @@ public class XformBuilderEx {
 		useConceptIdAsHint = "true".equalsIgnoreCase(Context.getAdministrationService().getGlobalProperty("xforms.useConceptIdAsHint"));
 		
 		boolean includeRelationshipNodes = !"false".equals(Context.getAdministrationService()
-				.getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_INCLUDE_PATIENT_RELATIONSHIPS));
+			.getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_INCLUDE_PATIENT_RELATIONSHIPS));
 
 		
 		//String schemaXml = XformsUtil.getSchema(form);
