@@ -52,11 +52,17 @@ public class XformBuilderEx {
 		fieldTokens = new Hashtable<FormField, String>();
 		useConceptIdAsHint = "true".equalsIgnoreCase(Context.getAdministrationService().getGlobalProperty("xforms.useConceptIdAsHint"));
 		
+		boolean includeRelationshipNodes = !"false".equals(Context.getAdministrationService()
+				.getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_INCLUDE_PATIENT_RELATIONSHIPS));
+
+		
 		//String schemaXml = XformsUtil.getSchema(form);
 		String templateXml = FormEntryWrapper.getFormTemplate(form);
 		
 		//Add relationship data node
-		templateXml = templateXml.replace("</patient>", "  <patient_relative>\n      <patient_relative.person/>\n      <patient_relative.relationship/>\n    </patient_relative>\n  </patient>");
+		if (includeRelationshipNodes) {
+			templateXml = templateXml.replace("</patient>", "  <patient_relative>\n      <patient_relative.person/>\n      <patient_relative.relationship/>\n    </patient_relative>\n  </patient>");
+		}
 		
 		Element formNode = (Element) XformBuilder.getDocument(new StringReader(templateXml)).getRootElement();
 		formNode.setAttribute(null, XformBuilder.ATTRIBUTE_UUID, form.getUuid());
@@ -130,7 +136,9 @@ public class XformBuilderEx {
 			}
 		}
 		
-		RelativeBuilder.build(modelNode, groupNode, formNode);
+		if (includeRelationshipNodes) {
+			RelativeBuilder.build(modelNode, groupNode, formNode);
+		}
 		
 		bindings.clear();
 		formFields.clear();
