@@ -244,7 +244,7 @@ public class XformBuilderEx {
 				if(!(minInclusive == null && maxInclusive == null)){
 					String lower = (minInclusive == null ? "" : FormSchemaFragment.numericToString(minInclusive, numericConcept.isPrecise()));
 					String upper = (maxInclusive == null ? "" : FormSchemaFragment.numericToString(maxInclusive, numericConcept.isPrecise()));
-					bindNode.setAttribute(null, XformBuilder.ATTRIBUTE_CONSTRAINT, ". &gt;= " + lower + " and . &lt;= " + upper);
+					bindNode.setAttribute(null, XformBuilder.ATTRIBUTE_CONSTRAINT, ". >= " + lower + " and . <= " + upper);
 					bindNode.setAttribute(null, (XformsUtil.isJavaRosaSaveFormat() ? "jr:constraintMsg" : XformBuilder.ATTRIBUTE_MESSAGE),
 					    "value should be between " + lower + " and " + upper + " inclusive");
 				}
