@@ -107,6 +107,7 @@ public interface XformsDAO {
 	public List<Object[]> getXformsList();
 	
 	public String getLocationName(Integer locationId);
+        public String getProviderName(Integer providerId);
 	public String getPersonName(Integer personId);
 	public String getConceptName(Integer conceptId, String localeKey);
 }

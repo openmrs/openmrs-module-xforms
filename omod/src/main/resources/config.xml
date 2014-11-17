@@ -41,6 +41,11 @@
 		<point>org.openmrs.api.UserService</point>
 		<class>org.openmrs.module.xforms.aop.XformsProviderAdvisor</class>
 	</advice>
+        
+        <advice>
+		<point>org.openmrs.api.ProviderService</point>
+		<class>org.openmrs.module.xforms.aop.XformsProviderAdvisor</class>
+	</advice>
 	
 	<advice>
 		<point>org.openmrs.api.ConceptService</point>

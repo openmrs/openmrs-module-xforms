@@ -250,6 +250,16 @@ public interface XformsService {
 	@Transactional(readOnly = true)
 	public String getLocationName(Integer locationId);
 
+        /**
+	 * Gets the name of a provider with a given id.
+	 * 
+	 * @param providerId
+	 *            the provider id.
+	 * @return the provider name.
+	 */
+	@Transactional(readOnly = true)
+	public String getProviderName(Integer providerId);
+        
 	/**
 	 * Gets the name of a person with a given id.
 	 * 
