@@ -1123,7 +1123,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 		if (name.equalsIgnoreCase(NODE_ENCOUNTER_ENCOUNTER_DATETIME)) {
 			bindNode.setAttribute(null, ATTRIBUTE_TYPE, XformsUtil.encounterDateIncludesTime() ? DATA_TYPE_DATETIME
 			        : DATA_TYPE_DATE);
-			bindNode.setAttribute(null, ATTRIBUTE_CONSTRAINT, ". &lt;= today()");
+			bindNode.setAttribute(null, ATTRIBUTE_CONSTRAINT, ". <= today()");
 			bindNode.setAttribute(null, (XformsUtil.isJavaRosaSaveFormat() ? "jr:constraintMsg" : ATTRIBUTE_MESSAGE),
 			    "Encounter date cannot be after today");
 		} else if (name.equalsIgnoreCase(NODE_ENCOUNTER_LOCATION_ID))
@@ -2351,7 +2351,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 	}
 	
 	private static void setValidationRule(Element bindingNode, String upper, String lower) {
-		bindingNode.setAttribute(null, ATTRIBUTE_CONSTRAINT, ". &gt;= " + lower + " and . &lt;= " + upper);
+		bindingNode.setAttribute(null, ATTRIBUTE_CONSTRAINT, ". >= " + lower + " and . <= " + upper);
 		bindingNode.setAttribute(null, (XformsUtil.isJavaRosaSaveFormat() ? "jr:constraintMsg" : ATTRIBUTE_MESSAGE),
 		    "value should be between " + lower + " and " + upper + " inclusive");
 	}
