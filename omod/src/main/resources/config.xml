@@ -399,7 +399,16 @@
 		<description>The url to go to after cancelling an xform.</description>
 	</globalProperty>
 	
-	<!-- /Required Global Properties -->
+	<globalProperty>
+		<property>@MODULE_ID@.includePatientRelationships</property>
+		<defaultValue>true</defaultValue>
+		<description>
+			Specifies that when creating a new xform, a node for patient relationships
+            (relatives) should be created automatically.
+        </description>
+	</globalProperty>
+
+    <!-- /Required Global Properties -->
 
 	<!-- /Xforms Module Properties -->
 	
