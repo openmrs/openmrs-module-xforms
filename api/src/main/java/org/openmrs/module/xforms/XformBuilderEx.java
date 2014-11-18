@@ -54,7 +54,6 @@ public class XformBuilderEx {
 		
 		boolean includeRelationshipNodes = !"false".equals(Context.getAdministrationService()
 			.getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_INCLUDE_PATIENT_RELATIONSHIPS));
-
 		
 		//String schemaXml = XformsUtil.getSchema(form);
 		String templateXml = FormEntryWrapper.getFormTemplate(form);
