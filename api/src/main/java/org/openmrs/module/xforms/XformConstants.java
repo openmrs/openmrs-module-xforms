@@ -213,6 +213,12 @@ public class XformConstants {
 	
 	public static final String GLOBAL_PROP_KEY_EMAIL_SERVER_CONFIG = "xforms.emailServerConfig";
 	
+	/**
+	 * The global property key for determining whether to always include patient relationships in forms.
+	 * This effectively defaults to "true" - if set to "false", then the relationship nodes will *not* be added.
+	 */
+	public static final String GLOBAL_PROP_KEY_INCLUDE_PATIENT_RELATIONSHIPS = "xforms.includePatientRelationships";
+
 	/** The default value for the user serializer class.*/
 	public static final String DEFAULT_USER_SERIALIZER= "org.openmrs.module.xforms.serialization.DefaultUserSerializer";
 	
