@@ -374,6 +374,8 @@ public class XformConstants {
 	
 	public static final String REQUEST_ATTRIBUTE_ID_PATIENT_ID = "PATIENT_ID";
 	
+	public static final String REQUEST_ATTRIBUTE_ACCEPT_PATIENT_UUID = "ACCEPT_PATIENT_UUID";
+
 	public static final String XFORM_XSLT_FORM_RESOURCE_NAME_SUFFIX = ".xFormXslt";
 	
 	//Specifies that when creating a new xform the location selection element should use autocomplete,
