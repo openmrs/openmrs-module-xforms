@@ -35,6 +35,11 @@
 			<name>OpenMRS Modules</name>
 			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/modules</url>
 		</repository>
+		<snapshotRepository>
+			<id>openmrs-repo-snapshots</id>
+			<name>Modules</name>
+			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/snapshots</url>
+		</snapshotRepository>
 	</distributionManagement>
 
 	<repositories>
