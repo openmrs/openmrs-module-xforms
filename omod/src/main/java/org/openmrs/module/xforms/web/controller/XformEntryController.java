@@ -1,11 +1,13 @@
 package org.openmrs.module.xforms.web.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
@@ -53,22 +55,39 @@ public class XformEntryController extends SimpleFormController{
 	protected Map referenceData(HttpServletRequest request, Object obj, Errors err) throws Exception {
 		HashMap<String,Object> map = new HashMap<String,Object>();
 
-		if(request.getParameter("encounterId") == null){ //Must be new form
-			Integer formId = Integer.parseInt(request.getParameter("formId"));
+		Encounter encounter = null;
+		Integer patientId =  null;
+		Integer formId = null;
+		
+		String id = request.getParameter("encounterId");
+		if (StringUtils.isBlank(id)) {
+			patientId = Integer.parseInt(request.getParameter("patientId"));
+			formId = Integer.parseInt(request.getParameter("formId"));
+			
+			if (isSingleEntryForm(formId.toString())) {
+				List<Encounter> encounters = Context.getEncounterService().getEncountersByPatientId(patientId);
+				if (encounters.size() > 0) {
+					encounter = encounters.get(0);
+				}
+			}
+		}
+		else {
+			encounter = Context.getEncounterService().getEncounter(Integer.parseInt(id));
+		}
+		
+		if(encounter == null){ //Must be new form
 			map.put("formId", formId);
-			map.put("patientId", Integer.parseInt(request.getParameter("patientId")));
+			map.put("patientId", patientId);
 			map.put("formName", ((FormService)Context.getService(FormService.class)).getForm(formId).getName());
 			map.put("entityFormDefDownloadUrlSuffix", "moduleServlet/xforms/xformDownload?target=xformentry&contentType=xml&");
 			map.put("formDataUploadUrlSuffix", "module/xforms/xformDataUpload.form");
 		}
 		else{ //editing existing form
-			Integer encounterId = Integer.parseInt(request.getParameter("encounterId"));
-			Encounter encounter = Context.getEncounterService().getEncounter(encounterId);
 			Form form = encounter.getForm();
 			map.put("formId", form.getFormId());
-			map.put("patientId", encounter.getPatientId());
+			map.put("patientId", encounter.getPatient().getPatientId());
 			map.put("formName", ((FormService)Context.getService(FormService.class)).getForm(form.getFormId()).getName());
-			map.put("entityFormDefDownloadUrlSuffix", "moduleServlet/xforms/xformDownload?target=xformentry&contentType=xml&encounterId="+encounterId+"&");
+			map.put("entityFormDefDownloadUrlSuffix", "moduleServlet/xforms/xformDownload?target=xformentry&contentType=xml&encounterId="+encounter.getEncounterId()+"&");
 			map.put("formDataUploadUrlSuffix", "module/xforms/xformDataUpload.form?mode=edit");
 		}
 		
@@ -119,4 +138,21 @@ public class XformEntryController extends SimpleFormController{
 	protected Object formBackingObject(HttpServletRequest request) throws Exception { 
 		return "Not Yet";
 	}    
+	
+	private boolean isSingleEntryForm(String formId) {
+    	if (StringUtils.isBlank(formId)) {
+    		return false;
+    	}
+    	
+		String formIds = Context.getAdministrationService().getGlobalProperty("xforms.singleEntryForms");
+		if (!StringUtils.isBlank(formIds)) {
+			String[] ids = formIds.split(",");
+			for (String id : ids) {
+				if (formId.equals(id)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 }

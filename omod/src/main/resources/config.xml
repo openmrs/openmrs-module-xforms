@@ -407,6 +407,12 @@
             (relatives) should be created automatically.
         </description>
 	</globalProperty>
+	
+	<globalProperty>
+		<property>@MODULE_ID@.singleEntryForms</property>
+		<defaultValue></defaultValue>
+		<description>Comma separated list of form ids that do not allow more than one entry for each patient.</description>
+	</globalProperty>
 
     <!-- /Required Global Properties -->
 
