@@ -193,7 +193,7 @@ public class XformBuilderUtil {
 			
 			Element node = itemNode.createElement(XformBuilder.NAMESPACE_XFORMS, null);
 			node.setName(XformBuilder.NODE_LABEL);
-			node.addChild(Element.TEXT, name + " [" + identifier + "]");
+			node.addChild(Element.TEXT, name + (identifier != null ? " [" + identifier + "]" : ""));
 			itemNode.addChild(Element.ELEMENT, node);
 			
 			node = itemNode.createElement(XformBuilder.NAMESPACE_XFORMS, null);
