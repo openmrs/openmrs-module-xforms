@@ -23,21 +23,20 @@
 	</organization>
 
 	<scm>
-		<connection>scm:git:https://github.com/OpenMRS/openmrs-module-xforms</connection>
-		<developerConnection>scm:git:https://github.com/OpenMRS/openmrs-module-xforms</developerConnection>
-		<url>https://github.com/OpenMRS/openmrs-module-xforms</url>
-	  <tag>xforms-4.0.9.6</tag>
+		<connection>scm:git:git@github.com:openmrs/openmrs-module-xforms.git</connection>
+		<developerConnection>scm:git:git@github.com:openmrs/openmrs-module-xforms.git</developerConnection>
+		<url>https://github.com/openmrs/openmrs-module-xforms.git</url>
   </scm>
 
 	<distributionManagement>
 		<repository>
 			<id>openmrs-repo-modules</id>
-			<name>OpenMRS Modules</name>
+			<name>OpenMRS Nexus Modules</name>
 			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/modules</url>
 		</repository>
 		<snapshotRepository>
 			<id>openmrs-repo-snapshots</id>
-			<name>Modules</name>
+			<name>OpenMRS Nexus Snapshots</name>
 			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
@@ -323,10 +322,11 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-release-plugin</artifactId>
-					<version>2.3.2</version>
+					<version>2.4.2</version>
 					<configuration>
 						<useReleaseProfile>false</useReleaseProfile>
 						<arguments>-Prelease</arguments>
+						<tagNameFormat>@{project.version}</tagNameFormat>
 					</configuration>
 				</plugin>
 
