@@ -257,7 +257,7 @@ public class XformBuilderEx {
 				Double minInclusive = numericConcept.getLowAbsolute();
 				Double maxInclusive = numericConcept.getHiAbsolute();
 				
-				if(!(minInclusive == null && maxInclusive == null)){
+				if(!(minInclusive == null || maxInclusive == null)){
 					String lower = (minInclusive == null ? "" : FormSchemaFragment.numericToString(minInclusive, numericConcept.isPrecise()));
 					String upper = (maxInclusive == null ? "" : FormSchemaFragment.numericToString(maxInclusive, numericConcept.isPrecise()));
 					bindNode.setAttribute(null, XformBuilder.ATTRIBUTE_CONSTRAINT, ". >= " + lower + " and . <= " + upper);
