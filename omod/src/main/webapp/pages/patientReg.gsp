@@ -47,6 +47,10 @@
 		font-size: 16px;
 	}
 	
+	table {
+		width: auto;
+	}
+	
 	table th, table td {
 		padding: 0px 0px;
 		border: none;
@@ -76,6 +80,10 @@
 	
 	.purcforms-repeat-border td {
 		padding: 2px 5px;
+	}
+	
+	.purcforms-group-border {
+		background: #F9F9F9;
 	}
 	
 	.purcforms-horizontal-grid-line, .purcforms-vertical-grid-line {
