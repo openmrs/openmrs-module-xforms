@@ -65,7 +65,7 @@ public class PatientRegUrlHandler {
 		return handlePath(path, request, response, model, httpSession);
 	}
 	
-	@RequestMapping(value = "/registrationapp/editPatientDemographics.page", method = RequestMethod.GET)
+	@RequestMapping(value = {"/registrationapp/editPatientDemographics.page", "/registrationapp/editSection.page"}, method = RequestMethod.GET)
 	public String handleEditPatietPage(HttpServletRequest request, HttpServletResponse response, @RequestParam("patientId") Patient patient, Model model, HttpSession httpSession) {
 
 		if("true".equals(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_USE_PATIENT_XFORM,"false"))) {
