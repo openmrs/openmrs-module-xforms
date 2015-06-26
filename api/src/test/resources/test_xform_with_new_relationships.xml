@@ -9,7 +9,7 @@
 				xmlns:xd="http://schemas.microsoft.com/office/infopath/2003">
 
 				<patient_relationship>
-					<patient_relationship.relationship_type_id>5</patient_relationship.relationship_type_id>
+					<patient_relationship.relationship_type_id>2</patient_relationship.relationship_type_id>
 					<patient_relationship.a_or_b>A</patient_relationship.a_or_b>
 					<patient_relationship.description>Parent</patient_relationship.description>
 					<patient_relationship.reverse_description>Child</patient_relationship.reverse_description>
