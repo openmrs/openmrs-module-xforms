@@ -20,6 +20,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.IOUtils;
 import org.openmrs.Patient;
+import org.openmrs.annotation.OpenmrsProfile;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.XformConstants;
@@ -42,6 +43,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
+@OpenmrsProfile(modules = { "uiframework:*.*" })
 public class PatientRegUrlHandler {
 	
 	public final static String SHOW_HTML_VIEW = "/module/uiframework/showHtml";
