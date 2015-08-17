@@ -35,6 +35,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kxml2.kdom.Document;
+import org.openmrs.Encounter;
 import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
@@ -430,8 +431,20 @@ public class XformDownloadServlet extends HttpServlet {
 		//clear any previously stored form session data
 		XformObsEdit.loadAndClearSessionData(request, form.getFormId());
 
-		if(request.getParameter("encounterId") != null)
-			XformObsEdit.fillObs(request,doc,Integer.parseInt(request.getParameter("encounterId")),xformXml);
+		if(request.getParameter("encounterId") != null || request.getParameter("encounterUuid") != null) {
+			Integer encounterId = null;
+			if (request.getParameter("encounterUuid") != null) {
+				Encounter encounter = Context.getEncounterService().getEncounterByUuid(request.getParameter("encounterUuid"));
+				if (encounter != null) {
+					encounterId = encounter.getEncounterId();
+				}
+			}
+			else {
+				encounterId = Integer.parseInt(request.getParameter("encounterId"));
+			}
+			
+			XformObsEdit.fillObs(request,doc, encounterId ,xformXml);
+		}
 
 		String xml = XformBuilder.fromDoc2String(doc);
 
