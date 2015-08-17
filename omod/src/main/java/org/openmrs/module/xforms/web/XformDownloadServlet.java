@@ -442,8 +442,7 @@ public class XformDownloadServlet extends HttpServlet {
 		//Get the layout and JavaScript of the form, if any.
 		Xform xform = xformsService.getXform(form.getFormId());
 
-		if(xform != null){
-
+		if (xform != null && !"true".equals(request.getParameter("excludeLayout"))){
 			org.w3c.dom.Element languageTextNode = null;
 			String localeXml = xform.getLocaleXml();
 			if(localeXml != null && localeXml.trim().length() > 0){
@@ -628,8 +627,7 @@ public class XformDownloadServlet extends HttpServlet {
 		if(XformsUtil.isJavaRosaSaveFormat())
 			xml = ItextParser.parse(xml, Context.getLocale().getLanguage());
 
-		if(xform != null){
-
+		if (xform != null && !"true".equals(request.getParameter("excludeLayout"))) {
 			org.w3c.dom.Element languageTextNode = null;
 			String localeXml = xform.getLocaleXml();
 			if(localeXml != null && localeXml.trim().length() > 0){
