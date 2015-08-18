@@ -190,9 +190,11 @@ public class XformDownloadServlet extends HttpServlet {
 
 				Integer formId = null;
 				Form form = null;
+				Patient patient = null;
 				if (request.getParameter("encounterUuid") != null) {
 					Encounter encounter = Context.getEncounterService().getEncounterByUuid(request.getParameter("encounterUuid"));
 					if (encounter != null) {
+						patient = encounter.getPatient();
 						form = encounter.getForm();
 						if (form != null) {
 							formId = form.getFormId();
@@ -203,6 +205,7 @@ public class XformDownloadServlet extends HttpServlet {
 					Integer encounterId = Integer.parseInt(request.getParameter("encounterId"));
 					Encounter encounter = Context.getEncounterService().getEncounter(encounterId);
 					if (encounter != null) {
+						patient = encounter.getPatient();
 						form = encounter.getForm();
 						if (form != null) {
 							formId = form.getFormId();
@@ -225,7 +228,7 @@ public class XformDownloadServlet extends HttpServlet {
 					if(formId == 0)
 						doPatientXformEntryGet(request, response, xformsService,formId, writer);
 					else
-						doXformEntryGet(request, response, form,formService,xformsService,createNew, writer);
+						doXformEntryGet(request, response, form, patient, formService,xformsService,createNew, writer);
 				}
 				else if (XformConstants.REQUEST_PARAM_XSLT.equals(target))		
 					doXsltGet(response, form,xformsService,createNew, writer);
@@ -376,7 +379,7 @@ public class XformDownloadServlet extends HttpServlet {
 	 * @throws ServletException
 	 * @throws IOException
 	 */
-	protected void doXformEntryGet(HttpServletRequest request, HttpServletResponse response, Form form,FormService formService,XformsService xformsService, boolean createNew, PrintWriter writer) throws Exception {			
+	protected void doXformEntryGet(HttpServletRequest request, HttpServletResponse response, Form form, Patient patient, FormService formService,XformsService xformsService, boolean createNew, PrintWriter writer) throws Exception {			
 		String xformXml = XformDownloadManager.getXform(formService,xformsService,form.getFormId(),createNew);
 
 		Document doc = XformBuilder.getDocument(xformXml);
@@ -422,29 +425,13 @@ public class XformDownloadServlet extends HttpServlet {
 			}
 		}
 
-		String patientParam = "";
 		String patientIdParam = request.getParameter(XformConstants.REQUEST_PARAM_PATIENT_ID);
-		if(patientIdParam != null){
-			Integer patientId = Integer.parseInt(patientIdParam);
-			Patient patient = Context.getPatientService().getPatient(patientId);
+		if (patientIdParam != null || patient != null) {
+			if (patient == null) {
+				Integer patientId = Integer.parseInt(patientIdParam);
+				patient = Context.getPatientService().getPatient(patientId);
+			}
 
-			/*XformBuilder.setNodeValue(doc, XformBuilder.NODE_PATIENT_PATIENT_ID, patientId.toString());
-
-			if(patient.getFamilyName() != null)
-				XformBuilder.setNodeValue(doc, XformBuilder.NODE_PATIENT_FAMILY_NAME, patient.getFamilyName());
-
-			if(patient.getMiddleName() != null)
-				XformBuilder.setNodeValue(doc, XformBuilder.NODE_PATIENT_MIDDLE_NAME,patient.getMiddleName());
-
-			if(patient.getGivenName() != null)
-				XformBuilder.setNodeValue(doc, XformBuilder.NODE_PATIENT_GIVEN_NAME, patient.getGivenName());*/
-
-			patientParam = "?"+XformConstants.REQUEST_PARAM_PATIENT_ID+"="+patientId;
-			String phrase = request.getParameter(XformConstants.REQUEST_PARAM_PATIENT_SEARCH_PHRASE);
-			if(phrase != null)
-				patientParam += "&"+XformConstants.REQUEST_PARAM_PATIENT_SEARCH_PHRASE+"=" + phrase;
-
-			//XformBuilder.setPatientTableFieldValues(form.getFormId(),doc.getRootElement(), patient, xformsService);
 			doc = XformBuilder.setPatientFieldValues(patient, form, doc, xformsService);
 
 			XformBuilder.setNodeAttributeValue(doc, XformBuilder.NODE_PATIENT, XformBuilder.ATTRIBUTE_UUID, patient.getUuid());
