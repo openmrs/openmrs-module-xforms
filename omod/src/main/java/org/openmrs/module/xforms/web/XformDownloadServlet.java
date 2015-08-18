@@ -188,8 +188,32 @@ public class XformDownloadServlet extends HttpServlet {
 				if(XformConstants.FALSE_TEXT_VALUE.equalsIgnoreCase(useStoredXform))
 					createNew = true;
 
-				Integer formId = Integer.parseInt(request.getParameter(XformConstants.REQUEST_PARAM_FORM_ID));
-				Form form = formService.getForm(formId);
+				Integer formId = null;
+				Form form = null;
+				if (request.getParameter("encounterUuid") != null) {
+					Encounter encounter = Context.getEncounterService().getEncounterByUuid(request.getParameter("encounterUuid"));
+					if (encounter != null) {
+						form = encounter.getForm();
+						if (form != null) {
+							formId = form.getFormId();
+						}
+					}
+				}
+				else if (request.getParameter("encounterId") != null) {
+					Integer encounterId = Integer.parseInt(request.getParameter("encounterId"));
+					Encounter encounter = Context.getEncounterService().getEncounter(encounterId);
+					if (encounter != null) {
+						form = encounter.getForm();
+						if (form != null) {
+							formId = form.getFormId();
+						}
+					}
+				}
+
+				if (form == null) {
+					formId = Integer.parseInt(request.getParameter(XformConstants.REQUEST_PARAM_FORM_ID));
+					form = formService.getForm(formId);
+				}
 
 				if (XformConstants.REQUEST_PARAM_XFORM.equalsIgnoreCase(target)) {
 					if(formId == 0)
@@ -431,7 +455,7 @@ public class XformDownloadServlet extends HttpServlet {
 		//clear any previously stored form session data
 		XformObsEdit.loadAndClearSessionData(request, form.getFormId());
 
-		if(request.getParameter("encounterId") != null || request.getParameter("encounterUuid") != null) {
+		if (request.getParameter("encounterId") != null || request.getParameter("encounterUuid") != null) {
 			Integer encounterId = null;
 			if (request.getParameter("encounterUuid") != null) {
 				Encounter encounter = Context.getEncounterService().getEncounterByUuid(request.getParameter("encounterUuid"));
