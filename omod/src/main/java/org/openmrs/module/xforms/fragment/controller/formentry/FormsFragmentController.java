@@ -68,7 +68,7 @@ public class FormsFragmentController {
 				Collection<Form> toEnter = handler.getFormsModuleCanEnter(fec);
 				if (toEnter != null) {
 					for (Form form : toEnter) {
-						if (excludFormUuids.contains(form.getUuid())) {
+						if (excludFormUuids.contains(form.getUuid()) || form.isRetired()) {
 							continue;
 						}
 						
