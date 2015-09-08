@@ -38,13 +38,18 @@ public class FormsFragmentController {
 		model.put("formToEntryUrlMap", getForms(patient));
 	}
 	
-	private Map<Form, FormEntryHandler> getForms(Patient patient) {
+	public static List<String> getExcludedForms() {
 		List<String> excludFormUuids =  new ArrayList<String>();
 		excludFormUuids.add("a000cb34-9ec1-4344-a1c8-f692232f6edd");
 		excludFormUuids.add("c75f120a-04ec-11e3-8780-2b40bef9a44b");
 		excludFormUuids.add("d2c7532c-fb01-11e2-8ff2-fd54ab5fdb2a");
 		excludFormUuids.add("b5f8ffd8-fbde-11e2-8ff2-fd54ab5fdb2a");
 		excludFormUuids.add("a007bbfe-fbe5-11e2-8ff2-fd54ab5fdb2a");
+		return excludFormUuids;
+	}
+	
+	private Map<Form, FormEntryHandler> getForms(Patient patient) {
+		List<String> excludFormUuids =  getExcludedForms();
 		
 		FormEntryContext fec = new FormEntryContext(patient);
 		Map<Form, FormEntryHandler> entryUrlMap = new TreeMap<Form, FormEntryHandler>(new Comparator<Form>() {

@@ -9,6 +9,7 @@
  */
 package org.openmrs.module.xforms.fragment.controller.formentry;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -34,7 +35,15 @@ public class EncountersFragmentController {
 	public void controller(@RequestParam("patientId") Patient patient, UiUtils ui,
 	                       FragmentModel model) {
 		
-		List<Encounter> encounters = Context.getEncounterService().getEncountersByPatient(patient);
+		List<String> excludFormUuids =  FormsFragmentController.getExcludedForms();
+		
+		List<Encounter> encounters =  new ArrayList<Encounter>();
+		List<Encounter> encounterList = Context.getEncounterService().getEncountersByPatient(patient);
+		for (Encounter encounter : encounterList) {
+			if (encounter.getForm() != null && !excludFormUuids.contains(encounter.getForm().getUuid())) {
+				encounters.add(encounter);
+			}
+		}
 		Collections.sort(encounters, new EncounterComparator());
 		model.put("encounters", encounters);
 		
@@ -54,6 +63,9 @@ public class EncountersFragmentController {
 							        + " is trying to handle viewing forms but specifies no URL");
 						}
 						for (Form form : toView) {
+							if (excludFormUuids.contains(form.getUuid()) || form.isRetired()) {
+								continue;
+							}
 							viewUrlMap.put(form, handler.getViewFormUrl());
 						}
 					}
@@ -66,6 +78,9 @@ public class EncountersFragmentController {
 							        + " is trying to handle editing forms but specifies no URL");
 						}
 						for (Form form : toEdit) {
+							if (excludFormUuids.contains(form.getUuid()) || form.isRetired()) {
+								continue;
+							}
 							editUrlMap.put(form, handler.getEditFormUrl());
 						}
 					}
