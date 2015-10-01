@@ -9,6 +9,7 @@
  */
 package org.openmrs.module.xforms.db.hibernate;
 
+import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -68,7 +69,7 @@ public class HibernateXformsDAO implements XformsDAO {
 	 * @see org.openmrs.module.xforms.XformsService#getXform(java.lang.Integer)
 	 */
 	public Xform getXform(Integer formId) {		
-		Query query = sessionFactory.getCurrentSession().createQuery(
+		Query query = getCurrentSession().createQuery(
 		"from Xform where formId = :formId");
 		query.setParameter("formId", formId);
 		
@@ -80,24 +81,24 @@ public class HibernateXformsDAO implements XformsDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Xform> getXforms() {
-		return sessionFactory.getCurrentSession().createQuery("from Xform").list();
+		return getCurrentSession().createQuery("from Xform").list();
 	}
 	
 	/**
 	 * @see org.openmrs.module.xforms.XformsService#saveXform(org.openmrs.module.xforms.Xform)
 	 */
 	public void saveXform(Xform xform) {
-		// sessionFactory.getCurrentSession().saveOrUpdate(xform);
+		// getCurrentSession().saveOrUpdate(xform);
 		//deleteXform(xform.getFormId());
 		//Context.evictFromSession(xform);
-		sessionFactory.getCurrentSession().save(xform);
+		getCurrentSession().save(xform);
 	}
 	
 	/**
 	 * @see org.openmrs.module.xforms.XformsService#deleteXform(java.lang.Integer)
 	 */
 	public void deleteXform(Integer formId) {
-		Query query = sessionFactory.getCurrentSession().createQuery(
+		Query query = getCurrentSession().createQuery(
 		"delete from Xform where formId = :formId");
 		query.setParameter("formId", formId);
 		
@@ -108,7 +109,7 @@ public class HibernateXformsDAO implements XformsDAO {
 	 * @see org.openmrs.module.xforms.XformsService#deleteXslt(java.lang.Integer)
 	 */
 	public void deleteXslt(Integer formId) {
-		Query query = sessionFactory.getCurrentSession().createQuery(
+		Query query = getCurrentSession().createQuery(
 		"update Xform set xslt = null where formId = :formId");
 		query.setParameter("formId", formId);
 		
@@ -150,7 +151,7 @@ public class HibernateXformsDAO implements XformsDAO {
 			else if(tableName.equalsIgnoreCase("PATIENT_IDENTIFIER"))
 				sql += " and preferred=1";
 			
-			return sessionFactory.getCurrentSession().createSQLQuery(sql)
+			return getCurrentSession().createSQLQuery(sql)
 			.uniqueResult();
 		} catch (Exception e) {
 			log.error("Could not get value for field:[" + columnName
@@ -172,7 +173,7 @@ public class HibernateXformsDAO implements XformsDAO {
 		"not (username is null and system_id is null)";
 		
 		try {
-			PreparedStatement st = sessionFactory.getCurrentSession()
+			PreparedStatement st = getCurrentSession()
 			.connection().prepareStatement(sql);
 			ResultSet res = st.executeQuery();
 			
@@ -195,7 +196,7 @@ public class HibernateXformsDAO implements XformsDAO {
 			+ XformConstants.PATIENT_XFORM_FORM_ID;
 		
 		try {
-			PreparedStatement st = sessionFactory.getCurrentSession()
+			PreparedStatement st = getCurrentSession()
 			.connection().prepareStatement(sql);
 			ResultSet res = st.executeQuery();
 			
@@ -216,7 +217,7 @@ public class HibernateXformsDAO implements XformsDAO {
 	 */
 	public boolean hasXform(Integer formId) {
 		String sql = "select 1 from xforms_xform where form_id=" + formId;
-		return sessionFactory.getCurrentSession().createSQLQuery(sql)
+		return getCurrentSession().createSQLQuery(sql)
 		.uniqueResult() != null;
 	}
 	
@@ -226,7 +227,7 @@ public class HibernateXformsDAO implements XformsDAO {
 	public boolean hasXslt(Integer formId) {
 		String sql = "select 1 from xforms_xform where xslt is not null and form_id="
 			+ formId;
-		return sessionFactory.getCurrentSession().createSQLQuery(sql)
+		return getCurrentSession().createSQLQuery(sql)
 		.uniqueResult() != null;
 	}
 	
@@ -236,7 +237,7 @@ public class HibernateXformsDAO implements XformsDAO {
 	public String getXslt(Integer formId) {
 		String sql = "select xslt from xforms_xform where form_id=" + formId;
 		try {
-			PreparedStatement st = sessionFactory.getCurrentSession()
+			PreparedStatement st = getCurrentSession()
 			.connection().prepareStatement(sql);
 			ResultSet res = st.executeQuery();
 			if (res.next())
@@ -252,7 +253,7 @@ public class HibernateXformsDAO implements XformsDAO {
 	 * @see org.openmrs.module.xforms.XformsService#saveXslt(java.lang.Integer,java.lang.String)
 	 */
 	public void saveXslt(Integer formId, String xslt) {
-		Query query = sessionFactory.getCurrentSession().createSQLQuery(
+		Query query = getCurrentSession().createSQLQuery(
 		"update xforms_xform set xslt = :xslt where form_id = :formId");
 		query.setParameter("xslt", xslt);
 		query.setParameter("formId", formId);
@@ -268,7 +269,7 @@ public class HibernateXformsDAO implements XformsDAO {
 			+ formId + " and name='" + fieldName + "'";
 
 		try {
-			PreparedStatement st = sessionFactory.getCurrentSession()
+			PreparedStatement st = getCurrentSession()
 			.connection().prepareStatement(sql);
 			ResultSet res = st.executeQuery();
 			if (res.next())
@@ -281,7 +282,7 @@ public class HibernateXformsDAO implements XformsDAO {
 	}*/
 	
 	public List<PersonRepeatAttribute> getPersonRepeatAttributes(Integer personId, Integer personAttributeId){
-		Query query = sessionFactory.getCurrentSession().createQuery(
+		Query query = getCurrentSession().createQuery(
 			"from PersonRepeatAttributes where personId=:personId "+
 		"and attributeTypeId=:attributeTypeId");
 		
@@ -292,15 +293,15 @@ public class HibernateXformsDAO implements XformsDAO {
 	}
 	
 	public void savePersonRepeatAttribute(PersonRepeatAttribute personRepeatAttribute){
-		sessionFactory.getCurrentSession().save(personRepeatAttribute);
+		getCurrentSession().save(personRepeatAttribute);
 	}
 	
 	public void deletePersonRepeatAttribute(Integer personRepeatAttributeId){
-		sessionFactory.getCurrentSession().delete(personRepeatAttributeId);
+		getCurrentSession().delete(personRepeatAttributeId);
 	}
 	
 	public List<Object[]> getList(String sql, String displayField, String valueField){
-		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		SQLQuery query = getCurrentSession().createSQLQuery(sql);
 		
 		if(displayField != null && displayField.trim().length() > 0){
 			if(XformsUtil.isOnePointNineAndAbove())
@@ -319,23 +320,23 @@ public class HibernateXformsDAO implements XformsDAO {
 		return query.list();
 	}
 	
-	public List<MedicalHistoryField> getMedicalHistoryFields(){
-		return sessionFactory.getCurrentSession().createQuery("from MedicalHistoryField").list();
+	public List<MedicalHistoryField> getMedicalHistoryFields() {
+		return getCurrentSession().createQuery("from MedicalHistoryField").list();
 	}
 	
 	public void saveMedicalHistoryField(MedicalHistoryField field){
 		if(field.isNew())
-			sessionFactory.getCurrentSession().save(field);
+			getCurrentSession().save(field);
 		else
-			sessionFactory.getCurrentSession().update(field);
+			getCurrentSession().update(field);
 	}
 	
 	public void deleteMedicalHistoryField(MedicalHistoryField field){
-		sessionFactory.getCurrentSession().delete(field);
+		getCurrentSession().delete(field);
 	}
 	
 	public void deleteMedicalHistoryField(Integer fieldId){
-		Query query = sessionFactory.getCurrentSession().createQuery("delete from MedicalHistoryField where fieldId = ?");
+		Query query = getCurrentSession().createQuery("delete from MedicalHistoryField where fieldId = ?");
 		query.setParameter(0, fieldId);
 		query.executeUpdate();
 	}
@@ -369,7 +370,7 @@ public class HibernateXformsDAO implements XformsDAO {
 			"and value_coded is not null) as t where value is not null " +
 			"order by tabIndex,name,encounter_datetime";
 
-		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		SQLQuery query = getCurrentSession().createSQLQuery(sql);
 		query.addScalar("name", Hibernate.STRING);
 		query.addScalar("value", Hibernate.STRING);
 		query.addScalar("encounter_datetime", Hibernate.DATE);
@@ -425,7 +426,7 @@ public class HibernateXformsDAO implements XformsDAO {
 		"and value_coded is not null and o.voided = 0 ) as t " +
 		"order by tabIndex,name,encounter_datetime";
 		
-		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		SQLQuery query = getCurrentSession().createSQLQuery(sql);
 		
 		if(XformsUtil.isOnePointNineAndAbove())
 			query.addScalar("name"/*, Hibernate.STRING*/);
@@ -518,7 +519,7 @@ public class HibernateXformsDAO implements XformsDAO {
 		"where ff.field_id=f.field_id " +
 		"and ff.form_id=" + formId + " and name = '" + fieldName + "'";
 		
-		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		SQLQuery query = getCurrentSession().createSQLQuery(sql);
 		
 		if(XformsUtil.isOnePointNineAndAbove())
 			query.addScalar("default_value"/*, Hibernate.STRING*/);
@@ -529,12 +530,12 @@ public class HibernateXformsDAO implements XformsDAO {
 	}
 	
 	public void createFormEntryError(XformsFormEntryError formEntryError) throws DAOException {
-		sessionFactory.getCurrentSession().save(formEntryError);
+		getCurrentSession().save(formEntryError);
 	}
 	
 	public List<GlobalProperty> getXFormsGlobalProperties() {
 		String sql = "select * from global_property gp where gp.property like 'xforms%'";
-		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		SQLQuery query = getCurrentSession().createSQLQuery(sql);
 		
 		return query.list();
 	}
@@ -543,7 +544,7 @@ public class HibernateXformsDAO implements XformsDAO {
 		String sql = "select f.form_id, f.name from xforms_xform xf inner join form f " +
 		"on xf.form_id=f.form_id where f.retired=0 ";
 		
-		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		SQLQuery query = getCurrentSession().createSQLQuery(sql);
 		
 		if(XformsUtil.isOnePointNineAndAbove()){
 			query.addScalar("form_id"/*, Hibernate.INTEGER*/);
@@ -559,14 +560,14 @@ public class HibernateXformsDAO implements XformsDAO {
 	
 	public String getLocationName(Integer locationId){
 		String sql = "select name from location where retired = 0 and location_id=" + locationId;
-		return (String)sessionFactory.getCurrentSession().createSQLQuery(sql).uniqueResult(); 
+		return (String)getCurrentSession().createSQLQuery(sql).uniqueResult(); 
 	}
 	
 	public String getPersonName(Integer personId){
 		try{
 			String sql = "select given_name, middle_name, family_name, preferred from person_name where voided = 0 and person_id=" + personId;
 			
-			PreparedStatement st = sessionFactory.getCurrentSession().connection().prepareStatement(sql);
+			PreparedStatement st = getCurrentSession().connection().prepareStatement(sql);
 			ResultSet res = st.executeQuery();
 			
 			String name = null;
@@ -619,7 +620,7 @@ public class HibernateXformsDAO implements XformsDAO {
 		try{
 			String sql = "select name from concept_name where concept_id=" + conceptId + " and locale='" + localeKey + "' and voided = 0";
 						
-			PreparedStatement st = sessionFactory.getCurrentSession().connection().prepareStatement(sql);
+			PreparedStatement st = getCurrentSession().connection().prepareStatement(sql);
 			ResultSet res = st.executeQuery();
 			
 			String name = null;
@@ -645,6 +646,28 @@ public class HibernateXformsDAO implements XformsDAO {
 		}
 		catch(SQLException ex){
 			ex.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Gets the current hibernate session while taking care of the hibernate 3 and 4 differences.
+	 * 
+	 * @return the current hibernate session.
+	 */
+	private org.hibernate.Session getCurrentSession() {
+		try {
+			return sessionFactory.getCurrentSession();
+		}
+		catch (NoSuchMethodError ex) {
+			try {
+				Method method = sessionFactory.getClass().getMethod("getCurrentSession", null);
+				return (org.hibernate.Session)method.invoke(sessionFactory, null);
+			}
+			catch (Exception e) {
+				log.error("Failed to get the hibernate session", e);
+			}
 		}
 		
 		return null;
