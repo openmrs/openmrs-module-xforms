@@ -666,10 +666,8 @@ public class HibernateXformsDAO implements XformsDAO {
 				return (org.hibernate.Session)method.invoke(sessionFactory, null);
 			}
 			catch (Exception e) {
-				log.error("Failed to get the hibernate session", e);
+				throw new RuntimeException("Failed to get the current hibernate session", e);
 			}
 		}
-		
-		return null;
 	}
 }
