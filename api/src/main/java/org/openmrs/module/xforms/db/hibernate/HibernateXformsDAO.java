@@ -617,38 +617,8 @@ public class HibernateXformsDAO implements XformsDAO {
 	}
 	
 	public String getConceptName(Integer conceptId, String localeKey){
-		try{
-			String sql = "select name from concept_name where concept_id=" + conceptId + " and locale='" + localeKey + "' and voided = 0";
-						
-			PreparedStatement st = getCurrentSession().connection().prepareStatement(sql);
-			ResultSet res = st.executeQuery();
-			
-			String name = null;
-			
-			while (res.next()){
-				
-				//TODO Older versions, which we still support, do not have the locale_preferred column.
-				//If we already have a name, overwrite it only with a preferred one.
-				/*if(name != null){
-					if(res.getInt("locale_preferred") != 1)
-						continue;
-					else
-						name = null;
-				}*/
-				
-				name = res.getString("name");
-				
-				/*if(res.getInt("locale_preferred") == 1)*/
-					break;
-			}
-			
-			return name;
-		}
-		catch(SQLException ex){
-			ex.printStackTrace();
-		}
-		
-		return null;
+		String sql = "select name from concept_name where concept_id=" + conceptId + " and locale='" + localeKey + "' and voided = 0";		
+		return (String)getCurrentSession().createSQLQuery(sql).uniqueResult();
 	}
 	
 	/**
