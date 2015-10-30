@@ -11,7 +11,7 @@ package org.openmrs.module.xforms;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.module.Activator;
+import org.openmrs.module.ModuleActivator;
 
 /**
  * The xforms activator as required by the openmrs module spec.
@@ -19,22 +19,38 @@ import org.openmrs.module.Activator;
  * @author Daniel
  *
  */
-public class XformsActivator implements Activator {
+public class XformsActivator implements ModuleActivator {
 
 	private Log log = LogFactory.getLog(this.getClass());
 
-	/**
-	 * @see org.openmrs.module.Activator#startup()
-	 */
-	public void startup() {
-		log.info("Starting Xforms Module");
+
+	@Override
+	public void willRefreshContext() {
+		
 	}
-	
-	/**
-	 *  @see org.openmrs.module.Activator#shutdown()
-	 */
-	public void shutdown() {
-		log.info("Shutting down Xforms Module");
+
+	@Override
+	public void contextRefreshed() {
+		
 	}
-	
+
+	@Override
+	public void willStart() {
+		
+	}
+
+	@Override
+	public void started() {
+		log.info("Started Xforms Module");
+	}
+
+	@Override
+	public void willStop() {
+		
+	}
+
+	@Override
+	public void stopped() {
+		log.info("Stopped Xforms Module");
+	}
 }
