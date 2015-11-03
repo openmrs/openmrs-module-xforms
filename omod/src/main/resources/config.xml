@@ -25,6 +25,7 @@
 	    <aware_of_module>org.openmrs.module.appui</aware_of_module>
 	    <aware_of_module>org.openmrs.module.emrapi</aware_of_module>
 	    <aware_of_module>org.openmrs.module.appframework</aware_of_module>
+	    <aware_of_module>org.openmrs.module.legacyui</aware_of_module>
 	</aware_of_modules>
 
 	<advice>
