@@ -457,8 +457,8 @@ public class XformsQueueProcessor {
 			
 			addOtherIdentifiers(pt, root, creator, patientService, propagateErrors, request);
 
-			Patient pt2 = patientService.identifierInUse(identifier.getIdentifier(),identifier.getIdentifierType(),pt);
-			if(pt2 == null){
+			List<Patient> patients = patientService.getPatients(identifier.getIdentifier());
+			if(patients == null || patients.size() == 0){
 				pt = patientService.savePatient(pt);
 				addPersonRepeatAttributes(pt,root,xformsService);
 
@@ -567,13 +567,13 @@ public class XformsQueueProcessor {
 		else if(name.equals(XformBuilder.NODE_NAME_COUNTY_DISTRICT))
 			pa.setCountyDistrict(value);
 		else if(name.equals(XformBuilder.NODE_NAME_NEIGHBORHOOD_CELL))
-			pa.setNeighborhoodCell(value);
+			pa.setAddress3(value);
 		else if(name.equals(XformBuilder.NODE_NAME_REGION))
-			pa.setRegion(value);
+			pa.setAddress6(value);
 		else if(name.equals(XformBuilder.NODE_NAME_SUBREGION))
-			pa.setSubregion(value);
+			pa.setAddress5(value);
 		else if(name.equals(XformBuilder.NODE_NAME_TOWNSHIP_DIVISION))
-			pa.setTownshipDivision(value);
+			pa.setAddress4(value);
 	}
 
 	private void addPersonRepeatAttributes(Patient pt, Element root,XformsService xformsService){
@@ -787,7 +787,7 @@ public class XformsQueueProcessor {
 		if(patientIdentifier == null || patientIdentifier.trim().length() == 0)
 			throw new Exception(Context.getMessageSourceService().getMessage(".expectedPatientID"));
 
-		List<Patient> patients = Context.getPatientService().getPatients(null, patientIdentifier, null);
+		List<Patient> patients = Context.getPatientService().getPatients(patientIdentifier);
 		if(patients != null && patients.size() > 1)
 			throw new Exception(Context.getMessageSourceService().getMessage("xformsmoreThanOneID") + patientIdentifier); 
 
@@ -977,8 +977,8 @@ public class XformsQueueProcessor {
 		
 		pt.addIdentifier(identifier);
 		
-		Patient pt2 = patientService.identifierInUse(identifier.getIdentifier(),identifier.getIdentifierType(), pt);
-		if(pt2 != null){
+		List<Patient> patients = patientService.getPatients(identifier.getIdentifier());
+		if(patients != null && patients.size() > 0){
 			reportError(Context.getMessageSourceService().getMessage("xforms.triedCreatePatientAlreadyExists") + identifier.getIdentifier(), propagateErrors, request);
 		}
 	}

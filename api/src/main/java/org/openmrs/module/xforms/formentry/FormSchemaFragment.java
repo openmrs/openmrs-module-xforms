@@ -18,7 +18,7 @@ import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.Drug;
 import org.openmrs.Form;
-import org.openmrs.util.FormConstants;
+import org.openmrs.hl7.HL7Constants;
 import org.openmrs.util.FormUtil;
 
 /**
@@ -172,7 +172,7 @@ public class FormSchemaFragment {
 			boolean required, Locale locale) {
 		Double minInclusive = concept.getLowAbsolute();
 		Double maxInclusive = concept.getHiAbsolute();
-		Boolean precise = concept.isPrecise();
+		Boolean precise = concept.isAllowDecimal();
 		boolean skipBounds = (minInclusive == null && maxInclusive == null);
 		String xml = "";
 		if (!skipBounds) {
@@ -263,7 +263,7 @@ public class FormSchemaFragment {
 			String answerConceptName = answer.getAnswerConcept()
 					.getName(locale).getName();
 			if (answer.getAnswerConcept().getConceptClass().getConceptClassId()
-					.equals(FormConstants.CLASS_DRUG)
+					.equals(HL7Constants.CLASS_DRUG)
 					&& answer.getAnswerDrug() != null) {
 				String answerDrugName = answer.getAnswerDrug().getName();
 				xml += "          <xs:enumeration value=\""

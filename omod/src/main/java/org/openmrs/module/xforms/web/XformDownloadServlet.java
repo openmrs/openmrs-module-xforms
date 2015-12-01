@@ -64,6 +64,7 @@ import org.openmrs.module.xforms.util.LanguageUtil;
 import org.openmrs.module.xforms.util.XformsUtil;
 import org.openmrs.util.FormUtil;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.RoleConstants;
 
 /**
  * Provides Xform download services.
@@ -395,7 +396,7 @@ public class XformDownloadServlet extends HttpServlet {
 
 		if("true".equals(Context.getAdministrationService().getGlobalProperty("xforms.setDefaultProvider", "false"))){
 			//Set default provider to the logged on user of no default value is already set in the xform.
-			if(user.hasRole(OpenmrsConstants.PROVIDER_ROLE)){
+			if(user.hasRole(RoleConstants.PROVIDER)){
 				String providerId = XformBuilder.getNodeValue(doc.getRootElement(), XformBuilder.NODE_ENCOUNTER_PROVIDER_ID);
 				if(providerId == null || providerId.trim().length() == 0) {
 					Integer id = XformsUtil.getProviderId(user);
@@ -533,7 +534,7 @@ public class XformDownloadServlet extends HttpServlet {
 
 			if("true".equals(Context.getAdministrationService().getGlobalProperty("xforms.setDefaultProvider", "false"))){
 				//Set default provider to the logged on user of no default value is already set in the xform.
-				if(user.hasRole(OpenmrsConstants.PROVIDER_ROLE)){
+				if(user.hasRole(RoleConstants.PROVIDER)){
 					String providerId = XformBuilder.getNodeValue(doc.getRootElement(), XformBuilder.NODE_ENCOUNTER_PROVIDER_ID);
 					if(providerId == null || providerId.trim().length() == 0) {
 						Integer id = XformsUtil.getProviderId(user);
@@ -749,17 +750,17 @@ public class XformDownloadServlet extends HttpServlet {
 		if(address.getCountyDistrict() != null)
 			XformBuilder.setNodeValue(doc, XformBuilder.NODE_NAME_PREFIX_PERSON_ADDRESS + XformBuilder.NODE_NAME_COUNTY_DISTRICT, address.getCountyDistrict());
 
-		if(address.getNeighborhoodCell() != null)
-			XformBuilder.setNodeValue(doc, XformBuilder.NODE_NAME_PREFIX_PERSON_ADDRESS + XformBuilder.NODE_NAME_NEIGHBORHOOD_CELL, address.getNeighborhoodCell());
+		if(address.getAddress3() != null)
+			XformBuilder.setNodeValue(doc, XformBuilder.NODE_NAME_PREFIX_PERSON_ADDRESS + XformBuilder.NODE_NAME_NEIGHBORHOOD_CELL, address.getAddress3());
 
-		if(address.getRegion() != null)
-			XformBuilder.setNodeValue(doc, XformBuilder.NODE_NAME_PREFIX_PERSON_ADDRESS + XformBuilder.NODE_NAME_REGION, address.getRegion());
+		if(address.getAddress6() != null)
+			XformBuilder.setNodeValue(doc, XformBuilder.NODE_NAME_PREFIX_PERSON_ADDRESS + XformBuilder.NODE_NAME_REGION, address.getAddress6());
 
-		if(address.getSubregion() != null)
-			XformBuilder.setNodeValue(doc, XformBuilder.NODE_NAME_PREFIX_PERSON_ADDRESS + XformBuilder.NODE_NAME_SUBREGION, address.getSubregion());
+		if(address.getAddress5() != null)
+			XformBuilder.setNodeValue(doc, XformBuilder.NODE_NAME_PREFIX_PERSON_ADDRESS + XformBuilder.NODE_NAME_SUBREGION, address.getAddress5());
 
-		if(address.getTownshipDivision() != null)
-			XformBuilder.setNodeValue(doc, XformBuilder.NODE_NAME_PREFIX_PERSON_ADDRESS + XformBuilder.NODE_NAME_TOWNSHIP_DIVISION, address.getTownshipDivision());
+		if(address.getAddress4() != null)
+			XformBuilder.setNodeValue(doc, XformBuilder.NODE_NAME_PREFIX_PERSON_ADDRESS + XformBuilder.NODE_NAME_TOWNSHIP_DIVISION, address.getAddress4());
 	}
 
 	/**

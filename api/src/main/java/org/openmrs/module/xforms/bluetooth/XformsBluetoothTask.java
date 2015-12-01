@@ -51,9 +51,6 @@ public class XformsBluetoothTask extends AbstractTask{
 	public void execute() {
 		Context.openSession();
 		try {
-			if (Context.isAuthenticated() == false)
-				authenticate();
-			
 			String serviceName = taskDefinition.getProperty(PROPERTY_SERVICE_NAME); //"OpenMRS XForms Bluetooth Server"
 			String serverUUID = taskDefinition.getProperty(PROPERTY_SERVER_UUID); //"F0E0D0C0B0A000908070605040301111"
 			String serverIP= taskDefinition.getProperty(PROPERTY_SERVER_IP); //"localhost"

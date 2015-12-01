@@ -100,12 +100,12 @@ public class MedicalHistoryFieldsController  extends SimpleFormController{
 							if (xsltFile != null && !xsltFile.isEmpty()) {
 								String xslt = IOUtils.toString(xsltFile
 										.getInputStream(),XformConstants.DEFAULT_CHARACTER_ENCODING);
-								form.setXslt(xslt);
+								throw new UnsupportedOperationException("No longer supported. Add it as a form resource");
 							}
 						}
 
 						// save form
-						Context.getFormService().updateForm(form);
+						Context.getFormService().saveForm(form);
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
 								"Form.saved");
 					} catch (Exception e) {
@@ -118,7 +118,7 @@ public class MedicalHistoryFieldsController  extends SimpleFormController{
 					}
 				} else if (action.equals(msa.getMessage("Form.delete"))) {
 					try {
-						Context.getFormService().deleteForm(form);
+						Context.getFormService().purgeForm(form);
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
 								"Form.deleted");
 					} catch (Exception e) {
@@ -134,12 +134,12 @@ public class MedicalHistoryFieldsController  extends SimpleFormController{
 					
 					FormService fs = Context.getFormService();
 					
-					TreeMap<Integer, TreeSet<FormField>> treeMap = FormUtil.getFormStructure(form);
+					Map<Integer, TreeSet<FormField>> treeMap = FormUtil.getFormStructure(form);
 					for (Integer parentFormFieldId : treeMap.keySet()) {
 						float sortWeight = 0;
 						for (FormField formField : treeMap.get(parentFormFieldId)) {
 							formField.setSortWeight(sortWeight);
-							fs.updateFormField(formField);
+							fs.saveFormField(formField);
 							sortWeight += 50;
 						}
 					}
@@ -200,8 +200,8 @@ public class MedicalHistoryFieldsController  extends SimpleFormController{
 		List<EncounterType> encTypes = new Vector<EncounterType>();
 
 		if (Context.isAuthenticated()) {
-			fieldTypes = Context.getFormService().getFieldTypes();
-			encTypes = Context.getEncounterService().getEncounterTypes();
+			fieldTypes = Context.getFormService().getAllFieldTypes();
+			encTypes = Context.getEncounterService().getAllEncounterTypes();
 		}
 
 		map.put("fieldTypes", fieldTypes);

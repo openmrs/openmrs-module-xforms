@@ -649,7 +649,7 @@ public class XformsUtil {
 			if (isOnePointNineAndAbove())
 				return getOnePointNineProviderId(encounter);
 			else
-				return encounter.getProvider().getPersonId();
+				return null; //return encounter.getProvider().getPersonId();
 		}
 		catch (NoSuchMethodError ex) {
 			Method method = encounter.getClass().getMethod("getProvider", null);
@@ -663,9 +663,9 @@ public class XformsUtil {
 				if (isOnePointNineAndAbove())
 					return getOnePointNineProviderName(encounter);
 				else {
-					PersonName personName = encounter.getProvider().getPersonName(); //This may be null for some users that have not last and first names.
-					return personName.toString() + " [" + encounter.getProvider().getPersonId() + "]";
-	
+					//PersonName personName = encounter.getProvider().getPersonName(); //This may be null for some users that have not last and first names.
+					//return personName.toString() + " [" + encounter.getProvider().getPersonId() + "]";
+					return null;
 				}
 			}
 			catch (NoSuchMethodError ex) {

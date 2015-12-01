@@ -21,7 +21,7 @@ import org.openmrs.module.xforms.Xform;
 import org.openmrs.module.xforms.XformBuilder;
 import org.openmrs.module.xforms.XformsService;
 import org.openmrs.module.xforms.util.XformsUtil;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.RoleConstants;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.support.StaticMethodMatcherPointcutAdvisor;
 import org.w3c.dom.Document;
@@ -79,7 +79,7 @@ public class XformsProviderAdvisor extends StaticMethodMatcherPointcutAdvisor im
 			
 			Object o = invocation.proceed();
 			
-			if (user.hasRole(OpenmrsConstants.PROVIDER_ROLE)) {
+			if (user.hasRole(RoleConstants.PROVIDER)) {
 				String methodName = invocation.getMethod().getName();
 				if (methodName.equals("saveUser")) {
 					if (isNewUser) {

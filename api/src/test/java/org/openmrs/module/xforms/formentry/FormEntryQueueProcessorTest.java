@@ -74,6 +74,18 @@ public class FormEntryQueueProcessorTest extends BaseModuleContextSensitiveTest 
 			return null;
 		}
 		
+		@Override
+		public String[] getSupportedViews() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public boolean supportsView(String view) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
 		public String serializeFormData(String data) {
 			//This is a test implementation that converts the incoming data to json
 			String firstname = StringUtils.substringBetween(data, "<firstname>", "</firstname>");

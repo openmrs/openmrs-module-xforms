@@ -23,7 +23,7 @@ import org.openmrs.module.web.FormEntryContext;
 import org.openmrs.module.web.extension.FormEntryHandler;
 import org.openmrs.module.xforms.Xform;
 import org.openmrs.module.xforms.XformsService;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 
 
 /**
@@ -80,7 +80,7 @@ public class XformsFormEntryHandler extends FormEntryHandler {
     }
 
     private <C extends Collection<Form>> C addAllXForms(C collection) {
-    	boolean showUnpublished = Context.getAuthenticatedUser().hasPrivilege(OpenmrsConstants.PRIV_VIEW_UNPUBLISHED_FORMS);
+    	boolean showUnpublished = Context.getAuthenticatedUser().hasPrivilege(PrivilegeConstants.VIEW_UNPUBLISHED_FORMS);
     	Set<Form> ret = new LinkedHashSet<Form>();
     	
     	FormService formService = Context.getFormService();

@@ -146,13 +146,13 @@ public class XformObsPatientEdit {
 		else if (XformBuilder.NODE_NAME_COUNTY_DISTRICT.equals(attributeValue))
 			pa.setCountyDistrict(dataValue);
 		else if (XformBuilder.NODE_NAME_NEIGHBORHOOD_CELL.equals(attributeValue))
-			pa.setNeighborhoodCell(dataValue);
+			pa.setAddress3(dataValue);
 		else if (XformBuilder.NODE_NAME_REGION.equals(attributeValue))
-			pa.setRegion(dataValue);
+			pa.setAddress6(dataValue);
 		else if (XformBuilder.NODE_NAME_SUBREGION.equals(attributeValue))
-			pa.setSubregion(dataValue);
+			pa.setAddress5(dataValue);
 		else if (XformBuilder.NODE_NAME_TOWNSHIP_DIVISION.equals(attributeValue))
-			pa.setTownshipDivision(dataValue);
+			pa.setAddress4(dataValue);
 		else
 			throw new APIException("Cannot find person address with name = " + attributeValue);
 		

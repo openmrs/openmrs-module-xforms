@@ -120,13 +120,13 @@ public class XformsServer {
 				DataOutputStream dosTemp = new DataOutputStream(baos);
 				
 				if (action == ACTION_DOWNLOAD_PATIENTS)
-					downloadPatients(String.valueOf(dis.readInt()), dosTemp,serializer, false);
+					;//downloadPatients(String.valueOf(dis.readInt()), dosTemp,serializer, false);
 				else if(action == ACTION_DOWNLOAD_SS_PATIENTS)
-					downloadPatients(String.valueOf(dis.readInt()), dosTemp,serializer, true);
+					;//downloadPatients(String.valueOf(dis.readInt()), dosTemp,serializer, true);
 				else if(action == ACTION_DOWNLOAD_COHORTS)
 					PatientDownloadManager.downloadCohorts(dosTemp,serializer);
 				else if(action == ACTION_DOWNLOAD_SAVED_SEARCHES)
-					PatientDownloadManager.downloadSavesSearches(dosTemp, serializer);
+					;//PatientDownloadManager.downloadSavesSearches(dosTemp, serializer);
 				else if (action == ACTION_DOWNLOAD_FORMS)
 					XformDownloadManager.downloadXforms(dosTemp,serializer);
 				else if (action == ACTION_UPLOAD_FORMS)
@@ -165,7 +165,7 @@ public class XformsServer {
 		}
 	}
 
-	private void downloadPatients(String cohortId, OutputStream os, String serializer, boolean isSavedSearch) throws Exception{
+	/*private void downloadPatients(String cohortId, OutputStream os, String serializer, boolean isSavedSearch) throws Exception{
 		
 		//Context.openSession();
 		
@@ -175,7 +175,7 @@ public class XformsServer {
 		finally{
 			//Context.closeSession();
 		}
-	}
+	}*/
 	
 	private void downloadPatients(String name, String identifier, OutputStream os, String serializerKey) throws Exception{
 		

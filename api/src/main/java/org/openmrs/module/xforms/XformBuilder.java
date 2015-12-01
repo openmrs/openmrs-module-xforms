@@ -39,7 +39,6 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptMap;
-import org.openmrs.ConceptName;
 import org.openmrs.ConceptSource;
 import org.openmrs.Encounter;
 import org.openmrs.Form;
@@ -790,9 +789,9 @@ public final class XformBuilder implements GlobalPropertyListener {
 				if (concept.getConceptMappings().size() > 0) {
 					if (preferredSource != null) {
 						for (ConceptMap map : concept.getConceptMappings()) {
-							if (OpenmrsUtil.nullSafeEquals(preferredSource, map.getSource())) {
+							if (OpenmrsUtil.nullSafeEquals(preferredSource, map.getConceptReferenceTerm().getConceptSource())) {
 								element.setAttribute(null, ATTRIBUTE_OPENMRS_CONCEPT,
-								    map.getSource().getName() + ":" + map.getSourceCode());
+								    map.getConceptReferenceTerm().getConceptSource().getName() + ":" + map.getConceptReferenceTerm().getCode());
 								return;
 							}
 						}
@@ -1849,8 +1848,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 		try {
 			String name = node.getAttributeValue(null, ATTRIBUTE_FIXED);
 			Concept concept = Context.getConceptService().getConcept(getConceptId(name));
-			ConceptName conceptName = concept.getName();
-			return conceptName.getDescription();
+			return concept.getDescription().getDescription();
 		}
 		catch (Exception ex) {
 			//ex.printStackTrace();
@@ -3135,7 +3133,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 	private static void populateConceptSet(Element controlNode, Concept concept, Element formNode, Element modelNode,
 	                                       Element bodyNode) {
 		
-		List<Concept> conceptSet = Context.getConceptService().getConceptsInSet(concept);
+		List<Concept> conceptSet = Context.getConceptService().getConceptsByConceptSet(concept);
 		for (Concept c : conceptSet) {
 			
 			String name = "person_attribute_concept" + c.getConceptId();
@@ -3171,7 +3169,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 			//add the hint
 			child = element.createElement(NAMESPACE_XFORMS, null);
 			child.setName(NODE_HINT);
-			child.addChild(Element.TEXT, c.getName().getDescription());
+			child.addChild(Element.TEXT, c.getDescription().getDescription());
 			element.addChild(Element.ELEMENT, child);
 			
 			pupulateConceptOptions(element, c, formNode, modelNode, bodyNode);
@@ -3281,7 +3279,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 		    new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(
 		        XformConstants.GLOBAL_PROP_KEY_TIME_DISPLAY_FORMAT, XformConstants.DEFAULT_TIME_DISPLAY_FORMAT)));
 		
-		List<Encounter> encounters = Context.getEncounterService().getEncountersByPatientId(patient.getPatientId(), false);
+		List<Encounter> encounters = Context.getEncounterService().getEncountersByPatientId(patient.getPatientId());
 		velocityContext.put("patientEncounters", encounters);
 		
 		List<Relationship> relationships = Context.getPersonService().getRelationshipsByPerson(patient);

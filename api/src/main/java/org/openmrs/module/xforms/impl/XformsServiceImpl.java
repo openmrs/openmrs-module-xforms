@@ -12,11 +12,9 @@ package org.openmrs.module.xforms.impl;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Form;
@@ -35,8 +33,6 @@ import org.openmrs.module.xforms.model.PatientMedicalHistory;
 import org.openmrs.module.xforms.model.PersonRepeatAttribute;
 import org.openmrs.module.xforms.model.XformUser;
 import org.openmrs.module.xforms.util.XformsUtil;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
@@ -356,7 +352,8 @@ public class XformsServiceImpl implements XformsService {
 			return;
 		}
 
-		String emailConfig = Context.getAdministrationService()
+		//TODO Uncomment this block after investigating were JavaMailSenderImpl is.
+		/*String emailConfig = Context.getAdministrationService()
 				.getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_EMAIL_SERVER_CONFIG);
 
 		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
@@ -381,7 +378,7 @@ public class XformsServiceImpl implements XformsService {
 			mailSender.send(message);
 		//} catch (MailException e) {
 		//	log.error("Failed to send an e-mail to " + email, e);
-		//}
+		//}*/
 	}
 
 }

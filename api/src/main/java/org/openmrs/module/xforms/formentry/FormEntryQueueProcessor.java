@@ -138,15 +138,7 @@ public class FormEntryQueueProcessor {
 		
 		// Now that we've determined the form used to create the XML data,
 		// we can obtain the associated XSLT to perform the transform to HL7.
-		String xsltDoc = null;
-		
-		try {
-			xsltDoc = form.getXslt();
-		}
-		catch (UnsupportedOperationException ex) {
-			//The service method will invoke the appropriate logic according to the openmrs version
-			xsltDoc = Context.getService(XformsService.class).getXslt(formId);
-		}
+		String xsltDoc = Context.getService(XformsService.class).getXslt(formId);
 		
 		if (StringUtils.isBlank(xsltDoc))
 			xsltDoc = BasicFormBuilder.getFormXslt();

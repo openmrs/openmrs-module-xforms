@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -33,6 +34,7 @@ import org.openmrs.Field;
 import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.api.context.Context;
+import org.openmrs.hl7.HL7Constants;
 import org.openmrs.module.xforms.formentry.FormEntryWrapper;
 import org.openmrs.module.xforms.formentry.FormSchemaFragment;
 import org.openmrs.module.xforms.util.XformsUtil;
@@ -239,7 +241,7 @@ public class XformBuilderEx {
 		//create the label
 		Element labelNode = bodyNode.createElement(XformBuilder.NAMESPACE_XFORMS, null);
 		labelNode.setName(XformBuilder.NODE_LABEL);
-		ConceptName name = concept.getBestName(locale);
+		ConceptName name = concept.getName(locale, false);
 		if (name == null) {
 			name = concept.getName();
 		}
@@ -253,13 +255,13 @@ public class XformBuilderEx {
 		
 		if(concept instanceof ConceptNumeric) {
 			ConceptNumeric numericConcept = (ConceptNumeric)concept;
-			if(numericConcept.isPrecise()){
+			if(numericConcept.isAllowDecimal()){
 				Double minInclusive = numericConcept.getLowAbsolute();
 				Double maxInclusive = numericConcept.getHiAbsolute();
 				
 				if(!(minInclusive == null || maxInclusive == null)){
-					String lower = (minInclusive == null ? "" : FormSchemaFragment.numericToString(minInclusive, numericConcept.isPrecise()));
-					String upper = (maxInclusive == null ? "" : FormSchemaFragment.numericToString(maxInclusive, numericConcept.isPrecise()));
+					String lower = (minInclusive == null ? "" : FormSchemaFragment.numericToString(minInclusive, numericConcept.isAllowDecimal()));
+					String upper = (maxInclusive == null ? "" : FormSchemaFragment.numericToString(maxInclusive, numericConcept.isAllowDecimal()));
 					bindNode.setAttribute(null, XformBuilder.ATTRIBUTE_CONSTRAINT, ". >= " + lower + " and . <= " + upper);
 					bindNode.setAttribute(null, (XformsUtil.isJavaRosaSaveFormat() ? "jr:constraintMsg" : XformBuilder.ATTRIBUTE_MESSAGE),
 					    "value should be between " + lower + " and " + upper + " inclusive");
@@ -276,7 +278,7 @@ public class XformBuilderEx {
 			String conceptValue;
 			
 			if (answer.getAnswerConcept().getConceptClass().getConceptClassId()
-					.equals(FormConstants.CLASS_DRUG)
+					.equals(HL7Constants.CLASS_DRUG)
 					&& answer.getAnswerDrug() != null) {
 				
 				conceptName = answer.getAnswerDrug().getName();
@@ -336,7 +338,7 @@ public class XformBuilderEx {
 			
 			Element labelNode = groupNode.createElement(XformBuilder.NAMESPACE_XFORMS, null);
 			labelNode.setName(XformBuilder.NODE_LABEL);
-			labelNode.addChild(Element.TEXT, formField.getField().getConcept().getBestName(locale).getName());
+			labelNode.addChild(Element.TEXT, formField.getField().getConcept().getName(locale, false).getName());
 			groupNode.addChild(Element.ELEMENT, labelNode);
 			
 			addHintNode(labelNode, formField.getField().getConcept());
@@ -367,7 +369,7 @@ public class XformBuilderEx {
 		
 		Element labelNode = groupNode.createElement(XformBuilder.NAMESPACE_XFORMS, null);
 		labelNode.setName(XformBuilder.NODE_LABEL);
-		labelNode.addChild(Element.TEXT, formField.getField().getConcept().getBestName(locale).getName());
+		labelNode.addChild(Element.TEXT, formField.getField().getConcept().getName(locale, false).getName());
 		groupNode.addChild(Element.ELEMENT, labelNode);
 		
 		addHintNode(labelNode, concept);
@@ -407,11 +409,11 @@ public class XformBuilderEx {
 	
 	private static void buildUInodes(Form form) {	
 		Locale locale = Context.getLocale();
-		TreeMap<Integer, TreeSet<FormField>> formStructure = FormUtil.getFormStructure(form);
+		Map<Integer, TreeSet<FormField>> formStructure = FormUtil.getFormStructure(form);
 		buildUInodes(form, formStructure, 0, locale);
 	}
 	
-	private static void buildUInodes(Form form, TreeMap<Integer, TreeSet<FormField>> formStructure, Integer sectionId, Locale locale) {	
+	private static void buildUInodes(Form form, Map<Integer, TreeSet<FormField>> formStructure, Integer sectionId, Locale locale) {	
 		
 		if (!formStructure.containsKey(sectionId))
 			return;
@@ -456,27 +458,27 @@ public class XformBuilderEx {
 					
 					addProblemList(name, concept, required, locale, formField);
 				}
-				else if (datatype.getHl7Abbreviation().equals(FormConstants.HL7_BOOLEAN)){
+				else if (datatype.getHl7Abbreviation().equals(HL7Constants.HL7_BOOLEAN)){
 					booleanConcept(name, concept, required, locale, formField);
 				}
-				else if (datatype.getHl7Abbreviation().equals(FormConstants.HL7_DATE)){
+				else if (datatype.getHl7Abbreviation().equals(HL7Constants.HL7_DATE)){
 					dateConcept(name, concept, required, locale, formField);
 				}
-				else if (datatype.getHl7Abbreviation().equals(FormConstants.HL7_DATETIME)){
+				else if (datatype.getHl7Abbreviation().equals(HL7Constants.HL7_DATETIME)){
 					dateTimeConcept(name, concept, required, locale, formField);
 				}
-				else if (datatype.getHl7Abbreviation().equals(FormConstants.HL7_TIME)){
+				else if (datatype.getHl7Abbreviation().equals(HL7Constants.HL7_TIME)){
 					timeConcept(name, concept, required, locale, formField);
 				}
-				else if (FormConstants.simpleDatatypes.containsKey(datatype.getHl7Abbreviation())){
+				else if (HL7Constants.simpleDatatypes.containsKey(datatype.getHl7Abbreviation())){
 					simpleConcept(name, concept, XformBuilder.DATA_TYPE_TEXT, required, locale, formField);
 				}
-				else if (datatype.getHl7Abbreviation().equals(FormConstants.HL7_NUMERIC)) {
+				else if (datatype.getHl7Abbreviation().equals(HL7Constants.HL7_NUMERIC)) {
 					ConceptNumeric conceptNumeric = Context.getConceptService().getConceptNumeric(concept.getConceptId());
 					numericConcept(name, conceptNumeric, required, locale, formField);
 				} 
-				else if (datatype.getHl7Abbreviation().equals(FormConstants.HL7_CODED)
-						|| datatype.getHl7Abbreviation().equals(FormConstants.HL7_CODED_WITH_EXCEPTIONS)) {
+				else if (datatype.getHl7Abbreviation().equals(HL7Constants.HL7_CODED)
+						|| datatype.getHl7Abbreviation().equals(HL7Constants.HL7_CODED_WITH_EXCEPTIONS)) {
 					
 					if (formField.getMaxOccurs() != null && formField.getMaxOccurs().intValue() == -1) {
 						addProblemList(name, concept, required, locale, formField);

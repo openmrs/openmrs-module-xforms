@@ -119,10 +119,10 @@ public class XformPatientEdit {
 		pa.setLatitude(XformBuilder.getNodeValue(rootNode, XformBuilder.NODE_NAME_PREFIX_PERSON_ADDRESS + XformBuilder.NODE_NAME_LATITUDE));
 		pa.setLongitude(XformBuilder.getNodeValue(rootNode, XformBuilder.NODE_NAME_PREFIX_PERSON_ADDRESS + XformBuilder.NODE_NAME_LONGITUDE));
 		pa.setCountyDistrict(XformBuilder.getNodeValue(rootNode, XformBuilder.NODE_NAME_PREFIX_PERSON_ADDRESS + XformBuilder.NODE_NAME_COUNTY_DISTRICT));
-		pa.setNeighborhoodCell(XformBuilder.getNodeValue(rootNode, XformBuilder.NODE_NAME_PREFIX_PERSON_ADDRESS + XformBuilder.NODE_NAME_NEIGHBORHOOD_CELL));
-		pa.setRegion(XformBuilder.getNodeValue(rootNode, XformBuilder.NODE_NAME_PREFIX_PERSON_ADDRESS + XformBuilder.NODE_NAME_REGION));
-		pa.setSubregion(XformBuilder.getNodeValue(rootNode, XformBuilder.NODE_NAME_PREFIX_PERSON_ADDRESS + XformBuilder.NODE_NAME_SUBREGION));
-		pa.setTownshipDivision(XformBuilder.getNodeValue(rootNode, XformBuilder.NODE_NAME_PREFIX_PERSON_ADDRESS + XformBuilder.NODE_NAME_TOWNSHIP_DIVISION));
+		pa.setAddress3(XformBuilder.getNodeValue(rootNode, XformBuilder.NODE_NAME_PREFIX_PERSON_ADDRESS + XformBuilder.NODE_NAME_NEIGHBORHOOD_CELL));
+		pa.setAddress6(XformBuilder.getNodeValue(rootNode, XformBuilder.NODE_NAME_PREFIX_PERSON_ADDRESS + XformBuilder.NODE_NAME_REGION));
+		pa.setAddress5(XformBuilder.getNodeValue(rootNode, XformBuilder.NODE_NAME_PREFIX_PERSON_ADDRESS + XformBuilder.NODE_NAME_SUBREGION));
+		pa.setAddress4(XformBuilder.getNodeValue(rootNode, XformBuilder.NODE_NAME_PREFIX_PERSON_ADDRESS + XformBuilder.NODE_NAME_TOWNSHIP_DIVISION));
 				
 		if(addressIsNew){
 			if(pa.getAddress1() == null || pa.getAddress1().trim().length() == 0)

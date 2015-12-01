@@ -10,6 +10,7 @@
 package org.openmrs.module.xforms.formentry;
 
 import java.util.Iterator;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -19,17 +20,17 @@ import org.openmrs.FormField;
 import org.openmrs.util.FormUtil;
 
 public class ComplexType {
-	TreeMap<Integer, TreeSet<FormField>> formStructure;
+	Map<Integer, TreeSet<FormField>> formStructure;
 	FormField formField;
 	String token;
 	boolean rendered = false;
 
-	ComplexType(TreeMap<Integer, TreeSet<FormField>> formStructure,
+	ComplexType(Map<Integer, TreeSet<FormField>> formStructure,
 			FormField formField) {
 		this(formStructure, formField, null);
 	}
 
-	ComplexType(TreeMap<Integer, TreeSet<FormField>> formStructure,
+	ComplexType(Map<Integer, TreeSet<FormField>> formStructure,
 			FormField formField, String token) {
 		this.formStructure = formStructure;
 		this.formField = formField;
@@ -97,7 +98,7 @@ public class ComplexType {
 	}
 
 	public static ComplexType getComplexType(
-			TreeMap<Integer, TreeSet<FormField>> formStructure,
+			Map<Integer, TreeSet<FormField>> formStructure,
 			Vector<ComplexType> list, FormField formField, String token,
 			Vector<String> tagList) {
 		ComplexType ct = new ComplexType(formStructure, formField);

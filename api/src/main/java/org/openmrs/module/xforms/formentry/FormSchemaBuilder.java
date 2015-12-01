@@ -10,7 +10,7 @@
 package org.openmrs.module.xforms.formentry;
 
 import java.util.Collection;
-import java.util.TreeMap;
+import java.util.Map;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -23,6 +23,7 @@ import org.openmrs.Field;
 import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.api.context.Context;
+import org.openmrs.hl7.HL7Constants;
 import org.openmrs.util.FormConstants;
 import org.openmrs.util.FormUtil;
 
@@ -43,7 +44,7 @@ import org.openmrs.util.FormUtil;
 public class FormSchemaBuilder {
 
 	Form form;
-	TreeMap<Integer, TreeSet<FormField>> formStructure;
+	Map<Integer, TreeSet<FormField>> formStructure;
 	Vector<String> tagList;
 	Vector<ComplexType> schemaSections;
 	Vector<ComplexType> complexTypes;
@@ -113,22 +114,22 @@ public class FormSchemaBuilder {
 					FormConstants.FIELD_TYPE_CONCEPT)) {
 				Concept concept = field.getConcept();
 				ConceptDatatype datatype = concept.getDatatype();
-				if (FormConstants.simpleDatatypes.containsKey(datatype
+				if (HL7Constants.simpleDatatypes.containsKey(datatype
 						.getHl7Abbreviation()))
 					schema.append(FormSchemaFragment.simpleConcept(token,
-							concept, FormConstants.simpleDatatypes
+							concept, HL7Constants.simpleDatatypes
 									.get(datatype.getHl7Abbreviation()),
 							required, Context.getLocale()));
 				else if (datatype.getHl7Abbreviation().equals(
-						FormConstants.HL7_NUMERIC)) {
+						HL7Constants.HL7_NUMERIC)) {
 					ConceptNumeric conceptNumeric = Context.getConceptService()
 							.getConceptNumeric(concept.getConceptId());
 					schema.append(FormSchemaFragment.numericConcept(token,
 							conceptNumeric, required, Context.getLocale()));
 				} else if (datatype.getHl7Abbreviation().equals(
-						FormConstants.HL7_CODED)
+						HL7Constants.HL7_CODED)
 						|| datatype.getHl7Abbreviation().equals(
-								FormConstants.HL7_CODED_WITH_EXCEPTIONS)) {
+								HL7Constants.HL7_CODED_WITH_EXCEPTIONS)) {
 					
 					Collection<ConceptAnswer> answers = concept
 							.getAnswers(false);

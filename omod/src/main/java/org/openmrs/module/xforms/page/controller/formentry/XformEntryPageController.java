@@ -48,7 +48,7 @@ public class XformEntryPageController {
 			Encounter encounter = Context.getEncounterService().getEncounter(encounterId);
 			Form form = encounter.getForm();
 			model.addAttribute("formId", form.getFormId());
-			model.addAttribute("patientId", encounter.getPatientId());
+			model.addAttribute("patientId", encounter.getPatient().getPatientId());
 			model.addAttribute("formName", ((FormService) Context.getService(FormService.class)).getForm(form.getFormId())
 			        .getName());
 			model.addAttribute("entityFormDefDownloadUrlSuffix",

@@ -11,8 +11,9 @@ package org.openmrs.module.xforms.formentry;
 
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.List;
-import java.util.TreeMap;
+import java.util.Map;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -36,6 +37,7 @@ import org.openmrs.Patient;
 import org.openmrs.Relationship;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.hl7.HL7Constants;
 import org.openmrs.util.FormConstants;
 import org.openmrs.util.FormUtil;
 import org.openmrs.util.VelocityExceptionHandler;
@@ -96,7 +98,7 @@ public class FormXmlTemplateBuilder {
 			velocityContext.put("date", new SimpleDateFormat("yyyyMMdd"));
 			velocityContext.put("time", new SimpleDateFormat("HH:mm:ss"));
 			
-			List<Encounter> encounters = Context.getEncounterService().getEncountersByPatientId(patient.getPatientId(), false);
+			List<Encounter> encounters = Context.getEncounterService().getEncountersByPatientId(patient.getPatientId());
 			velocityContext.put("patientEncounters", encounters);
 			
 			List<Relationship> relationships = Context.getPersonService().getRelationshipsByPerson(patient);
@@ -111,9 +113,9 @@ public class FormXmlTemplateBuilder {
 		String template = null;
 		try {
 			StringWriter w = new StringWriter();
-			Velocity.evaluate(velocityContext, w, this.getClass().getName(),
-					form.getTemplate());
-			template = w.toString();
+			//Velocity.evaluate(velocityContext, w, this.getClass().getName(),
+			//		form.getTemplate());
+			//template = w.toString();
 		} catch (Exception e) {
 			log.error("Error evaluating default values for form "
 					+ form.getName() + "[" + form.getFormId() + "]", e);
@@ -157,7 +159,7 @@ public class FormXmlTemplateBuilder {
 		xml.append(FormXmlTemplateFragment.openForm(form, FormEntryWrapper
 				.getFormSchemaNamespace(form), includeDefaultScripts));
 
-		TreeMap<Integer, TreeSet<FormField>> formStructure = FormUtil
+		Map<Integer, TreeSet<FormField>> formStructure = FormUtil
 				.getFormStructure(form);
 
 		renderStructure(xml, formStructure, includeDefaultScripts, 0, 2);
@@ -177,7 +179,7 @@ public class FormXmlTemplateBuilder {
 	 * @param indent
 	 */
 	public void renderStructure(StringBuffer xml,
-			TreeMap<Integer, TreeSet<FormField>> formStructure,
+			Map<Integer, TreeSet<FormField>> formStructure,
 			boolean includeDefaultScripts, Integer sectionId, int indent) {
 		
 		// if this sectionId is invalid, quit
@@ -257,9 +259,9 @@ public class FormXmlTemplateBuilder {
 					xml.append(xmlTag);
 					xml.append(">\n");
 				} else {
-					if (hl7Abbr.equals(FormConstants.HL7_CODED)
+					if (hl7Abbr.equals(HL7Constants.HL7_CODED)
 							|| hl7Abbr.equals(
-									FormConstants.HL7_CODED_WITH_EXCEPTIONS)) {
+									HL7Constants.HL7_CODED_WITH_EXCEPTIONS)) {
 						xml.append(" multiple=\"");
 						xml.append(field.getSelectMultiple() ? "1" : "0");
 						xml.append("\"");
@@ -271,11 +273,12 @@ public class FormXmlTemplateBuilder {
 					xml.append(indentation);
 					xml.append(indentation);
 					xml.append("<time xsi:nil=\"true\"></time>\n");
-					if ((hl7Abbr.equals(FormConstants.HL7_CODED) || 
-						 hl7Abbr.equals(FormConstants.HL7_CODED_WITH_EXCEPTIONS))
+					if ((hl7Abbr.equals(HL7Constants.HL7_CODED) || 
+						 hl7Abbr.equals(HL7Constants.HL7_CODED_WITH_EXCEPTIONS))
 							&& field.getSelectMultiple()) {
-						for (ConceptAnswer answer : concept
-								.getSortedAnswers(Context.getLocale())) {
+						Vector<ConceptAnswer> sortedAnswers = new Vector<ConceptAnswer>(concept.getAnswers(false));
+						Collections.sort(sortedAnswers);
+						for (ConceptAnswer answer : sortedAnswers) {
 							xml.append(indentation);
 							xml.append(indentation);
 							xml.append("<");
@@ -314,7 +317,7 @@ public class FormXmlTemplateBuilder {
 						xml.append(indentation);
 						xml.append(indentation);
 						xml.append("<value");
-						if (hl7Abbr.equals(FormConstants.HL7_BOOLEAN))
+						if (hl7Abbr.equals(HL7Constants.HL7_BOOLEAN))
 							xml.append(" infopath_boolean_hack=\"1\"");
 						xml.append(" xsi:nil=\"true\"></value>\n");
 					}

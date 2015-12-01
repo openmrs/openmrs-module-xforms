@@ -23,6 +23,7 @@ import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
+import org.hibernate.type.StandardBasicTypes;
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.module.xforms.MedicalHistoryField;
@@ -172,21 +173,15 @@ public class HibernateXformsDAO implements XformsDAO {
 		"where password is not null and salt is not null and " +
 		"not (username is null and system_id is null)";
 		
-		try {
-			PreparedStatement st = getCurrentSession()
-			.connection().prepareStatement(sql);
-			ResultSet res = st.executeQuery();
-			
-			while (res.next())
-				users.add(new XformUser(res.getInt("user_id"), res.getString("system_id"),
-					res.getString("username"),res.getString("password"), res.getString("salt")));
-			
-			return users;
-		} catch (SQLException e) {
-			log.error(e.getMessage(),e);
-		}
+		List<Object[]> results = (List<Object[]>) getCurrentSession()
+				.createSQLQuery(sql).list();
 		
-		return null;
+		for (Object[] row : results) {
+			users.add(new XformUser((Integer) row[0], (String) row[1],
+					(String) row[2], (String) row[3], (String) row[4]));
+		}
+
+		return users;
 	}
 	
 	public List<Integer> getXformFormIds() {
@@ -195,21 +190,14 @@ public class HibernateXformsDAO implements XformsDAO {
 		String sql = "select form_id from xforms_xform where form_id in (select form_id from form) and form_id<>"
 			+ XformConstants.PATIENT_XFORM_FORM_ID;
 		
-		try {
-			PreparedStatement st = getCurrentSession()
-			.connection().prepareStatement(sql);
-			ResultSet res = st.executeQuery();
-			
-			while (res.next())
-				formIds.add(res.getInt("form_id"));
-			
-			return formIds;
-		} catch (SQLException e) {
-			log.error(e.getMessage(),e);
+		List<Object[]> results = (List<Object[]>) getCurrentSession()
+				.createSQLQuery(sql).list();
+
+		for (Object[] row : results) {
+			formIds.add((Integer) row[0]);
 		}
-		
-		return null;
-		
+
+		return formIds;
 	}
 	
 	/**
@@ -236,14 +224,9 @@ public class HibernateXformsDAO implements XformsDAO {
 	 */
 	public String getXslt(Integer formId) {
 		String sql = "select xslt from xforms_xform where form_id=" + formId;
-		try {
-			PreparedStatement st = getCurrentSession()
-			.connection().prepareStatement(sql);
-			ResultSet res = st.executeQuery();
-			if (res.next())
-				return res.getString("xslt");
-		} catch (SQLException e) {
-			log.error(e.getMessage(),e);
+		Object xslt = getCurrentSession().createSQLQuery(sql).uniqueResult();
+		if (xslt != null) {
+			return (String) xslt;
 		}
 		
 		return null;
@@ -307,14 +290,14 @@ public class HibernateXformsDAO implements XformsDAO {
 			if(XformsUtil.isOnePointNineAndAbove())
 				query.addScalar(displayField/*, Hibernate.STRING*/);
 			else
-				query.addScalar(displayField, Hibernate.STRING);
+				query.addScalar(displayField, StandardBasicTypes.STRING);
 		}
 		
 		if(valueField != null && valueField.trim().length() > 0){
 			if(XformsUtil.isOnePointNineAndAbove())
 				query.addScalar(valueField/*, Hibernate.STRING*/);
 			else
-				query.addScalar(valueField, Hibernate.STRING);
+				query.addScalar(valueField, StandardBasicTypes.STRING);
 		}
 		
 		return query.list();
@@ -431,7 +414,7 @@ public class HibernateXformsDAO implements XformsDAO {
 		if(XformsUtil.isOnePointNineAndAbove())
 			query.addScalar("name"/*, Hibernate.STRING*/);
 		else
-			query.addScalar("name", Hibernate.STRING);
+			query.addScalar("name", StandardBasicTypes.STRING);
 		
 		//query.addScalar("value", Hibernate.STRING);
 		
@@ -447,15 +430,15 @@ public class HibernateXformsDAO implements XformsDAO {
 			query.addScalar("encounter_datetime"/*, Hibernate.DATE*/);
 		}
 		else{
-			query.addScalar("value_group_id", Hibernate.INTEGER);
-			query.addScalar("value_boolean", Hibernate.INTEGER);
-			query.addScalar("value_drug", Hibernate.INTEGER);
-			query.addScalar("value_datetime", Hibernate.DATE);
-			query.addScalar("value_numeric", Hibernate.FLOAT);
+			query.addScalar("value_group_id", StandardBasicTypes.INTEGER);
+			query.addScalar("value_boolean", StandardBasicTypes.INTEGER);
+			query.addScalar("value_drug", StandardBasicTypes.INTEGER);
+			query.addScalar("value_datetime", StandardBasicTypes.DATE);
+			query.addScalar("value_numeric", StandardBasicTypes.FLOAT);
 			//query.addScalar("value_modifier", Hibernate.OBJECT);
-			query.addScalar("value_text", Hibernate.STRING);
+			query.addScalar("value_text", StandardBasicTypes.STRING);
 			
-			query.addScalar("encounter_datetime", Hibernate.DATE);
+			query.addScalar("encounter_datetime", StandardBasicTypes.DATE);
 		}
 		
 		List<Object[]> list = query.list();
@@ -524,7 +507,7 @@ public class HibernateXformsDAO implements XformsDAO {
 		if(XformsUtil.isOnePointNineAndAbove())
 			query.addScalar("default_value"/*, Hibernate.STRING*/);
 		else
-			query.addScalar("default_value", Hibernate.STRING);
+			query.addScalar("default_value", StandardBasicTypes.STRING);
 		
 		return (String)query.uniqueResult();
 	}
@@ -551,8 +534,8 @@ public class HibernateXformsDAO implements XformsDAO {
 			query.addScalar("name"/*, Hibernate.STRING*/);
 		}
 		else{
-			query.addScalar("form_id", Hibernate.INTEGER);
-			query.addScalar("name", Hibernate.STRING);
+			query.addScalar("form_id", StandardBasicTypes.INTEGER);
+			query.addScalar("name", StandardBasicTypes.STRING);
 		}
 		
 		return query.list();
@@ -564,56 +547,52 @@ public class HibernateXformsDAO implements XformsDAO {
 	}
 	
 	public String getPersonName(Integer personId){
-		try{
-			String sql = "select given_name, middle_name, family_name, preferred from person_name where voided = 0 and person_id=" + personId;
-			
-			PreparedStatement st = getCurrentSession().connection().prepareStatement(sql);
-			ResultSet res = st.executeQuery();
-			
-			String name = null;
-			
-			while (res.next()){
-				
-				//If we already have a name, overwrite it only with a preferred one.
-				if(name != null){
-					if(res.getInt("preferred") != 1)
-						continue;
-					else
-						name = null;
-				}
-				
-				String givenName = res.getString("given_name");
-				String middleName = res.getString("middle_name");
-				String familyName = res.getString("family_name");
-				
-				if (StringUtils.hasText(givenName))
-					name = givenName;
-				
-				if (StringUtils.hasText(middleName)){
-					if(name == null)
-						name = givenName;
-					else
-						name += " " + givenName;
-				}
-				
-				if (StringUtils.hasText(familyName)){
-					if(name == null)
-						name = familyName;
-					else
-						name += " " + familyName;
-				}
-				
-				if(res.getInt("preferred") == 1)
-					break;
+
+		String sql = "select given_name, middle_name, family_name, preferred from person_name where voided = 0 and person_id="
+				+ personId;
+
+		List<Object[]> results = (List<Object[]>) getCurrentSession()
+				.createSQLQuery(sql).list();
+
+		String name = null;
+
+		for (Object[] row : results) {
+
+			// If we already have a name, overwrite it only with a preferred
+			// one.
+			if (name != null) {
+				if (((Boolean) row[3]).booleanValue() != true)
+					continue;
+				else
+					name = null;
 			}
-			
-			return name;
+
+			String givenName = (String) row[0];
+			String middleName = (String) row[1];
+			String familyName = (String) row[2];
+
+			if (StringUtils.hasText(givenName))
+				name = givenName;
+
+			if (StringUtils.hasText(middleName)) {
+				if (name == null)
+					name = givenName;
+				else
+					name += " " + givenName;
+			}
+
+			if (StringUtils.hasText(familyName)) {
+				if (name == null)
+					name = familyName;
+				else
+					name += " " + familyName;
+			}
+
+			if (((Boolean) row[3]).booleanValue() != true)
+				break;
 		}
-		catch(SQLException ex){
-			ex.printStackTrace();
-		}
-		
-		return null;
+
+		return name;
 	}
 	
 	public String getConceptName(Integer conceptId, String localeKey){

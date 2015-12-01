@@ -49,8 +49,6 @@ public class ProcessXformsQueueTask extends AbstractTask {
 		Context.openSession();
 		log.debug("Running xforms queue task... ");
 		try {
-			if (Context.isAuthenticated() == false)
-				authenticate();
 			processor.processXformsQueue();
 		} catch (APIException e) {
 			log.error("Error running xforms queue task", e);

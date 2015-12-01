@@ -60,7 +60,7 @@ public class PatientDownloadController extends SimpleFormController{
 	protected Map referenceData(HttpServletRequest request, Object obj, Errors err) throws Exception {
 
 		Map<Object, Object> data = new HashMap<Object, Object>();
-		cohorts = Context.getCohortService().getCohorts();
+		cohorts = Context.getCohortService().getAllCohorts();
 		data.put("cohorts", cohorts);
 
 		return data;
@@ -89,7 +89,7 @@ public class PatientDownloadController extends SimpleFormController{
 				if(request.getParameter(XformConstants.REQUEST_PARAM_DOWNLOAD_COHORTS) != null)
 					PatientDownloadManager.downloadCohorts(response.getOutputStream(),serializerKey);
 				else
-					PatientDownloadManager.downloadPatients(request.getParameter("cohortId"), response.getOutputStream(), serializerKey, false);
+					;//PatientDownloadManager.downloadPatients(request.getParameter("cohortId"), response.getOutputStream(), serializerKey, false);
 			}
 		}
 		else{

@@ -56,9 +56,6 @@ public class XformsSMSTask extends AbstractTask{
 	public void execute() {
 		Context.openSession();
 		try {
-			if (Context.isAuthenticated() == false)
-				authenticate();
-			
 			String serverIP = taskDefinition.getProperty(PROPERTY_SERVER_IP);
 			String msgSrcPort = taskDefinition.getProperty(PROPERTY_MSG_SRC_PORT);
 			String msgDestPort = taskDefinition.getProperty(PROPERTY_MSG_DEST_PORT);

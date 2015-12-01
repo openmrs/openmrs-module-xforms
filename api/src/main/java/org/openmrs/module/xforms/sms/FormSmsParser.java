@@ -538,7 +538,7 @@ public class FormSmsParser {
 		if(patientIdentifier == null)
 			throw new Exception("Expected patient identifier value");
 
-		List<Patient> patients = Context.getPatientService().getPatients(null, patientIdentifier, null);
+		List<Patient> patients = Context.getPatientService().getPatients(patientIdentifier);
 		if(patients != null && patients.size() > 1)
 			throw new Exception("More than one patient was found with identifier " + patientIdentifier);
 

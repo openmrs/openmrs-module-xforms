@@ -10,6 +10,8 @@
 package org.openmrs.module.xforms.formentry;
 
 import java.util.Hashtable;
+
+import org.openmrs.hl7.HL7Constants;
 import org.openmrs.util.FormConstants;
 
 /**
@@ -49,59 +51,59 @@ public class FormEntryConstants {
 	/**
 	 * @deprecated Use org.openmrs.util.form.FormConstants.HL7_TEXT
 	 */
-	public static final String HL7_TEXT = FormConstants.HL7_TEXT;
+	public static final String HL7_TEXT = HL7Constants.HL7_TEXT;
 	
 	/**
 	 * @deprecated Use org.openmrs.util.form.FormConstants.HL7_CODED
 	 */
-	public static final String HL7_CODED = FormConstants.HL7_CODED;
+	public static final String HL7_CODED = HL7Constants.HL7_CODED;
 	
 	/**
 	 * @deprecated Use org.openmrs.util.form.FormConstants.HL7_CODED_WITH_EXCEPTIONS
 	 */
-	public static final String HL7_CODED_WITH_EXCEPTIONS = FormConstants.HL7_CODED_WITH_EXCEPTIONS;
+	public static final String HL7_CODED_WITH_EXCEPTIONS = HL7Constants.HL7_CODED_WITH_EXCEPTIONS;
 	
 	/**
 	 * @deprecated Use org.openmrs.util.form.FormConstants.HL7_NUMERIC
 	 */
-	public static final String HL7_NUMERIC = FormConstants.HL7_NUMERIC;
+	public static final String HL7_NUMERIC = HL7Constants.HL7_NUMERIC;
 	
 	/**
 	 * @deprecated Use org.openmrs.util.form.FormConstants.HL7_DATE
 	 */
-	public static final String HL7_DATE = FormConstants.HL7_DATE;
+	public static final String HL7_DATE = HL7Constants.HL7_DATE;
 	
 	/**
 	 * @deprecated Use org.openmrs.util.form.FormConstants.HL7_TIME
 	 */
-	public static final String HL7_TIME = FormConstants.HL7_TIME;
+	public static final String HL7_TIME = HL7Constants.HL7_TIME;
 	
 	/**
 	 * @deprecated Use org.openmrs.util.form.FormConstants.HL7_DATETIME
 	 */
-	public static final String HL7_DATETIME = FormConstants.HL7_DATETIME;
+	public static final String HL7_DATETIME = HL7Constants.HL7_DATETIME;
 	
 	/**
 	 * @deprecated Use org.openmrs.util.form.FormConstants.HL7_BOOLEAN
 	 */
-	public static final String HL7_BOOLEAN = FormConstants.HL7_BOOLEAN;
+	public static final String HL7_BOOLEAN = HL7Constants.HL7_BOOLEAN;
 
 	
 	/**
 	 * @deprecated Use org.openmrs.util.form.FormConstants.CLASS_DRUG
 	 */
-	public static final Integer CLASS_DRUG = FormConstants.CLASS_DRUG;
+	public static final Integer CLASS_DRUG = HL7Constants.CLASS_DRUG;
 
 	
 	/**
 	 * @deprecated Use org.openmrs.util.form.FormConstants.HL7_LOCAL_CONCEPT
 	 */
-	public static final String HL7_LOCAL_CONCEPT = FormConstants.HL7_LOCAL_CONCEPT;
+	public static final String HL7_LOCAL_CONCEPT = HL7Constants.HL7_LOCAL_CONCEPT;
 	
 	/**
 	 * @deprecated Use org.openmrs.util.form.FormConstants.HL7_LOCAL_DRUG
 	 */
-	public static final String HL7_LOCAL_DRUG = FormConstants.HL7_LOCAL_DRUG;
+	public static final String HL7_LOCAL_DRUG = HL7Constants.HL7_LOCAL_DRUG;
 
 	// List of datatypes that do not require complex definitions
 	public static final Hashtable<String, String> simpleDatatypes = new Hashtable<String, String>();

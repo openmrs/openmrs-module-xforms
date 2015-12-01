@@ -40,12 +40,12 @@ import org.openmrs.Obs;
 import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.hl7.HL7Constants;
 import org.openmrs.module.xforms.util.DOMUtil;
 import org.openmrs.module.xforms.util.XformsUtil;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.UserEditor;
-import org.openmrs.util.FormConstants;
 import org.openmrs.util.FormUtil;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.util.FileCopyUtils;
@@ -400,7 +400,8 @@ public class XformObsEdit {
 				method.invoke(encounter, new Object[]{person});
 			}
 			catch(NoSuchMethodError ex){
-				encounter.setProvider(Context.getUserService().getUser(id));
+				//TODO Check if we still support 1.6 which uses userid as provider id
+				//encounter.setProvider(Context.getUserService().getUser(id));
 			}
 		}
 		
@@ -641,7 +642,7 @@ public class XformObsEdit {
 	 * @return String representation of the given concept
 	 */
 	public static String conceptToString(Concept concept, ConceptName localizedName) {
-		return concept.getConceptId() + "^" + localizedName.getName() + "^" + FormConstants.HL7_LOCAL_CONCEPT; // + "^"
+		return concept.getConceptId() + "^" + localizedName.getName() + "^" + HL7Constants.HL7_LOCAL_CONCEPT; // + "^"
 		// + localizedName.getConceptNameId() + "^" + localizedName.getName() + "^" + FormConstants.HL7_LOCAL_CONCEPT_NAME;
 	}
 
