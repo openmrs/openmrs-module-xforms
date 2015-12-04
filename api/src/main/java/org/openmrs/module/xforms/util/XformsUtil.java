@@ -47,10 +47,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.ConceptNumeric;
 import org.openmrs.Encounter;
 import org.openmrs.Form;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
@@ -994,5 +994,19 @@ public class XformsUtil {
 		catch (Exception e) {
 			throw new APIException("Failed to serialize the incoming data from the complex obs handler", e);
 		}
+	}
+	
+	public static Boolean isAllowDecimal(ConceptNumeric cn) {
+		Boolean allowNumeric = false;
+		try {
+			allowNumeric = cn.isPrecise();
+		} catch(Exception ex) {
+			try {
+				Method method = cn.getClass().getMethod("isAllowDecimal", null);
+				allowNumeric = (Boolean) method.invoke(cn, null);
+			}
+			catch (Exception e) {e.printStackTrace();}
+		}
+		return allowNumeric;
 	}
 }

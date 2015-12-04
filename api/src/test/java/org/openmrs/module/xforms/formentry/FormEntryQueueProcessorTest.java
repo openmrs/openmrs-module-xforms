@@ -74,13 +74,11 @@ public class FormEntryQueueProcessorTest extends BaseModuleContextSensitiveTest 
 			return null;
 		}
 		
-		@Override
 		public String[] getSupportedViews() {
 			// TODO Auto-generated method stub
 			return null;
 		}
 
-		@Override
 		public boolean supportsView(String view) {
 			// TODO Auto-generated method stub
 			return false;

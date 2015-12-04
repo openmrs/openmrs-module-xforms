@@ -19,6 +19,7 @@ import org.openmrs.ConceptNumeric;
 import org.openmrs.Drug;
 import org.openmrs.Form;
 import org.openmrs.hl7.HL7Constants;
+import org.openmrs.module.xforms.util.XformsUtil;
 import org.openmrs.util.FormUtil;
 
 /**
@@ -172,7 +173,7 @@ public class FormSchemaFragment {
 			boolean required, Locale locale) {
 		Double minInclusive = concept.getLowAbsolute();
 		Double maxInclusive = concept.getHiAbsolute();
-		Boolean precise = concept.isAllowDecimal();
+		Boolean precise = XformsUtil.isAllowDecimal(concept);
 		boolean skipBounds = (minInclusive == null && maxInclusive == null);
 		String xml = "";
 		if (!skipBounds) {

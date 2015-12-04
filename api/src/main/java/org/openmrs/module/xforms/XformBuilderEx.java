@@ -17,7 +17,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -255,13 +254,13 @@ public class XformBuilderEx {
 		
 		if(concept instanceof ConceptNumeric) {
 			ConceptNumeric numericConcept = (ConceptNumeric)concept;
-			if(numericConcept.isAllowDecimal()){
+			if(XformsUtil.isAllowDecimal(numericConcept)){
 				Double minInclusive = numericConcept.getLowAbsolute();
 				Double maxInclusive = numericConcept.getHiAbsolute();
 				
 				if(!(minInclusive == null || maxInclusive == null)){
-					String lower = (minInclusive == null ? "" : FormSchemaFragment.numericToString(minInclusive, numericConcept.isAllowDecimal()));
-					String upper = (maxInclusive == null ? "" : FormSchemaFragment.numericToString(maxInclusive, numericConcept.isAllowDecimal()));
+					String lower = (minInclusive == null ? "" : FormSchemaFragment.numericToString(minInclusive, XformsUtil.isAllowDecimal(numericConcept)));
+					String upper = (maxInclusive == null ? "" : FormSchemaFragment.numericToString(maxInclusive, XformsUtil.isAllowDecimal(numericConcept)));
 					bindNode.setAttribute(null, XformBuilder.ATTRIBUTE_CONSTRAINT, ". >= " + lower + " and . <= " + upper);
 					bindNode.setAttribute(null, (XformsUtil.isJavaRosaSaveFormat() ? "jr:constraintMsg" : XformBuilder.ATTRIBUTE_MESSAGE),
 					    "value should be between " + lower + " and " + upper + " inclusive");
