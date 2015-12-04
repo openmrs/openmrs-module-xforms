@@ -60,7 +60,7 @@ public class XformsFilter implements Filter {
 				GZIPResponseWrapper wrappedResponse = new GZIPResponseWrapper(httpResponse);
 
 				chain.doFilter(httpRequest, wrappedResponse);
-				//wrappedResponse.finishResponse();
+				wrappedResponse.finishResponse();
 
 				return;
 			}
