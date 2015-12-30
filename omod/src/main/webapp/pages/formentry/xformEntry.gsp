@@ -219,7 +219,7 @@ ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient ]) }
 		placeholder="${ ui.message("xforms.location.search.placeholder") }" />
 </div>
 <script type="text/javascript">
-	var jsDateFormat = '<openmrs:datePattern localize="false"/>';
+	var jsDateFormat = '<%= org.openmrs.api.context.Context.getDateFormat().toPattern().toLowerCase() %>';
 	var jsLocale = '<%= org.openmrs.api.context.Context.getLocale() %>';
 
 	var locationNameIdMap = new Object();
