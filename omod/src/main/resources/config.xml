@@ -47,6 +47,11 @@
 		<point>org.openmrs.api.ConceptService</point>
 		<class>org.openmrs.module.xforms.aop.XformsConceptAdvisor</class>
 	</advice>
+	
+	<advice>
+		<point>org.openmrs.module.appframework.service.AppFrameworkService</point>
+		<class>org.openmrs.module.xforms.aop.AppFrameworkServiceAdvisor</class>
+	</advice>
 
 	<!-- Required Global Properties -->
 	<globalProperty>

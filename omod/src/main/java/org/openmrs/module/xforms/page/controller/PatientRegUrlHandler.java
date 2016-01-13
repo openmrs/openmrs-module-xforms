@@ -19,11 +19,15 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.annotation.OpenmrsProfile;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.xforms.Xform;
 import org.openmrs.module.xforms.XformConstants;
+import org.openmrs.module.xforms.XformsService;
 import org.openmrs.ui.framework.UiFrameworkException;
 import org.openmrs.ui.framework.WebConstants;
 import org.openmrs.ui.framework.page.FileDownload;
@@ -72,6 +76,29 @@ public class PatientRegUrlHandler {
 
 		if("true".equals(Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_USE_PATIENT_XFORM,"false"))) {
 			return "redirect:/xforms/patientReg.page?target=xformentry&formId=0&mode=edit&patientId=" + patient.getPatientId() + "&refappui=true";
+		}
+		
+		String path = request.getServletPath();
+        path = path.substring(1, path.lastIndexOf(".page"));
+		return handlePath(path, request, response, model, httpSession);
+	}
+	
+	@RequestMapping(value = "/htmlformentryui/htmlform/editHtmlFormWithStandardUi.page", method = {RequestMethod.GET, RequestMethod.POST})
+	public String handleEditEncounterPage(HttpServletRequest request, HttpServletResponse response, Model model, HttpSession httpSession) {
+		
+		String encounterId = request.getParameter("encounterId");
+		String patientId = request.getParameter("patientId");
+		if (StringUtils.isNotBlank(encounterId) && StringUtils.isNotBlank(patientId)) {
+			Encounter encounter = Context.getEncounterService().getEncounter(Integer.parseInt(encounterId));
+			if (encounter != null && encounter.getForm() != null) {
+				Xform xform = Context.getService(XformsService.class).getXform(encounter.getForm());
+				if (xform != null) {
+					return "redirect:/xforms/formentry/xformEntry.page?refappui=true&encounterId=" + encounterId + 
+							"&patientId=" + patientId + 
+							"&returnUrl=coreapps/patientdashboard/patientDashboard.page?patientId=" + patientId + 
+							"&visitId=" + encounter.getVisit().getVisitId();
+				}
+			}
 		}
 		
 		String path = request.getServletPath();
