@@ -21,7 +21,6 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.app.event.EventCartridge;
 import org.apache.velocity.runtime.RuntimeConstants;
@@ -38,6 +37,7 @@ import org.openmrs.Relationship;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.hl7.HL7Constants;
+import org.openmrs.module.xforms.util.XformsUtil;
 import org.openmrs.util.FormConstants;
 import org.openmrs.util.FormUtil;
 import org.openmrs.util.VelocityExceptionHandler;
@@ -159,7 +159,7 @@ public class FormXmlTemplateBuilder {
 		xml.append(FormXmlTemplateFragment.openForm(form, FormEntryWrapper
 				.getFormSchemaNamespace(form), includeDefaultScripts));
 
-		Map<Integer, TreeSet<FormField>> formStructure = FormUtil
+		Map<Integer, TreeSet<FormField>> formStructure = XformsUtil
 				.getFormStructure(form);
 
 		renderStructure(xml, formStructure, includeDefaultScripts, 0, 2);

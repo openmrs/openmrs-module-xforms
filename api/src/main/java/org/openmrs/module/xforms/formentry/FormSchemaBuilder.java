@@ -24,6 +24,7 @@ import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.api.context.Context;
 import org.openmrs.hl7.HL7Constants;
+import org.openmrs.module.xforms.util.XformsUtil;
 import org.openmrs.util.FormConstants;
 import org.openmrs.util.FormUtil;
 
@@ -74,7 +75,7 @@ public class FormSchemaBuilder {
 
 		// define main form section (top level)
 		schema.append(FormSchemaFragment.startForm());
-		formStructure = FormUtil.getFormStructure(form);
+		formStructure = XformsUtil.getFormStructure(form);
 		for (FormField section : formStructure.get(0)) {
 			String sectionName = FormUtil.getXmlToken(section.getField()
 					.getName());

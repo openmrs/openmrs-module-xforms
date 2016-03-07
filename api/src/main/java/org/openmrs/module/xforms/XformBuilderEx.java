@@ -13,6 +13,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
@@ -48,6 +49,20 @@ public class XformBuilderEx {
 	private static Hashtable<FormField, Element> formFields;
 	private static Hashtable<FormField, String> fieldTokens;
 	private static boolean useConceptIdAsHint = false;
+	
+	// List of datatypes that do not require complex definitions
+	private static final Map<String, String> simpleDatatypes = new HashMap<String, String>();
+	
+	static {
+		simpleDatatypes.put(HL7Constants.HL7_TEXT, "xs:string");
+		simpleDatatypes.put(HL7Constants.HL7_DATE, "xs:date");
+		simpleDatatypes.put(HL7Constants.HL7_TIME, "xs:time");
+		simpleDatatypes.put(HL7Constants.HL7_DATETIME, "xs:dateTime");
+		
+		// We make a special boolean type with an extra attribute
+		// to get InfoPath to treat booleans properly
+		simpleDatatypes.put(HL7Constants.HL7_BOOLEAN, "_infopath_boolean");
+	}
 	
 	/**
 	 * Builds an xform for an given an openmrs form.
@@ -408,7 +423,7 @@ public class XformBuilderEx {
 	
 	private static void buildUInodes(Form form) {	
 		Locale locale = Context.getLocale();
-		Map<Integer, TreeSet<FormField>> formStructure = FormUtil.getFormStructure(form);
+		Map<Integer, TreeSet<FormField>> formStructure = XformsUtil.getFormStructure(form);
 		buildUInodes(form, formStructure, 0, locale);
 	}
 	
@@ -469,7 +484,7 @@ public class XformBuilderEx {
 				else if (datatype.getHl7Abbreviation().equals(HL7Constants.HL7_TIME)){
 					timeConcept(name, concept, required, locale, formField);
 				}
-				else if (HL7Constants.simpleDatatypes.containsKey(datatype.getHl7Abbreviation())){
+				else if (simpleDatatypes.containsKey(datatype.getHl7Abbreviation())){
 					simpleConcept(name, concept, XformBuilder.DATA_TYPE_TEXT, required, locale, formField);
 				}
 				else if (datatype.getHl7Abbreviation().equals(HL7Constants.HL7_NUMERIC)) {

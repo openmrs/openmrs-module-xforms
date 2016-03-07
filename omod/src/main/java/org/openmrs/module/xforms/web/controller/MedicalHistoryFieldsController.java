@@ -12,7 +12,6 @@ package org.openmrs.module.xforms.web.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -31,8 +30,8 @@ import org.openmrs.FormField;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.xforms.XformConstants;
+import org.openmrs.module.xforms.util.XformsUtil;
 import org.openmrs.propertyeditor.EncounterTypeEditor;
-import org.openmrs.util.FormUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -134,7 +133,7 @@ public class MedicalHistoryFieldsController  extends SimpleFormController{
 					
 					FormService fs = Context.getFormService();
 					
-					Map<Integer, TreeSet<FormField>> treeMap = FormUtil.getFormStructure(form);
+					Map<Integer, TreeSet<FormField>> treeMap = XformsUtil.getFormStructure(form);
 					for (Integer parentFormFieldId : treeMap.keySet()) {
 						float sortWeight = 0;
 						for (FormField formField : treeMap.get(parentFormFieldId)) {

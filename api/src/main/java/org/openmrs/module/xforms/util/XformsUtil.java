@@ -24,7 +24,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -50,6 +53,7 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.Encounter;
 import org.openmrs.Form;
+import org.openmrs.FormField;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
@@ -1008,5 +1012,27 @@ public class XformsUtil {
 			catch (Exception e) {e.printStackTrace();}
 		}
 		return allowNumeric;
+	}
+	
+	public static Map<Integer, TreeSet<FormField>> getFormStructure(Form form) {
+		Map<Integer, TreeSet<FormField>> formStructure = new TreeMap<Integer, TreeSet<FormField>>();
+		Integer base = Integer.valueOf(0);
+		formStructure.put(base, new TreeSet<FormField>());
+		
+		for (FormField formField : form.getFormFields()) {
+			FormField parent = formField.getParent();
+			if (parent == null) {
+				// top-level branches should be added to the base
+				formStructure.get(base).add(formField);
+			} else {
+				// child branches/leaves are added to their parent's branch
+				if (!formStructure.containsKey(parent.getFormFieldId())) {
+					formStructure.put(parent.getFormFieldId(), new TreeSet<FormField>());
+				}
+				formStructure.get(parent.getFormFieldId()).add(formField);
+			}
+		}
+		
+		return formStructure;
 	}
 }
