@@ -596,7 +596,7 @@ public class HibernateXformsDAO implements XformsDAO {
 	}
 	
 	public String getConceptName(Integer conceptId, String localeKey){
-		String sql = "select name from concept_name where concept_id=" + conceptId + " and locale='" + localeKey + "' and voided = 0";		
+		String sql = "select name from concept_name where concept_id=" + conceptId + " and locale='" + localeKey + "' and voided = 0 and locale_preferred=1";		
 		return (String)getCurrentSession().createSQLQuery(sql).uniqueResult();
 	}
 	
