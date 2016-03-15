@@ -1004,7 +1004,7 @@ public class XformsUtil {
 		Boolean allowNumeric = false;
 		try {
 			allowNumeric = cn.isPrecise();
-		} catch(Exception ex) {
+		} catch(NoSuchMethodError ex) {
 			try {
 				Method method = cn.getClass().getMethod("isAllowDecimal", null);
 				allowNumeric = (Boolean) method.invoke(cn, null);
