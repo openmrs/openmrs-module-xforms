@@ -656,7 +656,8 @@
 			}else if(key == 'provider'){
 				searchInputId = 'providerId_id_selection';
 				placeHolderText = '${ ui.message("Provider.search.placeholder") }';
-				callback = new CreateCallback().providerCallback();
+				createCallback = new CreateCallback();
+				callback = createCallback.providerCallback();
 				if(providerSearchElement == null){
 					isSearchElementNull = true;			
 					providerSearchElement = document.getElementById(searchInputId);
@@ -665,7 +666,8 @@
 			}else if(key == 'person'){
 				searchInputId = 'personId_id_selection';
 				placeHolderText = '${ ui.message("Person.search.placeholder") }';
-				callback = new CreateCallback().personCallback();
+				createCallback = new CreateCallback();
+				callback = createCallback.personCallback();
 				if(personSearchElement == null){
 					isSearchElementNull = true;
 					personSearchElement = document.getElementById(searchInputId);
@@ -680,20 +682,65 @@
 			}
 			
 			if (createCallback) {
-				// This is what maps each ConceptListItem or LocationListItem returned object to a name in the dropdown
-				createCallback.displayNamedObject = function(origQuery) { return function(item) {
-					// dwr sometimes puts strings into the results, just display those
-					if (typeof item == 'string') {
-						return null;
-					}
-					
-					// item is a ConceptListItem or LocationListItem object
-					// add a space so the term highlighter below thinks the first word is a word
-					var textShown = " " + item.name;					
-					var value = item.name;
-					
-					return { label: textShown, value: value, object: item};
-				}; };
+				if (key == 'concept') {
+					// This is what maps each ConceptListItem or LocationListItem returned object to a name in the dropdown
+					createCallback.displayNamedObject = function(origQuery) { return function(item) {
+						// dwr sometimes puts strings into the results, just display those
+						if (typeof item == 'string') {
+							return null;
+						}
+						
+						// item is a ConceptListItem or LocationListItem object
+						// add a space so the term highlighter below thinks the first word is a word
+						var textShown = " " + item.name;					
+						var value = item.name;
+						
+						return { label: textShown, value: value, object: item};
+					}; };
+				}
+				else if (key == 'person') {
+					// This is what maps each PersonListItem returned object to a name in the dropdown
+					createCallback.displayPerson = function(origQuery) { return function(person) {
+						// dwr methods sometimes put strings into the results, just display those
+						if (typeof person == 'string')
+							return { label: person, value: "" };
+									
+						// item is a PersonListItem object
+			
+						// adding space here for both the regexp matching and the gap
+						// between the image and the identifier
+						var textShown = " ";
+						
+						if (person.identifier)
+							textShown += person.identifier;
+						
+						textShown += " ";
+						
+						textShown += person.personName;
+						
+						return { label: textShown, value: person.personName, id: person.personId, object: person };
+					}; }
+				}
+				else if (key == 'provider') {
+					/**
+					 * This is what maps each ProviderListItem returned object to a name in the drop down
+					 */
+					createCallback.displayProvider = function(origQuery) { return function(provider) {
+						
+						// dwr methods sometimes put strings into the results, just display those
+						if (typeof provider == 'string')
+							return { label: provider, value: "" };
+							
+						var textShown = "";
+						
+						if (provider.identifier)
+							textShown += provider.identifier + " ";
+						
+						textShown += provider.displayName;
+						
+						return { label: textShown, value: provider.displayName, id: provider.providerId, object: provider };
+					}; }
+				}
 			}
 			
 			//we use a custom autocomplete for location widget since there is 
