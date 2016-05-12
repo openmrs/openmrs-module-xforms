@@ -83,7 +83,7 @@ public class EncountersFragmentController {
 							}
 							
 							String url = handler.getEditFormUrl();
-							url += url.contains("?") ? "&" : "?" + "refappui=true";
+							url += (url.contains("?") ? (!url.endsWith("&") ? "&" : "") : "?") + "refappui=true";
 							editUrlMap.put(form, url);
 						}
 					}
