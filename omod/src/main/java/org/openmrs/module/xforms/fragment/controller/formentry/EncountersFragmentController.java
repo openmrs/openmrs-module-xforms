@@ -81,7 +81,10 @@ public class EncountersFragmentController {
 							if (excludFormUuids.contains(form.getUuid()) || form.isRetired()) {
 								continue;
 							}
-							editUrlMap.put(form, handler.getEditFormUrl());
+							
+							String url = handler.getEditFormUrl();
+							url += url.contains("?") ? "&" : "?" + "refappui=true";
+							editUrlMap.put(form, url);
 						}
 					}
 				}
