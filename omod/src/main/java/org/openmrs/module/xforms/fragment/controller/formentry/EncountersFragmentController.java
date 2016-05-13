@@ -84,6 +84,9 @@ public class EncountersFragmentController {
 							
 							String url = handler.getEditFormUrl();
 							url += (url.contains("?") ? (!url.endsWith("&") ? "&" : "") : "?") + "refappui=true";
+							if (url.contains("htmlformentry")) {
+								url = "htmlformentryui/htmlform/editHtmlFormWithStandardUi.page?refappui=true";
+							}
 							editUrlMap.put(form, url);
 						}
 					}

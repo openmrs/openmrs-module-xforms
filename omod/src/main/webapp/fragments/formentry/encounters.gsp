@@ -41,7 +41,7 @@
                 
                 <% encounters.each { encounter -> %>
                     <tr>
-                        <td> <a href=/${ ui.contextPath() }/${formToEditUrlMap[encounter.form]}&encounterId=${encounter.encounterId}&patientId=${patient.patientId}>${encounter.form.name}</a> </td>
+                        <td> <a href=/${ ui.contextPath() }/${formToEditUrlMap[encounter.form]}&formUuid=${encounter.form.uuid}&encounterId=${encounter.encounterId}&patientId=${patient.patientId}>${encounter.form.name}</a> </td>
                         <td> ${ ui.formatDatetimePretty(encounter.encounterDatetime) }</td>
                         <td> ${encounter.encounterType.name} </td>
                         <td> 
