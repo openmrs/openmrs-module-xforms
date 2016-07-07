@@ -375,7 +375,7 @@ public class XformBuilderEx {
 	}
 	
 	public static void addProblemList(String token, Concept concept, boolean required,
-	                      			Locale locale, FormField formField) {
+	                      			Locale locale, FormField formField, boolean problemListPrefix) {
 		
 		Element groupNode = bodyNode.createElement(XformBuilder.NAMESPACE_XFORMS, null);
 		groupNode.setName(XformBuilder.NODE_GROUP);
@@ -399,6 +399,16 @@ public class XformBuilderEx {
 		
 		String nodeset = "problem_list/" + token + "/value";
 		String id = nodeset.replace('/', '_');
+		if (!problemListPrefix) {
+			Element bindNode = bindings.get(token);
+			nodeset = bindNode.getAttributeValue(null, XformBuilder.ATTRIBUTE_NODESET);
+			bindNode.setAttribute(null, XformBuilder.ATTRIBUTE_NODESET, nodeset.replace("/value", ""));
+			
+			nodeset = token + "/value";
+			id = nodeset.replace('/', '_');
+			nodeset = "obs/" + token + "/value";
+		}
+		
 		controlNode.setAttribute(null, XformBuilder.ATTRIBUTE_BIND, id);
 		
 		repeatControl.addChild(Element.ELEMENT, controlNode);
@@ -470,7 +480,7 @@ public class XformBuilderEx {
 						formField.getParent() != null &&
 						(formField.getParent().getField().getName().contains("PROBLEM LIST")) ){
 					
-					addProblemList(name, concept, required, locale, formField);
+					addProblemList(name, concept, required, locale, formField, true);
 				}
 				else if (datatype.getHl7Abbreviation().equals(HL7Constants.HL7_BOOLEAN)){
 					booleanConcept(name, concept, required, locale, formField);
@@ -495,7 +505,7 @@ public class XformBuilderEx {
 						|| datatype.getHl7Abbreviation().equals(HL7Constants.HL7_CODED_WITH_EXCEPTIONS)) {
 					
 					if (formField.getMaxOccurs() != null && formField.getMaxOccurs().intValue() == -1) {
-						addProblemList(name, concept, required, locale, formField);
+						addProblemList(name, concept, required, locale, formField, false);
 					}
 					else {
 						//Collection<ConceptAnswer> answers = concept.getAnswers(false);
