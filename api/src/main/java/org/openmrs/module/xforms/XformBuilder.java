@@ -528,6 +528,9 @@ public final class XformBuilder implements GlobalPropertyListener {
 	public static void setNodeValue(Element node, String value) {
 		if (value == null)
 			value = "";
+			
+		if (node == null)
+			return;
 		
 		for (int i = 0; i < node.getChildCount(); i++) {
 			if (node.isText(i)) {
