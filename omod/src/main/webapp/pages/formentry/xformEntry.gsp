@@ -6,14 +6,14 @@
     var breadcrumbs = [
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
         { label: "${ ui.message("xforms.app.formentry.title") }", link: "${ ui.pageLink("coreapps", "findpatient/findPatient", [app: "xforms.formentry"]) }" },
-        { label: "${ ui.format(patient.familyName) }, ${ ui.format(patient.givenName) }" , link: '${ui.pageLink("xforms", "formentry/patient", [patientId: patient.patientId])}'},
+        { label: "${ ui.escapeJs(ui.format(patient.familyName)) }, ${ ui.escapeJs(ui.format(patient.givenName)) }" , link: '${ui.pageLink("xforms", "formentry/patient", [patientId: patient.patientId])}'},
         { label: "${ ui.escapeJs(ui.format(formName)) }" }
     ];
     
     if ('${returnUrl}') {
 	    breadcrumbs = [
 	        { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
-	        { label: "${ ui.format(patient.familyName) }, ${ ui.format(patient.givenName) }" , link: '${ui.pageLink("xforms", "formentry/patient", [patientId: patient.patientId])}'},
+	        { label: "${ ui.escapeJs(ui.format(patient.familyName)) }, ${ ui.escapeJs(ui.format(patient.givenName)) }" , link: '${ui.pageLink("xforms", "formentry/patient", [patientId: patient.patientId])}'},
 	        { label: "${ ui.message("xforms.app.formentry.title") }", link: "${ ui.pageLink("coreapps", "findpatient/findPatient", [app: "xforms.formentry"]) }" },
 	        { label: "${ ui.escapeJs(ui.format(formName)) }" }
 	    ];
@@ -24,7 +24,7 @@
 	    var returnModule = '${returnModule}';
 	    breadcrumbs = [
 	        { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
-	        { label: "${ ui.format(patient.familyName) }, ${ ui.format(patient.givenName) }" , link: '${ui.pageLink(returnModule, returnPage, [patientId: patient.patientId])}'},
+	        { label: "${ ui.escapeJs(ui.format(patient.familyName)) }, ${ ui.escapeJs(ui.format(patient.givenName)) }" , link: '${ui.pageLink(returnModule, returnPage, [patientId: patient.patientId])}'},
 	        { label: "${ ui.escapeJs(ui.format(formName)) }" }
 	    ];
 	 }
@@ -226,8 +226,8 @@ ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient ]) }
 	var locationNames = [];
 
 	<% locations.each { loc -> %>
-		locationNames.push("${loc.name}");
-		locationNameIdMap["${loc.name}"] = "${loc.locationId}";
+		locationNames.push("${ui.escapeJs(loc.name)}");
+		locationNameIdMap["${ui.escapeJs(loc.name)}"] = "${loc.locationId}";
 	<% } %>
 	
 	jq('input#locationId_id_selection').autocomplete({

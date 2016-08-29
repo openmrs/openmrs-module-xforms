@@ -41,16 +41,16 @@
                 
                 <% encounters.each { encounter -> %>
                     <tr>
-                        <td> <a href=/${ ui.contextPath() }/${formToEditUrlMap[encounter.form]}&formUuid=${encounter.form.uuid}&encounterId=${encounter.encounterId}&patientId=${patient.patientId}>${encounter.form.name}</a> </td>
+                        <td> <a href=/${ ui.contextPath() }/${formToEditUrlMap[encounter.form]}&formUuid=${encounter.form.uuid}&encounterId=${encounter.encounterId}&patientId=${patient.patientId}>${ui.escapeJs(encounter.form.name)}</a> </td>
                         <td> ${ ui.formatDatetimePretty(encounter.encounterDatetime) }</td>
-                        <td> ${encounter.encounterType.name} </td>
+                        <td> ${ui.escapeJs(encounter.encounterType.name)} </td>
                         <td> 
                         	<% encounter.providersByRoles.each { key, value -> %>
-			                	${value.name}
+			                	${ui.escapeJs(value.name)}
 			                <% } %>	 
                         </td>
-                        <td> ${encounter.location} </td>
-                        <td> ${encounter.creator.personName} </td>
+                        <td> ${ui.escapeJs(encounter.location.name)} </td>
+                        <td> ${ui.escapeJs(encounter.creator.personName.fullName)} </td>
                     </tr>
                 <% } %>
                 

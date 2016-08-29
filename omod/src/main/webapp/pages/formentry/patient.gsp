@@ -13,14 +13,14 @@
     var breadcrumbs = [
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
         { label: "${ ui.message("xforms.app.formentry.title") }", link: "${ ui.pageLink("coreapps", "findpatient/findPatient", [app: "xforms.formentry"]) }" },
-        { label: "${ ui.format(patient.familyName) }, ${ ui.format(patient.givenName) }" , link: '${ui.pageLink("coreapps", "patientdashboard/patientDashboard", [patientId: patient.patientId])}'},
+        { label: "${ ui.escapeJs(ui.format(patient.familyName)) }, ${ ui.escapeJs(ui.format(patient.givenName)) }" , link: '${ui.pageLink("coreapps", "patientdashboard/patientDashboard", [patientId: patient.patientId])}'},
     ];
     
     
     if ('${returnUrl}') {
     	breadcrumbs = [
 	        { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
-	        { label: "${ ui.format(patient.familyName) }, ${ ui.format(patient.givenName) }" , link: '${ui.escapeJs(returnUrl)}'},
+	        { label: "${ ui.escapeJs(ui.format(patient.familyName)) }, ${ ui.escapeJs(ui.format(patient.givenName)) }" , link: '${ui.escapeJs(returnUrl)}'},
 	        { label: "${ ui.message("xforms.app.formentry.title") }", link: "${ ui.pageLink("coreapps", "findpatient/findPatient", [app: "xforms.formentry"]) }" }
     	];
     }
@@ -37,7 +37,7 @@ ${ ui.includeFragment("coreapps", "patientHeader", [ patient: patient ]) }
 		<% tabs.each { %>
 			<li>
 				<a href="#${ it.id }">
-					${ it.label }
+					${ ui.escapeJs(it.label) }
 				</a>
 			</li>
 		<% } %>
