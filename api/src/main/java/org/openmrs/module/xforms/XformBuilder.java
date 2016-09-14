@@ -529,6 +529,9 @@ public final class XformBuilder implements GlobalPropertyListener {
 		if (value == null)
 			value = "";
 		
+		if (node == null)
+			throw new IllegalArgumentException("node is null");
+
 		for (int i = 0; i < node.getChildCount(); i++) {
 			if (node.isText(i)) {
 				node.removeChild(i);
