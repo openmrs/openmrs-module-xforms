@@ -23,6 +23,12 @@
 	<!-- Add here beans related to the web context -->
 	
     <bean id="xformsUrlMapping" class="org.openmrs.module.xforms.web.controller.XformsUrlHandlerMapping">
+    	<property name="interceptors">
+    		<list>
+    			<ref bean="localeChangeInterceptor" />
+    			<ref bean="themeChangeInterceptor" />
+    		</list>
+    	</property>
     	<property name="order"><value>1</value></property>
     	<property name="mappings">
             <props>
