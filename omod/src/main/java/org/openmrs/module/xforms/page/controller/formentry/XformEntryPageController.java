@@ -54,6 +54,7 @@ public class XformEntryPageController {
 			model.addAttribute("entityFormDefDownloadUrlSuffix",
 			    "moduleServlet/xforms/xformDownload?target=xformentry&contentType=xml&encounterId=" + encounterId + "&");
 			model.addAttribute("formDataUploadUrlSuffix", "module/xforms/xformDataUpload.form?mode=edit");
+			model.addAttribute("formDataDeleteUrlSuffix", "moduleServlet/xforms/xformDataDelete?encounterId=" + encounter.getEncounterId() + "&patientId=");
 		}
 		
 		model.addAttribute("returnModule", "xforms");

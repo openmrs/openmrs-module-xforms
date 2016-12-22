@@ -510,7 +510,7 @@
        		otherProperties: "<spring:message code="xforms.otherProperties" />",
        		exclusiveQuestion: "<spring:message code="xforms.exclusiveQuestion" />",
        		cls: "<spring:message code="xforms.cls" />",
-       		deleteFormPrompt: "<spring:message code="xforms.deleteFormPrompt" />",
+       		deleteFormPrompt: "<spring:message code="xforms.deleteFormPrompt" />"
 	};
 
 	function searchExternal(key,value,parentElement,textElement,valueElement,filterField){
