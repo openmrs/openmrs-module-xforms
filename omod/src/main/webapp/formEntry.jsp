@@ -94,6 +94,7 @@
     
 <div id="entityFormDefDownloadUrlSuffix" style="visibility:hidden;">${entityFormDefDownloadUrlSuffix}</div>
 <div id="formDataUploadUrlSuffix" style="visibility:hidden;">${formDataUploadUrlSuffix}</div>
+<div id="formDataDeleteUrlSuffix" style="visibility:hidden;">${formDataDeleteUrlSuffix}</div>
 <div id="afterSubmitUrlSuffix" style="visibility:hidden;">${afterSubmitUrlSuffix}</div>
 <div id="afterCancelUrlSuffix" style="visibility:hidden;">${afterCancelUrlSuffix}</div>
 <div id="externalSourceUrlSuffix" style="visibility:hidden;">moduleServlet/xforms/widgetValueDownload?</div>
@@ -508,7 +509,8 @@
        		exclusiveOption: "<spring:message code="xforms.exclusiveOption" />",
        		otherProperties: "<spring:message code="xforms.otherProperties" />",
        		exclusiveQuestion: "<spring:message code="xforms.exclusiveQuestion" />",
-       		cls: "<spring:message code="xforms.cls" />"
+       		cls: "<spring:message code="xforms.cls" />",
+       		deleteFormPrompt: "<spring:message code="xforms.deleteFormPrompt" />",
 	};
 
 	function searchExternal(key,value,parentElement,textElement,valueElement,filterField){

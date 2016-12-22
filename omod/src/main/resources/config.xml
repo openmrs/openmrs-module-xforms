@@ -489,6 +489,10 @@
 		<servlet-name>userValidator</servlet-name>
 		<servlet-class>@MODULE_PACKAGE@.web.UserValidatorServlet</servlet-class>
 	</servlet>
+	<servlet>
+		<servlet-name>xformDataDelete</servlet-name>
+		<servlet-class>@MODULE_PACKAGE@.web.XformDataDeleteServlet</servlet-class>
+	</servlet>
 	
 	
 	<!-- Filter definitions -->

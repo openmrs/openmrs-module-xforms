@@ -98,9 +98,13 @@ public class XformEntryController extends SimpleFormController{
 			map.put("formName", ((FormService)Context.getService(FormService.class)).getForm(form.getFormId()).getName());
 			map.put("entityFormDefDownloadUrlSuffix", "moduleServlet/xforms/xformDownload?target=xformentry&contentType=xml&encounterId="+encounter.getEncounterId()+"&");
 			map.put("formDataUploadUrlSuffix", "module/xforms/xformDataUpload.form?mode=edit");
+			map.put("formDataDeleteUrlSuffix", "moduleServlet/xforms/xformDataDelete?encounterId=" + encounter.getEncounterId() + "&patientId=");
 		}
 		
 		String url = "patientDashboard.form?";
+		if (encounter != null) {
+			url += "patientId=" + encounter.getPatient().getPatientId();
+		}
 		map.put("afterSubmitUrlSuffix", url);
 		map.put("afterCancelUrlSuffix", url);
 
