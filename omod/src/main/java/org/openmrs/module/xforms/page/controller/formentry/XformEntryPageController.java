@@ -43,6 +43,7 @@ public class XformEntryPageController {
 			model.addAttribute("entityFormDefDownloadUrlSuffix",
 			    "moduleServlet/xforms/xformDownload?target=xformentry&contentType=xml&");
 			model.addAttribute("formDataUploadUrlSuffix", "module/xforms/xformDataUpload.form");
+			model.addAttribute("formDataDeleteUrlSuffix", "");
 		} else { //editing existing form
 			Integer encounterId = Integer.parseInt(request.getParameter("encounterId"));
 			Encounter encounter = Context.getEncounterService().getEncounter(encounterId);
