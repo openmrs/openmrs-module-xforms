@@ -435,16 +435,20 @@ public class XformObsEdit {
 				addMultipleSelObs(encounter,concept,node,datetime);
 			else{
 				Element valueNode = XformBuilder.getElement(node, "value");
-				String value = XformBuilder.getTextValue(valueNode);
+				String value = null;
 
 				String obsId = node.getAttributeValue(null, "obsId");
 				String obsGroupId = node.getAttributeValue(null, "obsGroupId");
-
-				if((obsId != null && obsId.trim().length() > 0) ||
-						obsGroupId != null && obsGroupId.trim().length() > 0){
-
-					if(!"true()".equals(valueNode.getAttributeValue(null, "new")))
-						continue; //new obs cant have an obs id
+	
+				if (valueNode != null) {
+					value = XformBuilder.getTextValue(valueNode);
+					
+					if((obsId != null && obsId.trim().length() > 0) ||
+							obsGroupId != null && obsGroupId.trim().length() > 0){
+	
+						if(!"true()".equals(valueNode.getAttributeValue(null, "new")))
+							continue; //new obs cant have an obs id
+					}
 				}
 
 				if(obsGroupId != null && obsGroupId.trim().length() > 0){		
