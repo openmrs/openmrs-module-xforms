@@ -220,6 +220,9 @@ public class FormXmlTemplateBuilder {
 				xml.append(field.getTableName());
 				xml.append("\" openmrs_attribute=\"");
 				xml.append(field.getAttributeName());
+                //include UUID field attribute
+                xml.append("\" openmrs_field_uuid=\"");
+                xml.append(field.getUuid());
 				if (formStructure.containsKey(subSectionId)) {
 					xml.append("\">\n");
 					renderStructure(xml, formStructure, includeDefaultScripts,
@@ -244,7 +247,9 @@ public class FormXmlTemplateBuilder {
 					.equals(FormConstants.FIELD_TYPE_CONCEPT)) {
 				Concept concept = field.getConcept();
 				String hl7Abbr = concept.getDatatype().getHl7Abbreviation();
-				xml.append(" openmrs_concept=\"");
+                xml.append(" openmrs_field_uuid=\"");
+                xml.append(field.getUuid());
+                xml.append("\" openmrs_concept=\"");
 				xml.append(StringEscapeUtils.escapeXml(FormUtil.conceptToString(concept, Context
 						.getLocale())));
 				xml.append("\" openmrs_datatype=\"");

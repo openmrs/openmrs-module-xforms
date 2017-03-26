@@ -292,4 +292,9 @@ public interface XformsService {
 	 */
 	@Transactional
 	public void sendStacktraceToAdminByEmail(String subject, Throwable exception);
+
+
+    @Transactional(readOnly = true)
+    public String getProcessedXformXml(String xml);
+
 }
