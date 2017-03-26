@@ -26,11 +26,13 @@ import org.openmrs.module.xforms.MedicalHistoryField;
 import org.openmrs.module.xforms.Xform;
 import org.openmrs.module.xforms.XformsService;
 import org.openmrs.web.WebUtil;
+import org.openmrs.web.dwr.DWRRelationshipService;
 import org.openmrs.web.dwr.FieldListItem;
 import org.openmrs.web.dwr.FormFieldListItem;
+import org.springframework.transaction.annotation.Transactional;
 
-
-public class DWRXformsService {
+@Transactional
+public class DWRXformsService{
 
 	protected final Log log = LogFactory.getLog(getClass());
 
@@ -150,6 +152,8 @@ public class DWRXformsService {
 	}
 
 	public String getJSTree() {
+		// Add code to reload provider/location lists here
+		
 		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
 		List<MedicalHistoryField> fields = xformsService.getMedicalHistoryFields();
 		String s = generateJSTree(getMedicalHistoryFieldsStructure(fields), 0, Context.getLocale());
@@ -172,7 +176,6 @@ public class DWRXformsService {
 	}
 
 	private String generateFormFieldJavascript(MedicalHistoryField field, Locale locale) {
-
 		String parent = "''";
 		if(field.getFieldId() != -1)
 			parent = "-1";
@@ -185,6 +188,13 @@ public class DWRXformsService {
 	}
 	
 	public boolean isAuthenticated() {
+		try {
+			// call xforms refresh
+			DWRXformsRefreshOperationImpl.refreshXforms();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         return Context.isAuthenticated();
     }
     
@@ -196,4 +206,5 @@ public class DWRXformsService {
             return false;
         }
     }
+    
 }
