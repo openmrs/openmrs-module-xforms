@@ -3072,10 +3072,12 @@ public final class XformBuilder implements GlobalPropertyListener {
 		element.addChild(Element.ELEMENT, child);
 		
 		//add the hint
-		child = element.createElement(NAMESPACE_XFORMS, null);
-		child.setName(NODE_HINT);
-		child.addChild(Element.TEXT, attribute.getDescription());
-		element.addChild(Element.ELEMENT, child);
+		if (StringUtils.isNotBlank(attribute.getDescription())) {
+			child = element.createElement(NAMESPACE_XFORMS, null);
+			child.setName(NODE_HINT);
+			child.addChild(Element.TEXT, attribute.getDescription());
+			element.addChild(Element.ELEMENT, child);
+		}
 		
 		if (attribute.getFormat() != null) {
 			if ("org.openmrs.Location".equals(attribute.getFormat().trim()))
