@@ -126,7 +126,7 @@ public class XformObsEdit {
 			//TODO This needs to do a better job by searching for an attribute that starts with
 			//a concept id of the concept and hence remove the name dependency as the concept name
 			//could change or may be different in a different locale.
-			Element node = XformBuilder.getElementByAttributePrefix(formNode,"openmrs_concept", (obsGroupId == null ? concept.getConceptId() : obs.getObsGroup().getConcept()) +"^", (obsGroupId == null ? false : true), (obsGroupId == null ? "obsId" : "obsGroupId"), true, nonCopyAttributes);
+			Element node = XformBuilder.getElementByAttributePrefix(formNode,"openmrs_concept", (obsGroupId == null ? concept.getConceptId() : obs.getObsGroup().getConcept().getConceptId()) +"^", (obsGroupId == null ? false : true), (obsGroupId == null ? "obsId" : "obsGroupId"), true, nonCopyAttributes);
 			if(node == null)
 				continue;
 
