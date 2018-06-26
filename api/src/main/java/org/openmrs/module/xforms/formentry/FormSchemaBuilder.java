@@ -79,7 +79,7 @@ public class FormSchemaBuilder {
 		for (FormField section : formStructure.get(0)) {
 			String sectionName = FormUtil.getXmlToken(section.getField()
 					.getName());
-			String sectionTag = FormUtil.getNewTag(sectionName, tagList);
+			String sectionTag = XformsUtil.getNewTag(sectionName, tagList);
 			ComplexType ct = ComplexType.getComplexType(formStructure,
 					schemaSections, section, sectionTag + "_section", tagList);
 			String sectionTypeTag = ct.getToken();
@@ -194,7 +194,7 @@ public class FormSchemaBuilder {
 			if (sectionFormFieldList != null) {
 				Vector<String> subSectionTagList = new Vector<String>();
 				for (FormField subSectionFormField : sectionFormFieldList) {
-					String elemTag = FormUtil.getNewTag(subSectionFormField
+					String elemTag = XformsUtil.getNewTag(subSectionFormField
 							.getField().getName(), subSectionTagList);
 					String elemTypeTag;
 					if (formStructure.containsKey(subSectionFormField
@@ -313,7 +313,7 @@ public class FormSchemaBuilder {
 			if (i >= 0)
 				typeTag = complexTypes.get(i).token;
 			else {
-				typeTag = FormUtil.getNewTag(FormUtil.getXmlToken(f.getField()
+				typeTag = XformsUtil.getNewTag(FormUtil.getXmlToken(f.getField()
 						.getName()
 						+ "_type"), tagList);
 				ct.token = typeTag;

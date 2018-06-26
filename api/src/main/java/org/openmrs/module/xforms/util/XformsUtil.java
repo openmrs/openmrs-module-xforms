@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -66,6 +67,7 @@ import org.openmrs.module.xforms.XformConstants;
 import org.openmrs.module.xforms.XformsService;
 import org.openmrs.module.xforms.formentry.FormEntryWrapper;
 import org.openmrs.obs.ComplexObsHandler;
+import org.openmrs.util.FormUtil;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -1034,5 +1036,29 @@ public class XformsUtil {
 		}
 		
 		return formStructure;
+	}
+	
+	/**
+	 * Generates a new, unique tag name for any given string
+	 * 
+	 * @param s string to convert into a unique XML tag
+	 * @param tagList java.util.Vector containing all previously created tags. If the tagList is
+	 *            null, it will be initialized automatically
+	 * @return unique XML tag name from given string (guaranteed not to duplicate any tag names
+	 *         already within <code>tagList</code>)
+	 */
+	public static String getNewTag(String s, Vector<String> tagList) {
+		String token = FormUtil.getXmlToken(s);
+		if (tagList.contains(token)) {
+			int i = 1;
+			while (tagList.contains(token + "_" + i))
+				i++;
+			String tagName = token + "_" + i;
+			tagList.add(tagName);
+			return tagName;
+		} else {
+			tagList.add(token);
+			return token;
+		}
 	}
 }

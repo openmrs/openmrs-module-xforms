@@ -17,6 +17,7 @@ import java.util.Vector;
 
 import org.openmrs.Field;
 import org.openmrs.FormField;
+import org.openmrs.module.xforms.util.XformsUtil;
 import org.openmrs.util.FormUtil;
 
 public class ComplexType {
@@ -105,7 +106,7 @@ public class ComplexType {
 		int index = list.indexOf(ct);
 		if (index >= 0)
 			return list.get(index);
-		ct.setToken(FormUtil.getNewTag(token, tagList));
+		ct.setToken(XformsUtil.getNewTag(token, tagList));
 		list.add(ct);
 		return ct;
 	}

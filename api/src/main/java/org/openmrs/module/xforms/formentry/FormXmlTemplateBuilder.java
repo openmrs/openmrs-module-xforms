@@ -197,7 +197,7 @@ public class FormXmlTemplateBuilder {
 		for (FormField formField : section) {
 			Field field = formField.getField();
 			Integer fieldTypeId = field.getFieldType().getFieldTypeId();
-			String xmlTag = FormUtil.getNewTag(field.getName(), tagList);
+			String xmlTag = XformsUtil.getNewTag(field.getName(), tagList);
 			Integer subSectionId = formField.getFormFieldId();
 			for (int i = 0; i < indent; i++)
 				indentation[i] = ' ';
