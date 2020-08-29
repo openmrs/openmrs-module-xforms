@@ -14,7 +14,7 @@
             <column name="name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="tab_index" type="INT"/>
+            <column name="tabIndex" type="INT"/>
         </createTable>
     </changeSet>
     

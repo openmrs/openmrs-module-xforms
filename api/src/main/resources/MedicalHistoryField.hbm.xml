@@ -18,7 +18,7 @@
 		This caused problem in PostgreSQL because Postgres converts all column 
 		names to lower case when fetching from db and thus no result was returned since
 		column tabIndex was being searched as tabindex and thus was never found -->
-		<property name="tabIndex" column="tab_index" type="int" />
+		<property name="tabIndex" column="`tabIndex`" type="int" />
 		
 	</class>
 </hibernate-mapping>

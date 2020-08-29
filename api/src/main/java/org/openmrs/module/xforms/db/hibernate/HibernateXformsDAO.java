@@ -384,7 +384,7 @@ public class HibernateXformsDAO implements XformsDAO {
 	
 	public PatientMedicalHistory getPatientMedicalHistory(Integer patientId){
 		
-		String sql = "select * from (select mhf.tab_index,mhf.name, " +
+		String sql = "select * from (select mhf.tabIndex,mhf.name, " +
 		"value_group_id, " +
 		"value_boolean, " +
 		"value_drug, " +
@@ -399,7 +399,7 @@ public class HibernateXformsDAO implements XformsDAO {
 		"where e.patient_id = " + patientId + " " +
 		        "and value_coded is null and o.voided = false " +
 		"UNION " +
-		"select mhf.tab_index, mhf.name, null, null, null, null, null, cn.name, e.encounter_datetime " +
+		        "select mhf.tabIndex, mhf.name, null, null, null, null, null, cn.name, e.encounter_datetime " +
 		"from encounter e " +
 		"inner join obs o on o.encounter_id = e.encounter_id " +
 		"inner join concept_name cn on cn.concept_id=o.value_coded " +
@@ -407,7 +407,7 @@ public class HibernateXformsDAO implements XformsDAO {
 		"and o.person_id = e.patient_id " +
 		"where e.patient_id = " + patientId + " " +
 		        "and value_coded is not null and o.voided = false ) as t " +
-		        "order by tab_index,name,encounter_datetime";
+		        "order by tabIndex,name,encounter_datetime";
 		
 		SQLQuery query = getCurrentSession().createSQLQuery(sql);
 		
