@@ -9,7 +9,9 @@
 
 		<id name="formEntryErrorId" type="int" column="formentry_error_id" 
 			unsaved-value="0">
-				<generator class="native" />
+			<generator class="native">
+				<param name="sequence">formentry_formentry_error_id_seq</param>
+			</generator>
 		</id>
 
 		<property name="formData" type="java.lang.String" 

@@ -384,7 +384,7 @@ public class HibernateXformsDAO implements XformsDAO {
 	
 	public PatientMedicalHistory getPatientMedicalHistory(Integer patientId){
 		
-		String sql = "select * from (select mhf.tabIndex,mhf.name, " +
+		String sql = "select * from (select mhf.tab_index,mhf.name, " +
 		"value_group_id, " +
 		"value_boolean, " +
 		"value_drug, " +
@@ -397,17 +397,17 @@ public class HibernateXformsDAO implements XformsDAO {
 		"inner join xforms_medical_history_field mhf on mhf.field_id=o.concept_id " +
 		"and o.person_id = e.patient_id " +
 		"where e.patient_id = " + patientId + " " +
-		"and value_coded is null and o.voided = 0 " +
+		        "and value_coded is null and o.voided = false " +
 		"UNION " +
-		"select mhf.tabIndex, mhf.name, null, null, null, null, null, cn.name, e.encounter_datetime " +
+		"select mhf.tab_index, mhf.name, null, null, null, null, null, cn.name, e.encounter_datetime " +
 		"from encounter e " +
 		"inner join obs o on o.encounter_id = e.encounter_id " +
 		"inner join concept_name cn on cn.concept_id=o.value_coded " +
 		"inner join xforms_medical_history_field mhf on mhf.field_id=o.concept_id " +
 		"and o.person_id = e.patient_id " +
 		"where e.patient_id = " + patientId + " " +
-		"and value_coded is not null and o.voided = 0 ) as t " +
-		"order by tabIndex,name,encounter_datetime";
+		        "and value_coded is not null and o.voided = false ) as t " +
+		        "order by tab_index,name,encounter_datetime";
 		
 		SQLQuery query = getCurrentSession().createSQLQuery(sql);
 		
@@ -542,13 +542,13 @@ public class HibernateXformsDAO implements XformsDAO {
 	}
 	
 	public String getLocationName(Integer locationId){
-		String sql = "select name from location where retired = 0 and location_id=" + locationId;
+		String sql = "select name from location where retired = false and location_id=" + locationId;
 		return (String)getCurrentSession().createSQLQuery(sql).uniqueResult(); 
 	}
 	
 	public String getPersonName(Integer personId){
 
-		String sql = "select given_name, middle_name, family_name, preferred from person_name where voided = 0 and person_id="
+		String sql = "select given_name, middle_name, family_name, preferred from person_name where voided = false and person_id="
 				+ personId;
 
 		List<Object[]> results = (List<Object[]>) getCurrentSession()
@@ -596,7 +596,8 @@ public class HibernateXformsDAO implements XformsDAO {
 	}
 	
 	public String getConceptName(Integer conceptId, String localeKey){
-		String sql = "select name from concept_name where concept_id=" + conceptId + " and locale='" + localeKey + "' and voided = 0 and locale_preferred=1";		
+		String sql = "select name from concept_name where concept_id=" + conceptId + " and locale='" + localeKey
+		        + "' and voided = false and locale_preferred=1";
 		return (String)getCurrentSession().createSQLQuery(sql).uniqueResult();
 	}
 	

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+	
+
+    <changeSet author="aman (generated)" id="xforms-1598359669281-158">
+        <createTable tableName="xforms_medical_history_field">
+            <column name="field_id" type="INT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tab_index" type="INT"/>
+        </createTable>
+    </changeSet>
+    
+    <changeSet author="aman (generated)" id="xforms-1598359669281-159">
+        <createTable tableName="xforms_person_repeat_attribute">
+            <column autoIncrement="true" name="person_repeat_attribute_id" type="INT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column defaultValueNumeric="0" name="person_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="" name="value" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="person_attribute_type_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="value_id" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="value_id_type" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="value_display_order" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="creator" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_created" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="changed_by" type="INT"/>
+            <column name="date_changed" type="datetime"/>
+            <column defaultValueNumeric="0" name="voided" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="voided_by" type="INT"/>
+            <column name="date_voided" type="datetime"/>
+            <column name="void_reason" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="aman (generated)" id="xforms-1598359669281-160">
+        <createTable tableName="xforms_xform">
+            <column name="form_id" type="INT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="xform_xml" type="LONGTEXT"/>
+            <column name="layout_xml" type="LONGTEXT"/>
+            <column defaultValueNumeric="0" name="creator" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_created" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="changed_by" type="INT"/>
+            <column name="date_changed" type="datetime"/>
+            <column name="locale_xml" type="LONGTEXT"/>
+            <column name="javascript_src" type="LONGTEXT"/>
+            <column name="uuid" type="CHAR(38)"/>
+            <column name="css_text" type="LONGTEXT"/>
+        </createTable>
+    </changeSet>
+
+
+    <changeSet author="aman (generated)" id="xforms-1598359669281-576">
+        <createIndex indexName="repeat_attribute_changer" tableName="xforms_person_repeat_attribute">
+            <column name="changed_by"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="aman (generated)" id="xforms-1598359669281-577">
+        <createIndex indexName="repeat_attribute_creator" tableName="xforms_person_repeat_attribute">
+            <column defaultValueNumeric="0" name="creator"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="aman (generated)" id="xforms-1598359669281-578">
+        <createIndex indexName="repeat_attribute_voider" tableName="xforms_person_repeat_attribute">
+            <column name="voided_by"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="aman (generated)" id="xforms-1598359669281-579">
+        <createIndex indexName="repeat_defines_attribute_type" tableName="xforms_person_repeat_attribute">
+            <column defaultValueNumeric="0" name="person_attribute_type_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="aman (generated)" id="xforms-1598359669281-580">
+        <createIndex indexName="repeat_identifies_person" tableName="xforms_person_repeat_attribute">
+            <column defaultValueNumeric="0" name="person_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="aman (generated)" id="xforms-1598359669281-652">
+        <createIndex indexName="user_who_created_xform" tableName="xforms_xform">
+            <column defaultValueNumeric="0" name="creator"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="aman (generated)" id="xforms-1598359669281-655">
+        <createIndex indexName="user_who_last_changed_xform" tableName="xforms_xform">
+            <column name="changed_by"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="aman (generated)" id="xforms-1598359669281-1096">
+        <addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="xforms_person_repeat_attribute" constraintName="repeat_attribute_changer" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="user_id" referencedTableName="users" />
+    </changeSet>
+    <changeSet author="aman (generated)" id="xforms-1598359669281-1097">
+        <addForeignKeyConstraint baseColumnNames="creator" baseTableName="xforms_person_repeat_attribute" constraintName="repeat_attribute_creator" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="user_id" referencedTableName="users" />
+    </changeSet>
+    <changeSet author="aman (generated)" id="xforms-1598359669281-1098">
+        <addForeignKeyConstraint baseColumnNames="voided_by" baseTableName="xforms_person_repeat_attribute" constraintName="repeat_attribute_voider" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="user_id" referencedTableName="users" />
+    </changeSet>
+    <changeSet author="aman (generated)" id="xforms-1598359669281-1099">
+        <addForeignKeyConstraint baseColumnNames="person_attribute_type_id" baseTableName="xforms_person_repeat_attribute" constraintName="repeat_defines_attribute_type" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="person_attribute_type_id" referencedTableName="person_attribute_type" />
+    </changeSet>
+    <changeSet author="aman (generated)" id="xforms-1598359669281-1100">
+        <addForeignKeyConstraint baseColumnNames="person_id" baseTableName="xforms_person_repeat_attribute" constraintName="repeat_identifies_person" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="person_id" referencedTableName="person" />
+    </changeSet>
+    <changeSet author="aman (generated)" id="xforms-1598359669281-1172">
+        <addForeignKeyConstraint baseColumnNames="creator" baseTableName="xforms_xform" constraintName="user_who_created_xform" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="user_id" referencedTableName="users" />
+    </changeSet>
+    <changeSet author="aman (generated)" id="xforms-1598359669281-1175">
+        <addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="xforms_xform" constraintName="user_who_last_changed_xform" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="user_id" referencedTableName="users" />
+    </changeSet>
+    
+    <changeSet author="aman" id="xforms-25082020">
+    	<comment> Adding uuids to all data in the the xform table </comment>
+		<sql>update xforms_xform set uuid = uuid() where uuid is null;</sql>
+    </changeSet>
+</databaseChangeLog>
