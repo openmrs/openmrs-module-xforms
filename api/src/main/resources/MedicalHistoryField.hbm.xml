@@ -13,11 +13,12 @@
 		
 		<property name="name" type="java.lang.String" length="255" not-null="true"/>
 		
-		<!-- tabIndex property in database is mapped to tab_index.
-		When sqldiff.xml was used it was stored as tabIndex in db. 
+		<!-- tabIndex property in database is mapped to tabIndex. 
 		This caused problem in PostgreSQL because Postgres converts all column 
 		names to lower case when fetching from db and thus no result was returned since
-		column tabIndex was being searched as tabindex and thus was never found -->
+		column tabIndex was being searched as tabindex. To force PostgreSQL to look for exact
+		column name we need to add quotes around column name. Hibernate allows us to generate queries
+		with quoted columns by quoting them using ` `-->
 		<property name="tabIndex" column="`tabIndex`" type="int" />
 		
 	</class>
