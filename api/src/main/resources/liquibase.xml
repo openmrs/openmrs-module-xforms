@@ -4,9 +4,14 @@
 		xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
-	
+
 
     <changeSet author="aman (generated)" id="xforms-1598359669281-158">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="xforms_medical_history_field"/>
+            </not>
+        </preConditions>
         <createTable tableName="xforms_medical_history_field">
             <column name="field_id" type="INT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -14,11 +19,16 @@
             <column name="name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="tabIndex" type="INT"/>
+            <column name="tab_index" type="INT"/>
         </createTable>
     </changeSet>
     
     <changeSet author="aman (generated)" id="xforms-1598359669281-159">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="xforms_person_repeat_attribute"/>
+            </not>
+        </preConditions>        
         <createTable tableName="xforms_person_repeat_attribute">
             <column autoIncrement="true" name="person_repeat_attribute_id" type="INT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -59,6 +69,11 @@
     </changeSet>
 
     <changeSet author="aman (generated)" id="xforms-1598359669281-160">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="xforms_xform"/>
+            </not>
+        </preConditions>
         <createTable tableName="xforms_xform">
             <column name="form_id" type="INT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -82,65 +97,141 @@
 
 
     <changeSet author="aman (generated)" id="xforms-1598359669281-576">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists indexName="repeat_attribute_changer"/>
+            </not>
+        </preConditions>
         <createIndex indexName="repeat_attribute_changer" tableName="xforms_person_repeat_attribute">
             <column name="changed_by"/>
         </createIndex>
     </changeSet>
     <changeSet author="aman (generated)" id="xforms-1598359669281-577">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists indexName="repeat_attribute_creator"/>
+            </not>
+        </preConditions>
         <createIndex indexName="repeat_attribute_creator" tableName="xforms_person_repeat_attribute">
             <column defaultValueNumeric="0" name="creator"/>
         </createIndex>
     </changeSet>
     <changeSet author="aman (generated)" id="xforms-1598359669281-578">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists indexName="repeat_attribute_voider"/>
+            </not>
+        </preConditions>
         <createIndex indexName="repeat_attribute_voider" tableName="xforms_person_repeat_attribute">
             <column name="voided_by"/>
         </createIndex>
     </changeSet>
     <changeSet author="aman (generated)" id="xforms-1598359669281-579">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists indexName="repeat_defines_attribute_type"/>
+            </not>
+        </preConditions>
         <createIndex indexName="repeat_defines_attribute_type" tableName="xforms_person_repeat_attribute">
             <column defaultValueNumeric="0" name="person_attribute_type_id"/>
         </createIndex>
     </changeSet>
     <changeSet author="aman (generated)" id="xforms-1598359669281-580">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists indexName="repeat_identifies_person"/>
+            </not>
+        </preConditions>
         <createIndex indexName="repeat_identifies_person" tableName="xforms_person_repeat_attribute">
             <column defaultValueNumeric="0" name="person_id"/>
         </createIndex>
     </changeSet>
     <changeSet author="aman (generated)" id="xforms-1598359669281-652">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists indexName="user_who_created_xform"/>
+            </not>
+        </preConditions>
         <createIndex indexName="user_who_created_xform" tableName="xforms_xform">
             <column defaultValueNumeric="0" name="creator"/>
         </createIndex>
     </changeSet>
     <changeSet author="aman (generated)" id="xforms-1598359669281-655">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists indexName="user_who_last_changed_xform"/>
+            </not>
+        </preConditions>
         <createIndex indexName="user_who_last_changed_xform" tableName="xforms_xform">
             <column name="changed_by"/>
         </createIndex>
     </changeSet>
 
     <changeSet author="aman (generated)" id="xforms-1598359669281-1096">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="repeat_attribute_changer" />
+            </not>
+        </preConditions>
         <addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="xforms_person_repeat_attribute" constraintName="repeat_attribute_changer" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="user_id" referencedTableName="users" />
     </changeSet>
     <changeSet author="aman (generated)" id="xforms-1598359669281-1097">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="repeat_attribute_creator" />
+            </not>
+        </preConditions>
         <addForeignKeyConstraint baseColumnNames="creator" baseTableName="xforms_person_repeat_attribute" constraintName="repeat_attribute_creator" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="user_id" referencedTableName="users" />
     </changeSet>
     <changeSet author="aman (generated)" id="xforms-1598359669281-1098">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="repeat_attribute_voider" />
+            </not>
+        </preConditions>
         <addForeignKeyConstraint baseColumnNames="voided_by" baseTableName="xforms_person_repeat_attribute" constraintName="repeat_attribute_voider" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="user_id" referencedTableName="users" />
     </changeSet>
     <changeSet author="aman (generated)" id="xforms-1598359669281-1099">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="repeat_defines_attribute_type" />
+            </not>
+        </preConditions>
         <addForeignKeyConstraint baseColumnNames="person_attribute_type_id" baseTableName="xforms_person_repeat_attribute" constraintName="repeat_defines_attribute_type" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="person_attribute_type_id" referencedTableName="person_attribute_type" />
     </changeSet>
     <changeSet author="aman (generated)" id="xforms-1598359669281-1100">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="repeat_identifies_person" />
+            </not>
+        </preConditions>
         <addForeignKeyConstraint baseColumnNames="person_id" baseTableName="xforms_person_repeat_attribute" constraintName="repeat_identifies_person" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="person_id" referencedTableName="person" />
     </changeSet>
     <changeSet author="aman (generated)" id="xforms-1598359669281-1172">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="user_who_created_xform" />
+            </not>
+        </preConditions>
         <addForeignKeyConstraint baseColumnNames="creator" baseTableName="xforms_xform" constraintName="user_who_created_xform" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="user_id" referencedTableName="users" />
     </changeSet>
     <changeSet author="aman (generated)" id="xforms-1598359669281-1175">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="user_who_last_changed_xform" />
+            </not>
+        </preConditions>
         <addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="xforms_xform" constraintName="user_who_last_changed_xform" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="user_id" referencedTableName="users" />
     </changeSet>
-    
     <changeSet author="aman" id="xforms-25082020">
     	<comment> Adding uuids to all data in the the xform table </comment>
 		<sql>update xforms_xform set uuid = uuid() where uuid is null;</sql>
+    </changeSet>
+    <changeSet author="aman" id="xforms_update_columnname-31082020">
+        <preConditions onFail="MARK_RAN">
+    		<columnExists tableName="xforms_medical_history_field" columnName="tabIndex"></columnExists>
+   		</preConditions>
+   		<comment> Rename tabIndex to tab_index for table xforms_medical_history_field, Present since 4.3.13 </comment>
+	    <renameColumn columnDataType="INT" newColumnName="tab_index" oldColumnName="tabIndex" tableName="xforms_medical_history_field"/> 
     </changeSet>
 </databaseChangeLog>
