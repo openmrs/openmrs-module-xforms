@@ -13,7 +13,12 @@
 		
 		<property name="name" type="java.lang.String" length="255" not-null="true"/>
 		
-		<property name="tabIndex" type="int" />
+		<!-- tabIndex property in database is now mapped to tab_index.
+		When sqldiff file was used it was mapped to tabIndex. 
+		This caused problem in PostgreSQL because Postgres converts all column 
+		names to lower case when fetching from db and thus no result was returned since
+		column tabIndex was being searched as tabindex. -->
+		<property name="tabIndex" column="tab_index" type="int" />
 		
 	</class>
 </hibernate-mapping>
