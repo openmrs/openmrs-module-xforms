@@ -56,6 +56,8 @@
 		<openmrs:htmlInclude file="/scripts/jquery/autocomplete/jquery.ui.autocomplete.autoSelect.js" />
 	</c:if>
 
+	<script src="${pageContext.request.contextPath}/csrfguard" type="text/javascript"></script>
+	
   </head>
   <body>
   
