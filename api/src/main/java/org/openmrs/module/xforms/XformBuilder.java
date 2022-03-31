@@ -3506,7 +3506,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 		//add the repeat group label
 		Element labelNode = repeatGroupNode.createElement(NAMESPACE_XFORMS, null);
 		labelNode.setName(NODE_LABEL);
-		labelNode.addChild(Element.TEXT, "Other dentifiers");
+		labelNode.addChild(Element.TEXT, "Other Identifiers");
 		repeatGroupNode.addChild(Element.ELEMENT, labelNode);
 		
 		//add repeat node.
