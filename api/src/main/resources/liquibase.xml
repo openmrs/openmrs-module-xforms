@@ -170,7 +170,7 @@
     <changeSet author="aman (generated)" id="xforms-1598359669281-1096">
         <preConditions onFail="MARK_RAN">
             <not>
-                <foreignKeyConstraintExists foreignKeyName="repeat_attribute_changer" />
+                <foreignKeyConstraintExists foreignKeyTableName="xforms_person_repeat_attribute" foreignKeyName="repeat_attribute_changer" />
             </not>
         </preConditions>
         <addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="xforms_person_repeat_attribute" constraintName="repeat_attribute_changer" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="user_id" referencedTableName="users" />
@@ -178,7 +178,7 @@
     <changeSet author="aman (generated)" id="xforms-1598359669281-1097">
         <preConditions onFail="MARK_RAN">
             <not>
-                <foreignKeyConstraintExists foreignKeyName="repeat_attribute_creator" />
+                <foreignKeyConstraintExists foreignKeyTableName="xforms_person_repeat_attribute" foreignKeyName="repeat_attribute_creator" />
             </not>
         </preConditions>
         <addForeignKeyConstraint baseColumnNames="creator" baseTableName="xforms_person_repeat_attribute" constraintName="repeat_attribute_creator" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="user_id" referencedTableName="users" />
@@ -186,7 +186,7 @@
     <changeSet author="aman (generated)" id="xforms-1598359669281-1098">
         <preConditions onFail="MARK_RAN">
             <not>
-                <foreignKeyConstraintExists foreignKeyName="repeat_attribute_voider" />
+                <foreignKeyConstraintExists foreignKeyTableName="xforms_person_repeat_attribute" foreignKeyName="repeat_attribute_voider" />
             </not>
         </preConditions>
         <addForeignKeyConstraint baseColumnNames="voided_by" baseTableName="xforms_person_repeat_attribute" constraintName="repeat_attribute_voider" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="user_id" referencedTableName="users" />
@@ -194,7 +194,7 @@
     <changeSet author="aman (generated)" id="xforms-1598359669281-1099">
         <preConditions onFail="MARK_RAN">
             <not>
-                <foreignKeyConstraintExists foreignKeyName="repeat_defines_attribute_type" />
+                <foreignKeyConstraintExists foreignKeyTableName="xforms_person_repeat_attribute" foreignKeyName="repeat_defines_attribute_type" />
             </not>
         </preConditions>
         <addForeignKeyConstraint baseColumnNames="person_attribute_type_id" baseTableName="xforms_person_repeat_attribute" constraintName="repeat_defines_attribute_type" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="person_attribute_type_id" referencedTableName="person_attribute_type" />
@@ -202,7 +202,7 @@
     <changeSet author="aman (generated)" id="xforms-1598359669281-1100">
         <preConditions onFail="MARK_RAN">
             <not>
-                <foreignKeyConstraintExists foreignKeyName="repeat_identifies_person" />
+                <foreignKeyConstraintExists foreignKeyTableName="xforms_person_repeat_attribute" foreignKeyName="repeat_identifies_person" />
             </not>
         </preConditions>
         <addForeignKeyConstraint baseColumnNames="person_id" baseTableName="xforms_person_repeat_attribute" constraintName="repeat_identifies_person" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="person_id" referencedTableName="person" />
@@ -210,7 +210,7 @@
     <changeSet author="aman (generated)" id="xforms-1598359669281-1172">
         <preConditions onFail="MARK_RAN">
             <not>
-                <foreignKeyConstraintExists foreignKeyName="user_who_created_xform" />
+                <foreignKeyConstraintExists foreignKeyTableName="xforms_xform" foreignKeyName="user_who_created_xform" />
             </not>
         </preConditions>
         <addForeignKeyConstraint baseColumnNames="creator" baseTableName="xforms_xform" constraintName="user_who_created_xform" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="user_id" referencedTableName="users" />
@@ -218,7 +218,7 @@
     <changeSet author="aman (generated)" id="xforms-1598359669281-1175">
         <preConditions onFail="MARK_RAN">
             <not>
-                <foreignKeyConstraintExists foreignKeyName="user_who_last_changed_xform" />
+                <foreignKeyConstraintExists foreignKeyTableName="xforms_xform" foreignKeyName="user_who_last_changed_xform" />
             </not>
         </preConditions>
         <addForeignKeyConstraint baseColumnNames="changed_by" baseTableName="xforms_xform" constraintName="user_who_last_changed_xform" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="user_id" referencedTableName="users" />
