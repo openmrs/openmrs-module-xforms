@@ -89,7 +89,7 @@ public class PatientRegUrlHandler {
 		String encounterId = request.getParameter("encounterId");
 		String patientId = request.getParameter("patientId");
 		if (StringUtils.isNotBlank(encounterId) && StringUtils.isNotBlank(patientId)) {
-			Encounter encounter = Context.getEncounterService().getEncounter(Integer.parseInt(encounterId));
+			Encounter encounter = getEncounter(encounterId);
 			if (encounter != null && encounter.getForm() != null) {
 				Xform xform = Context.getService(XformsService.class).getXform(encounter.getForm());
 				if (xform != null) {
@@ -104,6 +104,15 @@ public class PatientRegUrlHandler {
 		String path = request.getServletPath();
         path = path.substring(1, path.lastIndexOf(".page"));
 		return handlePath(path, request, response, model, httpSession);
+	}
+	
+	private Encounter getEncounter(String encounterId) {
+		try {
+			return Context.getEncounterService().getEncounter(Integer.parseInt(encounterId));
+		}
+		catch (NumberFormatException ex) {
+			return Context.getEncounterService().getEncounterByUuid(encounterId);
+		}
 	}
 	
 	/**
