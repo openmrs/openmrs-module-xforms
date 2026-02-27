@@ -1,15 +1,17 @@
-name: Build with Maven
+name: Build and Test
 
 on:
   push:
-    branches: [ main ]
+    branches: [release]
   pull_request:
-    branches: [ main ]
-  workflow_dispatch:
+    branches: [release]
 
 jobs:
   build:
-    uses: openmrs/openmrs-contrib-gha-workflows/.github/workflows/build-backend-module.yml@main
+    name: Build and Test
+    uses: wikumChamith/openmrs-contrib-gha-workflows/.github/workflows/build-backend-module.yml@release
     with:
       java_versions: '[8]'
       main_java_version: '8'
+    secrets:
+      NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
