@@ -2,7 +2,7 @@ name: Build, Deploy, and Release
 
 on:
   push:
-    branches: [main]
+    branches: [release]
   workflow_dispatch:
     inputs:
       release_version:
