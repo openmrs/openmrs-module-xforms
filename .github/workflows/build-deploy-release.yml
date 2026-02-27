@@ -3,6 +3,8 @@ name: Build, Deploy, and Release
 on:
   push:
     branches: [release]
+  pull_request:
+    branches: [release]
   workflow_dispatch:
     inputs:
       release_version:
@@ -15,7 +17,7 @@ on:
 jobs:
   build:
     name: Build and Test
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
     uses: wikumChamith/openmrs-contrib-gha-workflows/.github/workflows/build-backend-module.yml@release
     with:
       java_versions: '[8]'
