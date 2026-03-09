@@ -2,11 +2,30 @@ name: Release
 
 on:
   workflow_dispatch:
-  
+    inputs:
+      release_version:
+        description: 'Release version (e.g., 1.3.3)'
+        required: true
+        type: string
+      development_version:
+        description: 'Next development version (e.g., 1.4.0-SNAPSHOT)'
+        required: true
+        type: string
+      branch:
+        description: 'Branch to release from'
+        required: false
+        type: string
+        default: 'master'
+
 jobs:
   release:
     name: Release
     uses: openmrs/openmrs-contrib-gha-workflows/.github/workflows/release-backend-module.yml@main
+    with:
+      release_version: ${{ inputs.release_version }}
+      development_version: ${{ inputs.development_version }}
+      branch: ${{ inputs.branch }}
     secrets:
       MAVEN_REPO_USERNAME: ${{ secrets.MAVEN_REPO_USERNAME }}
       MAVEN_REPO_API_KEY: ${{ secrets.MAVEN_REPO_API_KEY }}
+      BOT_PAT: ${{ secrets.BOT_PAT }}
