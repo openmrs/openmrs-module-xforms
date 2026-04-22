@@ -20,7 +20,7 @@ on:
 jobs:
   release:
     name: Release
-    uses: openmrs/openmrs-contrib-gha-workflows/.github/workflows/release-backend-module.yml@main
+    uses: wikumChamith/openmrs-contrib-gha-workflows/.github/workflows/release-backend-module.yml@gpg-signing
     with:
       release_version: ${{ inputs.release_version }}
       development_version: ${{ inputs.development_version }}
