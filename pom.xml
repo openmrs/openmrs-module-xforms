@@ -34,6 +34,19 @@
         <tag>HEAD</tag>
     </scm>
 
+    <distributionManagement>
+        <repository>
+            <id>openmrs-repo-releases</id>
+            <name>OpenMRS Releases</name>
+            <url>https://mavenrepo.openmrs.org/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>openmrs-repo-snapshots</id>
+            <name>OpenMRS Snapshots</name>
+            <url>https://mavenrepo.openmrs.org/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <modules>
         <module>api</module>
         <module>omod</module>
