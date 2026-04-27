@@ -9,12 +9,10 @@
  */
 package org.openmrs.module.xforms;
 
-
 /**
  * Contains the header of a connection response.
  * 
  * @author Daniel
- *
  */
 public class ResponseStatus {
 	

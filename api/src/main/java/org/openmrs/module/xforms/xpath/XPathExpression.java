@@ -14,23 +14,25 @@ import java.util.Vector;
 
 import org.w3c.dom.Node;
 
-
 /**
  * @author Cosmin
  * @author daniel
  */
-public class XPathExpression implements Serializable
-{
+public class XPathExpression implements Serializable {
+	
 	String[] locationStepStringsArray;
+	
 	XPathLocationStep[] locationStepArray;
+	
 	Vector resultNodeSet;
+	
 	String expression = null;
+	
 	Node startNode = null;
-		
-	public XPathExpression (Node startNode, String expression)
-	{
+	
+	public XPathExpression(Node startNode, String expression) {
 		Vector tmp = new Vector();
-
+		
 		this.startNode = startNode;
 		this.expression = expression;
 		
@@ -38,16 +40,16 @@ public class XPathExpression implements Serializable
 		//of an xpath expression
 		
 		//parse
-		if(expression.startsWith("//")) {
+		if (expression.startsWith("//")) {
 			//this way of handling "//" is obviously incomplete
 			//but we allow it like this because of the lacking resources
 			tmp.addElement("//");
-			expression = new String(expression.toCharArray(), 2, expression.length()-2);
-		} else if(expression.startsWith("/")) {
+			expression = new String(expression.toCharArray(), 2, expression.length() - 2);
+		} else if (expression.startsWith("/")) {
 			tmp.addElement("/");
 			//trace the root element
-			expression = new String(expression.toCharArray(), 1, expression.length()-1);
-		} 
+			expression = new String(expression.toCharArray(), 1, expression.length() - 1);
+		}
 		//System.out.println("Expression "+expression+" start node is "+start);
 		
 		//because there is no support for StringTokenizer
@@ -60,23 +62,22 @@ public class XPathExpression implements Serializable
 			System.out.println("location step: "+locationStepStringsArray[i]);
 		}
 		*/
-		for(int start = 0, end = 0; end < expression.length()-1 && end!=-1; start = end+1) {
+		for (int start = 0, end = 0; end < expression.length() - 1 && end != -1; start = end + 1) {
 			end = expression.indexOf("/", start);
 			
-			if(end != -1){
-				String token = expression.substring(start,end);
-				if(token.indexOf('@') >= 0 && token.indexOf(']') < 0){
+			if (end != -1) {
+				String token = expression.substring(start, end);
+				if (token.indexOf('@') >= 0 && token.indexOf(']') < 0) {
 					//end = expression.indexOf("/", end + 1);
 					end = expression.indexOf("]", end + 1) + 1;
 				}
 			}
 			
 			//System.out.println("start = "+start+" end = "+end);
-			String s = new String(expression.toCharArray(), start, 
-					(end!=-1?end:expression.length())-start);
+			String s = new String(expression.toCharArray(), start, (end != -1 ? end : expression.length()) - start);
 			
-			if(s.indexOf('@') > 0)
-				addAttributeSteps(s,tmp);
+			if (s.indexOf('@') > 0)
+				addAttributeSteps(s, tmp);
 			else
 				tmp.addElement(s);
 		}
@@ -94,26 +95,24 @@ public class XPathExpression implements Serializable
 		Vector prevResults = null;
 		
 		//start processing every location
-		for(int j=0; j < locationStepStringsArray.length; j++)
-		{
+		for (int j = 0; j < locationStepStringsArray.length; j++) {
 			prevResults = new Vector();
 			
 			String locationStepString = locationStepStringsArray[j];
-			if(locationStepString.indexOf('@') >= 0){
-				if(attributeFound)
+			if (locationStepString.indexOf('@') >= 0) {
+				if (attributeFound)
 					prevResults = resultNodeSet;
 				attributeFound = true;
-			}
-			else
+			} else
 				attributeFound = false;
 			
 			XPathLocationStep locationStep = new XPathLocationStep(locationStepString);
-
-			resultNodeSet = locationStep.getResult(resultNodeSet,prevResults);
+			
+			resultNodeSet = locationStep.getResult(resultNodeSet, prevResults);
 		}
 	}
 	
-	private void addAttributeSteps(String step,Vector list){
+	private void addAttributeSteps(String step, Vector list) {
 		int posBeg = 0;
 		int posEnd = step.indexOf(" and ");
 		/*if(posEnd > 0){ //TODO Need to support more than two and expressions
@@ -127,19 +126,18 @@ public class XPathExpression implements Serializable
 			posEnd = step.indexOf(']',posBeg);
 		}
 		else*/
-			posEnd = step.indexOf(']',posBeg);
+		posEnd = step.indexOf(']', posBeg);
 		
-		while(posEnd > 0){
-			list.addElement(step.substring(posBeg, posEnd+1));
+		while (posEnd > 0) {
+			list.addElement(step.substring(posBeg, posEnd + 1));
 			posBeg = posEnd + 1;
-			if(posBeg >= step.length())
+			if (posBeg >= step.length())
 				break;
-			posEnd = step.indexOf(']',posBeg);
+			posEnd = step.indexOf(']', posBeg);
 		}
 	}
 	
-	public Vector getResult()
-	{
+	public Vector getResult() {
 		return resultNodeSet;
 	}
 }

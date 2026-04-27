@@ -16,10 +16,10 @@ public enum RefreshOperation {
 	
 	/** New provider, location or concept added. */
 	ADD,
-
+	
 	/** Provider, location, or concept name has been changed. */
 	EDIT,
-
+	
 	/** Provider, location or concept has been deleted. */
 	DELETE
 }

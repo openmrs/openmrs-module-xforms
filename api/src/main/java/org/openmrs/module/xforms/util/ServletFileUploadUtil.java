@@ -34,17 +34,16 @@ import org.jdom.xpath.XPath;
 
 import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 
-
 /**
- * Handles upload of xforms as files. Where a submission can consist of multiple files like 
- * images files, pictures files, sound files, video files, and more. (multipart content)
+ * Handles upload of xforms as files. Where a submission can consist of multiple files like images
+ * files, pictures files, sound files, video files, and more. (multipart content)
  * 
  * @author daniel
- *
  */
 public class ServletFileUploadUtil {
 	
-	public static String getXformsInstanceData(HttpServletRequest request, HttpServletResponse response, PrintWriter writer) throws IOException, Exception {
+	public static String getXformsInstanceData(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
+	        throws IOException, Exception {
 		
 		String serverLocation = request.getServerName();
 		ServletFileUpload upload = new ServletFileUpload(new DiskFileItemFactory());
@@ -53,11 +52,11 @@ public class ServletFileUploadUtil {
 			List<FileItem> items = upload.parseRequest(request);
 			// find the xform that user wants to submit to OpenMrs
 			String xml = findXformFromItems(items);
-			if(xml.compareTo("") == 0) { // send error if user sends no xform to submit
+			if (xml.compareTo("") == 0) { // send error if user sends no xform to submit
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Request contains no form");
 				return null;
 			}
-			if(items.size() > 0) 
+			if (items.size() > 0)
 				xml = fillBinaryDataToXform(xml, items);
 			
 			// send success signal
@@ -65,17 +64,17 @@ public class ServletFileUploadUtil {
 			response.setHeader("Location", serverLocation);
 			writer.println("Data submitted successfully");
 			return xml;
-		// any exception occurs, fire up error message(exception for exceeding image file size)
-		} catch (FileUploadException e2) {
+			// any exception occurs, fire up error message(exception for exceeding image file size)
+		}
+		catch (FileUploadException e2) {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Request contains more than 10M bytes file");
 			return null;
 		}
 	}
 	
-	
 	/**
-	 * return xform in string format after finding it from the item list and after removing
-	 * it from the list. if there is no xform in the list, then return ""
+	 * return xform in string format after finding it from the item list and after removing it from the
+	 * list. if there is no xform in the list, then return ""
 	 * 
 	 * @param items - fileItem list from request
 	 * @return xform found in string format
@@ -84,9 +83,9 @@ public class ServletFileUploadUtil {
 	@SuppressWarnings("unchecked")
 	private static String findXformFromItems(List<FileItem> items) throws IOException {
 		Iterator iterator = items.iterator();
-		while(iterator.hasNext()) {
+		while (iterator.hasNext()) {
 			FileItem item = (FileItem) iterator.next();
-			if(item.getFieldName().compareTo("xml_submission_file") == 0) {
+			if (item.getFieldName().compareTo("xml_submission_file") == 0) {
 				InputStream in = item.getInputStream();
 				String xml = IOUtils.toString(in);
 				iterator.remove();
@@ -96,9 +95,8 @@ public class ServletFileUploadUtil {
 		return "";
 	}
 	
-	
 	/**
-	 * return xform passed in after replacing binary file names in the xform with its actual data in 
+	 * return xform passed in after replacing binary file names in the xform with its actual data in
 	 * Base64 format encoded
 	 * 
 	 * @param xml - xform in string format
@@ -110,9 +108,9 @@ public class ServletFileUploadUtil {
 	@SuppressWarnings("unchecked")
 	private static String fillBinaryDataToXform(String xml, List<FileItem> items) throws IOException, JDOMException {
 		SAXBuilder builder = new SAXBuilder();
-	    Document document = builder.build(new ByteArrayInputStream(xml.getBytes()));
+		Document document = builder.build(new ByteArrayInputStream(xml.getBytes()));
 		Iterator iterator = items.iterator();
-		while(iterator.hasNext()) {
+		while (iterator.hasNext()) {
 			FileItem item = (FileItem) iterator.next();
 			String fileName = item.getFieldName();
 			XPath xPath = XPath.newInstance("/form/obs//value[. = \"" + fileName + "\"]");
@@ -122,6 +120,6 @@ public class ServletFileUploadUtil {
 			value.setText(Base64.encode(bytes));
 		}
 		XMLOutputter out = new XMLOutputter(Format.getPrettyFormat());
-        return out.outputString(document);
+		return out.outputString(document);
 	}
 }

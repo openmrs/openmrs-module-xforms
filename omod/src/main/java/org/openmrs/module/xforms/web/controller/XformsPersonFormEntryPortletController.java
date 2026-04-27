@@ -35,41 +35,34 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.controller.PortletController;
 
 public class XformsPersonFormEntryPortletController extends PortletController {
-
+	
 	/**
-	 * 
 	 * @see org.openmrs.web.controller.PortletController#populateModel(javax.servlet.http.HttpServletRequest,
 	 *      java.util.Map)
 	 */
 	@Override
-	protected void populateModel(HttpServletRequest request,
-			Map<String, Object> model) {
+	protected void populateModel(HttpServletRequest request, Map<String, Object> model) {
 		if (model.containsKey("formToEntryUrlMap")) {
 			return;
 		}
 		Person person = (Person) model.get("person");
 		if (person == null)
-			throw new IllegalArgumentException(
-					"This portlet may only be used in the context of a Person");
+			throw new IllegalArgumentException("This portlet may only be used in the context of a Person");
 		FormEntryContext fec = new FormEntryContext(person);
 		Map<FormModuleHandler, FormEntryHandler> entryUrlMap = new TreeMap<FormModuleHandler, FormEntryHandler>(
-				new Comparator<FormModuleHandler>() {
-
-					public int compare(FormModuleHandler left, FormModuleHandler right) {
-						int temp = left.getName().toLowerCase()
-								.compareTo(right.getName().toLowerCase());
-						if (temp == 0)
-							temp = OpenmrsUtil.compareWithNullAsLowest(
-									left.getVersion(), right.getVersion());
-						if (temp == 0)
-							temp = OpenmrsUtil.compareWithNullAsGreatest(
-									left.getId(), right.getId());
-						return temp;
-					}
-				});
-		List<Extension> handlers = ModuleFactory.getExtensions(
-				"org.openmrs.module.web.extension.FormEntryHandler",
-				MEDIA_TYPE.html);
+		        new Comparator<FormModuleHandler>() {
+			        
+			        public int compare(FormModuleHandler left, FormModuleHandler right) {
+				        int temp = left.getName().toLowerCase().compareTo(right.getName().toLowerCase());
+				        if (temp == 0)
+					        temp = OpenmrsUtil.compareWithNullAsLowest(left.getVersion(), right.getVersion());
+				        if (temp == 0)
+					        temp = OpenmrsUtil.compareWithNullAsGreatest(left.getId(), right.getId());
+				        return temp;
+			        }
+		        });
+		List<Extension> handlers = ModuleFactory.getExtensions("org.openmrs.module.web.extension.FormEntryHandler",
+		    MEDIA_TYPE.html);
 		
 		HashMap<Form, Integer> formHandlerCount = new HashMap<Form, Integer>();
 		
@@ -79,12 +72,10 @@ public class XformsPersonFormEntryPortletController extends PortletController {
 				Collection<Form> toEnter = handler.getFormsModuleCanEnter(fec);
 				if (toEnter != null) {
 					for (Form form : toEnter) {
-						entryUrlMap.put(
-								new FormModuleHandler(form, ext.getModuleId()),
-								handler);
+						entryUrlMap.put(new FormModuleHandler(form, ext.getModuleId()), handler);
 						
 						Integer count = formHandlerCount.get(form);
-						if(count == null)
+						if (count == null)
 							count = 1;
 						else
 							count++;
@@ -96,33 +87,34 @@ public class XformsPersonFormEntryPortletController extends PortletController {
 		}
 		
 		//If the formfilter module is installed, filter forms.
-		filterForms(entryUrlMap, (Patient)model.get("patient"));
+		filterForms(entryUrlMap, (Patient) model.get("patient"));
 		
 		//Make sure we do not append module id when displaying forms that are not handled by more than one module.
 		Set<FormModuleHandler> keys = entryUrlMap.keySet();
-		for(FormModuleHandler key : keys) {
+		for (FormModuleHandler key : keys) {
 			key.setAppendModuleId(formHandlerCount.get(key.getForm()) > 1);
 		}
 		
 		model.put("formToEntryUrlMap", entryUrlMap);
-		model.put("anyUpdatedFormEntryModules",
-				handlers != null && handlers.size() > 0);
+		model.put("anyUpdatedFormEntryModules", handlers != null && handlers.size() > 0);
 	}
 	
 	private void filterForms(Map<FormModuleHandler, FormEntryHandler> entryUrlMap, Patient patient) {
 		try {
-			Object instance = OpenmrsClassLoader.getInstance().loadClass("org.openmrs.module.formfilter.web.controller.PersonFormFilterEntryPortletController").newInstance();
-			Method method = instance.getClass().getDeclaredMethod("filterForm", new Class[]{Form.class, Patient.class});
+			Object instance = OpenmrsClassLoader.getInstance()
+			        .loadClass("org.openmrs.module.formfilter.web.controller.PersonFormFilterEntryPortletController")
+			        .newInstance();
+			Method method = instance.getClass().getDeclaredMethod("filterForm", new Class[] { Form.class, Patient.class });
 			method.setAccessible(true);
 			
 			for (Iterator<FormModuleHandler> iterator = entryUrlMap.keySet().iterator(); iterator.hasNext();) {
 				Form form = ((FormModuleHandler) iterator.next()).getForm();
-				if (!(Boolean)method.invoke(instance, new Object[]{form, patient})) {
+				if (!(Boolean) method.invoke(instance, new Object[] { form, patient })) {
 					iterator.remove();
 				}
 			}
 		}
-		catch(Exception ex) {
+		catch (Exception ex) {
 			//ignore if module is not installed
 		}
 	}

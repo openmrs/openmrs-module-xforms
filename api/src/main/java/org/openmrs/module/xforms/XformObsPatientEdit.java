@@ -75,7 +75,7 @@ public class XformObsPatientEdit {
 	}
 	
 	private static void updatePerson(Patient patient, String attributeValue, String dataValue, Element node)
-	    throws Exception {
+	        throws Exception {
 		
 		if (XformBuilder.NODE_GENDER.equals(attributeValue))
 			patient.setGender(dataValue);
@@ -92,7 +92,7 @@ public class XformObsPatientEdit {
 	}
 	
 	private static void updatePersonName(Patient patient, String attributeValue, String dataValue, Element node)
-	    throws Exception {
+	        throws Exception {
 		
 		PersonName personName = patient.getPersonName();
 		
@@ -165,8 +165,8 @@ public class XformObsPatientEdit {
 	}
 	
 	private static void updatePersonAttribute(Patient patient, String attributeValue, String dataValue, Element node) {
-		PersonAttributeType personAttributeType = Context.getPersonService().getPersonAttributeType(
-		    Integer.parseInt(attributeValue));
+		PersonAttributeType personAttributeType = Context.getPersonService()
+		        .getPersonAttributeType(Integer.parseInt(attributeValue));
 		
 		if (personAttributeType == null)
 			throw new APIException("Cannot find person attribute type with id = " + attributeValue);
@@ -190,7 +190,8 @@ public class XformObsPatientEdit {
 		}
 	}
 	
-	private static void setPersonAttributeValue(String dataValue, PersonAttribute personAttribute, PersonAttributeType personAttributeType) {
+	private static void setPersonAttributeValue(String dataValue, PersonAttribute personAttribute,
+	        PersonAttributeType personAttributeType) {
 		if ("org.openmrs.Concept".equals(personAttributeType.getFormat())) {
 			
 			if (!dataValue.contains("^")) {

@@ -13,7 +13,6 @@ import org.apache.commons.lang.StringUtils;
 import org.openmrs.Location;
 import org.openmrs.api.context.Context;
 
-
 public class LocationUtil {
 	
 	public Location get(String locationId) {

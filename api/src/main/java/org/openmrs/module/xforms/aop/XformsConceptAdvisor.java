@@ -40,11 +40,12 @@ public class XformsConceptAdvisor implements AfterReturningAdvice {
 		if (method.getName().equals("saveConcept")) {
 			
 			Concept concept = (Concept) args[0];
-			if (!concept.getDatatype().isCoded()){
+			if (!concept.getDatatype().isCoded()) {
 				
 				String newName = concept.getName().getName();
-				String oldName = Context.getService(XformsService.class).getConceptName(concept.getConceptId(), Context.getLocale().getLanguage());
-				if(!newName.equals(oldName)){
+				String oldName = Context.getService(XformsService.class).getConceptName(concept.getConceptId(),
+				    Context.getLocale().getLanguage());
+				if (!newName.equals(oldName)) {
 					refreshConceptName(concept, newName, oldName);
 				}
 				
@@ -61,13 +62,13 @@ public class XformsConceptAdvisor implements AfterReturningAdvice {
 			//Loop through the xforms refreshing one by one
 			for (Xform xform : xforms) {
 				
-				try{
+				try {
 					String xml = xform.getXformXml();
 					Document doc = XformsUtil.fromString2Doc(xml);
 					
 					//Get all xf:select1 nodes in the xforms document.
-					NodeList elements = doc.getDocumentElement().getElementsByTagName(
-						XformBuilder.PREFIX_XFORMS + ":" + XformBuilder.CONTROL_SELECT1);
+					NodeList elements = doc.getDocumentElement()
+					        .getElementsByTagName(XformBuilder.PREFIX_XFORMS + ":" + XformBuilder.CONTROL_SELECT1);
 					
 					//Look for the node which has a concept_id attribute value of conceptId
 					for (int index = 0; index < elements.getLength(); index++) {
@@ -78,7 +79,7 @@ public class XformsConceptAdvisor implements AfterReturningAdvice {
 						}
 					}
 				}
-				catch(Exception ex){
+				catch (Exception ex) {
 					ex.printStackTrace();
 					continue; //failure for one form should not stop others from proceeding.
 				}
@@ -88,8 +89,8 @@ public class XformsConceptAdvisor implements AfterReturningAdvice {
 	}
 	
 	/**
-	 * Refreshes a coded concept in a given xforms select1 node. Where refreshing is simply adding
-	 * newly added answers and deleting those that have been removed from the coded concept.
+	 * Refreshes a coded concept in a given xforms select1 node. Where refreshing is simply adding newly
+	 * added answers and deleting those that have been removed from the coded concept.
 	 * 
 	 * @param conceptSelect1Element the concept's select1 node.
 	 * @param concept the coded concept.
@@ -98,7 +99,7 @@ public class XformsConceptAdvisor implements AfterReturningAdvice {
 	 * @param xformsService the xforms service.
 	 */
 	private void refreshConceptWithId(Element conceptSelect1Element, Concept concept, Document doc, Xform xform,
-	                                  XformsService xformsService) {
+	        XformsService xformsService) {
 		
 		boolean xformModified = false;
 		List<String> xformConceptAnswers = new ArrayList<String>();
@@ -137,8 +138,9 @@ public class XformsConceptAdvisor implements AfterReturningAdvice {
 		
 		//Update name if changed.
 		String newName = concept.getName().getName();
-		String oldName = Context.getService(XformsService.class).getConceptName(concept.getConceptId(), Context.getLocale().getLanguage());
-		if(!newName.equals(oldName)){
+		String oldName = Context.getService(XformsService.class).getConceptName(concept.getConceptId(),
+		    Context.getLocale().getLanguage());
+		if (!newName.equals(oldName)) {
 			refreshConceptName(concept, newName, oldName, conceptSelect1Element);
 			xformModified = true;
 		}
@@ -176,8 +178,8 @@ public class XformsConceptAdvisor implements AfterReturningAdvice {
 	 * 
 	 * @param doc the xforms document.
 	 * @param concept the concept answer whose xforms node to add.
-	 * @param conceptSelect1Element the select1 element for the coded concept that has the answer we
-	 *            are adding.
+	 * @param conceptSelect1Element the select1 element for the coded concept that has the answer we are
+	 *            adding.
 	 */
 	private void addNewConceptAnswer(Document doc, Concept concept, Element conceptSelect1Element) {
 		String hl7Name = StringEscapeUtils.escapeXml(FormUtil.conceptToString(concept, Context.getLocale()));
@@ -196,7 +198,6 @@ public class XformsConceptAdvisor implements AfterReturningAdvice {
 		conceptSelect1Element.appendChild(itemNode);
 	}
 	
-	
 	private void refreshConceptName(Concept concept, String newName, String oldName) throws Exception {
 		XformsService xformsService = Context.getService(XformsService.class);
 		List<Xform> xforms = xformsService.getXforms();
@@ -208,13 +209,12 @@ public class XformsConceptAdvisor implements AfterReturningAdvice {
 		//Loop through the xforms refreshing one by one
 		for (Xform xform : xforms) {
 			
-			try{
+			try {
 				String xml = xform.getXformXml();
 				Document doc = XformsUtil.fromString2Doc(xml);
 				
 				//Get all xf:item nodes in the xforms document.
-				NodeList elements = doc.getDocumentElement().getElementsByTagName(
-					XformBuilder.PREFIX_XFORMS + ":" + "item");
+				NodeList elements = doc.getDocumentElement().getElementsByTagName(XformBuilder.PREFIX_XFORMS + ":" + "item");
 				
 				boolean xformModified = false;
 				
@@ -224,7 +224,7 @@ public class XformsConceptAdvisor implements AfterReturningAdvice {
 					
 					if (sConceptId.equalsIgnoreCase(element.getAttribute(XformBuilder.ATTRIBUTE_CONCEPT_ID))) {
 						boolean ret = refreshConceptName(concept, newName, oldName, element);
-						if(ret){
+						if (ret) {
 							xformModified = true;
 						}
 					}
@@ -235,22 +235,23 @@ public class XformsConceptAdvisor implements AfterReturningAdvice {
 					xformsService.saveXform(xform);
 				}
 			}
-			catch(Exception ex){
+			catch (Exception ex) {
 				ex.printStackTrace();
 				continue; //failure for one form should not stop others from proceeding.
 			}
 		}
 	}
 	
-	private boolean refreshConceptName(Concept concept, String newName, String oldName, Element parentElement){
+	private boolean refreshConceptName(Concept concept, String newName, String oldName, Element parentElement) {
 		NodeList elements = parentElement.getElementsByTagName(XformBuilder.PREFIX_XFORMS + ":" + "label");
-		if(elements.getLength() > 0) {
+		if (elements.getLength() > 0) {
 			Element labelElement = (Element) elements.item(0); //We deal with only the first label node.
 			
 			//Assuming label element for the select1 node comes first.
-			if (oldName.equals(labelElement.getTextContent())){
+			if (oldName.equals(labelElement.getTextContent())) {
 				labelElement.setTextContent(newName);
-				setItemValueText(parentElement, StringEscapeUtils.escapeXml(FormUtil.conceptToString(concept, Context.getLocale())));
+				setItemValueText(parentElement,
+				    StringEscapeUtils.escapeXml(FormUtil.conceptToString(concept, Context.getLocale())));
 				return true;
 			}
 		}
@@ -258,9 +259,9 @@ public class XformsConceptAdvisor implements AfterReturningAdvice {
 		return false;
 	}
 	
-	private void setItemValueText(Element parentElement, String valueText){
+	private void setItemValueText(Element parentElement, String valueText) {
 		NodeList elements = parentElement.getElementsByTagName(XformBuilder.PREFIX_XFORMS + ":" + "value");
-		if(elements.getLength() > 0) {
+		if (elements.getLength() > 0) {
 			Element valueElement = (Element) elements.item(0);
 			valueElement.setTextContent(valueText);
 		}

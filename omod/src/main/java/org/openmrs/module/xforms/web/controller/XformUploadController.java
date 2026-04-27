@@ -59,7 +59,7 @@ public class XformUploadController extends SimpleFormController {
 	
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object object,
-	                                BindException exceptions) throws Exception {
+	        BindException exceptions) throws Exception {
 		
 		//try to authenticate users who logon inline (with the request).
 		XformsUtil.authenticateInlineUser(request);
@@ -97,7 +97,7 @@ public class XformUploadController extends SimpleFormController {
 				if(pos > 0){
 					xformXml = xml.substring(0,pos);
 					layoutXml = xml.substring(pos+XformConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR.length(), pos2 > 0 ? pos2 : xml.length());
-
+				
 					if(pos2 > 0)
 						localeXml = xml.substring(pos2+XformConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR.length(), xml.length());
 				}
@@ -107,7 +107,7 @@ public class XformUploadController extends SimpleFormController {
 				}
 				else
 					xformXml = xml;*/
-
+				
 				int pos = xml.indexOf(XformConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR);
 				int pos2 = xml.indexOf(XformConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR);
 				int pos3 = xml.indexOf(XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR);
@@ -116,19 +116,26 @@ public class XformUploadController extends SimpleFormController {
 					xformXml = xml.substring(0, pos);
 					
 					int endIndex = pos2;
-					if(endIndex == -1) endIndex = pos3;
-					if(endIndex == -1) endIndex = pos4;
-					if(endIndex == -1) endIndex = xml.length();
+					if (endIndex == -1)
+						endIndex = pos3;
+					if (endIndex == -1)
+						endIndex = pos4;
+					if (endIndex == -1)
+						endIndex = xml.length();
 					
-					layoutXml = xml.substring(pos + XformConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR.length(), endIndex);
+					layoutXml = xml.substring(pos + XformConstants.PURCFORMS_FORMDEF_LAYOUT_XML_SEPARATOR.length(),
+					    endIndex);
 					
 					if (pos2 > 0)
 						
 						endIndex = pos3;
-						if(endIndex == -1) endIndex = pos4;
-						if(endIndex == -1) endIndex = xml.length();
+					if (endIndex == -1)
+						endIndex = pos4;
+					if (endIndex == -1)
+						endIndex = xml.length();
 					
-						localeXml = xml.substring(pos2 + XformConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR.length(), endIndex);
+					localeXml = xml.substring(pos2 + XformConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR.length(),
+					    endIndex);
 					
 					if (pos3 > 0)
 						javaScriptSrc = xml.substring(
@@ -136,18 +143,19 @@ public class XformUploadController extends SimpleFormController {
 						    pos4 > 0 ? pos4 : xml.length());
 					
 					if (pos4 > 0)
-						css = xml.substring(
-						    pos4 + XformConstants.PURCFORMS_FORMDEF_CSS_SEPARATOR.length(), xml.length());
+						css = xml.substring(pos4 + XformConstants.PURCFORMS_FORMDEF_CSS_SEPARATOR.length(), xml.length());
 					
 				} else if (pos2 > 0) {
 					xformXml = xml.substring(0, pos2);
 					
 					int endIndex = pos3;
-					if(endIndex == -1) endIndex = pos4;
-					if(endIndex == -1) endIndex = xml.length();
+					if (endIndex == -1)
+						endIndex = pos4;
+					if (endIndex == -1)
+						endIndex = xml.length();
 					
 					localeXml = xml.substring(pos2 + XformConstants.PURCFORMS_FORMDEF_LOCALE_XML_SEPARATOR.length(),
-						endIndex);
+					    endIndex);
 					
 					if (pos3 > 0) {
 						javaScriptSrc = xml.substring(
@@ -156,22 +164,19 @@ public class XformUploadController extends SimpleFormController {
 					}
 					
 					if (pos4 > 0) {
-						css = xml.substring(
-						    pos4 + XformConstants.PURCFORMS_FORMDEF_CSS_SEPARATOR.length(), xml.length());
+						css = xml.substring(pos4 + XformConstants.PURCFORMS_FORMDEF_CSS_SEPARATOR.length(), xml.length());
 					}
 				} else if (pos3 > 0) {
 					xformXml = xml.substring(0, pos3);
 					javaScriptSrc = xml.substring(pos3 + XformConstants.PURCFORMS_FORMDEF_JAVASCRIPT_SRC_SEPARATOR.length(),
-						pos4 > 0 ? pos4 : xml.length());
+					    pos4 > 0 ? pos4 : xml.length());
 					
 					if (pos4 > 0) {
-						css = xml.substring(pos4 + XformConstants.PURCFORMS_FORMDEF_CSS_SEPARATOR.length(),
-						    xml.length());
+						css = xml.substring(pos4 + XformConstants.PURCFORMS_FORMDEF_CSS_SEPARATOR.length(), xml.length());
 					}
 				} else if (pos4 > 0) {
 					xformXml = xml.substring(0, pos4);
-					css = xml.substring(pos4 + XformConstants.PURCFORMS_FORMDEF_CSS_SEPARATOR.length(),
-						xml.length());
+					css = xml.substring(pos4 + XformConstants.PURCFORMS_FORMDEF_CSS_SEPARATOR.length(), xml.length());
 				} else
 					xformXml = xml;
 				
@@ -212,8 +217,8 @@ public class XformUploadController extends SimpleFormController {
 				}
 			}
 			
-			return new ModelAndView(new RedirectView(request.getContextPath() + "/admin/forms/formSchemaDesign.form?formId="
-			        + formId));
+			return new ModelAndView(
+			        new RedirectView(request.getContextPath() + "/admin/forms/formSchemaDesign.form?formId=" + formId));
 		}
 	}
 	
@@ -226,9 +231,9 @@ public class XformUploadController extends SimpleFormController {
 				stringBuffer.append(line);
 		} 
 		catch (Exception e){e.printStackTrace();}
-
+		
 		return stringBuffer.toString();*/
-
+		
 		//We have commented out the above because we want to preserver new lines for formatting
 		//purposes. e.g the javascript attached to xforms becomes troublesome when the javascript is lost.
 		

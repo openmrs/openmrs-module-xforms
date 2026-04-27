@@ -32,8 +32,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class PatientPageController {
 	
 	public void controller(@RequestParam("patientId") Patient patient, UiUtils ui,
-	                       @RequestParam(value = "returnUrl", required = false) String returnUrl,
-	                       PageModel model) {
+	        @RequestParam(value = "returnUrl", required = false) String returnUrl, PageModel model) {
 		
 		model.addAttribute("returnUrl", returnUrl);
 		model.addAttribute("patient", patient);
@@ -41,7 +40,7 @@ public class PatientPageController {
 	}
 	
 	private Map<Form, FormEntryHandler> getForms(Patient patient) {
-		List<String> excludFormUuids =  new ArrayList<String>();
+		List<String> excludFormUuids = new ArrayList<String>();
 		excludFormUuids.add("a000cb34-9ec1-4344-a1c8-f692232f6edd");
 		excludFormUuids.add("c75f120a-04ec-11e3-8780-2b40bef9a44b");
 		excludFormUuids.add("d2c7532c-fb01-11e2-8ff2-fd54ab5fdb2a");

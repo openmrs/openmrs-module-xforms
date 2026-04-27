@@ -71,7 +71,7 @@ public class XformsProviderAdvisor extends StaticMethodMatcherPointcutAdvisor im
 				//oldName = XformBuilder.getProviderName(user, XformsUtil.getPersonId(user));
 				Integer personId = XformsUtil.getPersonId(user);
 				oldName = Context.getService(XformsService.class).getPersonName(personId);
-				if(oldName != null)
+				if (oldName != null)
 					oldName += " [" + personId + "]";
 				else
 					oldName = XformBuilder.getProviderName(user, personId);
@@ -117,13 +117,13 @@ public class XformsProviderAdvisor extends StaticMethodMatcherPointcutAdvisor im
 		//Loop through the xforms refreshing one by one
 		for (Xform xform : xforms) {
 			
-			try{
+			try {
 				String xml = xform.getXformXml();
 				Document doc = XformsUtil.fromString2Doc(xml);
 				
 				//Get all xf:select1 nodes in the xforms document.
-				NodeList elements = doc.getDocumentElement().getElementsByTagName(
-				    XformBuilder.PREFIX_XFORMS + ":" + XformBuilder.CONTROL_SELECT1);
+				NodeList elements = doc.getDocumentElement()
+				        .getElementsByTagName(XformBuilder.PREFIX_XFORMS + ":" + XformBuilder.CONTROL_SELECT1);
 				
 				//Look for the provider node which has a bind attribute value of: encounter.provider_id.
 				for (int index = 0; index < elements.getLength(); index++) {
@@ -134,7 +134,7 @@ public class XformsProviderAdvisor extends StaticMethodMatcherPointcutAdvisor im
 					}
 				}
 			}
-			catch(Exception ex){
+			catch (Exception ex) {
 				ex.printStackTrace();
 				continue; //failure for one form should not stop others from proceeding.
 			}
@@ -153,9 +153,8 @@ public class XformsProviderAdvisor extends StaticMethodMatcherPointcutAdvisor im
 	 * @param xformsService the xforms service.
 	 * @throws Exception
 	 */
-	private void refreshProviderWithId(RefreshOperation operation, Element providerSelect1Element, User user,
-	                                   String oldName, Document doc, Xform xform, XformsService xformsService)
-	                                                                                                          throws Exception {
+	private void refreshProviderWithId(RefreshOperation operation, Element providerSelect1Element, User user, String oldName,
+	        Document doc, Xform xform, XformsService xformsService) throws Exception {
 		Integer personId = XformsUtil.getPersonId(user);
 		String sPersonId = personId.toString();
 		

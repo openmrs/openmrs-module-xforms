@@ -50,25 +50,23 @@ import org.springframework.util.StringUtils;
  * @version 1.0
  */
 public class FormXmlTemplateBuilder {
-
+	
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	private VelocityEngine ve;
-
+	
 	Form form;
+	
 	String url;
-
+	
 	/**
-	 * Construct an XML template builder for generating patient-based templates
-	 * for a given OpenMRS form.
+	 * Construct an XML template builder for generating patient-based templates for a given OpenMRS
+	 * form.
 	 * 
-	 * @param context
-	 *            active OpenMRS context
-	 * @param form
-	 *            OpenMRS form for which template(s) will be made
-	 * @param url
-	 *            absolute (full, including "http://" and ending with ".xsn")
-	 *            url location of InfoPath form (.xsn file)
+	 * @param context active OpenMRS context
+	 * @param form OpenMRS form for which template(s) will be made
+	 * @param url absolute (full, including "http://" and ending with ".xsn") url location of InfoPath
+	 *            form (.xsn file)
 	 */
 	public FormXmlTemplateBuilder(Form form, String url) {
 		this.form = form;
@@ -79,22 +77,20 @@ public class FormXmlTemplateBuilder {
 		initializeVelocity();
 		
 		VelocityContext velocityContext = new VelocityContext();
-
+		
 		if (patient != null) {
 			velocityContext.put("form", form);
 			velocityContext.put("url", url);
 			User user = Context.getAuthenticatedUser();
 			String enterer;
 			if (user != null)
-				enterer = user.getUserId() + "^" + user.getGivenName() + " "
-						+ user.getFamilyName();
+				enterer = user.getUserId() + "^" + user.getGivenName() + " " + user.getFamilyName();
 			else
 				enterer = "";
-
+			
 			velocityContext.put("enterer", enterer);
 			velocityContext.put("patient", patient);
-			velocityContext.put("timestamp", new SimpleDateFormat(
-					"yyyyMMdd'T'HH:mm:ss.SSSZ"));
+			velocityContext.put("timestamp", new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss.SSSZ"));
 			velocityContext.put("date", new SimpleDateFormat("yyyyMMdd"));
 			velocityContext.put("time", new SimpleDateFormat("HH:mm:ss"));
 			
@@ -109,66 +105,63 @@ public class FormXmlTemplateBuilder {
 		EventCartridge ec = new EventCartridge();
 		ec.addEventHandler(new VelocityExceptionHandler());
 		velocityContext.attachEventCartridge(ec);
-
+		
 		String template = null;
 		try {
 			StringWriter w = new StringWriter();
 			//Velocity.evaluate(velocityContext, w, this.getClass().getName(),
 			//		form.getTemplate());
 			//template = w.toString();
-		} catch (Exception e) {
-			log.error("Error evaluating default values for form "
-					+ form.getName() + "[" + form.getFormId() + "]", e);
+		}
+		catch (Exception e) {
+			log.error("Error evaluating default values for form " + form.getName() + "[" + form.getFormId() + "]", e);
 		}
 		return template;
 	}
 	
 	/**
-	 * A utility method to initialize Velocity. This could be
-	 * called in the constructor, but putting it in a separate
-	 * method like this allows for late-initialization only
-	 * when someone actually uses this servlet.
+	 * A utility method to initialize Velocity. This could be called in the constructor, but putting it
+	 * in a separate method like this allows for late-initialization only when someone actually uses
+	 * this servlet.
 	 */
 	private void initializeVelocity() {
 		if (ve == null) {
 			ve = new VelocityEngine();
-
-			ve.setProperty( RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,
-				"org.apache.velocity.runtime.log.CommonsLogLogChute" );
-			ve.setProperty(CommonsLogLogChute.LOGCHUTE_COMMONS_LOG_NAME, 
-					"xforms_velocity");
+			
+			ve.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,
+			    "org.apache.velocity.runtime.log.CommonsLogLogChute");
+			ve.setProperty(CommonsLogLogChute.LOGCHUTE_COMMONS_LOG_NAME, "xforms_velocity");
 			try {
 				ve.init();
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				log.error("velocity init failed", e);
-			}		
+			}
 		}
 	}
-
+	
 	/**
 	 * Returns the XML template for a form
 	 * 
-	 * @param includeDefaultScripts
-	 *            if true, field defaults are inserted into the template
+	 * @param includeDefaultScripts if true, field defaults are inserted into the template
 	 * @return XML template for a form
 	 */
 	public synchronized String getXmlTemplate(boolean includeDefaultScripts) {
 		StringBuffer xml = new StringBuffer();
-
+		
 		xml.append(FormXmlTemplateFragment.header(form, url));
-		xml.append(FormXmlTemplateFragment.openForm(form, FormEntryWrapper
-				.getFormSchemaNamespace(form), includeDefaultScripts));
-
-		Map<Integer, TreeSet<FormField>> formStructure = XformsUtil
-				.getFormStructure(form);
-
+		xml.append(
+		    FormXmlTemplateFragment.openForm(form, FormEntryWrapper.getFormSchemaNamespace(form), includeDefaultScripts));
+		
+		Map<Integer, TreeSet<FormField>> formStructure = XformsUtil.getFormStructure(form);
+		
 		renderStructure(xml, formStructure, includeDefaultScripts, 0, 2);
-
+		
 		xml.append(FormXmlTemplateFragment.closeForm());
-
+		
 		return xml.toString();
 	}
-
+	
 	/**
 	 * Recursively creates the xml structure for the given formStructure
 	 * 
@@ -178,9 +171,8 @@ public class FormXmlTemplateBuilder {
 	 * @param sectionId
 	 * @param indent
 	 */
-	public void renderStructure(StringBuffer xml,
-			Map<Integer, TreeSet<FormField>> formStructure,
-			boolean includeDefaultScripts, Integer sectionId, int indent) {
+	public void renderStructure(StringBuffer xml, Map<Integer, TreeSet<FormField>> formStructure,
+	        boolean includeDefaultScripts, Integer sectionId, int indent) {
 		
 		// if this sectionId is invalid, quit
 		if (!formStructure.containsKey(sectionId))
@@ -206,9 +198,8 @@ public class FormXmlTemplateBuilder {
 			// if this is a repeating element and they have defined a default value
 			// for the field, then we want to repeat this element
 			boolean repeatingElement = false;
-			if (formField.getMaxOccurs() != null && formField.getMaxOccurs().equals(-1) &&
-					StringUtils.hasLength(field.getDefaultValue()) &&
-					includeDefaultScripts) {
+			if (formField.getMaxOccurs() != null && formField.getMaxOccurs().equals(-1)
+			        && StringUtils.hasLength(field.getDefaultValue()) && includeDefaultScripts) {
 				xml.append("#{foreach}($listItem in " + field.getDefaultValue() + ")");
 				repeatingElement = true;
 			}
@@ -222,9 +213,8 @@ public class FormXmlTemplateBuilder {
 				xml.append(field.getAttributeName());
 				if (formStructure.containsKey(subSectionId)) {
 					xml.append("\">\n");
-					renderStructure(xml, formStructure, includeDefaultScripts,
-							subSectionId, indent
-									+ FormConstants.INDENT_SIZE);
+					renderStructure(xml, formStructure, includeDefaultScripts, subSectionId,
+					    indent + FormConstants.INDENT_SIZE);
 					xml.append(indentation);
 				} else {
 					if (field.getDefaultValue() != null) {
@@ -240,28 +230,24 @@ public class FormXmlTemplateBuilder {
 				xml.append("</");
 				xml.append(xmlTag);
 				xml.append(">\n");
-			} else if (fieldTypeId
-					.equals(FormConstants.FIELD_TYPE_CONCEPT)) {
+			} else if (fieldTypeId.equals(FormConstants.FIELD_TYPE_CONCEPT)) {
 				Concept concept = field.getConcept();
 				String hl7Abbr = concept.getDatatype().getHl7Abbreviation();
 				xml.append(" openmrs_concept=\"");
-				xml.append(StringEscapeUtils.escapeXml(FormUtil.conceptToString(concept, Context
-						.getLocale())));
+				xml.append(StringEscapeUtils.escapeXml(FormUtil.conceptToString(concept, Context.getLocale())));
 				xml.append("\" openmrs_datatype=\"");
 				xml.append(hl7Abbr);
 				xml.append("\"");
 				if (formStructure.containsKey(subSectionId)) {
 					xml.append(">\n");
-					renderStructure(xml, formStructure, includeDefaultScripts,
-							subSectionId, indent + FormConstants.INDENT_SIZE);
+					renderStructure(xml, formStructure, includeDefaultScripts, subSectionId,
+					    indent + FormConstants.INDENT_SIZE);
 					xml.append(indentation);
 					xml.append("</");
 					xml.append(xmlTag);
 					xml.append(">\n");
 				} else {
-					if (hl7Abbr.equals(HL7Constants.HL7_CODED)
-							|| hl7Abbr.equals(
-									HL7Constants.HL7_CODED_WITH_EXCEPTIONS)) {
+					if (hl7Abbr.equals(HL7Constants.HL7_CODED) || hl7Abbr.equals(HL7Constants.HL7_CODED_WITH_EXCEPTIONS)) {
 						xml.append(" multiple=\"");
 						xml.append(field.getSelectMultiple() ? "1" : "0");
 						xml.append("\"");
@@ -273,39 +259,32 @@ public class FormXmlTemplateBuilder {
 					xml.append(indentation);
 					xml.append(indentation);
 					xml.append("<time xsi:nil=\"true\"></time>\n");
-					if ((hl7Abbr.equals(HL7Constants.HL7_CODED) || 
-						 hl7Abbr.equals(HL7Constants.HL7_CODED_WITH_EXCEPTIONS))
-							&& field.getSelectMultiple()) {
+					if ((hl7Abbr.equals(HL7Constants.HL7_CODED) || hl7Abbr.equals(HL7Constants.HL7_CODED_WITH_EXCEPTIONS))
+					        && field.getSelectMultiple()) {
 						Vector<ConceptAnswer> sortedAnswers = new Vector<ConceptAnswer>(concept.getAnswers(false));
 						Collections.sort(sortedAnswers);
 						for (ConceptAnswer answer : sortedAnswers) {
 							xml.append(indentation);
 							xml.append(indentation);
 							xml.append("<");
-							String answerConceptName = answer
-									.getAnswerConcept().getName(
-											Context.getLocale()).getName();
+							String answerConceptName = answer.getAnswerConcept().getName(Context.getLocale()).getName();
 							Drug answerDrug = answer.getAnswerDrug();
 							if (answerDrug == null) {
-								String answerTag = FormUtil.getXmlToken(
-										answerConceptName);
+								String answerTag = FormUtil.getXmlToken(answerConceptName);
 								xml.append(answerTag);
 								xml.append(" openmrs_concept=\"");
-								xml.append(StringEscapeUtils.escapeXml(FormUtil.conceptToString(answer
-										.getAnswerConcept(), Context
-										.getLocale())));
+								xml.append(StringEscapeUtils.escapeXml(
+								    FormUtil.conceptToString(answer.getAnswerConcept(), Context.getLocale())));
 								xml.append("\">false</");
 								xml.append(answerTag);
 								xml.append(">\n");
 							} else {
 								String answerDrugName = answerDrug.getName();
-								String answerTag = FormUtil.getXmlToken(
-										answerDrugName);
+								String answerTag = FormUtil.getXmlToken(answerDrugName);
 								xml.append(answerTag);
 								xml.append(" openmrs_concept=\"");
-								xml.append(StringEscapeUtils.escapeXml(FormUtil.conceptToString(answer
-										.getAnswerConcept(), Context
-										.getLocale())));
+								xml.append(StringEscapeUtils.escapeXml(
+								    FormUtil.conceptToString(answer.getAnswerConcept(), Context.getLocale())));
 								xml.append("^");
 								xml.append(FormUtil.drugToString(answerDrug));
 								xml.append("\">false</");
@@ -329,8 +308,7 @@ public class FormXmlTemplateBuilder {
 			} else {
 				// if the type isn't db or concept, just do something generic
 				xml.append(">\n");
-				renderStructure(xml, formStructure, includeDefaultScripts,
-						subSectionId, indent + FormConstants.INDENT_SIZE);
+				renderStructure(xml, formStructure, includeDefaultScripts, subSectionId, indent + FormConstants.INDENT_SIZE);
 				xml.append(indentation);
 				xml.append("</");
 				xml.append(xmlTag);

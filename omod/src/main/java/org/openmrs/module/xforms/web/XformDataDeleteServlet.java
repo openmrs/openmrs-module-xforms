@@ -43,7 +43,7 @@ public class XformDataDeleteServlet extends HttpServlet {
 		PrintWriter writer = response.getWriter();
 		
 		// check if user is authenticated
-		if (!XformsUtil.isAuthenticated(request,response,"/moduleServlet/xforms/xformDataDelete")) {
+		if (!XformsUtil.isAuthenticated(request, response, "/moduleServlet/xforms/xformDataDelete")) {
 			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 			return;
 		}

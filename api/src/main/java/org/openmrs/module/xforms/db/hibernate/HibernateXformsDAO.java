@@ -43,9 +43,9 @@ import org.springframework.util.StringUtils;
  * Provides the hibernate data access services for the Xforms module.
  * 
  * @author Daniel
- * 
  */
 public class HibernateXformsDAO implements XformsDAO {
+	
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	/**
@@ -69,9 +69,8 @@ public class HibernateXformsDAO implements XformsDAO {
 	/**
 	 * @see org.openmrs.module.xforms.XformsService#getXform(java.lang.Integer)
 	 */
-	public Xform getXform(Integer formId) {		
-		Query query = getCurrentSession().createQuery(
-		"from Xform where formId = :formId");
+	public Xform getXform(Integer formId) {
+		Query query = getCurrentSession().createQuery("from Xform where formId = :formId");
 		query.setParameter("formId", formId);
 		
 		return (Xform) query.uniqueResult();
@@ -99,8 +98,7 @@ public class HibernateXformsDAO implements XformsDAO {
 	 * @see org.openmrs.module.xforms.XformsService#deleteXform(java.lang.Integer)
 	 */
 	public void deleteXform(Integer formId) {
-		Query query = getCurrentSession().createQuery(
-		"delete from Xform where formId = :formId");
+		Query query = getCurrentSession().createQuery("delete from Xform where formId = :formId");
 		query.setParameter("formId", formId);
 		
 		query.executeUpdate();
@@ -110,8 +108,7 @@ public class HibernateXformsDAO implements XformsDAO {
 	 * @see org.openmrs.module.xforms.XformsService#deleteXslt(java.lang.Integer)
 	 */
 	public void deleteXslt(Integer formId) {
-		Query query = getCurrentSession().createQuery(
-		"update Xform set xslt = null where formId = :formId");
+		Query query = getCurrentSession().createQuery("update Xform set xslt = null where formId = :formId");
 		query.setParameter("formId", formId);
 		
 		query.executeUpdate();
@@ -120,44 +117,35 @@ public class HibernateXformsDAO implements XformsDAO {
 	/**
 	 * @see org.openmrs.module.xforms.XformsService#getPatientValue(java.lang.Integer,java.lang.String,java.lang.String,java.lang.String)
 	 */
-	public Object getPatientValue(Integer patientId, String tableName,
-	                              String columnName, String filterValue) {
+	public Object getPatientValue(Integer patientId, String tableName, String columnName, String filterValue) {
 		
-		if(tableName.equals("patient")){
-			if(columnName.equals("birthdate")||columnName.equals("birthdate_estimated")||columnName.equals("gender"))
+		if (tableName.equals("patient")) {
+			if (columnName.equals("birthdate") || columnName.equals("birthdate_estimated") || columnName.equals("gender"))
 				tableName = "person";
-		}
-		else if(tableName.equals("patient_address")){
-			if(columnName.equals("address1")||columnName.equals("address2"))
+		} else if (tableName.equals("patient_address")) {
+			if (columnName.equals("address1") || columnName.equals("address2"))
 				tableName = "person_address";
-		}
-		else if(tableName.equals("patient_name")){
-			if(columnName.equals("family_name")||columnName.equals("given_name")||columnName.equals("middle_name"))
+		} else if (tableName.equals("patient_name")) {
+			if (columnName.equals("family_name") || columnName.equals("given_name") || columnName.equals("middle_name"))
 				tableName = "person_name";
 		}
 		
 		String sql = "";
 		try {
-			sql = "select "
-				+ columnName
-				+ " from "
-				+ tableName
-				+ " where "
-				+ (tableName.indexOf("person") != -1 ? "person_id"
-						: "patient_id") + "=" + patientId;
-			if (filterValue != null
-					&& tableName.equalsIgnoreCase("PATIENT_IDENTIFIER")
-					&& columnName.equalsIgnoreCase("IDENTIFIER"))
+			sql = "select " + columnName + " from " + tableName + " where "
+			        + (tableName.indexOf("person") != -1 ? "person_id" : "patient_id") + "=" + patientId;
+			if (filterValue != null && tableName.equalsIgnoreCase("PATIENT_IDENTIFIER")
+			        && columnName.equalsIgnoreCase("IDENTIFIER"))
 				sql += " and identifier_type = " + filterValue;
-			else if(tableName.equalsIgnoreCase("PATIENT_IDENTIFIER"))
+			else if (tableName.equalsIgnoreCase("PATIENT_IDENTIFIER"))
 				sql += " and preferred=1";
 			
-			return getCurrentSession().createSQLQuery(sql)
-			.uniqueResult();
-		} catch (Exception e) {
-			log.error("Could not get value for field:[" + columnName
-				+ "] table:[" + tableName + "] SQL=" + sql
-				+ " ErrorDetails=" + e.getMessage(), /*e*/null);
+			return getCurrentSession().createSQLQuery(sql).uniqueResult();
+		}
+		catch (Exception e) {
+			log.error("Could not get value for field:[" + columnName + "] table:[" + tableName + "] SQL=" + sql
+			        + " ErrorDetails=" + e.getMessage(),
+			    /*e*/null);
 		}
 		
 		return null;
@@ -169,18 +157,15 @@ public class HibernateXformsDAO implements XformsDAO {
 	public List<XformUser> getUsers() {
 		List<XformUser> users = new ArrayList<XformUser>();
 		
-		String sql = "select user_id,system_id,username,password,salt from users " +
-		"where password is not null and salt is not null and " +
-		"not (username is null and system_id is null)";
+		String sql = "select user_id,system_id,username,password,salt from users "
+		        + "where password is not null and salt is not null and " + "not (username is null and system_id is null)";
 		
-		List<Object[]> results = (List<Object[]>) getCurrentSession()
-				.createSQLQuery(sql).list();
+		List<Object[]> results = (List<Object[]>) getCurrentSession().createSQLQuery(sql).list();
 		
 		for (Object[] row : results) {
-			users.add(new XformUser((Integer) row[0], (String) row[1],
-					(String) row[2], (String) row[3], (String) row[4]));
+			users.add(new XformUser((Integer) row[0], (String) row[1], (String) row[2], (String) row[3], (String) row[4]));
 		}
-
+		
 		return users;
 	}
 	
@@ -188,15 +173,14 @@ public class HibernateXformsDAO implements XformsDAO {
 		List<Integer> formIds = new ArrayList<Integer>();
 		
 		String sql = "select form_id from xforms_xform where form_id in (select form_id from form) and form_id<>"
-			+ XformConstants.PATIENT_XFORM_FORM_ID;
+		        + XformConstants.PATIENT_XFORM_FORM_ID;
 		
-		List<Object[]> results = (List<Object[]>) getCurrentSession()
-				.createSQLQuery(sql).list();
-
+		List<Object[]> results = (List<Object[]>) getCurrentSession().createSQLQuery(sql).list();
+		
 		for (Object[] row : results) {
 			formIds.add((Integer) row[0]);
 		}
-
+		
 		return formIds;
 	}
 	
@@ -205,18 +189,15 @@ public class HibernateXformsDAO implements XformsDAO {
 	 */
 	public boolean hasXform(Integer formId) {
 		String sql = "select 1 from xforms_xform where form_id=" + formId;
-		return getCurrentSession().createSQLQuery(sql)
-		.uniqueResult() != null;
+		return getCurrentSession().createSQLQuery(sql).uniqueResult() != null;
 	}
 	
 	/**
 	 * @see org.openmrs.module.xforms.XformsService#hasXslt(java.lang.Integer)
 	 */
 	public boolean hasXslt(Integer formId) {
-		String sql = "select 1 from xforms_xform where xslt is not null and form_id="
-			+ formId;
-		return getCurrentSession().createSQLQuery(sql)
-		.uniqueResult() != null;
+		String sql = "select 1 from xforms_xform where xslt is not null and form_id=" + formId;
+		return getCurrentSession().createSQLQuery(sql).uniqueResult() != null;
 	}
 	
 	/**
@@ -236,8 +217,7 @@ public class HibernateXformsDAO implements XformsDAO {
 	 * @see org.openmrs.module.xforms.XformsService#saveXslt(java.lang.Integer,java.lang.String)
 	 */
 	public void saveXslt(Integer formId, String xslt) {
-		Query query = getCurrentSession().createSQLQuery(
-		"update xforms_xform set xslt = :xslt where form_id = :formId");
+		Query query = getCurrentSession().createSQLQuery("update xforms_xform set xslt = :xslt where form_id = :formId");
 		query.setParameter("xslt", xslt);
 		query.setParameter("formId", formId);
 		
@@ -250,7 +230,7 @@ public class HibernateXformsDAO implements XformsDAO {
 	/*public Object getFieldDefaultValue(Integer formId, String fieldName) {
 		String sql = "select default_value from field f inner join form_field ff on f.field_id=ff.field_id where form_id="
 			+ formId + " and name='" + fieldName + "'";
-
+	
 		try {
 			PreparedStatement st = getCurrentSession()
 			.connection().prepareStatement(sql);
@@ -260,14 +240,13 @@ public class HibernateXformsDAO implements XformsDAO {
 		} catch (SQLException e) {
 			log.error(e.getMessage(),e);
 		}
-
+	
 		return null;
 	}*/
 	
-	public List<PersonRepeatAttribute> getPersonRepeatAttributes(Integer personId, Integer personAttributeId){
+	public List<PersonRepeatAttribute> getPersonRepeatAttributes(Integer personId, Integer personAttributeId) {
 		Query query = getCurrentSession().createQuery(
-			"from PersonRepeatAttributes where personId=:personId "+
-		"and attributeTypeId=:attributeTypeId");
+		    "from PersonRepeatAttributes where personId=:personId " + "and attributeTypeId=:attributeTypeId");
 		
 		query.setParameter("personId", personId);
 		query.setParameter("attributeTypeId", personAttributeId);
@@ -275,26 +254,26 @@ public class HibernateXformsDAO implements XformsDAO {
 		return query.list();
 	}
 	
-	public void savePersonRepeatAttribute(PersonRepeatAttribute personRepeatAttribute){
+	public void savePersonRepeatAttribute(PersonRepeatAttribute personRepeatAttribute) {
 		getCurrentSession().save(personRepeatAttribute);
 	}
 	
-	public void deletePersonRepeatAttribute(Integer personRepeatAttributeId){
+	public void deletePersonRepeatAttribute(Integer personRepeatAttributeId) {
 		getCurrentSession().delete(personRepeatAttributeId);
 	}
 	
-	public List<Object[]> getList(String sql, String displayField, String valueField){
+	public List<Object[]> getList(String sql, String displayField, String valueField) {
 		SQLQuery query = getCurrentSession().createSQLQuery(sql);
 		
-		if(displayField != null && displayField.trim().length() > 0){
-			if(XformsUtil.isOnePointNineAndAbove())
+		if (displayField != null && displayField.trim().length() > 0) {
+			if (XformsUtil.isOnePointNineAndAbove())
 				query.addScalar(displayField/*, Hibernate.STRING*/);
 			else
 				query.addScalar(displayField, StandardBasicTypes.STRING);
 		}
 		
-		if(valueField != null && valueField.trim().length() > 0){
-			if(XformsUtil.isOnePointNineAndAbove())
+		if (valueField != null && valueField.trim().length() > 0) {
+			if (XformsUtil.isOnePointNineAndAbove())
 				query.addScalar(valueField/*, Hibernate.STRING*/);
 			else
 				query.addScalar(valueField, StandardBasicTypes.STRING);
@@ -307,18 +286,18 @@ public class HibernateXformsDAO implements XformsDAO {
 		return getCurrentSession().createQuery("from MedicalHistoryField").list();
 	}
 	
-	public void saveMedicalHistoryField(MedicalHistoryField field){
-		if(field.isNew())
+	public void saveMedicalHistoryField(MedicalHistoryField field) {
+		if (field.isNew())
 			getCurrentSession().save(field);
 		else
 			getCurrentSession().update(field);
 	}
 	
-	public void deleteMedicalHistoryField(MedicalHistoryField field){
+	public void deleteMedicalHistoryField(MedicalHistoryField field) {
 		getCurrentSession().delete(field);
 	}
 	
-	public void deleteMedicalHistoryField(Integer fieldId){
+	public void deleteMedicalHistoryField(Integer fieldId) {
 		Query query = getCurrentSession().createQuery("delete from MedicalHistoryField where fieldId = ?");
 		query.setParameter(0, fieldId);
 		query.executeUpdate();
@@ -352,7 +331,7 @@ public class HibernateXformsDAO implements XformsDAO {
 			"where e.patient_id = " + patientId + " " +
 			"and value_coded is not null) as t where value is not null " +
 			"order by tabIndex,name,encounter_datetime";
-
+	
 		SQLQuery query = getCurrentSession().createSQLQuery(sql);
 		query.addScalar("name", Hibernate.STRING);
 		query.addScalar("value", Hibernate.STRING);
@@ -381,44 +360,31 @@ public class HibernateXformsDAO implements XformsDAO {
 		return history;
 	}*/
 	
-	
-	public PatientMedicalHistory getPatientMedicalHistory(Integer patientId){
+	public PatientMedicalHistory getPatientMedicalHistory(Integer patientId) {
 		
-		String sql = "select * from (select mhf.tab_index,mhf.name, " +
-		"value_group_id, " +
-		"value_boolean, " +
-		"value_drug, " +
-		"value_datetime, " +
-		"value_numeric, " +
-		"value_text, " +
-		"e.encounter_datetime " +
-		"from encounter e " +
-		"inner join obs o on o.encounter_id = e.encounter_id " +
-		"inner join xforms_medical_history_field mhf on mhf.field_id=o.concept_id " +
-		"and o.person_id = e.patient_id " +
-		"where e.patient_id = " + patientId + " " +
-		        "and value_coded is null and o.voided = false " +
-		"UNION " +
-		        "select mhf.tab_index, mhf.name, null, null, null, null, null, cn.name, e.encounter_datetime " +
-		"from encounter e " +
-		"inner join obs o on o.encounter_id = e.encounter_id " +
-		"inner join concept_name cn on cn.concept_id=o.value_coded " +
-		"inner join xforms_medical_history_field mhf on mhf.field_id=o.concept_id " +
-		"and o.person_id = e.patient_id " +
-		"where e.patient_id = " + patientId + " " +
-		        "and value_coded is not null and o.voided = false ) as t " +
-		        "order by tab_index,name,encounter_datetime";
+		String sql = "select * from (select mhf.tab_index,mhf.name, " + "value_group_id, " + "value_boolean, "
+		        + "value_drug, " + "value_datetime, " + "value_numeric, " + "value_text, " + "e.encounter_datetime "
+		        + "from encounter e " + "inner join obs o on o.encounter_id = e.encounter_id "
+		        + "inner join xforms_medical_history_field mhf on mhf.field_id=o.concept_id "
+		        + "and o.person_id = e.patient_id " + "where e.patient_id = " + patientId + " "
+		        + "and value_coded is null and o.voided = false " + "UNION "
+		        + "select mhf.tab_index, mhf.name, null, null, null, null, null, cn.name, e.encounter_datetime "
+		        + "from encounter e " + "inner join obs o on o.encounter_id = e.encounter_id "
+		        + "inner join concept_name cn on cn.concept_id=o.value_coded "
+		        + "inner join xforms_medical_history_field mhf on mhf.field_id=o.concept_id "
+		        + "and o.person_id = e.patient_id " + "where e.patient_id = " + patientId + " "
+		        + "and value_coded is not null and o.voided = false ) as t " + "order by tab_index,name,encounter_datetime";
 		
 		SQLQuery query = getCurrentSession().createSQLQuery(sql);
 		
-		if(XformsUtil.isOnePointNineAndAbove())
+		if (XformsUtil.isOnePointNineAndAbove())
 			query.addScalar("name"/*, Hibernate.STRING*/);
 		else
 			query.addScalar("name", StandardBasicTypes.STRING);
 		
 		//query.addScalar("value", Hibernate.STRING);
 		
-		if(XformsUtil.isOnePointNineAndAbove()){
+		if (XformsUtil.isOnePointNineAndAbove()) {
 			query.addScalar("value_group_id"/*, Hibernate.INTEGER*/);
 			query.addScalar("value_boolean"/*, Hibernate.INTEGER*/);
 			query.addScalar("value_drug"/*, Hibernate.INTEGER*/);
@@ -428,8 +394,7 @@ public class HibernateXformsDAO implements XformsDAO {
 			query.addScalar("value_text"/*, Hibernate.STRING*/);
 			
 			query.addScalar("encounter_datetime"/*, Hibernate.DATE*/);
-		}
-		else{
+		} else {
 			query.addScalar("value_group_id", StandardBasicTypes.INTEGER);
 			query.addScalar("value_boolean", StandardBasicTypes.INTEGER);
 			query.addScalar("value_drug", StandardBasicTypes.INTEGER);
@@ -442,15 +407,15 @@ public class HibernateXformsDAO implements XformsDAO {
 		}
 		
 		List<Object[]> list = query.list();
-		if(list == null || list.size() == 0)
+		if (list == null || list.size() == 0)
 			return null;
 		
 		PatientMedicalHistory history = new PatientMedicalHistory();
 		MedicalHistoryFieldData field = null;
 		String prevName = null;
-		for(Object[] item : list){
-			String name = (String)item[0];
-			if(!name.equals(prevName)){
+		for (Object[] item : list) {
+			String name = (String) item[0];
+			if (!name.equals(prevName)) {
 				field = new MedicalHistoryFieldData();
 				field.setFieldName(name);
 				history.addHistory(field);
@@ -459,34 +424,28 @@ public class HibernateXformsDAO implements XformsDAO {
 			
 			MedicalHistoryValue mhv = new MedicalHistoryValue();
 			
-			if(item[1] != null){
+			if (item[1] != null) {
 				mhv.setType(MedicalHistoryValue.TYPE_INT);
 				mhv.setValue(item[1]);
-			}
-			else if(item[2] != null){
+			} else if (item[2] != null) {
 				mhv.setType(MedicalHistoryValue.TYPE_INT);
 				mhv.setValue(item[2]);
-			}
-			else if(item[3] != null){
+			} else if (item[3] != null) {
 				mhv.setType(MedicalHistoryValue.TYPE_INT);
 				mhv.setValue(item[3]);
-			}
-			else if(item[4] != null){
+			} else if (item[4] != null) {
 				mhv.setType(MedicalHistoryValue.TYPE_DATE);
 				mhv.setValue(item[4]);
-			}
-			else if(item[5] != null){
+			} else if (item[5] != null) {
 				mhv.setType(MedicalHistoryValue.TYPE_FLOAT);
 				mhv.setValue(item[5]);
-			}
-			else if(item[6] != null){
+			} else if (item[6] != null) {
 				mhv.setType(MedicalHistoryValue.TYPE_STRING);
 				mhv.setValue(item[6]);
-			}
-			else
+			} else
 				continue;
 			
-			mhv.setValueDate((Date)item[7]);
+			mhv.setValueDate((Date) item[7]);
 			
 			field.addValue(mhv /*new MedicalHistoryValue((String)item[1],(Date)item[2])*/);
 		}
@@ -496,20 +455,18 @@ public class HibernateXformsDAO implements XformsDAO {
 		return history;
 	}
 	
-	
-	public String getFieldDefaultValue(Integer formId, String fieldName){
-		String sql = "select distinct default_value from form_field ff inner join field f " +
-		"where ff.field_id=f.field_id " +
-		"and ff.form_id=" + formId + " and name = '" + fieldName + "'";
+	public String getFieldDefaultValue(Integer formId, String fieldName) {
+		String sql = "select distinct default_value from form_field ff inner join field f " + "where ff.field_id=f.field_id "
+		        + "and ff.form_id=" + formId + " and name = '" + fieldName + "'";
 		
 		SQLQuery query = getCurrentSession().createSQLQuery(sql);
 		
-		if(XformsUtil.isOnePointNineAndAbove())
+		if (XformsUtil.isOnePointNineAndAbove())
 			query.addScalar("default_value"/*, Hibernate.STRING*/);
 		else
 			query.addScalar("default_value", StandardBasicTypes.STRING);
 		
-		return (String)query.uniqueResult();
+		return (String) query.uniqueResult();
 	}
 	
 	public void createFormEntryError(XformsFormEntryError formEntryError) throws DAOException {
@@ -523,17 +480,16 @@ public class HibernateXformsDAO implements XformsDAO {
 		return query.list();
 	}
 	
-	public List<Object[]> getXformsList(){
-		String sql = "select f.form_id, f.name from xforms_xform xf inner join form f " +
-		"on xf.form_id=f.form_id where f.retired=0 ";
+	public List<Object[]> getXformsList() {
+		String sql = "select f.form_id, f.name from xforms_xform xf inner join form f "
+		        + "on xf.form_id=f.form_id where f.retired=0 ";
 		
 		SQLQuery query = getCurrentSession().createSQLQuery(sql);
 		
-		if(XformsUtil.isOnePointNineAndAbove()){
+		if (XformsUtil.isOnePointNineAndAbove()) {
 			query.addScalar("form_id"/*, Hibernate.INTEGER*/);
 			query.addScalar("name"/*, Hibernate.STRING*/);
-		}
-		else{
+		} else {
 			query.addScalar("form_id", StandardBasicTypes.INTEGER);
 			query.addScalar("name", StandardBasicTypes.STRING);
 		}
@@ -541,23 +497,22 @@ public class HibernateXformsDAO implements XformsDAO {
 		return query.list();
 	}
 	
-	public String getLocationName(Integer locationId){
+	public String getLocationName(Integer locationId) {
 		String sql = "select name from location where retired = false and location_id=" + locationId;
-		return (String)getCurrentSession().createSQLQuery(sql).uniqueResult(); 
+		return (String) getCurrentSession().createSQLQuery(sql).uniqueResult();
 	}
 	
-	public String getPersonName(Integer personId){
-
+	public String getPersonName(Integer personId) {
+		
 		String sql = "select given_name, middle_name, family_name, preferred from person_name where voided = false and person_id="
-				+ personId;
-
-		List<Object[]> results = (List<Object[]>) getCurrentSession()
-				.createSQLQuery(sql).list();
-
+		        + personId;
+		
+		List<Object[]> results = (List<Object[]>) getCurrentSession().createSQLQuery(sql).list();
+		
 		String name = null;
-
+		
 		for (Object[] row : results) {
-
+			
 			// If we already have a name, overwrite it only with a preferred
 			// one.
 			if (name != null) {
@@ -566,39 +521,39 @@ public class HibernateXformsDAO implements XformsDAO {
 				else
 					name = null;
 			}
-
+			
 			String givenName = (String) row[0];
 			String middleName = (String) row[1];
 			String familyName = (String) row[2];
-
+			
 			if (StringUtils.hasText(givenName))
 				name = givenName;
-
+			
 			if (StringUtils.hasText(middleName)) {
 				if (name == null)
 					name = givenName;
 				else
 					name += " " + givenName;
 			}
-
+			
 			if (StringUtils.hasText(familyName)) {
 				if (name == null)
 					name = familyName;
 				else
 					name += " " + familyName;
 			}
-
+			
 			if (((Boolean) row[3]).booleanValue() != true)
 				break;
 		}
-
+		
 		return name;
 	}
 	
-	public String getConceptName(Integer conceptId, String localeKey){
+	public String getConceptName(Integer conceptId, String localeKey) {
 		String sql = "select name from concept_name where concept_id=" + conceptId + " and locale='" + localeKey
 		        + "' and voided = false and locale_preferred=1";
-		return (String)getCurrentSession().createSQLQuery(sql).uniqueResult();
+		return (String) getCurrentSession().createSQLQuery(sql).uniqueResult();
 	}
 	
 	/**
@@ -613,7 +568,7 @@ public class HibernateXformsDAO implements XformsDAO {
 		catch (NoSuchMethodError ex) {
 			try {
 				Method method = sessionFactory.getClass().getMethod("getCurrentSession", null);
-				return (org.hibernate.Session)method.invoke(sessionFactory, null);
+				return (org.hibernate.Session) method.invoke(sessionFactory, null);
 			}
 			catch (Exception e) {
 				throw new RuntimeException("Failed to get the current hibernate session", e);

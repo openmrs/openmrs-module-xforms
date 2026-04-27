@@ -113,7 +113,8 @@ public class RelationshipBuilder {
 		bindNode = modelElement.createElement(XformBuilder.NAMESPACE_XFORMS, null);
 		bindNode.setName(XformBuilder.NODE_BIND);
 		bindNode.setAttribute(null, XformBuilder.ATTRIBUTE_ID, NODE_RELATIVE);
-		bindNode.setAttribute(null, XformBuilder.ATTRIBUTE_NODESET, "/form/patient/patient_relationship/relative/relative.uuid");
+		bindNode.setAttribute(null, XformBuilder.ATTRIBUTE_NODESET,
+		    "/form/patient/patient_relationship/relative/relative.uuid");
 		modelElement.addChild(Element.ELEMENT, bindNode);
 	}
 	
@@ -144,9 +145,9 @@ public class RelationshipBuilder {
 			
 			XformBuilder.getElement(patientRelationShipNode, "relative.uuid").setAttribute(null, "displayValue", relative);
 			
-			XformBuilder.setNodeValue(patientRelationShipNode, BIND_RELATIONSHIP_TYPE_ID, relationship.getRelationshipType()
-			        .getRelationshipTypeId()
-			        + ((relationship.getPersonA().getPersonId().equals(patient.getPersonId())) ? "B" : "A"));
+			XformBuilder.setNodeValue(patientRelationShipNode, BIND_RELATIONSHIP_TYPE_ID,
+			    relationship.getRelationshipType().getRelationshipTypeId()
+			            + ((relationship.getPersonA().getPersonId().equals(patient.getPersonId())) ? "B" : "A"));
 			
 			XformBuilder.setNodeValue(patientRelationShipNode, "patient_relationship.exists", "1");
 		}
@@ -203,7 +204,8 @@ public class RelationshipBuilder {
 	 * @param isA specifies which side of the relationship we are adding the option for
 	 * @return the Element for the select option
 	 */
-	private static Element createRelationTypeOptionNode(RelationshipType relationshipType, Element controlNode, boolean isA) {
+	private static Element createRelationTypeOptionNode(RelationshipType relationshipType, Element controlNode,
+	        boolean isA) {
 		Element itemNode = controlNode.createElement(XformBuilder.NAMESPACE_XFORMS, null);
 		itemNode.setName(XformBuilder.NODE_ITEM);
 		

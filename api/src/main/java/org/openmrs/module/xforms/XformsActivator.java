@@ -17,38 +17,36 @@ import org.openmrs.module.ModuleActivator;
  * The xforms activator as required by the openmrs module spec.
  * 
  * @author Daniel
- *
  */
 public class XformsActivator implements ModuleActivator {
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
-
-
+	
 	@Override
 	public void willRefreshContext() {
 		
 	}
-
+	
 	@Override
 	public void contextRefreshed() {
 		
 	}
-
+	
 	@Override
 	public void willStart() {
 		
 	}
-
+	
 	@Override
 	public void started() {
 		log.info("Started Xforms Module");
 	}
-
+	
 	@Override
 	public void willStop() {
 		
 	}
-
+	
 	@Override
 	public void stopped() {
 		log.info("Stopped Xforms Module");

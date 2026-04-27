@@ -23,9 +23,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * Advice for deleting an xform attached to a form which has been deleted.
- * Also added support for duplicating an xform when a form is duplicated.
- * This class should be renamed to reflect these two functionalities instead of only form delete.
+ * Advice for deleting an xform attached to a form which has been deleted. Also added support for
+ * duplicating an xform when a form is duplicated. This class should be renamed to reflect these two
+ * functionalities instead of only form delete.
  * 
  * @since 4.0.3
  */
@@ -38,18 +38,17 @@ public class FormDeleteAfterAdvice implements MethodInterceptor {
 		if (invocation.getMethod().getName().equals("purgeForm") || invocation.getMethod().getName().equals("deleteForm")) {
 			object = invocation.proceed();
 			Context.getService(XformsService.class).deleteXform((Form) invocation.getArguments()[0]);
-		}
-		else if(invocation.getMethod().getName().equals("duplicateForm")) {
-
+		} else if (invocation.getMethod().getName().equals("duplicateForm")) {
+			
 			XformsService xformsService = Context.getService(XformsService.class);
-			Xform oldXform = xformsService.getXform((Form)invocation.getArguments()[0]);
-
+			Xform oldXform = xformsService.getXform((Form) invocation.getArguments()[0]);
+			
 			object = invocation.proceed();
 			
-			Form newForm = (Form)object;
+			Form newForm = (Form) object;
 			
 			//check if xform is found for the duplicated form.
-			if(oldXform != null) {
+			if (oldXform != null) {
 				Xform newXform = new Xform();
 				newXform.setFormId(newForm.getFormId());
 				newXform.setJavaScriptSrc(oldXform.getJavaScriptSrc());
@@ -64,16 +63,15 @@ public class FormDeleteAfterAdvice implements MethodInterceptor {
 				formElement.setAttribute("name", newForm.getName());
 				formElement.setAttribute("uuid", newForm.getUuid());
 				formElement.setAttribute("version", newForm.getVersion());
-								
+				
 				newXform.setXformXml(XformsUtil.doc2String(doc));
 				
 				xformsService.saveXform(newXform);
 			}
-		}
-		else {
+		} else {
 			object = invocation.proceed();
 		}
 		
-        return object;
-    }
+		return object;
+	}
 }

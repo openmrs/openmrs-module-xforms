@@ -24,28 +24,30 @@ public class AppFrameworkServiceAdvisor implements MethodInterceptor {
 	@Override
 	public Object invoke(MethodInvocation invocation) throws Throwable {
 		
-		Object object = invocation.proceed();;
+		Object object = invocation.proceed();
+		;
 		
 		if (invocation.getMethod().getName().equals("getExtensionsForCurrentUser")) {
-			String extensionPointId = (String)invocation.getArguments()[0];
+			String extensionPointId = (String) invocation.getArguments()[0];
 			if ("org.openmrs.referenceapplication.encounterTemplate".equals(extensionPointId)) {
 				
 				List<EncounterType> encounterTypes = Context.getEncounterService().getAllEncounterTypes();
 				
-				List<Extension> extensions = (List<Extension>)object;
+				List<Extension> extensions = (List<Extension>) object;
 				for (Extension extension : extensions) {
 					Map<String, Object> extensionParams = extension.getExtensionParams();
-					Map<String, Object> types = (Map<String, Object>)extensionParams.get("supportedEncounterTypes");
+					Map<String, Object> types = (Map<String, Object>) extensionParams.get("supportedEncounterTypes");
 					
 					if (!"defaultEncounterTemplate".equals(extensionParams.get("templateId"))) {
 						continue;
 					}
 					
 					for (EncounterType type : encounterTypes) {
-						if ("ca3aed11-1aa4-42a1-b85c-8332fc8001fc".equals(type.getUuid()) || "25a042b2-60bc-4940-a909-debd098b7d82".equals(type.getUuid())) {
+						if ("ca3aed11-1aa4-42a1-b85c-8332fc8001fc".equals(type.getUuid())
+						        || "25a042b2-60bc-4940-a909-debd098b7d82".equals(type.getUuid())) {
 							continue;
 						}
-
+						
 						if (types.containsKey(type.getUuid())) {
 							continue;
 						}
@@ -53,7 +55,7 @@ public class AppFrameworkServiceAdvisor implements MethodInterceptor {
 						HashMap map = new HashMap();
 						map.put("icon", "icon-file-alt");
 						map.put("editable", "true");
-
+						
 						types.put(type.getUuid(), map);
 					}
 				}
@@ -62,6 +64,6 @@ public class AppFrameworkServiceAdvisor implements MethodInterceptor {
 			}
 		}
 		
-        return object;
-    }
+		return object;
+	}
 }
