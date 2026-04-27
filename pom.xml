@@ -47,6 +47,28 @@
         </snapshotRepository>
     </distributionManagement>
 
+    <repositories>
+        <repository>
+            <id>openmrs-repo</id>
+            <name>OpenMRS Public</name>
+            <url>https://mavenrepo.openmrs.org/public</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>openmrs-repo</id>
+            <name>OpenMRS Public</name>
+            <url>https://mavenrepo.openmrs.org/public</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
     <modules>
         <module>api</module>
         <module>omod</module>
