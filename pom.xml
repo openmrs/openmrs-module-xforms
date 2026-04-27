@@ -85,6 +85,21 @@
         <emrapiVersion>1.1</emrapiVersion>
     </properties>
 
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <configuration>
+                        <doclint>none</doclint>
+                        <failOnError>false</failOnError>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
     <dependencies>
         <!-- Dependencies deployed under org.openmrs.module.xforms come from the
             pre-maven lib directory. It was difficult to determine their exact versions,
