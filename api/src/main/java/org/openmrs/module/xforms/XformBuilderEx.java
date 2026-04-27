@@ -1,4 +1,4 @@
-/**
+/*
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
@@ -41,13 +41,16 @@ import org.openmrs.module.xforms.util.XformsUtil;
 import org.openmrs.util.FormConstants;
 import org.openmrs.util.FormUtil;
 
-
 public class XformBuilderEx {
-
+	
 	private static Element bodyNode;
+	
 	public static Hashtable<String, Element> bindings;
+	
 	private static Hashtable<FormField, Element> formFields;
+	
 	private static Hashtable<FormField, String> fieldTokens;
+	
 	private static boolean useConceptIdAsHint = false;
 	
 	// List of datatypes that do not require complex definitions
@@ -75,17 +78,19 @@ public class XformBuilderEx {
 		bindings = new Hashtable<String, Element>();
 		formFields = new Hashtable<FormField, Element>();
 		fieldTokens = new Hashtable<FormField, String>();
-		useConceptIdAsHint = "true".equalsIgnoreCase(Context.getAdministrationService().getGlobalProperty("xforms.useConceptIdAsHint"));
+		useConceptIdAsHint = "true"
+		        .equalsIgnoreCase(Context.getAdministrationService().getGlobalProperty("xforms.useConceptIdAsHint"));
 		
 		boolean includeRelationshipNodes = !"false".equals(Context.getAdministrationService()
-			.getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_INCLUDE_PATIENT_RELATIONSHIPS));
+		        .getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_INCLUDE_PATIENT_RELATIONSHIPS));
 		
 		//String schemaXml = XformsUtil.getSchema(form);
 		String templateXml = FormEntryWrapper.getFormTemplate(form);
 		
 		//Add relationship data node
 		if (includeRelationshipNodes) {
-			templateXml = templateXml.replace("</patient>", "  <patient_relative>\n      <patient_relative.person/>\n      <patient_relative.relationship/>\n    </patient_relative>\n  </patient>");
+			templateXml = templateXml.replace("</patient>",
+			    "  <patient_relative>\n      <patient_relative.person/>\n      <patient_relative.relationship/>\n    </patient_relative>\n  </patient>");
 		}
 		
 		Element formNode = (Element) XformBuilder.getDocument(new StringReader(templateXml)).getRootElement();
@@ -141,8 +146,8 @@ public class XformBuilderEx {
 		buildUInodes(form);
 		
 		//find all conceptId attributes in the document and replace their value with a mapped concept
-		String prefSourceName = Context.getAdministrationService().getGlobalProperty(
-		    XformConstants.GLOBAL_PROP_KEY_PREFERRED_CONCEPT_SOURCE);
+		String prefSourceName = Context.getAdministrationService()
+		        .getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_PREFERRED_CONCEPT_SOURCE);
 		//we only use the mappings if the global property is set
 		if (StringUtils.isNotBlank(prefSourceName)) {
 			for (int i = 0; i < formNode.getChildCount(); i++) {
@@ -171,48 +176,58 @@ public class XformBuilderEx {
 		return XformBuilder.fromDoc2String(doc);
 	}
 	
-	public static void simpleConcept(String token, Concept concept, String type, boolean required, Locale locale, FormField formField) {
+	public static void simpleConcept(String token, Concept concept, String type, boolean required, Locale locale,
+	        FormField formField) {
 		addUInode(token, concept, type, XformBuilder.CONTROL_INPUT, locale, getParentNode(formField, locale));
 	}
 	
-	public static void dateConcept(String token, Concept concept, boolean required, Locale locale, FormField formField) {	
-		addUInode(token, concept, XformBuilder.DATA_TYPE_DATE, XformBuilder.CONTROL_INPUT, locale, getParentNode(formField, locale));
+	public static void dateConcept(String token, Concept concept, boolean required, Locale locale, FormField formField) {
+		addUInode(token, concept, XformBuilder.DATA_TYPE_DATE, XformBuilder.CONTROL_INPUT, locale,
+		    getParentNode(formField, locale));
 	}
 	
-	public static void dateTimeConcept(String token, Concept concept, boolean required, Locale locale, FormField formField) {	
-		addUInode(token, concept, XformBuilder.DATA_TYPE_DATETIME, XformBuilder.CONTROL_INPUT, locale, getParentNode(formField, locale));
+	public static void dateTimeConcept(String token, Concept concept, boolean required, Locale locale, FormField formField) {
+		addUInode(token, concept, XformBuilder.DATA_TYPE_DATETIME, XformBuilder.CONTROL_INPUT, locale,
+		    getParentNode(formField, locale));
 	}
 	
-	public static void timeConcept(String token, Concept concept, boolean required, Locale locale, FormField formField) {	
-		addUInode(token, concept, XformBuilder.DATA_TYPE_TIME, XformBuilder.CONTROL_INPUT, locale, getParentNode(formField, locale));
+	public static void timeConcept(String token, Concept concept, boolean required, Locale locale, FormField formField) {
+		addUInode(token, concept, XformBuilder.DATA_TYPE_TIME, XformBuilder.CONTROL_INPUT, locale,
+		    getParentNode(formField, locale));
 	}
 	
-	public static void numericConcept(String token, ConceptNumeric concept, boolean required, Locale locale, FormField formField) {	
-		addUInode(token, concept, XformBuilder.DATA_TYPE_DECIMAL, XformBuilder.CONTROL_INPUT, locale, getParentNode(formField, locale));
+	public static void numericConcept(String token, ConceptNumeric concept, boolean required, Locale locale,
+	        FormField formField) {
+		addUInode(token, concept, XformBuilder.DATA_TYPE_DECIMAL, XformBuilder.CONTROL_INPUT, locale,
+		    getParentNode(formField, locale));
 	}
 	
-	public static void selectSingle(String token, Concept concept,
-	                      			Collection<ConceptAnswer> answerList, boolean required,
-	                      			Locale locale, FormField formField) {
+	public static void selectSingle(String token, Concept concept, Collection<ConceptAnswer> answerList, boolean required,
+	        Locale locale, FormField formField) {
 		
-		Element controlNode = addUInode(token, concept, XformBuilder.DATA_TYPE_TEXT, XformBuilder.CONTROL_SELECT1, locale, getParentNode(formField, locale));
+		Element controlNode = addUInode(token, concept, XformBuilder.DATA_TYPE_TEXT, XformBuilder.CONTROL_SELECT1, locale,
+		    getParentNode(formField, locale));
 		if (controlNode != null) {
-			addCodedUInodes(false, controlNode, answerList, concept, XformBuilder.DATA_TYPE_TEXT, XformBuilder.CONTROL_SELECT1, locale);
+			addCodedUInodes(false, controlNode, answerList, concept, XformBuilder.DATA_TYPE_TEXT,
+			    XformBuilder.CONTROL_SELECT1, locale);
 		}
 	}
 	
-	public static void selectMultiple(String token, Concept concept,
-	                        			Collection<ConceptAnswer> answerList, Locale locale, FormField formField) {
+	public static void selectMultiple(String token, Concept concept, Collection<ConceptAnswer> answerList, Locale locale,
+	        FormField formField) {
 		
-		Element controlNode = addUInode(token, concept, XformBuilder.DATA_TYPE_TEXT, XformBuilder.CONTROL_SELECT, locale, getParentNode(formField, locale));
+		Element controlNode = addUInode(token, concept, XformBuilder.DATA_TYPE_TEXT, XformBuilder.CONTROL_SELECT, locale,
+		    getParentNode(formField, locale));
 		if (controlNode != null) {
-			addCodedUInodes(true, controlNode, answerList, concept, XformBuilder.DATA_TYPE_TEXT, XformBuilder.CONTROL_SELECT, locale);
+			addCodedUInodes(true, controlNode, answerList, concept, XformBuilder.DATA_TYPE_TEXT, XformBuilder.CONTROL_SELECT,
+			    locale);
 		}
 	}
 	
 	public static void booleanConcept(String token, Concept concept, boolean required, Locale locale, FormField formField) {
-	
-		Element controlNode = addUInode(token, concept, XformBuilder.DATA_TYPE_BOOLEAN, XformBuilder.CONTROL_INPUT, locale, getParentNode(formField, locale));
+		
+		Element controlNode = addUInode(token, concept, XformBuilder.DATA_TYPE_BOOLEAN, XformBuilder.CONTROL_INPUT, locale,
+		    getParentNode(formField, locale));
 		/*if (controlNode != null) {
 			//addCodedUInodes(false, controlNode, answerList, concept, XformBuilder.DATA_TYPE_TEXT, XformBuilder.CONTROL_INPUT, locale);
 		
@@ -236,7 +251,8 @@ public class XformBuilderEx {
 		}*/
 	}
 	
-	private static Element addUInode(String token, Concept concept, String dataType, String controlName, Locale locale, Element bodyNode){
+	private static Element addUInode(String token, Concept concept, String dataType, String controlName, Locale locale,
+	        Element bodyNode) {
 		String bindName = token;
 		
 		Element controlNode = bodyNode.createElement(XformBuilder.NAMESPACE_XFORMS, null);
@@ -267,17 +283,20 @@ public class XformBuilderEx {
 		
 		XformBuilder.addControl(bodyNode, controlNode);
 		
-		if(concept instanceof ConceptNumeric) {
-			ConceptNumeric numericConcept = (ConceptNumeric)concept;
-			if(XformsUtil.isAllowDecimal(numericConcept)){
+		if (concept instanceof ConceptNumeric) {
+			ConceptNumeric numericConcept = (ConceptNumeric) concept;
+			if (XformsUtil.isAllowDecimal(numericConcept)) {
 				Double minInclusive = numericConcept.getLowAbsolute();
 				Double maxInclusive = numericConcept.getHiAbsolute();
 				
-				if(!(minInclusive == null || maxInclusive == null)){
-					String lower = (minInclusive == null ? "" : FormSchemaFragment.numericToString(minInclusive, XformsUtil.isAllowDecimal(numericConcept)));
-					String upper = (maxInclusive == null ? "" : FormSchemaFragment.numericToString(maxInclusive, XformsUtil.isAllowDecimal(numericConcept)));
+				if (!(minInclusive == null || maxInclusive == null)) {
+					String lower = (minInclusive == null ? ""
+					        : FormSchemaFragment.numericToString(minInclusive, XformsUtil.isAllowDecimal(numericConcept)));
+					String upper = (maxInclusive == null ? ""
+					        : FormSchemaFragment.numericToString(maxInclusive, XformsUtil.isAllowDecimal(numericConcept)));
 					bindNode.setAttribute(null, XformBuilder.ATTRIBUTE_CONSTRAINT, ". >= " + lower + " and . <= " + upper);
-					bindNode.setAttribute(null, (XformsUtil.isJavaRosaSaveFormat() ? "jr:constraintMsg" : XformBuilder.ATTRIBUTE_MESSAGE),
+					bindNode.setAttribute(null,
+					    (XformsUtil.isJavaRosaSaveFormat() ? "jr:constraintMsg" : XformBuilder.ATTRIBUTE_MESSAGE),
 					    "value should be between " + lower + " and " + upper + " inclusive");
 				}
 			}
@@ -286,25 +305,25 @@ public class XformBuilderEx {
 		return controlNode;
 	}
 	
-	private static void addCodedUInodes(boolean multiplSel, Element controlNode, Collection<ConceptAnswer> answerList, Concept concept, String dataType, String controlName, Locale locale){
+	private static void addCodedUInodes(boolean multiplSel, Element controlNode, Collection<ConceptAnswer> answerList,
+	        Concept concept, String dataType, String controlName, Locale locale) {
 		for (ConceptAnswer answer : answerList) {
 			String conceptName = answer.getAnswerConcept().getName(locale).getName();
 			String conceptValue;
 			
-			if (answer.getAnswerConcept().getConceptClass().getConceptClassId()
-					.equals(HL7Constants.CLASS_DRUG)
-					&& answer.getAnswerDrug() != null) {
+			if (answer.getAnswerConcept().getConceptClass().getConceptClassId().equals(HL7Constants.CLASS_DRUG)
+			        && answer.getAnswerDrug() != null) {
 				
 				conceptName = answer.getAnswerDrug().getName();
 				
-				if(multiplSel)
+				if (multiplSel)
 					conceptValue = FormUtil.getXmlToken(conceptName);
 				else {
-					conceptValue = StringEscapeUtils.escapeXml(FormUtil.conceptToString(answer.getAnswerConcept(),
-									locale)) + "^" + FormUtil.drugToString(answer.getAnswerDrug());
+					conceptValue = StringEscapeUtils.escapeXml(FormUtil.conceptToString(answer.getAnswerConcept(), locale))
+					        + "^" + FormUtil.drugToString(answer.getAnswerDrug());
 				}
 			} else {
-				if(multiplSel)
+				if (multiplSel)
 					conceptValue = FormUtil.getXmlToken(conceptName);
 				else
 					conceptValue = StringEscapeUtils.escapeXml(FormUtil.conceptToString(answer.getAnswerConcept(), locale));
@@ -331,17 +350,16 @@ public class XformBuilderEx {
 		}
 	}
 	
-	private static Element getParentNode(FormField formField, Locale locale){
+	private static Element getParentNode(FormField formField, Locale locale) {
 		formField = formField.getParent();
-		if(formField == null){
+		if (formField == null) {
 			return bodyNode; //is this problem list?
 		}
-		if(formField.getParent() == null){
+		if (formField.getParent() == null) {
 			return bodyNode;
-		}
-		else{
+		} else {
 			Element node = formFields.get(formField);
-			if(node != null)
+			if (node != null)
 				return node;
 			
 			String token = fieldTokens.get(formField);
@@ -365,8 +383,7 @@ public class XformBuilderEx {
 				
 				formFields.put(formField, repeatControl);
 				return repeatControl;
-			}
-			else {
+			} else {
 				groupNode.setAttribute(null, XformBuilder.ATTRIBUTE_ID, token);
 				formFields.put(formField, groupNode);
 				return groupNode;
@@ -374,8 +391,8 @@ public class XformBuilderEx {
 		}
 	}
 	
-	public static void addProblemList(String token, Concept concept, boolean required,
-	                      			Locale locale, FormField formField, boolean problemListPrefix) {
+	public static void addProblemList(String token, Concept concept, boolean required, Locale locale, FormField formField,
+	        boolean problemListPrefix) {
 		
 		Element groupNode = bodyNode.createElement(XformBuilder.NAMESPACE_XFORMS, null);
 		groupNode.setName(XformBuilder.NODE_GROUP);
@@ -392,7 +409,7 @@ public class XformBuilderEx {
 		repeatControl.setName(XformBuilder.CONTROL_REPEAT);
 		repeatControl.setAttribute(null, XformBuilder.ATTRIBUTE_BIND, token);
 		groupNode.addChild(Element.ELEMENT, repeatControl);
-
+		
 		//add the input node.
 		Element controlNode = repeatControl.createElement(XformBuilder.NAMESPACE_XFORMS, null);
 		controlNode.setName(XformBuilder.CONTROL_INPUT);
@@ -428,16 +445,17 @@ public class XformBuilderEx {
 		bindNode.setAttribute(null, XformBuilder.ATTRIBUTE_NODESET, "/form/" + nodeset);
 		bindNode.setAttribute(null, XformBuilder.ATTRIBUTE_TYPE, XformBuilder.DATA_TYPE_TEXT);
 		
-		((Element)bindings.get(token).getParent()).addChild(Element.ELEMENT, bindNode);
+		((Element) bindings.get(token).getParent()).addChild(Element.ELEMENT, bindNode);
 	}
 	
-	private static void buildUInodes(Form form) {	
+	private static void buildUInodes(Form form) {
 		Locale locale = Context.getLocale();
 		Map<Integer, TreeSet<FormField>> formStructure = XformsUtil.getFormStructure(form);
 		buildUInodes(form, formStructure, 0, locale);
 	}
 	
-	private static void buildUInodes(Form form, Map<Integer, TreeSet<FormField>> formStructure, Integer sectionId, Locale locale) {	
+	private static void buildUInodes(Form form, Map<Integer, TreeSet<FormField>> formStructure, Integer sectionId,
+	        Locale locale) {
 		
 		if (!formStructure.containsKey(sectionId))
 			return;
@@ -448,17 +466,18 @@ public class XformBuilderEx {
 		
 		Vector<String> tagList = new Vector<String>();
 		
-		for(FormField formField : section){	
+		for (FormField formField : section) {
 			Integer subSectionId = formField.getFormFieldId();
 			String sectionName = FormUtil.getXmlToken(formField.getField().getName());
 			String name = XformsUtil.getNewTag(sectionName, tagList);
-
-			if(formField.getParent() != null && fieldTokens.values().contains(name)){
+			
+			if (formField.getParent() != null && fieldTokens.values().contains(name)) {
 				String parentName = fieldTokens.get(formField.getParent());
 				String token = parentName + "_" + name;
 				
-				if(!bindings.containsKey(token)) {
-					token = XformsUtil.getNewTag(FormUtil.getXmlToken(formField.getParent().getField().getName()),  new Vector<String>());
+				if (!bindings.containsKey(token)) {
+					token = XformsUtil.getNewTag(FormUtil.getXmlToken(formField.getParent().getField().getName()),
+					    new Vector<String>());
 					token = token + "_" + name;
 				}
 				
@@ -466,62 +485,50 @@ public class XformBuilderEx {
 			}
 			
 			fieldTokens.put(formField, name);
-
+			
 			Field field = formField.getField();
 			boolean required = formField.isRequired();
 			
-			if (field.getFieldType().getFieldTypeId().equals(
-					FormConstants.FIELD_TYPE_CONCEPT)) {
+			if (field.getFieldType().getFieldTypeId().equals(FormConstants.FIELD_TYPE_CONCEPT)) {
 				
 				Concept concept = field.getConcept();
 				ConceptDatatype datatype = concept.getDatatype();
 				
-				if ( (name.contains("problem_added") || name.contains("problem_resolved")) &&
-						formField.getParent() != null &&
-						(formField.getParent().getField().getName().contains("PROBLEM LIST")) ){
+				if ((name.contains("problem_added") || name.contains("problem_resolved")) && formField.getParent() != null
+				        && (formField.getParent().getField().getName().contains("PROBLEM LIST"))) {
 					
 					addProblemList(name, concept, required, locale, formField, true);
-				}
-				else if (datatype.getHl7Abbreviation().equals(HL7Constants.HL7_BOOLEAN)){
+				} else if (datatype.getHl7Abbreviation().equals(HL7Constants.HL7_BOOLEAN)) {
 					booleanConcept(name, concept, required, locale, formField);
-				}
-				else if (datatype.getHl7Abbreviation().equals(HL7Constants.HL7_DATE)){
+				} else if (datatype.getHl7Abbreviation().equals(HL7Constants.HL7_DATE)) {
 					dateConcept(name, concept, required, locale, formField);
-				}
-				else if (datatype.getHl7Abbreviation().equals(HL7Constants.HL7_DATETIME)){
+				} else if (datatype.getHl7Abbreviation().equals(HL7Constants.HL7_DATETIME)) {
 					dateTimeConcept(name, concept, required, locale, formField);
-				}
-				else if (datatype.getHl7Abbreviation().equals(HL7Constants.HL7_TIME)){
+				} else if (datatype.getHl7Abbreviation().equals(HL7Constants.HL7_TIME)) {
 					timeConcept(name, concept, required, locale, formField);
-				}
-				else if (simpleDatatypes.containsKey(datatype.getHl7Abbreviation())){
+				} else if (simpleDatatypes.containsKey(datatype.getHl7Abbreviation())) {
 					simpleConcept(name, concept, XformBuilder.DATA_TYPE_TEXT, required, locale, formField);
-				}
-				else if (datatype.getHl7Abbreviation().equals(HL7Constants.HL7_NUMERIC)) {
+				} else if (datatype.getHl7Abbreviation().equals(HL7Constants.HL7_NUMERIC)) {
 					ConceptNumeric conceptNumeric = Context.getConceptService().getConceptNumeric(concept.getConceptId());
 					numericConcept(name, conceptNumeric, required, locale, formField);
-				} 
-				else if (datatype.getHl7Abbreviation().equals(HL7Constants.HL7_CODED)
-						|| datatype.getHl7Abbreviation().equals(HL7Constants.HL7_CODED_WITH_EXCEPTIONS)) {
+				} else if (datatype.getHl7Abbreviation().equals(HL7Constants.HL7_CODED)
+				        || datatype.getHl7Abbreviation().equals(HL7Constants.HL7_CODED_WITH_EXCEPTIONS)) {
 					
 					if (formField.getMaxOccurs() != null && formField.getMaxOccurs().intValue() == -1) {
 						addProblemList(name, concept, required, locale, formField, false);
-					}
-					else {
+					} else {
 						//Collection<ConceptAnswer> answers = concept.getAnswers(false);
 						List answers = new ArrayList<ConceptAnswer>(concept.getAnswers(false));
-						if(answers != null && answers.size() > 0 && answers.get(0) instanceof Comparable)
+						if (answers != null && answers.size() > 0 && answers.get(0) instanceof Comparable)
 							Collections.sort(answers);
 						
-						if (field.getSelectMultiple()){
+						if (field.getSelectMultiple()) {
 							selectMultiple(name, concept, answers, locale, formField);
-						}
-						else {
+						} else {
 							selectSingle(name, concept, answers, required, locale, formField);
 						}
 					}
-				}
-				else if ("ED".equals(datatype.getHl7Abbreviation())){
+				} else if ("ED".equals(datatype.getHl7Abbreviation())) {
 					simpleConcept(name, concept, XformBuilder.DATA_TYPE_BASE64BINARY, required, locale, formField);
 				}
 			}
@@ -534,14 +541,14 @@ public class XformBuilderEx {
 	
 	private static void addHintNode(Element labelNode, Concept concept) {
 		String hint = null;
-		if(concept.getDescription() != null)
+		if (concept.getDescription() != null)
 			hint = concept.getDescription().getDescription();
 		
-		if(useConceptIdAsHint) {
+		if (useConceptIdAsHint) {
 			hint = (hint != null ? hint + " [" + concept.getConceptId() + "]" : concept.getConceptId().toString());
 		}
 		
-		if(hint != null) {
+		if (hint != null) {
 			Element hintNode = labelNode.createElement(XformBuilder.NAMESPACE_XFORMS, null);
 			hintNode.setName(XformBuilder.NODE_HINT);
 			hintNode.addChild(Element.TEXT, hint);

@@ -1,4 +1,4 @@
-/**
+/*
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
@@ -21,7 +21,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 public class PatientRegPageController {
 	
-	public void controller(UiUtils ui, @RequestParam(value = "patientId", required = false) Patient patient, PageModel model, HttpServletRequest request) {
+	public void controller(UiUtils ui, @RequestParam(value = "patientId", required = false) Patient patient, PageModel model,
+	        HttpServletRequest request) {
 		
 		String patientId = request.getParameter("patientId");
 		
@@ -31,7 +32,7 @@ public class PatientRegPageController {
 		model.addAttribute("entityFormDefDownloadUrlSuffix",
 		    "moduleServlet/xforms/xformDownload?target=xformentry&contentType=xml&");
 		model.addAttribute("formDataUploadUrlSuffix", "module/xforms/xformDataUpload.form");
-
+		
 		model.addAttribute("afterSubmitUrlSuffix", "coreapps/clinicianfacing/patient.page?");
 		model.addAttribute("afterCancelUrlSuffix", "index.htm");
 		
@@ -39,17 +40,14 @@ public class PatientRegPageController {
 			model.addAttribute("formName", "Edit Patient Demographics");
 			model.addAttribute("afterCancelUrlSuffix", "coreapps/clinicianfacing/patient.page?patientId=" + patientId);
 			model.addAttribute("formDataUploadUrlSuffix", "module/xforms/xformDataUpload.form?mode=edit");
-		}
-		else {
+		} else {
 			model.addAttribute("patient", new Patient(0));
 		}
 		
-		model.addAttribute(
-		    XformConstants.FORM_DESIGNER_KEY_DATE_SUBMIT_FORMAT,
+		model.addAttribute(XformConstants.FORM_DESIGNER_KEY_DATE_SUBMIT_FORMAT,
 		    Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_SUBMIT_FORMAT,
 		        XformConstants.DEFAULT_DATE_SUBMIT_FORMAT));
-		model.addAttribute(
-		    XformConstants.FORM_DESIGNER_KEY_DATE_DISPLAY_FORMAT,
+		model.addAttribute(XformConstants.FORM_DESIGNER_KEY_DATE_DISPLAY_FORMAT,
 		    Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_DISPLAY_FORMAT,
 		        XformConstants.DEFAULT_DATE_DISPLAY_FORMAT));
 		model.addAttribute(XformConstants.FORM_DESIGNER_KEY_DEFAULT_FONT_FAMILY, Context.getAdministrationService()
@@ -68,32 +66,26 @@ public class PatientRegPageController {
 		
 		model.addAttribute(XformConstants.FORM_DESIGNER_KEY_DEFAULT_GROUPBOX_HEADER_BG_COLOR, color);
 		
-		model.addAttribute(
-		    XformConstants.FORM_DESIGNER_KEY_DATE_TIME_SUBMIT_FORMAT,
+		model.addAttribute(XformConstants.FORM_DESIGNER_KEY_DATE_TIME_SUBMIT_FORMAT,
 		    Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_TIME_SUBMIT_FORMAT,
 		        XformConstants.DEFAULT_DATE_TIME_SUBMIT_FORMAT));
-		model.addAttribute(
-		    XformConstants.FORM_DESIGNER_KEY_DATE_TIME_DISPLAY_FORMAT,
+		model.addAttribute(XformConstants.FORM_DESIGNER_KEY_DATE_TIME_DISPLAY_FORMAT,
 		    Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_TIME_DISPLAY_FORMAT,
 		        XformConstants.DEFAULT_DATE_TIME_DISPLAY_FORMAT));
-		model.addAttribute(
-		    XformConstants.FORM_DESIGNER_KEY_TIME_SUBMIT_FORMAT,
+		model.addAttribute(XformConstants.FORM_DESIGNER_KEY_TIME_SUBMIT_FORMAT,
 		    Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_TIME_SUBMIT_FORMAT,
 		        XformConstants.DEFAULT_TIME_SUBMIT_FORMAT));
-		model.addAttribute(
-		    XformConstants.FORM_DESIGNER_KEY_TIME_DISPLAY_FORMAT,
+		model.addAttribute(XformConstants.FORM_DESIGNER_KEY_TIME_DISPLAY_FORMAT,
 		    Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_TIME_DISPLAY_FORMAT,
 		        XformConstants.DEFAULT_TIME_DISPLAY_FORMAT));
 		
-		model.addAttribute(
-		    XformConstants.FORM_DESIGNER_KEY_SHOW_SUBMIT_SUCCESS_MSG,
+		model.addAttribute(XformConstants.FORM_DESIGNER_KEY_SHOW_SUBMIT_SUCCESS_MSG,
 		    Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_SHOW_SUBMIT_SUCCESS_MSG,
 		        XformConstants.DEFAULT_SHOW_SUBMIT_SUCCESS_MSG));
 		
 		model.addAttribute(XformConstants.FORM_DESIGNER_KEY_LOCALE_KEY, Context.getAdministrationService()
 		        .getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_LOCALE, Context.getLocale().getLanguage()));
-		model.addAttribute(
-		    XformConstants.FORM_DESIGNER_KEY_DECIMAL_SEPARATORS,
+		model.addAttribute(XformConstants.FORM_DESIGNER_KEY_DECIMAL_SEPARATORS,
 		    Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DECIMAL_SEPARATORS,
 		        XformConstants.DEFAULT_DECIMAL_SEPARATORS));
 		model.addAttribute("usingJQuery", XformsUtil.usesJquery());

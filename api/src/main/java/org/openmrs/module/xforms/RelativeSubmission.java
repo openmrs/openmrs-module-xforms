@@ -1,4 +1,4 @@
-/**
+/*
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
@@ -59,7 +59,8 @@ public class RelativeSubmission {
 			Element relativeNode = patientNode.getElement(i);
 			
 			String relationshipUuid = relativeNode.getAttributeValue(null, XformBuilder.ATTRIBUTE_UUID);
-			if (!("true()".equals(relativeNode.getAttributeValue(null, "new"))) && StringUtils.isNotBlank(relationshipUuid)) {
+			if (!("true()".equals(relativeNode.getAttributeValue(null, "new")))
+			        && StringUtils.isNotBlank(relationshipUuid)) {
 				updateRelationship(relationshipUuid, relativeNode, patient, deletedRelationships, ps);
 				continue;
 			}
@@ -106,8 +107,8 @@ public class RelativeSubmission {
 		if (AorB != null && ("A".equalsIgnoreCase(AorB) || "B".equalsIgnoreCase(AorB))) {
 			isPersonA = "A".equalsIgnoreCase(AorB);
 		} else {
-			throw new APIException("Cannot determine if the patient is A or B in the relationship:"
-			        + relationshipType.getName());
+			throw new APIException(
+			        "Cannot determine if the patient is A or B in the relationship:" + relationshipType.getName());
 		}
 		
 		Person otherPerson = ps.getPersonByUuid(personUuid);
@@ -135,7 +136,7 @@ public class RelativeSubmission {
 	}
 	
 	private static void updateRelationship(String uuid, Element relativeNode, Patient patient,
-	                                       List<Relationship> deletedRelationships, PersonService ps) {
+	        List<Relationship> deletedRelationships, PersonService ps) {
 		
 		Relationship relationship = Context.getPersonService().getRelationshipByUuid(uuid);
 		if (relationship == null)

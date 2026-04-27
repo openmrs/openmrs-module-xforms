@@ -1,4 +1,4 @@
-/**
+/*
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
@@ -67,13 +67,12 @@ public class FormEntryQueueProcessor {
 	
 	/**
 	 * Transform a FormEntryQueue entry (converts the XML data into HL7 and places it into the HL7
-	 * inbound queue for further processing). Once transformed, then FormEntryQueue entry is flagged
-	 * as completed (the status is updated). The XSLT from the appropriate form (the form used to
-	 * generate the FormEntryQueue data in the first place) is used to perform the transformation
-	 * into HL7.
+	 * inbound queue for further processing). Once transformed, then FormEntryQueue entry is flagged as
+	 * completed (the status is updated). The XSLT from the appropriate form (the form used to generate
+	 * the FormEntryQueue data in the first place) is used to perform the transformation into HL7.
 	 * 
 	 * @param formEntryQueue entry to be transformed
-	 * @should transform xml data with a serialized complex obs 
+	 * @should transform xml data with a serialized complex obs
 	 */
 	public HL7InQueue transformFormEntryQueue(FormEntryQueue formEntryQueue, boolean propagateErrors) throws Exception {
 		log.debug("Transforming form entry queue");
@@ -128,9 +127,8 @@ public class FormEntryQueueProcessor {
 		}
 		
 		// Get the HL7 source based on the form's encounter type
-		hl7Source = Context.getHL7Service().getHL7SourceByName(
-		    Context.getAdministrationService().getGlobalProperty(FormEntryConstants.FORMENTRY_GP_DEFAULT_HL7_SOURCE,
-		        FormEntryConstants.FORMENTRY_DEFAULT_HL7_SOURCE_NAME));
+		hl7Source = Context.getHL7Service().getHL7SourceByName(Context.getAdministrationService().getGlobalProperty(
+		    FormEntryConstants.FORMENTRY_GP_DEFAULT_HL7_SOURCE, FormEntryConstants.FORMENTRY_DEFAULT_HL7_SOURCE_NAME));
 		
 		// If source key not provided, use FormEntryQueue.formEntryQueueId
 		if (hl7SourceKey == null || hl7SourceKey.length() < 1)
@@ -293,8 +291,8 @@ public class FormEntryQueueProcessor {
 	}
 	
 	/**
-	 * Utility method that adds the 'provider_id_type' attribute to the 'encounter.provider_id' tag
-	 * and set its value to 'PROIVDER.ID'
+	 * Utility method that adds the 'provider_id_type' attribute to the 'encounter.provider_id' tag and
+	 * set its value to 'PROIVDER.ID'
 	 * 
 	 * @param xml
 	 * @return

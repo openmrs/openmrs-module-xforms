@@ -1,4 +1,4 @@
-/**
+/*
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
@@ -22,45 +22,41 @@ import org.openmrs.scheduler.tasks.AbstractTask;
  * @version 1.0
  */
 public class ProcessXformsQueueTask extends AbstractTask {
-
+	
 	// Logger
 	private static Log log = LogFactory.getLog(ProcessXformsQueueTask.class);
-
+	
 	// Instance of xforms processor.
 	private XformsQueueProcessor processor = null;
-
-
-
+	
 	/**
-	 * Default Constructor (Uses SchedulerConstants.username and
-	 * SchedulerConstants.password
-	 * 
+	 * Default Constructor (Uses SchedulerConstants.username and SchedulerConstants.password
 	 */
 	public ProcessXformsQueueTask() {
 		if (processor == null)
 			processor = new XformsQueueProcessor();
 	}
-
+	
 	/**
-	 * Process the next xform in the queue and then remove the xform from the
-	 * queue.
+	 * Process the next xform in the queue and then remove the xform from the queue.
 	 */
 	public void execute() {
 		Context.openSession();
 		log.debug("Running xforms queue task... ");
 		try {
 			processor.processXformsQueue();
-		} catch (APIException e) {
+		}
+		catch (APIException e) {
 			log.error("Error running xforms queue task", e);
 			throw e;
-		} finally {
+		}
+		finally {
 			Context.closeSession();
 		}
 	}
-
+	
 	/**
 	 * Clean up any resources here
-	 * 
 	 */
 	public void shutdown() {
 		processor = null;

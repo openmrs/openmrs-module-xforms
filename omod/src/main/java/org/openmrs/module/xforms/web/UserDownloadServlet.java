@@ -1,4 +1,4 @@
-/**
+/*
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
@@ -24,7 +24,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.module.xforms.XformsServer;
 
-
 //TODO This class may need to be refactored out of the XForms module.
 
 /**
@@ -33,8 +32,8 @@ import org.openmrs.module.xforms.XformsServer;
  * @author Daniel Kayiwa
  * @version 1.0
  */
-public class UserDownloadServlet  extends HttpServlet {
-
+public class UserDownloadServlet extends HttpServlet {
+	
 	public static final long serialVersionUID = 123427878377111L;
 	
 	private Log log = LogFactory.getLog(this.getClass());
@@ -43,16 +42,17 @@ public class UserDownloadServlet  extends HttpServlet {
 	 * This just delegates to the doGet()
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request,response);
+		doGet(request, response);
 	}
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-		try{
-			new XformsServer().processConnection(new DataInputStream((InputStream)request.getInputStream()), new DataOutputStream((OutputStream)response.getOutputStream()));
+		
+		try {
+			new XformsServer().processConnection(new DataInputStream((InputStream) request.getInputStream()),
+			    new DataOutputStream((OutputStream) response.getOutputStream()));
 		}
-		catch(Exception e){
-			log.error(e.getMessage(),e);
+		catch (Exception e) {
+			log.error(e.getMessage(), e);
 		}
 	}
 }

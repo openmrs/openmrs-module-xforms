@@ -1,4 +1,4 @@
-/**
+/*
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
@@ -12,15 +12,13 @@ package org.openmrs.module.xforms.web.extension.html;
 import org.openmrs.module.Extension;
 import org.openmrs.module.web.extension.PatientDashboardTabExt;
 
-
 /**
  * Adds the XForms tab to the patient dashboard, which allows XForms based data entry.
  * 
  * @author Daniel
- *
  */
-public class XformsPatientDashboardTabExt  extends PatientDashboardTabExt{
-
+public class XformsPatientDashboardTabExt extends PatientDashboardTabExt {
+	
 	public Extension.MEDIA_TYPE getMediaType() {
 		return Extension.MEDIA_TYPE.html;
 	}

@@ -1,4 +1,4 @@
-/**
+/*
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
@@ -8,7 +8,6 @@
  * graphic logo is a trademark of OpenMRS Inc.
  */
 package org.openmrs.module.xforms.download;
-
 
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -29,27 +28,26 @@ import org.openmrs.module.xforms.util.XformsUtil;
  * Manages xforms download.
  * 
  * @author Daniel
- *
  */
 public class XformDownloadManager {
 	
-    public static final long serialVersionUID = 123427878343561L;
-    
-    private static Log log = LogFactory.getLog(XformDownloadManager.class);
-    
-    
+	public static final long serialVersionUID = 123427878343561L;
+	
+	private static Log log = LogFactory.getLog(XformDownloadManager.class);
+	
 	/**
 	 * Writes xforms to a stream.
 	 * 
 	 * @param actionUrl - the URL to post to after data entry.
 	 * @param os - the stream.
-	 * @throws Exception  
+	 * @throws Exception
 	 */
-	public static void downloadXforms(OutputStream os, String serializerKey) throws Exception{		
-		if(serializerKey == null || serializerKey.trim().length() == 0)
+	public static void downloadXforms(OutputStream os, String serializerKey) throws Exception {
+		if (serializerKey == null || serializerKey.trim().length() == 0)
 			serializerKey = XformConstants.GLOBAL_PROP_KEY_XFORM_SERIALIZER;
 		
-        XformsUtil.invokeSerializationMethod("serializeForms",os, serializerKey, XformConstants.DEFAULT_XFORM_SERIALIZER, getXmlForms());
+		XformsUtil.invokeSerializationMethod("serializeForms", os, serializerKey, XformConstants.DEFAULT_XFORM_SERIALIZER,
+		    getXmlForms());
 	}
 	
 	/**
@@ -58,14 +56,14 @@ public class XformDownloadManager {
 	 * @param actionUrl
 	 * @return a list of xforms xml text.
 	 */
-	private static List<String> getXmlForms(){
-		XformsService xformsService = (XformsService)Context.getService(XformsService.class);
+	private static List<String> getXmlForms() {
+		XformsService xformsService = (XformsService) Context.getService(XformsService.class);
 		
 		List<Xform> xforms = xformsService.getXforms();
 		List<String> xmlforms = new ArrayList<String>();
-		for(Xform xform : xforms){
+		for (Xform xform : xforms) {
 			String xml = xform.getXformXml();
-			if(xml != null)
+			if (xml != null)
 				xmlforms.add(xml);
 		}
 		
@@ -85,8 +83,6 @@ public class XformDownloadManager {
 		return createNewXform(formService, form);
 	}
 	
-	
-	
 	/**
 	 * Creates a new xform for an given openmrs form.
 	 * 
@@ -99,35 +95,36 @@ public class XformDownloadManager {
 		//String schemaXml = XformsUtil.getSchema(form);
 		//String templateXml = FormEntryWrapper.getFormTemplate(form);
 		//XformBuilder.getXform4mStrings(schemaXml, templateXml);
-		return XformBuilderEx.buildXform(form); 
+		return XformBuilderEx.buildXform(form);
 	}
 	
 	/**
 	 * Gets an xform for a given form id.
 	 * 
 	 * @param formService - the form service.
-	 * @param xformsService  the xforms service.
+	 * @param xformsService the xforms service.
 	 * @param formId - the form id.
 	 * @param createNew - true if you want
 	 * @return - the xml content of the xform.
 	 */
-	public static String getXform(FormService formService,XformsService xformsService,Integer formId,boolean createNew) throws Exception {
+	public static String getXform(FormService formService, XformsService xformsService, Integer formId, boolean createNew)
+	        throws Exception {
 		
 		String xformXml = null;
 		
-        //try{ //we want exception to propagate to the ui
-    		if(!createNew){
-    			Xform xform = xformsService.getXform(formId);
-    			if(xform != null)
-    				xformXml = xform.getXformXml();
-    		}
-    		
-    		if(xformXml == null)
-    			xformXml = createNewXform(formService, formId);
-        /*}
-        catch(Exception e){
-            log.error(e.getMessage(),e);
-        }*/
+		//try{ //we want exception to propagate to the ui
+		if (!createNew) {
+			Xform xform = xformsService.getXform(formId);
+			if (xform != null)
+				xformXml = xform.getXformXml();
+		}
+		
+		if (xformXml == null)
+			xformXml = createNewXform(formService, formId);
+		/*}
+		catch(Exception e){
+		    log.error(e.getMessage(),e);
+		}*/
 		
 		return xformXml;
 	}
@@ -135,19 +132,19 @@ public class XformDownloadManager {
 	/**
 	 * Gets the xslt of an xform for a given form id.
 	 * 
-	 * @param xformsService  the xforms service.
+	 * @param xformsService the xforms service.
 	 * @param formId - the form id.
 	 * @param createNew - true if you want
 	 * @return - the xslt for the xform.
 	 */
-	public static String getXslt(XformsService xformsService,Integer formId,boolean createNew){
+	public static String getXslt(XformsService xformsService, Integer formId, boolean createNew) {
 		
 		String xslt = null;
 		
-		if(!createNew)
+		if (!createNew)
 			xslt = xformsService.getXslt(formId);
 		
-		if(xslt == null)
+		if (xslt == null)
 			xslt = XformsUtil.getDefaultXSLT();
 		
 		return xslt;

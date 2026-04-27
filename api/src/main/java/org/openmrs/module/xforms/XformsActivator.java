@@ -1,4 +1,4 @@
-/**
+/*
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
@@ -17,38 +17,36 @@ import org.openmrs.module.ModuleActivator;
  * The xforms activator as required by the openmrs module spec.
  * 
  * @author Daniel
- *
  */
 public class XformsActivator implements ModuleActivator {
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
-
-
+	
 	@Override
 	public void willRefreshContext() {
 		
 	}
-
+	
 	@Override
 	public void contextRefreshed() {
 		
 	}
-
+	
 	@Override
 	public void willStart() {
 		
 	}
-
+	
 	@Override
 	public void started() {
 		log.info("Started Xforms Module");
 	}
-
+	
 	@Override
 	public void willStop() {
 		
 	}
-
+	
 	@Override
 	public void stopped() {
 		log.info("Stopped Xforms Module");

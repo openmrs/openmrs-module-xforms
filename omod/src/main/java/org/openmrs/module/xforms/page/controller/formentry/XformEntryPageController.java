@@ -1,4 +1,4 @@
-/**
+/*
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
@@ -26,8 +26,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class XformEntryPageController {
 	
 	public void controller(@RequestParam("patientId") Patient patient, UiUtils ui,
-	                       @RequestParam(value = "returnUrl", required = false) String returnUrl,
-	                       PageModel model, HttpServletRequest request) {
+	        @RequestParam(value = "returnUrl", required = false) String returnUrl, PageModel model,
+	        HttpServletRequest request) {
 		
 		model.addAttribute("returnUrl", returnUrl);
 		addFormEntryValues(model, request);
@@ -50,12 +50,13 @@ public class XformEntryPageController {
 			Form form = encounter.getForm();
 			model.addAttribute("formId", form.getFormId());
 			model.addAttribute("patientId", encounter.getPatient().getPatientId());
-			model.addAttribute("formName", ((FormService) Context.getService(FormService.class)).getForm(form.getFormId())
-			        .getName());
+			model.addAttribute("formName",
+			    ((FormService) Context.getService(FormService.class)).getForm(form.getFormId()).getName());
 			model.addAttribute("entityFormDefDownloadUrlSuffix",
 			    "moduleServlet/xforms/xformDownload?target=xformentry&contentType=xml&encounterId=" + encounterId + "&");
 			model.addAttribute("formDataUploadUrlSuffix", "module/xforms/xformDataUpload.form?mode=edit");
-			model.addAttribute("formDataDeleteUrlSuffix", "moduleServlet/xforms/xformDataDelete?encounterId=" + encounter.getEncounterId() + "&patientId=");
+			model.addAttribute("formDataDeleteUrlSuffix",
+			    "moduleServlet/xforms/xformDataDelete?encounterId=" + encounter.getEncounterId() + "&patientId=");
 		}
 		
 		model.addAttribute("returnModule", "xforms");
@@ -67,8 +68,7 @@ public class XformEntryPageController {
 				returnUrl = "coreapps/clinicianfacing/patient.page?";
 				model.addAttribute("returnPage", "clinicianfacing/patient");
 				model.addAttribute("returnModule", "coreapps");
-			}
-			else if (returnUrl.contains("patientdashboard")) {
+			} else if (returnUrl.contains("patientdashboard")) {
 				returnUrl = "coreapps/patientdashboard/patientDashboard.page?";
 				model.addAttribute("returnPage", "patientdashboard/patientDashboard");
 				model.addAttribute("returnModule", "coreapps");
@@ -85,11 +85,10 @@ public class XformEntryPageController {
 			url += "&afterSelectedUrl=/xforms/formentry/patient.page?patientId={{patientId}}";
 		}
 		
-		if(StringUtils.isNotBlank(returnUrl)) {
+		if (StringUtils.isNotBlank(returnUrl)) {
 			url = returnUrl;
 		}
 		model.addAttribute("afterSubmitUrlSuffix", url);
-		
 		
 		url = "xforms/formentry/patient.page?";
 		str = request.getParameter("afterCancelUrl");
@@ -98,18 +97,15 @@ public class XformEntryPageController {
 		}
 		url = Context.getAdministrationService().getGlobalProperty("xforms.afterCancelUrl", url);
 		
-		if(StringUtils.isNotBlank(returnUrl)) {
+		if (StringUtils.isNotBlank(returnUrl)) {
 			url = returnUrl;
 		}
 		model.addAttribute("afterCancelUrlSuffix", url);
 		
-		
-		model.addAttribute(
-		    XformConstants.FORM_DESIGNER_KEY_DATE_SUBMIT_FORMAT,
+		model.addAttribute(XformConstants.FORM_DESIGNER_KEY_DATE_SUBMIT_FORMAT,
 		    Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_SUBMIT_FORMAT,
 		        XformConstants.DEFAULT_DATE_SUBMIT_FORMAT));
-		model.addAttribute(
-		    XformConstants.FORM_DESIGNER_KEY_DATE_DISPLAY_FORMAT,
+		model.addAttribute(XformConstants.FORM_DESIGNER_KEY_DATE_DISPLAY_FORMAT,
 		    Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_DISPLAY_FORMAT,
 		        XformConstants.DEFAULT_DATE_DISPLAY_FORMAT));
 		model.addAttribute(XformConstants.FORM_DESIGNER_KEY_DEFAULT_FONT_FAMILY, Context.getAdministrationService()
@@ -128,32 +124,26 @@ public class XformEntryPageController {
 		
 		model.addAttribute(XformConstants.FORM_DESIGNER_KEY_DEFAULT_GROUPBOX_HEADER_BG_COLOR, color);
 		
-		model.addAttribute(
-		    XformConstants.FORM_DESIGNER_KEY_DATE_TIME_SUBMIT_FORMAT,
+		model.addAttribute(XformConstants.FORM_DESIGNER_KEY_DATE_TIME_SUBMIT_FORMAT,
 		    Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_TIME_SUBMIT_FORMAT,
 		        XformConstants.DEFAULT_DATE_TIME_SUBMIT_FORMAT));
-		model.addAttribute(
-		    XformConstants.FORM_DESIGNER_KEY_DATE_TIME_DISPLAY_FORMAT,
+		model.addAttribute(XformConstants.FORM_DESIGNER_KEY_DATE_TIME_DISPLAY_FORMAT,
 		    Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DATE_TIME_DISPLAY_FORMAT,
 		        XformConstants.DEFAULT_DATE_TIME_DISPLAY_FORMAT));
-		model.addAttribute(
-		    XformConstants.FORM_DESIGNER_KEY_TIME_SUBMIT_FORMAT,
+		model.addAttribute(XformConstants.FORM_DESIGNER_KEY_TIME_SUBMIT_FORMAT,
 		    Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_TIME_SUBMIT_FORMAT,
 		        XformConstants.DEFAULT_TIME_SUBMIT_FORMAT));
-		model.addAttribute(
-		    XformConstants.FORM_DESIGNER_KEY_TIME_DISPLAY_FORMAT,
+		model.addAttribute(XformConstants.FORM_DESIGNER_KEY_TIME_DISPLAY_FORMAT,
 		    Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_TIME_DISPLAY_FORMAT,
 		        XformConstants.DEFAULT_TIME_DISPLAY_FORMAT));
 		
-		model.addAttribute(
-		    XformConstants.FORM_DESIGNER_KEY_SHOW_SUBMIT_SUCCESS_MSG,
+		model.addAttribute(XformConstants.FORM_DESIGNER_KEY_SHOW_SUBMIT_SUCCESS_MSG,
 		    Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_SHOW_SUBMIT_SUCCESS_MSG,
 		        XformConstants.DEFAULT_SHOW_SUBMIT_SUCCESS_MSG));
 		
 		model.addAttribute(XformConstants.FORM_DESIGNER_KEY_LOCALE_KEY, Context.getAdministrationService()
 		        .getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_LOCALE, Context.getLocale().getLanguage()));
-		model.addAttribute(
-		    XformConstants.FORM_DESIGNER_KEY_DECIMAL_SEPARATORS,
+		model.addAttribute(XformConstants.FORM_DESIGNER_KEY_DECIMAL_SEPARATORS,
 		    Context.getAdministrationService().getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_DECIMAL_SEPARATORS,
 		        XformConstants.DEFAULT_DECIMAL_SEPARATORS));
 		model.addAttribute("usingJQuery", XformsUtil.usesJquery());

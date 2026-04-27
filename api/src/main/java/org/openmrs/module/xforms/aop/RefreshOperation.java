@@ -1,4 +1,4 @@
-/**
+/*
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
@@ -16,10 +16,10 @@ public enum RefreshOperation {
 	
 	/** New provider, location or concept added. */
 	ADD,
-
+	
 	/** Provider, location, or concept name has been changed. */
 	EDIT,
-
+	
 	/** Provider, location or concept has been deleted. */
 	DELETE
 }

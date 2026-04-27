@@ -1,4 +1,4 @@
-/**
+/*
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
@@ -29,15 +29,13 @@ import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.fragment.FragmentModel;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
 public class EncountersFragmentController {
 	
-	public void controller(@RequestParam("patientId") Patient patient, UiUtils ui,
-	                       FragmentModel model) {
+	public void controller(@RequestParam("patientId") Patient patient, UiUtils ui, FragmentModel model) {
 		
-		List<String> excludFormUuids =  FormsFragmentController.getExcludedForms();
+		List<String> excludFormUuids = FormsFragmentController.getExcludedForms();
 		
-		List<Encounter> encounters =  new ArrayList<Encounter>();
+		List<Encounter> encounters = new ArrayList<Encounter>();
 		List<Encounter> encounterList = Context.getEncounterService().getEncountersByPatient(patient);
 		for (Encounter encounter : encounterList) {
 			if (encounter.getForm() != null && !excludFormUuids.contains(encounter.getForm().getUuid())) {
@@ -99,9 +97,10 @@ public class EncountersFragmentController {
 	}
 	
 	private class EncounterComparator implements Comparator<Encounter> {
-	    @Override
-	    public int compare(Encounter e1, Encounter e2) {
-	        return e1.getEncounterDatetime().compareTo(e2.getEncounterDatetime());
-	    }
+		
+		@Override
+		public int compare(Encounter e1, Encounter e2) {
+			return e1.getEncounterDatetime().compareTo(e2.getEncounterDatetime());
+		}
 	}
 }

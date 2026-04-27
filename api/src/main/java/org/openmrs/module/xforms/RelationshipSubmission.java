@@ -1,4 +1,4 @@
-/**
+/*
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
@@ -80,15 +80,15 @@ public class RelationshipSubmission {
 			Element AorBNode = XformBuilder.getElement(relationshipNode,
 			    RelationshipBuilder.BIND_PATIENT_RELATIONSHIP_A_OR_B);
 			if (AorBNode == null) {
-				throw new APIException("Cannot determine if the patient is A or B in the relationship:"
-				        + relationshipType.getName());
+				throw new APIException(
+				        "Cannot determine if the patient is A or B in the relationship:" + relationshipType.getName());
 			}
 			String AorB = XformBuilder.getTextValue(AorBNode);
 			if (AorB != null && ("A".equalsIgnoreCase(AorB) || "B".equalsIgnoreCase(AorB))) {
 				isPersonA = "A".equalsIgnoreCase(AorB);
 			} else {
-				throw new APIException("Cannot determine if the patient is A or B in the relationship:"
-				        + relationshipType.getName());
+				throw new APIException(
+				        "Cannot determine if the patient is A or B in the relationship:" + relationshipType.getName());
 			}
 			
 			//get the relative
@@ -102,7 +102,8 @@ public class RelationshipSubmission {
 				}
 			}
 			if (otherPerson == null)
-				throw new APIException("Cannot determine if the relattive in the relationship:" + relationshipType.getName());
+				throw new APIException(
+				        "Cannot determine if the relattive in the relationship:" + relationshipType.getName());
 			
 			if (isPersonA) {
 				personA = patient;

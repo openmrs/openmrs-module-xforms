@@ -1,4 +1,4 @@
-/**
+/*
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
@@ -22,12 +22,10 @@ import ca.uhn.hl7v2.parser.EncodingNotSupportedException;
 import ca.uhn.hl7v2.parser.GenericParser;
 
 /**
- * Main entry point for processing of HL7 streams into OpenMRS
- * 
- * NOTE: This class has been copied from earlier versions of openmrs
- *       because it is no longer available in versions starting from 1.6
- *       This ensures that atleast for now, the xforms module works with all
- *       versions of openmrs from 1.2.2 up to the latest which is 1.6
+ * Main entry point for processing of HL7 streams into OpenMRS NOTE: This class has been copied from
+ * earlier versions of openmrs because it is no longer available in versions starting from 1.6 This
+ * ensures that atleast for now, the xforms module works with all versions of openmrs from 1.2.2 up
+ * to the latest which is 1.6
  * 
  * @version 1.0
  */
@@ -83,4 +81,3 @@ public class HL7Receiver {
 		return response;
 	}
 }
-

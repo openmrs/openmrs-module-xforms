@@ -1,4 +1,4 @@
-/**
+/*
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
@@ -55,7 +55,8 @@ public class RelativeBuilder {
 		bindNode = modelElement.createElement(XformBuilder.NAMESPACE_XFORMS, null);
 		bindNode.setName(XformBuilder.NODE_BIND);
 		bindNode.setAttribute(null, XformBuilder.ATTRIBUTE_ID, BIND_PERSON);
-		bindNode.setAttribute(null, XformBuilder.ATTRIBUTE_NODESET, "/form/patient/patient_relative/patient_relative.person");
+		bindNode.setAttribute(null, XformBuilder.ATTRIBUTE_NODESET,
+		    "/form/patient/patient_relative/patient_relative.person");
 		modelElement.addChild(Element.ELEMENT, bindNode);
 		
 		//Create bind node for relationship.
@@ -160,7 +161,8 @@ public class RelativeBuilder {
 	 * @param isA specifies which side of the relationship we are adding the option for
 	 * @return the Element for the select option
 	 */
-	private static Element createRelationTypeOptionNode(RelationshipType relationshipType, Element controlNode, boolean isA) {
+	private static Element createRelationTypeOptionNode(RelationshipType relationshipType, Element controlNode,
+	        boolean isA) {
 		Element itemNode = controlNode.createElement(XformBuilder.NAMESPACE_XFORMS, null);
 		itemNode.setName(XformBuilder.NODE_ITEM);
 		
@@ -233,7 +235,7 @@ public class RelativeBuilder {
 				return patient.getPatientIdentifier().getIdentifier();
 			}
 		}
-		catch(Exception ex) {
+		catch (Exception ex) {
 			log.error(ex.getMessage(), ex);
 		}
 		

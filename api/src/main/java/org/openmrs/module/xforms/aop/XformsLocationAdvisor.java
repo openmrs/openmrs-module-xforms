@@ -1,4 +1,4 @@
-/**
+/*
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
@@ -65,7 +65,7 @@ public class XformsLocationAdvisor extends StaticMethodMatcherPointcutAdvisor im
 				//TODO If name has changed, is there an easy way of getting the old value before saving to database?
 				//oldName = XformBuilder.getLocationName(location);
 				oldName = Context.getService(XformsService.class).getLocationName(location.getLocationId());
-				if(oldName !=  null)
+				if (oldName != null)
 					oldName += " [" + location.getLocationId() + "]";
 				else
 					oldName = XformBuilder.getLocationName(location);
@@ -106,13 +106,13 @@ public class XformsLocationAdvisor extends StaticMethodMatcherPointcutAdvisor im
 		//Loop through the xforms refreshing one by one
 		for (Xform xform : xforms) {
 			
-			try{
+			try {
 				String xml = xform.getXformXml();
 				Document doc = XformsUtil.fromString2Doc(xml);
 				
 				//Get all xf:select1 nodes in the xforms document.
-				NodeList elements = doc.getDocumentElement().getElementsByTagName(
-				    XformBuilder.PREFIX_XFORMS + ":" + XformBuilder.CONTROL_SELECT1);
+				NodeList elements = doc.getDocumentElement()
+				        .getElementsByTagName(XformBuilder.PREFIX_XFORMS + ":" + XformBuilder.CONTROL_SELECT1);
 				
 				//Look for the location node which has a bind attribute value of: encounter.location_id.
 				for (int index = 0; index < elements.getLength(); index++) {
@@ -123,7 +123,7 @@ public class XformsLocationAdvisor extends StaticMethodMatcherPointcutAdvisor im
 					}
 				}
 			}
-			catch(Exception ex){
+			catch (Exception ex) {
 				ex.printStackTrace();
 				continue; //failure for one form should not stop others from proceeding.
 			}
@@ -143,8 +143,7 @@ public class XformsLocationAdvisor extends StaticMethodMatcherPointcutAdvisor im
 	 * @throws Exception
 	 */
 	private void refreshLocationWithId(RefreshOperation operation, Element locationSelect1Element, Location location,
-	                                   String oldName, Document doc, Xform xform, XformsService xformsService)
-	                                                                                                          throws Exception {
+	        String oldName, Document doc, Xform xform, XformsService xformsService) throws Exception {
 		String sLocationId = location.getLocationId().toString();
 		
 		if (operation == RefreshOperation.DELETE || operation == RefreshOperation.EDIT) {

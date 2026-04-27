@@ -1,4 +1,4 @@
-/**
+/*
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
@@ -26,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
  * Provides data access services to the Xforms module.
  * 
  * @author Daniel
- *
  */
 public interface XformsDAO {
 	
@@ -80,14 +79,14 @@ public interface XformsDAO {
 	 */
 	public boolean hasXslt(Integer formId);
 	
-	 /**
-     * @see org.openmrs.module.xforms.XformsService#getXslt(java.lang.Integer)
-     */
+	/**
+	 * @see org.openmrs.module.xforms.XformsService#getXslt(java.lang.Integer)
+	 */
 	public String getXslt(Integer formId);
 	
-	 /**
-     * @see org.openmrs.module.xforms.XformsService#saveXslt(java.lang.Integer,java.lang.String)
-     */
+	/**
+	 * @see org.openmrs.module.xforms.XformsService#saveXslt(java.lang.Integer,java.lang.String)
+	 */
 	public void saveXslt(Integer formId, String xslt);
 	
 	/**
@@ -95,9 +94,10 @@ public interface XformsDAO {
 	 */
 	public String getFieldDefaultValue(Integer formId, String fieldName);
 	
-	
 	public List<PersonRepeatAttribute> getPersonRepeatAttributes(Integer personId, Integer personAttributeId);
+	
 	public void savePersonRepeatAttribute(PersonRepeatAttribute personRepeatAttribute);
+	
 	public void deletePersonRepeatAttribute(Integer personRepeatAttributeId);
 	
 	public List<Object[]> getList(String sql, String displayField, String valueField);
@@ -105,17 +105,22 @@ public interface XformsDAO {
 	public PatientMedicalHistory getPatientMedicalHistory(Integer patientId);
 	
 	public List<MedicalHistoryField> getMedicalHistoryFields();
+	
 	public void saveMedicalHistoryField(MedicalHistoryField field);
+	
 	public void deleteMedicalHistoryField(MedicalHistoryField field);
+	
 	public void deleteMedicalHistoryField(Integer fieldId);
 	
 	public void createFormEntryError(XformsFormEntryError formEntryError);
-
+	
 	public List<GlobalProperty> getXFormsGlobalProperties();
 	
 	public List<Object[]> getXformsList();
 	
 	public String getLocationName(Integer locationId);
+	
 	public String getPersonName(Integer personId);
+	
 	public String getConceptName(Integer conceptId, String localeKey);
 }

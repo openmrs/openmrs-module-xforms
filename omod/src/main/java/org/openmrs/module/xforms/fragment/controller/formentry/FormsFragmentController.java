@@ -1,4 +1,4 @@
-/**
+/*
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
@@ -28,18 +28,16 @@ import org.openmrs.ui.framework.fragment.FragmentModel;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
 public class FormsFragmentController {
 	
-	public void controller(@RequestParam("patientId") Patient patient, UiUtils ui,
-	                       FragmentModel model) {
+	public void controller(@RequestParam("patientId") Patient patient, UiUtils ui, FragmentModel model) {
 		
 		model.addAttribute("patient", patient);
 		model.put("formToEntryUrlMap", getForms(patient));
 	}
 	
 	public static List<String> getExcludedForms() {
-		List<String> excludFormUuids =  new ArrayList<String>();
+		List<String> excludFormUuids = new ArrayList<String>();
 		excludFormUuids.add("a000cb34-9ec1-4344-a1c8-f692232f6edd");
 		excludFormUuids.add("c75f120a-04ec-11e3-8780-2b40bef9a44b");
 		excludFormUuids.add("d2c7532c-fb01-11e2-8ff2-fd54ab5fdb2a");
@@ -49,7 +47,7 @@ public class FormsFragmentController {
 	}
 	
 	private Map<Form, FormEntryHandler> getForms(Patient patient) {
-		List<String> excludFormUuids =  getExcludedForms();
+		List<String> excludFormUuids = getExcludedForms();
 		
 		FormEntryContext fec = new FormEntryContext(patient);
 		Map<Form, FormEntryHandler> entryUrlMap = new TreeMap<Form, FormEntryHandler>(new Comparator<Form>() {

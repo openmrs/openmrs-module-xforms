@@ -1,4 +1,4 @@
-/**
+/*
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
@@ -89,8 +89,8 @@ public class XformsUtil {
 	private static Log log = LogFactory.getLog(XformsUtil.class);
 	
 	/**
-	 * Authenticates users who logon inline (with the request by appending user name and password to
-	 * the url).
+	 * Authenticates users who logon inline (with the request by appending user name and password to the
+	 * url).
 	 * 
 	 * @param request
 	 * @throws ContextAuthenticationException
@@ -109,8 +109,8 @@ public class XformsUtil {
 	 * 
 	 * @param request the http request.
 	 * @param response the http response.
-	 * @param loginRedirect the part of the url appended to the Context Path, that the user is
-	 *            redireted to on successfully logging in.
+	 * @param loginRedirect the part of the url appended to the Context Path, that the user is redireted
+	 *            to on successfully logging in.
 	 * @return true if user is authenticated, else false.
 	 * @throws Exception
 	 */
@@ -183,24 +183,15 @@ public class XformsUtil {
 	private static String getDefaultStyle() {
 		return "@namespace xf url(http://www.w3.org/2002/xforms); "
 		        + "/* Display a red background on all invalid form controls */ "
-		        + "*:invalid .xf-value { background-color: red; } "
-		        + " "
+		        + "*:invalid .xf-value { background-color: red; } " + " "
 		        + "/* Display a red asterisk after all required form controls */ "
-		        + "*:required::after { content: '*'; color: red; } "
-		        + " "
-		        + "/* Do not render non-relevant form controls */ "
-		        + "*:disabled { visibility: hidden; } "
-		        + " "
-		        + "/* Display an alert message when appropriate */ "
-		        + "*:valid   xf|alert { display: none; } "
-		        + "*:invalid xf|alert { display: show; } "
-		        + " "
+		        + "*:required::after { content: '*'; color: red; } " + " "
+		        + "/* Do not render non-relevant form controls */ " + "*:disabled { visibility: hidden; } " + " "
+		        + "/* Display an alert message when appropriate */ " + "*:valid   xf|alert { display: none; } "
+		        + "*:invalid xf|alert { display: show; } " + " "
 		        + "/* Display the selected repeat-item with a light blue color. */ "
-		        + ".xf-repeat-index { background-color: lightblue; } "
-		        + " "
-		        + "/* Display repeat items in a table row. */ "
-		        + "xf|repeat .xf-repeat-item {display: table-row;} "
-		        + " "
+		        + ".xf-repeat-index { background-color: lightblue; } " + " " + "/* Display repeat items in a table row. */ "
+		        + "xf|repeat .xf-repeat-item {display: table-row;} " + " "
 		        + "/* Display each select1 and input control within a repeat as a table cell, having a thin solid border and its lable aligned centrally. */ "
 		        + "xf|repeat xf|select1, xf|repeat xf|input{display: table-cell; border: thin; border-style: solid; text-align: center;}"
 		        + " "
@@ -219,46 +210,37 @@ public class XformsUtil {
 	 * @return the XSLT text
 	 */
 	public static String getDefaultXSLT() {
-		return "<?xml version='1.0' encoding='UTF-8'?> "
-		        + "<xsl:stylesheet version='2.0' "
-		        + "xmlns:xsl='http://www.w3.org/1999/XSL/Transform' "
-		        + "xmlns:fn='http://www.w3.org/2005/xpath-functions' "
-		        + "xmlns:xf='http://www.w3.org/2002/xforms'> "
-		        + "<xsl:output method='xml' version='1.0' encoding='UTF-8'/> "
-		        + "<xsl:template match='/'> "
-		        + " <html xmlns='http://www.w3.org/1999/xhtml' "
-		        + "       xmlns:xf='http://www.w3.org/2002/xforms' "
-		        + "       xmlns:xsd='http://www.w3.org/2001/XMLSchema' "
+		return "<?xml version='1.0' encoding='UTF-8'?> " + "<xsl:stylesheet version='2.0' "
+		        + "xmlns:xsl='http://www.w3.org/1999/XSL/Transform' " + "xmlns:fn='http://www.w3.org/2005/xpath-functions' "
+		        + "xmlns:xf='http://www.w3.org/2002/xforms'> " + "<xsl:output method='xml' version='1.0' encoding='UTF-8'/> "
+		        + "<xsl:template match='/'> " + " <html xmlns='http://www.w3.org/1999/xhtml' "
+		        + "       xmlns:xf='http://www.w3.org/2002/xforms' " + "       xmlns:xsd='http://www.w3.org/2001/XMLSchema' "
 		        + "       xmlns:xs='http://www.w3.org/2001/XMLSchema' "
 		        + "       xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' "
 		        + "       xmlns:ev='http://www.w3.org/2001/xml-events' "
 		        + "       xmlns:openmrstype='http://localhost:8080/openmrs/moduleServlet/formentry/forms/customtypes/schema/4-109' "
 		        + " > " + " <head> " + " 	<title> "
-		        + " 		<xsl:value-of select='/xf:xforms/xf:model/xf:instance/form/@name' /> " + "   </title> " + "	<style> "
-		        + getDefaultStyle() + " </style> " + "   <script type='text/javascript'> <![CDATA[ " + getJavaStriptNode()
-		        + " ]]> </script> " + " 	<xsl:copy-of select='/xf:xforms/xf:model' /> " + " </head> " + " <body> "
-		        + " 	<xsl:for-each select='/xf:xforms/*'> " + "   	<xsl:if test='local-name() != \"model\"'> "
-		        + " 			<xsl:copy-of select='.' /> " + "       </xsl:if> " + " 	</xsl:for-each> " + " </body> " + " </html> "
-		        + "</xsl:template> " + "</xsl:stylesheet> ";
+		        + " 		<xsl:value-of select='/xf:xforms/xf:model/xf:instance/form/@name' /> " + "   </title> "
+		        + "	<style> " + getDefaultStyle() + " </style> " + "   <script type='text/javascript'> <![CDATA[ "
+		        + getJavaStriptNode() + " ]]> </script> " + " 	<xsl:copy-of select='/xf:xforms/xf:model' /> " + " </head> "
+		        + " <body> " + " 	<xsl:for-each select='/xf:xforms/*'> "
+		        + "   	<xsl:if test='local-name() != \"model\"'> " + " 			<xsl:copy-of select='.' /> "
+		        + "       </xsl:if> " + " 	</xsl:for-each> " + " </body> " + " </html> " + "</xsl:template> "
+		        + "</xsl:stylesheet> ";
 	}
 	
 	/**
-	 * Gets the default plain (without JavaScript and css) XSLT for transforming an XForm into an
-	 * XHTML document.
+	 * Gets the default plain (without JavaScript and css) XSLT for transforming an XForm into an XHTML
+	 * document.
 	 * 
 	 * @return the XSLT text
 	 */
 	public static String getPlainDefaultXSLT() {
-		return "<?xml version='1.0' encoding='UTF-8'?> "
-		        + "<xsl:stylesheet version='2.0' "
-		        + "xmlns:xsl='http://www.w3.org/1999/XSL/Transform' "
-		        + "xmlns:fn='http://www.w3.org/2005/xpath-functions' "
-		        + "xmlns:xf='http://www.w3.org/2002/xforms'> "
-		        + "<xsl:output method='xml' version='1.0' encoding='UTF-8'/> "
-		        + "<xsl:template match='/'> "
-		        + " <html xmlns='http://www.w3.org/1999/xhtml' "
-		        + "       xmlns:xf='http://www.w3.org/2002/xforms' "
-		        + "       xmlns:xsd='http://www.w3.org/2001/XMLSchema' "
+		return "<?xml version='1.0' encoding='UTF-8'?> " + "<xsl:stylesheet version='2.0' "
+		        + "xmlns:xsl='http://www.w3.org/1999/XSL/Transform' " + "xmlns:fn='http://www.w3.org/2005/xpath-functions' "
+		        + "xmlns:xf='http://www.w3.org/2002/xforms'> " + "<xsl:output method='xml' version='1.0' encoding='UTF-8'/> "
+		        + "<xsl:template match='/'> " + " <html xmlns='http://www.w3.org/1999/xhtml' "
+		        + "       xmlns:xf='http://www.w3.org/2002/xforms' " + "       xmlns:xsd='http://www.w3.org/2001/XMLSchema' "
 		        + "       xmlns:xs='http://www.w3.org/2001/XMLSchema' "
 		        + "       xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' "
 		        + "       xmlns:ev='http://www.w3.org/2001/xml-events' "
@@ -267,13 +249,13 @@ public class XformsUtil {
 		        + " 		<xsl:value-of select='/xf:xforms/xf:model/xf:instance/form/@name' /> " + "   </title> "
 		        + " 	<xsl:copy-of select='/xf:xforms/xf:model' /> " + " </head> " + " <body> "
 		        + " 	<xsl:for-each select='/xf:xforms/*'> " + "   	<xsl:if test='local-name() != \"model\"'> "
-		        + " 			<xsl:copy-of select='.' /> " + "       </xsl:if> " + " 	</xsl:for-each> " + " </body> " + " </html> "
-		        + "</xsl:template> " + "</xsl:stylesheet> ";
+		        + " 			<xsl:copy-of select='.' /> " + "       </xsl:if> " + " 	</xsl:for-each> " + " </body> "
+		        + " </html> " + "</xsl:template> " + "</xsl:stylesheet> ";
 	}
 	
 	/**
-	 * Gets the javascript needed during the xforms processsing in the browser. For now the
-	 * javascript we have deals with deleting of xform repeat items.
+	 * Gets the javascript needed during the xforms processsing in the browser. For now the javascript
+	 * we have deals with deleting of xform repeat items.
 	 * 
 	 * @return the javascript script.
 	 */
@@ -285,12 +267,12 @@ public class XformsUtil {
 		        + "        var dataElement = instance.getElementsByTagName('problem_list')[0]; "
 		        + "        var itemElements = dataElement.getElementsByTagName(id); "
 		        + "        var cnt = itemElements.length; " +
-
+		        
 		        "        if (cnt > 1){ " + "             dataElement.removeChild(itemElements[cnt-1]); "
 		        + "        } else { " + " 			var values = itemElements[0].getElementsByTagName('value'); "
-		        + " 			for(var i=0; i<values.length; i++) " + "			values[i].childNodes[0].nodeValue = null; " + "        } "
-		        +
-
+		        + " 			for(var i=0; i<values.length; i++) "
+		        + "			values[i].childNodes[0].nodeValue = null; " + "        } " +
+		        
 		        "        model.rebuild(); " + "        model.recalculate(); " + "        model.refresh(); " + "   } ";
 		
 		return script;
@@ -299,7 +281,7 @@ public class XformsUtil {
 		scriptNode.setName(XformBuilder.NODE_SCRIPT);
 		scriptNode.setAttribute(null, XformBuilder.ATTRIBUTE_TYPE, "text/javascript");
 		scriptNode.addChild(Element.CDSECT, script);
-
+		
 		return scriptNode;*/
 	}
 	
@@ -320,12 +302,12 @@ public class XformsUtil {
 		Source source = new StreamSource(IOUtils.toInputStream(xform,XformConstants.DEFAULT_CHARACTER_ENCODING));
 		Source xslt = new StreamSource(IOUtils.toInputStream(xsl,XformConstants.DEFAULT_CHARACTER_ENCODING));
 		Result result = new StreamResult(outWriter);
-
+		
 		System.setProperty("javax.xml.transform.TransformerFactory",
 		"net.sf.saxon.TransformerFactoryImpl");
-
+		
 		TransformerFactory tf = TransformerFactory.newInstance();
-
+		
 		Transformer t = tf.newTransformer(xslt);
 		t.transform(source, result);
 		return outWriter.toString();*/
@@ -399,7 +381,8 @@ public class XformsUtil {
 		File xformsComplexObsDir = OpenmrsUtil
 		        .getDirectoryInApplicationDataDirectory(folderName + File.separatorChar + path);
 		if (log.isDebugEnabled())
-			log.debug("Loaded xforms complex obs directory from global properties: " + xformsComplexObsDir.getAbsolutePath());
+			log.debug(
+			    "Loaded xforms complex obs directory from global properties: " + xformsComplexObsDir.getAbsolutePath());
 		
 		return xformsComplexObsDir;
 	}
@@ -569,7 +552,7 @@ public class XformsUtil {
 	 * @throws Exception
 	 */
 	public static void invokeSerializationMethod(String methodName, OutputStream os, String globalPropKey,
-	                                             String defaultClassName, Object data) throws Exception {
+	        String defaultClassName, Object data) throws Exception {
 		String serializerClass = Context.getAdministrationService().getGlobalProperty(globalPropKey);
 		
 		if (serializerClass == null || serializerClass.length() == 0)
@@ -598,7 +581,7 @@ public class XformsUtil {
 	 * @throws Exception
 	 */
 	public static Object invokeDeserializationMethod(InputStream is, String globalPropKey, String defaultClassName,
-	                                                 Object data) throws Exception {
+	        Object data) throws Exception {
 		String className = Context.getAdministrationService().getGlobalProperty(globalPropKey);
 		if (className == null || className.length() == 0)
 			className = defaultClassName;
@@ -613,14 +596,14 @@ public class XformsUtil {
 		return concept.getConceptId() + "^" + concept.getName(locale).getName()
 				+ "^" + FormConstants.HL7_LOCAL_CONCEPT;
 	}*/
-
+	
 	public static Document fromString2Doc(String xml) throws Exception {
 		return DocumentBuilderFactory.newInstance().newDocumentBuilder()
 		        .parse(IOUtils.toInputStream(xml, XformConstants.DEFAULT_CHARACTER_ENCODING));
 	}
 	
 	public static void reportDataUploadError(Throwable ex, HttpServletRequest request, HttpServletResponse response,
-	                                         PrintWriter writer) throws IOException {
+	        PrintWriter writer) throws IOException {
 		
 		ex = getActualRootCause(ex, true);
 		
@@ -640,12 +623,12 @@ public class XformsUtil {
 	}
 	
 	/**
-	 * Gets the id of the provider for a given encounter. OpenMRS from version 1.6 changed the
-	 * return type of encounter.getProvider() from User to Person. As a result, this module could
-	 * get problems with these versions of OpenMRS. One solution would be to develop separate
-	 * versions of the module where one is for higher and another for lower versions of OpenMRS. Did
-	 * not like this option very much because i did not want to maintain two different versions. So
-	 * i decided to use reflection when on higher versions of OpenMRS.
+	 * Gets the id of the provider for a given encounter. OpenMRS from version 1.6 changed the return
+	 * type of encounter.getProvider() from User to Person. As a result, this module could get problems
+	 * with these versions of OpenMRS. One solution would be to develop separate versions of the module
+	 * where one is for higher and another for lower versions of OpenMRS. Did not like this option very
+	 * much because i did not want to maintain two different versions. So i decided to use reflection
+	 * when on higher versions of OpenMRS.
 	 * 
 	 * @return Returns the provider id.
 	 * @since 3.8.4
@@ -704,8 +687,8 @@ public class XformsUtil {
 	}
 	
 	public static boolean autoGeneratePatientIdentifier() {
-		return "true".equalsIgnoreCase(Context.getAdministrationService().getGlobalProperty(
-		    "xforms.autoGeneratePatientIdentifier", "false"));
+		return "true".equalsIgnoreCase(
+		    Context.getAdministrationService().getGlobalProperty("xforms.autoGeneratePatientIdentifier", "false"));
 	}
 	
 	public static PatientIdentifierType getNewPatientIdentifierType() {
@@ -742,13 +725,13 @@ public class XformsUtil {
 	}
 	
 	public static boolean encounterDateIncludesTime() {
-		return "true".equalsIgnoreCase(Context.getAdministrationService().getGlobalProperty(
-		    "xforms.encounterDateIncludesTime", "false"));
+		return "true".equalsIgnoreCase(
+		    Context.getAdministrationService().getGlobalProperty("xforms.encounterDateIncludesTime", "false"));
 	}
 	
 	public static boolean isJavaRosaSaveFormat() {
-		return "javarosa".equalsIgnoreCase(Context.getAdministrationService().getGlobalProperty("xforms.saveFormat",
-		    "purcforms"));
+		return "javarosa"
+		        .equalsIgnoreCase(Context.getAdministrationService().getGlobalProperty("xforms.saveFormat", "purcforms"));
 	}
 	
 	/**
@@ -761,10 +744,10 @@ public class XformsUtil {
 	 * @throws IOException
 	 * @throws TransformerException
 	 */
-	public static String replaceConceptMaps(String xml) throws ParserConfigurationException, SAXException, IOException,
-	    TransformerException {
-		String prefSourceName = Context.getAdministrationService().getGlobalProperty(
-		    XformConstants.GLOBAL_PROP_KEY_PREFERRED_CONCEPT_SOURCE);
+	public static String replaceConceptMaps(String xml)
+	        throws ParserConfigurationException, SAXException, IOException, TransformerException {
+		String prefSourceName = Context.getAdministrationService()
+		        .getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_PREFERRED_CONCEPT_SOURCE);
 		if (StringUtils.isBlank(prefSourceName))
 			return xml;
 		
@@ -785,21 +768,21 @@ public class XformsUtil {
 					
 					//if we have a value for the conceptId attribute as a concept map i.e the ':' separating source name and 
 					//the concept's code in the specified source
-					if (namedNodeMap.getNamedItem(XformBuilder.ATTRIBUTE_OPENMRS_CONCEPT) != null
-					        && namedNodeMap.getNamedItem(XformBuilder.ATTRIBUTE_OPENMRS_CONCEPT).getNodeValue().indexOf(":") > -1) {
+					if (namedNodeMap.getNamedItem(XformBuilder.ATTRIBUTE_OPENMRS_CONCEPT) != null && namedNodeMap
+					        .getNamedItem(XformBuilder.ATTRIBUTE_OPENMRS_CONCEPT).getNodeValue().indexOf(":") > -1) {
 						String sourceNameAndCode[] = StringUtils.split(
 						    namedNodeMap.getNamedItem(XformBuilder.ATTRIBUTE_OPENMRS_CONCEPT).getNodeValue(), ":");
 						Concept concept = Context.getConceptService().getConceptByMapping(sourceNameAndCode[1],
 						    sourceNameAndCode[0]);
 						
 						if (concept == null)
-							throw new APIException("Failed to find concept by mapping in source name:'"
-							        + sourceNameAndCode[0].trim() + "' and source code'" + sourceNameAndCode[1].trim() + "'");
+							throw new APIException(
+							        "Failed to find concept by mapping in source name:'" + sourceNameAndCode[0].trim()
+							                + "' and source code'" + sourceNameAndCode[1].trim() + "'");
 						
-						((Element) currChildElement.getChildNodes().item(j)).setAttribute(
-						    XformBuilder.ATTRIBUTE_OPENMRS_CONCEPT,
-						    concept.getConceptId().toString() + "^" + concept.getName() + "^"
-						            + XformConstants.HL7_LOCAL_CONCEPT);
+						((Element) currChildElement.getChildNodes().item(j))
+						        .setAttribute(XformBuilder.ATTRIBUTE_OPENMRS_CONCEPT, concept.getConceptId().toString() + "^"
+						                + concept.getName() + "^" + XformConstants.HL7_LOCAL_CONCEPT);
 						foundMappings = true;
 					}
 				}
@@ -940,16 +923,16 @@ public class XformsUtil {
 			
 			method = Context.class.getMethod("getProviderService", null);
 			Object providerService = method.invoke(null, null);
-			method = providerService.getClass().getMethod("getProvidersByPerson", new Class[]{Class.forName("org.openmrs.Person")});
-			Collection providers = (Collection)method.invoke(providerService, new Object[]{ person });
+			method = providerService.getClass().getMethod("getProvidersByPerson",
+			    new Class[] { Class.forName("org.openmrs.Person") });
+			Collection providers = (Collection) method.invoke(providerService, new Object[] { person });
 			if (providers.size() == 0)
 				return null;
 			
 			Object provider = providers.toArray()[0];
 			method = provider.getClass().getMethod("getProviderId", null);
-			return (Integer)method.invoke(provider, null);
-		}
-		else {
+			return (Integer) method.invoke(provider, null);
+		} else {
 			return getPersonId(user);
 		}
 	}
@@ -958,8 +941,8 @@ public class XformsUtil {
 	 * Convenience method that recursively attempts to pull the root case from a Throwable
 	 * 
 	 * @param t the Throwable object
-	 * @param isOriginalError specifies if the passed in Throwable is the original Exception that
-	 *            was thrown
+	 * @param isOriginalError specifies if the passed in Throwable is the original Exception that was
+	 *            thrown
 	 * @return the root cause if any was found
 	 */
 	public static Throwable getActualRootCause(Throwable t, boolean isOriginalError) {
@@ -1006,12 +989,15 @@ public class XformsUtil {
 		Boolean allowNumeric = false;
 		try {
 			allowNumeric = cn.isPrecise();
-		} catch(NoSuchMethodError ex) {
+		}
+		catch (NoSuchMethodError ex) {
 			try {
 				Method method = cn.getClass().getMethod("isAllowDecimal", null);
 				allowNumeric = (Boolean) method.invoke(cn, null);
 			}
-			catch (Exception e) {e.printStackTrace();}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		return allowNumeric;
 	}
@@ -1042,10 +1028,10 @@ public class XformsUtil {
 	 * Generates a new, unique tag name for any given string
 	 * 
 	 * @param s string to convert into a unique XML tag
-	 * @param tagList java.util.Vector containing all previously created tags. If the tagList is
-	 *            null, it will be initialized automatically
-	 * @return unique XML tag name from given string (guaranteed not to duplicate any tag names
-	 *         already within <code>tagList</code>)
+	 * @param tagList java.util.Vector containing all previously created tags. If the tagList is null,
+	 *            it will be initialized automatically
+	 * @return unique XML tag name from given string (guaranteed not to duplicate any tag names already
+	 *         within <code>tagList</code>)
 	 */
 	public static String getNewTag(String s, Vector<String> tagList) {
 		String token = FormUtil.getXmlToken(s);

@@ -1,4 +1,4 @@
-/**
+/*
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
@@ -21,23 +21,25 @@ import org.openmrs.module.xforms.util.XformsUtil;
 import org.openmrs.util.FormUtil;
 
 public class ComplexType {
+	
 	Map<Integer, TreeSet<FormField>> formStructure;
+	
 	FormField formField;
+	
 	String token;
+	
 	boolean rendered = false;
-
-	ComplexType(Map<Integer, TreeSet<FormField>> formStructure,
-			FormField formField) {
+	
+	ComplexType(Map<Integer, TreeSet<FormField>> formStructure, FormField formField) {
 		this(formStructure, formField, null);
 	}
-
-	ComplexType(Map<Integer, TreeSet<FormField>> formStructure,
-			FormField formField, String token) {
+	
+	ComplexType(Map<Integer, TreeSet<FormField>> formStructure, FormField formField, String token) {
 		this.formStructure = formStructure;
 		this.formField = formField;
 		this.token = token;
 	}
-
+	
 	public boolean equals(Object obj) {
 		if (obj != null && obj instanceof ComplexType) {
 			ComplexType ct = (ComplexType) obj;
@@ -45,42 +47,41 @@ public class ComplexType {
 		}
 		return false;
 	}
-
+	
 	public void setToken(String token) {
 		this.token = token;
 	}
-
+	
 	public String getToken() {
 		return token;
 	}
-
+	
 	public void setRendered(boolean rendered) {
 		this.rendered = rendered;
 	}
-
+	
 	public boolean isRendered() {
 		return rendered;
 	}
-
+	
 	public Field getField() {
 		return formField.getField();
 	}
-
+	
 	public boolean isRequired() {
 		return formField.isRequired();
 	}
-
+	
 	public int hashCode() {
 		return this.formField.getField().getFieldId();
 	}
-
+	
 	// true if form fields are structurally equivalent in schema (can share
 	// a type definition)
 	public boolean equivalent(FormField a, FormField b) {
 		if (a.equals(b))
 			return true;
-		if (!a.getField().getFieldId().equals(b.getField().getFieldId())
-				|| a.isRequired() != b.isRequired())
+		if (!a.getField().getFieldId().equals(b.getField().getFieldId()) || a.isRequired() != b.isRequired())
 			return false;
 		TreeSet<FormField> aBranch = formStructure.get(a.getFormFieldId());
 		TreeSet<FormField> bBranch = formStructure.get(b.getFormFieldId());
@@ -97,11 +98,9 @@ public class ComplexType {
 		}
 		return true;
 	}
-
-	public static ComplexType getComplexType(
-			Map<Integer, TreeSet<FormField>> formStructure,
-			Vector<ComplexType> list, FormField formField, String token,
-			Vector<String> tagList) {
+	
+	public static ComplexType getComplexType(Map<Integer, TreeSet<FormField>> formStructure, Vector<ComplexType> list,
+	        FormField formField, String token, Vector<String> tagList) {
 		ComplexType ct = new ComplexType(formStructure, formField);
 		int index = list.indexOf(ct);
 		if (index >= 0)

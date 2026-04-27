@@ -1,4 +1,4 @@
-/**
+/*
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
@@ -65,7 +65,7 @@ public class XformDataUploadController extends SimpleFormController {
 	
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object object,
-	                                BindException exceptions) throws Exception {
+	        BindException exceptions) throws Exception {
 		
 		byte status = XformsServer.STATUS_NULL;
 		
@@ -80,8 +80,8 @@ public class XformDataUploadController extends SimpleFormController {
 			
 			//check if external client sending multiple filled forms.
 			//These are normally mobile clients.
-			if (XformConstants.TRUE_TEXT_VALUE.equalsIgnoreCase(request
-			        .getParameter(XformConstants.REQUEST_PARAM_BATCH_ENTRY))) {
+			if (XformConstants.TRUE_TEXT_VALUE
+			        .equalsIgnoreCase(request.getParameter(XformConstants.REQUEST_PARAM_BATCH_ENTRY))) {
 				try {
 					String serializerKey = request.getParameter("serializer");
 					if (serializerKey == null || serializerKey.trim().length() == 0)
@@ -105,8 +105,8 @@ public class XformDataUploadController extends SimpleFormController {
 					if ("edit".equals(request.getParameter("mode")))
 						processXformEdit(request, xml);
 					else
-						XformDataUploadManager.processXform(xml, request.getSession().getId(), XformsUtil.getEnterer(),
-						    true, request);
+						XformDataUploadManager.processXform(xml, request.getSession().getId(), XformsUtil.getEnterer(), true,
+						    request);
 					
 					Object id = request.getAttribute(XformConstants.REQUEST_ATTRIBUTE_ID_PATIENT_ID);
 					if (id != null)

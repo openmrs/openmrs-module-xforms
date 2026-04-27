@@ -1,4 +1,4 @@
-/**
+/*
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
@@ -12,13 +12,11 @@ package org.openmrs.module.xforms.serialization;
 import java.util.*;
 import java.io.*;
 
-
 /**
- * Helper class to write and read collection to and from streams. This class also
- * writes the built in types taking care of nulls if any.
+ * Helper class to write and read collection to and from streams. This class also writes the built
+ * in types taking care of nulls if any.
  * 
  * @author Daniel Kayiwa
- *
  */
 public class SerializationUtils {
 	
@@ -29,12 +27,11 @@ public class SerializationUtils {
 	 * @param data - the string to write.
 	 * @throws IOException - thrown when a problem occurs during the writing to stream.
 	 */
-	public static void writeUTF(DataOutputStream dos,String data) throws IOException{
-		if(data != null){
+	public static void writeUTF(DataOutputStream dos, String data) throws IOException {
+		if (data != null) {
 			dos.writeBoolean(true);
 			dos.writeUTF(data);
-		}
-		else
+		} else
 			dos.writeBoolean(false);
 	}
 	
@@ -45,14 +42,13 @@ public class SerializationUtils {
 	 * @param data - the Interger to write.
 	 * @throws IOException - thrown when a problem occurs during the writing to stream.
 	 */
-	public static void writeInteger(DataOutputStream dos,Integer data) throws IOException{
-		if(data != null){
+	public static void writeInteger(DataOutputStream dos, Integer data) throws IOException {
+		if (data != null) {
 			dos.writeBoolean(true);
 			dos.writeInt(data.intValue());
-		}
-		else
+		} else
 			dos.writeBoolean(false);
-	} 
+	}
 	
 	/**
 	 * Writes a Date to a stream.
@@ -61,14 +57,13 @@ public class SerializationUtils {
 	 * @param data - the Date to write.
 	 * @throws IOException - thrown when a problem occurs during the writing to stream.
 	 */
-	public static void writeDate(DataOutputStream dos,Date data) throws IOException{
-		if(data != null){
+	public static void writeDate(DataOutputStream dos, Date data) throws IOException {
+		if (data != null) {
 			dos.writeBoolean(true);
 			dos.writeLong(data.getTime());
-		}
-		else
+		} else
 			dos.writeBoolean(false);
-	} 
+	}
 	
 	/**
 	 * Writes a boolean to a stream.
@@ -77,14 +72,13 @@ public class SerializationUtils {
 	 * @param data - the boolean to write.
 	 * @throws IOException - thrown when a problem occurs during the writing to stream.
 	 */
-	public static void writeBoolean(DataOutputStream dos,Boolean data) throws IOException{
-		if(data != null){
+	public static void writeBoolean(DataOutputStream dos, Boolean data) throws IOException {
+		if (data != null) {
 			dos.writeBoolean(true);
 			dos.writeBoolean(data.booleanValue());
-		}
-		else
+		} else
 			dos.writeBoolean(false);
-	} 
+	}
 	
 	/**
 	 * Reads a string from a stream.
@@ -94,7 +88,7 @@ public class SerializationUtils {
 	 * @throws IOException - thrown when a problem occurs during the reading from stream.
 	 */
 	public static String readUTF(DataInputStream dis) throws IOException {
-		if(dis.readBoolean())
+		if (dis.readBoolean())
 			return dis.readUTF();
 		return null;
 	}
@@ -107,7 +101,7 @@ public class SerializationUtils {
 	 * @throws IOException - thrown when a problem occurs during the reading from stream.
 	 */
 	public static Integer readInteger(DataInputStream dis) throws IOException {
-		if(dis.readBoolean())
+		if (dis.readBoolean())
 			return new Integer(dis.readInt());
 		return null;
 	}
@@ -120,7 +114,7 @@ public class SerializationUtils {
 	 * @throws IOException - thrown when a problem occurs during the reading from stream.
 	 */
 	public static Date readDate(DataInputStream dis) throws IOException {
-		if(dis.readBoolean())
+		if (dis.readBoolean())
 			return new Date(dis.readLong());
 		return null;
 	}
@@ -133,7 +127,7 @@ public class SerializationUtils {
 	 * @throws IOException - thrown when a problem occurs during the reading from stream.
 	 */
 	public static Boolean readBoolean(DataInputStream dis) throws IOException {
-		if(dis.readBoolean())
+		if (dis.readBoolean())
 			return new Boolean(dis.readBoolean());
 		return null;
 	}
@@ -160,23 +154,24 @@ public class SerializationUtils {
 			dos.writeInt(0);
 	}*/
 	
-	public static List read(DataInputStream dis, Class cls) throws IOException, InstantiationException,IllegalAccessException {
+	public static List read(DataInputStream dis, Class cls)
+	        throws IOException, InstantiationException, IllegalAccessException {
 		
 		int len = dis.readInt();
-		if(len == 0)
+		if (len == 0)
 			return null;
-
+		
 		List<Persistent> persistentList = new ArrayList<Persistent>();
 		
-		for(byte i=0; i<len; i++ ){
-			Persistent persistent = (Persistent)cls.newInstance();
+		for (byte i = 0; i < len; i++) {
+			Persistent persistent = (Persistent) cls.newInstance();
 			persistent.read(dis);
 			persistentList.add(persistent);
 		}
 		
 		return persistentList;
 	}
-
+	
 	/**
 	 * Writes a small vector (byte size) of Persistent objects to a stream.
 	 * 
@@ -184,13 +179,12 @@ public class SerializationUtils {
 	 * @param dos - the stream to write to.
 	 * @throws IOException - thrown when a problem occurs during the writing to stream.
 	 */
-	public static void write(List persistentList, DataOutputStream dos) throws IOException {	
-		if(persistentList != null){
+	public static void write(List persistentList, DataOutputStream dos) throws IOException {
+		if (persistentList != null) {
 			dos.writeInt(persistentList.size());
-			for(int i=0; i<persistentList.size(); i++ )
-				((Persistent)persistentList.get(i)).write(dos);
-		}
-		else
+			for (int i = 0; i < persistentList.size(); i++)
+				((Persistent) persistentList.get(i)).write(dos);
+		} else
 			dos.writeInt(0);
 	}
 }

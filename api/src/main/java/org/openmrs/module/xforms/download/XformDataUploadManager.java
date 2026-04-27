@@ -1,4 +1,4 @@
-/**
+/*
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
@@ -91,7 +91,7 @@ public class XformDataUploadManager {
 	 * @param xml - the xforms model.
 	 */
 	public static void processXform(String xml, String sessionId, String enterer, boolean propagateErrors,
-	                                HttpServletRequest request) throws Exception {
+	        HttpServletRequest request) throws Exception {
 		DocumentBuilder db = dbf.newDocumentBuilder();
 		xml = XformsUtil.replaceConceptMaps(xml);
 		Document doc = db.parse(IOUtils.toInputStream(xml, XformConstants.DEFAULT_CHARACTER_ENCODING));
@@ -111,7 +111,7 @@ public class XformDataUploadManager {
 	 * @throws Exception
 	 */
 	private static List<Document> mergeNewPatientsWithEncounters(List<String> xforms, String sessionId, String enterer)
-	                                                                                                                   throws Exception {
+	        throws Exception {
 		DocumentBuilder db = dbf.newDocumentBuilder();
 		
 		//Holds a list of encounter documents.
@@ -172,8 +172,8 @@ public class XformDataUploadManager {
 	}
 	
 	/**
-	 * Merges a new patient document with a list of documents having encounter obs entered in
-	 * various forms for the new patient.
+	 * Merges a new patient document with a list of documents having encounter obs entered in various
+	 * forms for the new patient.
 	 * 
 	 * @param patientDoc the new patient document.
 	 * @param encounterDocs a list of encounter documents for the new patient.
@@ -223,8 +223,8 @@ public class XformDataUploadManager {
 	}
 	
 	/**
-	 * Save xforms data in the xforms queue. As per from version 3 we are no longer queuing, we
-	 * process immediately because users want to see their encounter obs without waiting.
+	 * Save xforms data in the xforms queue. As per from version 3 we are no longer queuing, we process
+	 * immediately because users want to see their encounter obs without waiting.
 	 * 
 	 * @param xml - the xforms model.
 	 */
@@ -256,19 +256,19 @@ public class XformDataUploadManager {
 		/*NodeList elemList = doc.getElementsByTagName(XformConstants.NODE_SESSION);
 		if (elemList != null && elemList.getLength() > 0) 
 			((Element)elemList.item(0)).setTextContent(sessionId);
-
+		
 		elemList = doc.getElementsByTagName(XformConstants.NODE_UID);
 		if (elemList != null && elemList.getLength() > 0) 
 			((Element)elemList.item(0)).setTextContent(FormEntryWrapper.generateFormUid());
-
+		
 		elemList = doc.getElementsByTagName(XformConstants.NODE_DATE_ENTERED);
 		if (elemList != null && elemList.getLength() > 0) 
 			((Element)elemList.item(0)).setTextContent(FormUtil.dateToString(new java.util.Date()));
-
+		
 		elemList = doc.getElementsByTagName(XformConstants.NODE_ENTERER);
 		if (elemList != null && elemList.getLength() > 0) 
 			((Element)elemList.item(0)).setTextContent(enterer);*/
-
+		
 		setTextContent(doc.getElementsByTagName(XformConstants.NODE_SESSION), sessionId);
 		setTextContent(doc.getElementsByTagName(XformConstants.NODE_UID), FormEntryWrapper.generateFormUid());
 		setTextContent(doc.getElementsByTagName(XformConstants.NODE_DATE_ENTERED),
@@ -292,8 +292,8 @@ public class XformDataUploadManager {
 	 */
 	private static Map<Integer, String> getXforms() throws Exception {
 		
-		String useStoredXform = Context.getAdministrationService().getGlobalProperty(
-		    XformConstants.GLOBAL_PROP_KEY_USER_STORED_XFORMS);
+		String useStoredXform = Context.getAdministrationService()
+		        .getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_USER_STORED_XFORMS);
 		boolean createNew = false;
 		if (XformConstants.FALSE_TEXT_VALUE.equalsIgnoreCase(useStoredXform))
 			createNew = true;

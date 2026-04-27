@@ -1,4 +1,4 @@
-/**
+/*
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
@@ -23,10 +23,9 @@ import org.openmrs.module.xforms.XformsService;
  * Adds XForm links to the form schema design page.
  * 
  * @author Daniel
- *
  */
 public class XformsFormHeaderExt extends Extension {
-
+	
 	private String formId;
 	
 	public Extension.MEDIA_TYPE getMediaType() {
@@ -37,7 +36,7 @@ public class XformsFormHeaderExt extends Extension {
 	public void initialize(Map<String, String> parameters) {
 		formId = parameters.get("formId");
 	}
-
+	
 	public Map<String, String> getLinks() {
 		
 		LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
@@ -52,22 +51,22 @@ public class XformsFormHeaderExt extends Extension {
 			//map.put("module/xforms/xformUpload.form?formId=" + formId, "xforms.uploadXform");
 			
 			XformsService xformsService = null;
-			try{
-				xformsService = (XformsService)Context.getService(XformsService.class);
-			}catch(APIException ex){
+			try {
+				xformsService = (XformsService) Context.getService(XformsService.class);
+			}
+			catch (APIException ex) {
 				//In openmrs from version 1.6 and above, we get
 				//APIException: Service not found: interface org.openmrs.module.xforms.XformsService
 				ex.printStackTrace();
 			}
 			
-			if(xformsService == null || xformsService.hasXform(Integer.valueOf(formId))){
+			if (xformsService == null || xformsService.hasXform(Integer.valueOf(formId))) {
 				map.put("module/xforms/xformDelete.form?target=xform&formId=" + formId, "xforms.deleteXform");
 			}
 			
-			
 			//If form without a single form field, add the default fields.
 			Form form = Context.getFormService().getForm(Integer.parseInt(formId));
-			if(form != null && (form.getFormFields() == null || form.getFormFields().size() == 0)){
+			if (form != null && (form.getFormFields() == null || form.getFormFields().size() == 0)) {
 				BasicFormBuilder.addDefaultFields(form);
 			}
 		}

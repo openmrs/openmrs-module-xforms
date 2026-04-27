@@ -1,4 +1,4 @@
-/**
+/*
  * This Source Code Form is subject to the terms of the Mozilla Public License,
  * v. 2.0. If a copy of the MPL was not distributed with this file, You can
  * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
@@ -531,7 +531,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 		
 		if (node == null)
 			throw new IllegalArgumentException("node is null");
-
+		
 		for (int i = 0; i < node.getChildCount(); i++) {
 			if (node.isText(i)) {
 				node.removeChild(i);
@@ -594,8 +594,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 	 * @return - the child element.
 	 */
 	public static Element getElementByAttributePrefix(Element parent, String attributeName, String attributePrefix,
-	                                                  boolean includeAttribute, String includeAttributeName,
-	                                                  boolean copyIfNotExists, List<String> nonCopyAttributes) {
+	        boolean includeAttribute, String includeAttributeName, boolean copyIfNotExists, List<String> nonCopyAttributes) {
 		for (int i = 0; i < parent.getChildCount(); i++) {
 			if (parent.getType(i) != Element.ELEMENT)
 				continue;
@@ -741,8 +740,8 @@ public final class XformBuilder implements GlobalPropertyListener {
 		    problemListItems);
 		
 		//find all conceptId attributes in the document and replace their value with a mapped concept
-		String prefSourceName = Context.getAdministrationService().getGlobalProperty(
-		    XformConstants.GLOBAL_PROP_KEY_PREFERRED_CONCEPT_SOURCE);
+		String prefSourceName = Context.getAdministrationService()
+		        .getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_PREFERRED_CONCEPT_SOURCE);
 		//we only use the mappings if the global property is set
 		if (StringUtils.isNotBlank(prefSourceName)) {
 			for (int i = 0; i < formNode.getChildCount(); i++) {
@@ -785,16 +784,18 @@ public final class XformBuilder implements GlobalPropertyListener {
 		try {
 			Concept concept = cs.getConcept(Integer.valueOf(tokens[0].trim()));
 			ConceptSource preferredSource = null;
-			String prefSourceName = Context.getAdministrationService().getGlobalProperty(
-			    XformConstants.GLOBAL_PROP_KEY_PREFERRED_CONCEPT_SOURCE);
+			String prefSourceName = Context.getAdministrationService()
+			        .getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_PREFERRED_CONCEPT_SOURCE);
 			if (StringUtils.isNotBlank(prefSourceName)) {
 				preferredSource = cs.getConceptSourceByName(prefSourceName);
 				if (concept.getConceptMappings().size() > 0) {
 					if (preferredSource != null) {
 						for (ConceptMap map : concept.getConceptMappings()) {
-							if (OpenmrsUtil.nullSafeEquals(preferredSource, map.getConceptReferenceTerm().getConceptSource())) {
+							if (OpenmrsUtil.nullSafeEquals(preferredSource,
+							    map.getConceptReferenceTerm().getConceptSource())) {
 								element.setAttribute(null, ATTRIBUTE_OPENMRS_CONCEPT,
-								    map.getConceptReferenceTerm().getConceptSource().getName() + ":" + map.getConceptReferenceTerm().getCode());
+								    map.getConceptReferenceTerm().getConceptSource().getName() + ":"
+								            + map.getConceptReferenceTerm().getCode());
 								return;
 							}
 						}
@@ -830,7 +831,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 			return "FAMILY NAME";
 		else
 			return name.replace('_', ' ');*/
-
+		
 		name = name.replace('.', ' ');
 		name = name.replace("patient ", "");
 		name = name.replace("encounter ", "");
@@ -856,8 +857,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 	 * @param bodyNode - the body node to add the UI control to.
 	 */
 	public static void parseTemplate(Element modelElement, Element formNode, Element formChild, Hashtable bindings,
-	                                 Element bodyNode, Hashtable<String, String> problemList,
-	                                 Hashtable<String, String> problemListItems, int level) {
+	        Element bodyNode, Hashtable<String, String> problemList, Hashtable<String, String> problemListItems, int level) {
 		level++;
 		int numOfEntries = formChild.getChildCount();
 		for (int i = 0; i < numOfEntries; i++) {
@@ -880,9 +880,10 @@ public final class XformBuilder implements GlobalPropertyListener {
 			
 			//If the node has an openmrs_concept attribute but is not called obs,
 			//Or has the openmrs_attribite and openmrs_table attributes. 
-			if ((child.getAttributeValue(null, ATTRIBUTE_OPENMRS_CONCEPT) != null && level > 1 /*!child.getName().equals(NODE_OBS)*/)
-			        || (child.getAttributeValue(null, ATTRIBUTE_OPENMRS_ATTRIBUTE) != null && child.getAttributeValue(null,
-			            ATTRIBUTE_OPENMRS_TABLE) != null)) {
+			if ((child.getAttributeValue(null, ATTRIBUTE_OPENMRS_CONCEPT) != null
+			        && level > 1 /*!child.getName().equals(NODE_OBS)*/)
+			        || (child.getAttributeValue(null, ATTRIBUTE_OPENMRS_ATTRIBUTE) != null
+			                && child.getAttributeValue(null, ATTRIBUTE_OPENMRS_TABLE) != null)) {
 				
 				if (!name.equalsIgnoreCase(NODE_PROBLEM_LIST)) {
 					Element bindNode = createBindNode(modelElement, child, bindings, problemList, problemListItems);
@@ -896,8 +897,8 @@ public final class XformBuilder implements GlobalPropertyListener {
 						setTableFieldDefaultValue(name, formNode);
 						
 						if ("identifier".equalsIgnoreCase(child.getAttributeValue(null, ATTRIBUTE_OPENMRS_ATTRIBUTE))
-						        && "patient_identifier".equalsIgnoreCase(child.getAttributeValue(null,
-						            ATTRIBUTE_OPENMRS_TABLE))) {
+						        && "patient_identifier"
+						                .equalsIgnoreCase(child.getAttributeValue(null, ATTRIBUTE_OPENMRS_TABLE))) {
 							bindNode.setAttribute(null, ATTRIBUTE_PRELOAD, PRELOAD_PATIENT);
 							bindNode.setAttribute(null, ATTRIBUTE_PRELOAD_PARAMS, "patientIdentifier");
 						}
@@ -980,7 +981,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 			/*if(XformBuilderUtil.populateProviders19(formNode, modelNode, groupNode)){
 				return;
 			}*/
-
+			
 			List<User> providers = Context.getUserService().getUsersByRole(new Role("Provider"));
 			for (User provider : providers) {
 				
@@ -1041,7 +1042,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 	 * @return - the created binding node.
 	 */
 	private static Element createBindNode(Element modelElement, Element node, Hashtable bindings,
-	                                      Hashtable<String, String> problemList, Hashtable<String, String> problemListItems) {
+	        Hashtable<String, String> problemList, Hashtable<String, String> problemListItems) {
 		Element bindNode = modelElement.createElement(NAMESPACE_XFORMS, null);
 		bindNode.setName(NODE_BIND);
 		String parentName = ((Element) node.getParent()).getName();
@@ -1064,8 +1065,8 @@ public final class XformBuilder implements GlobalPropertyListener {
 			problemListItems.put(binding, parentName);
 		} else {
 			if (!(parentName.equalsIgnoreCase("obs") || parentName.equalsIgnoreCase("patient")
-			        || parentName.equalsIgnoreCase("encounter") || parentName.equalsIgnoreCase("problem_list") || parentName
-			        .equalsIgnoreCase("orders"))) {
+			        || parentName.equalsIgnoreCase("encounter") || parentName.equalsIgnoreCase("problem_list")
+			        || parentName.equalsIgnoreCase("orders"))) {
 				//binding = parentName + "_" + binding;
 				//TODO Need to investigate why the above commented out code brings the no data node found error in the form designer
 			}
@@ -1110,9 +1111,9 @@ public final class XformBuilder implements GlobalPropertyListener {
 	}
 	
 	/**
-	 * Adds a node to hold the xforms value for a multiple select node. The value is a space
-	 * delimited list of selected answers, which will later on be used to fill the true or false
-	 * values as expected by openmrs multiple select questions.
+	 * Adds a node to hold the xforms value for a multiple select node. The value is a space delimited
+	 * list of selected answers, which will later on be used to fill the true or false values as
+	 * expected by openmrs multiple select questions.
 	 * 
 	 * @param child - the multiple select node to add the value node to.
 	 */
@@ -1132,8 +1133,8 @@ public final class XformBuilder implements GlobalPropertyListener {
 	 */
 	private static void setTableFieldDataType(String name, Element bindNode) {
 		if (name.equalsIgnoreCase(NODE_ENCOUNTER_ENCOUNTER_DATETIME)) {
-			bindNode.setAttribute(null, ATTRIBUTE_TYPE, XformsUtil.encounterDateIncludesTime() ? DATA_TYPE_DATETIME
-			        : DATA_TYPE_DATE);
+			bindNode.setAttribute(null, ATTRIBUTE_TYPE,
+			    XformsUtil.encounterDateIncludesTime() ? DATA_TYPE_DATETIME : DATA_TYPE_DATE);
 			bindNode.setAttribute(null, ATTRIBUTE_CONSTRAINT, ". <= today()");
 			bindNode.setAttribute(null, (XformsUtil.isJavaRosaSaveFormat() ? "jr:constraintMsg" : ATTRIBUTE_MESSAGE),
 			    "Encounter date cannot be after today");
@@ -1189,7 +1190,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 			bindNode.setAttribute(null, ATTRIBUTE_READONLY, XPATH_VALUE_TRUE);
 			bindNode.setAttribute(null, ATTRIBUTE_LOCKED, XPATH_VALUE_TRUE);
 		}*/
-
+		
 		//jr:preload="patient" jr:preloadParams="ID"
 		
 		if (name.equalsIgnoreCase(NODE_PATIENT_BIRTH_DATE)) {
@@ -1264,15 +1265,15 @@ public final class XformBuilder implements GlobalPropertyListener {
 	
 	/**
 	 * Check whether a node is an openmrs table field node These are the ones with the attributes:
-	 * openmrs_table and openmrs_attribute e.g. patient_unique_number
-	 * openmrs_table="PATIENT_IDENTIFIER" openmrs_attribute="IDENTIFIER"
+	 * openmrs_table and openmrs_attribute e.g. patient_unique_number openmrs_table="PATIENT_IDENTIFIER"
+	 * openmrs_attribute="IDENTIFIER"
 	 * 
 	 * @param node - the node to check.
 	 * @return - true if it is, else false.
 	 */
 	private static boolean isTableFieldNode(Element node) {
-		return (node.getAttributeValue(null, ATTRIBUTE_OPENMRS_ATTRIBUTE) != null && node.getAttributeValue(null,
-		    ATTRIBUTE_OPENMRS_TABLE) != null);
+		return (node.getAttributeValue(null, ATTRIBUTE_OPENMRS_ATTRIBUTE) != null
+		        && node.getAttributeValue(null, ATTRIBUTE_OPENMRS_TABLE) != null);
 		
 	}
 	
@@ -1283,8 +1284,8 @@ public final class XformBuilder implements GlobalPropertyListener {
 	 * @return - true if multiple select, else false.
 	 */
 	private static boolean isMultSelectNode(Element child) {
-		return (child.getAttributeValue(null, ATTRIBUTE_MULTIPLE) != null && child.getAttributeValue(null,
-		    ATTRIBUTE_MULTIPLE).equals("1"));
+		return (child.getAttributeValue(null, ATTRIBUTE_MULTIPLE) != null
+		        && child.getAttributeValue(null, ATTRIBUTE_MULTIPLE).equals("1"));
 	}
 	
 	/**
@@ -1297,8 +1298,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 	 * @param bindings - a hashtable of node bindings.
 	 */
 	private static void parseSchema(Element rootNode, Element bodyNode, Element modelNode, Element xformSchemaNode,
-	                                Hashtable bindings, Hashtable<String, String> problemList,
-	                                Hashtable<String, String> problemListItems) {
+	        Hashtable bindings, Hashtable<String, String> problemList, Hashtable<String, String> problemListItems) {
 		Hashtable<String, Element> repeatControls = new Hashtable<String, Element>();
 		Hashtable<String, List<String>> duplicateFields = new Hashtable<String, List<String>>();
 		
@@ -1313,16 +1313,16 @@ public final class XformBuilder implements GlobalPropertyListener {
 				parseComplexType(child, child.getAttributeValue(null, ATTRIBUTE_NAME), bodyNode, xformSchemaNode, bindings,
 				    problemList, problemListItems, repeatControls, modelNode);
 				
-				parseDuplicateFieldsComplexType(duplicateFields, repeatControls, child, bodyNode, modelNode,
-				    xformSchemaNode, bindings, problemList, problemListItems);
+				parseDuplicateFieldsComplexType(duplicateFields, repeatControls, child, bodyNode, modelNode, xformSchemaNode,
+				    bindings, problemList, problemListItems);
 				
 				parseSharedRepeatKidsComplexType(child.getAttributeValue(null, ATTRIBUTE_NAME), duplicateFields,
 				    repeatControls, child, bodyNode, modelNode, xformSchemaNode, bindings, problemList, problemListItems);
 			} else {
 				String nameAttribute = child.getAttributeValue(null, ATTRIBUTE_NAME);
 				if (name.equalsIgnoreCase(NODE_SIMPLETYPE)
-				        || (name.equalsIgnoreCase(NODE_COMPLEXTYPE) && nameAttribute != null
-				                && nameAttribute.startsWith("_") && !nameAttribute.contains("_section"))/*&& isUserDefinedSchemaElement(child)*/)
+				        || (name.equalsIgnoreCase(NODE_COMPLEXTYPE) && nameAttribute != null && nameAttribute.startsWith("_")
+				                && !nameAttribute.contains("_section"))/*&& isUserDefinedSchemaElement(child)*/)
 					xformSchemaNode.addChild(0, Element.ELEMENT, child);
 				
 				if ("obs_section".equalsIgnoreCase(nameAttribute))
@@ -1337,10 +1337,9 @@ public final class XformBuilder implements GlobalPropertyListener {
 	}
 	
 	private static void parseDuplicateFieldsComplexType(Hashtable<String, List<String>> duplicateFields,
-	                                                    Hashtable<String, Element> repeatControls, Element child,
-	                                                    Element bodyNode, Element modelNode, Element xformSchemaNode,
-	                                                    Hashtable bindings, Hashtable<String, String> problemList,
-	                                                    Hashtable<String, String> problemListItems) {
+	        Hashtable<String, Element> repeatControls, Element child, Element bodyNode, Element modelNode,
+	        Element xformSchemaNode, Hashtable bindings, Hashtable<String, String> problemList,
+	        Hashtable<String, String> problemListItems) {
 		Set<Entry<String, List<String>>> entries = duplicateFields.entrySet();
 		for (Entry<String, List<String>> entry : entries) {
 			String key = child.getAttributeValue(null, ATTRIBUTE_NAME);
@@ -1367,10 +1366,9 @@ public final class XformBuilder implements GlobalPropertyListener {
 	}
 	
 	private static void parseSharedRepeatKidsComplexType(String name, Hashtable<String, List<String>> duplicateFields,
-	                                                     Hashtable<String, Element> repeatControls, Element child,
-	                                                     Element bodyNode, Element modelNode, Element xformSchemaNode,
-	                                                     Hashtable bindings, Hashtable<String, String> problemList,
-	                                                     Hashtable<String, String> problemListItems) {
+	        Hashtable<String, Element> repeatControls, Element child, Element bodyNode, Element modelNode,
+	        Element xformSchemaNode, Hashtable bindings, Hashtable<String, String> problemList,
+	        Hashtable<String, String> problemListItems) {
 		String orgName = name;
 		name = getBindNodeName(name);
 		List<String> repeats = repeatSharedKids.get(name);
@@ -1385,7 +1383,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 	}
 	
 	private static void parseDuplicateFieldsSimpleType(Hashtable<String, List<String>> duplicateFields, Element child,
-	                                                   Hashtable bindings) {
+	        Hashtable bindings) {
 		Set<Entry<String, List<String>>> entries = duplicateFields.entrySet();
 		for (Entry<String, List<String>> entry : entries) {
 			String key = child.getAttributeValue(null, ATTRIBUTE_NAME);
@@ -1404,8 +1402,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 	}
 	
 	private static void parseObsSectionRepeats(Element complexTypeNode, Hashtable bindings,
-	                                           Hashtable<String, String> problemList,
-	                                           Hashtable<String, List<String>> duplicateFields) {
+	        Hashtable<String, String> problemList, Hashtable<String, List<String>> duplicateFields) {
 		for (int i = 0; i < complexTypeNode.getChildCount(); i++) {
 			if (complexTypeNode.isText(i))
 				continue; //ignore text.
@@ -1419,8 +1416,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 	}
 	
 	private static void parseObsSectionSequenceRepeats(Element sequenceNode, Hashtable bindings,
-	                                                   Hashtable<String, String> problemList,
-	                                                   Hashtable<String, List<String>> duplicateFields) {
+	        Hashtable<String, String> problemList, Hashtable<String, List<String>> duplicateFields) {
 		
 		Hashtable<String, List<String>> fieldMap = new Hashtable<String, List<String>>();
 		
@@ -1434,7 +1430,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 				problemList.put(name, name);
 				
 				/*obsRepeatItems.put(name, name);
-
+				
 				String nodeset = nodesets.get(name);
 				Element bindNode = (Element)bindings.get(name);
 				if(nodeset != null && bindNode != null){
@@ -1495,9 +1491,8 @@ public final class XformBuilder implements GlobalPropertyListener {
 	 * @param bindings - a hashtable of node bindings.
 	 */
 	private static void parseComplexType(Element complexTypeNode, String name, Element bodyNode, Element xformSchemaNode,
-	                                     Hashtable bindings, Hashtable<String, String> problemList,
-	                                     Hashtable<String, String> problemListItems,
-	                                     Hashtable<String, Element> repeatControls, Element modelNode) {
+	        Hashtable bindings, Hashtable<String, String> problemList, Hashtable<String, String> problemListItems,
+	        Hashtable<String, Element> repeatControls, Element modelNode) {
 		
 		if (name.equals("patient_relationship_section") || name.equals("relative_section"))
 			return;
@@ -1537,8 +1532,8 @@ public final class XformBuilder implements GlobalPropertyListener {
 				
 			Element node = (Element) complexTypeNode.getChild(i);
 			if (node.getName().equalsIgnoreCase(NODE_SEQUENCE))
-				labelNode = parseSequenceNode(name, node, bodyNode, xformSchemaNode, bindNode, problemList,
-				    problemListItems, repeatControls, repeatItem, modelNode);
+				labelNode = parseSequenceNode(name, node, bodyNode, xformSchemaNode, bindNode, problemList, problemListItems,
+				    repeatControls, repeatItem, modelNode);
 			
 			if (repeatItem)
 				labelNode = lblNode;
@@ -1700,7 +1695,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 	/*private static Element getBindNode(String name, Hashtable bindings){
 		if(name == null)
 			return null;
-
+	
 		//We are only dealing with names ending with _type. e.g. education_level_type
 		//Openmrs appends the _type to the name when creating xml types for each concept
 		if(name.indexOf(COMPLEX_TYPE_NAME_POSTFIX) != -1){
@@ -1719,11 +1714,11 @@ public final class XformBuilder implements GlobalPropertyListener {
 		else
 			return null;
 	}*/
-
+	
 	/**
-	 * Gets the binding node name of a complex or simple type node name. An example of such a node
-	 * would be weight_kg for: complexType name="weight_kg_type" or <xs:simpleType
-	 * name="weight_kg_type_restricted_type">
+	 * Gets the binding node name of a complex or simple type node name. An example of such a node would
+	 * be weight_kg for: complexType name="weight_kg_type" or
+	 * <xs:simpleType name="weight_kg_type_restricted_type">
 	 * 
 	 * @param name - the name of the complex or simple type node.
 	 * @return - the binding node name.
@@ -1799,9 +1794,9 @@ public final class XformBuilder implements GlobalPropertyListener {
 	
 	/**
 	 * Checks if this node has the concept name and id. An example of such a node would be as:
-	 * <xs:attribute name="openmrs_concept" type="xs:string" use="required"
-	 * fixed="5089^WEIGHT (KG)^99DCT" /> where the concept name and id combination we are refering
-	 * to is: 5089^WEIGHT (KG)^99DCT
+	 * <xs:attribute name="openmrs_concept" type="xs:string" use="required" fixed="5089^WEIGHT
+	 * (KG)^99DCT" /> where the concept name and id combination we are refering to is: 5089^WEIGHT
+	 * (KG)^99DCT
 	 * 
 	 * @param node - the node to check.
 	 * @return true if so, else false.
@@ -1884,9 +1879,8 @@ public final class XformBuilder implements GlobalPropertyListener {
 	 * @return the created label node.
 	 */
 	private static Element parseSequenceNode(String name, Element sequenceNode, Element bodyNode, Element xformSchemaNode,
-	                                         Element bindingNode, Hashtable<String, String> problemList,
-	                                         Hashtable<String, String> problemListItems,
-	                                         Hashtable<String, Element> repeatControls, boolean repeatItem, Element modelNode) {
+	        Element bindingNode, Hashtable<String, String> problemList, Hashtable<String, String> problemListItems,
+	        Hashtable<String, Element> repeatControls, boolean repeatItem, Element modelNode) {
 		Element labelNode = null, controlNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
 		;
 		
@@ -1962,7 +1956,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 	 * @return the label node for the control.
 	 */
 	private static Element addProblemListSection(String name, Element bodyNode, Hashtable<String, Element> repeatControls,
-	                                             Element modelNode) {
+	        Element modelNode) {
 		Element groupNode = bodyNode.createElement(NAMESPACE_XFORMS, null);
 		groupNode.setName(NODE_GROUP);
 		Element labelNode = groupNode.createElement(NAMESPACE_XFORMS, null);
@@ -1991,10 +1985,8 @@ public final class XformBuilder implements GlobalPropertyListener {
 	 * @return returns the created label node.
 	 */
 	private static Element buildSequenceInputControlNode(String name, Element node, String type, Element labelNode,
-	                                                     Element bindingNode, Element bodyNode,
-	                                                     Hashtable<String, String> problemList,
-	                                                     Hashtable<String, String> problemListItems,
-	                                                     Hashtable<String, Element> repeatControls, Element modelNode) {
+	        Element bindingNode, Element bodyNode, Hashtable<String, String> problemList,
+	        Hashtable<String, String> problemListItems, Hashtable<String, Element> repeatControls, Element modelNode) {
 		type = getPrefixedDataType(type);
 		
 		if (!isDataTypeSetPrecisely(bindingNode))
@@ -2008,17 +2000,15 @@ public final class XformBuilder implements GlobalPropertyListener {
 		labelNode.setName(NODE_LABEL);
 		inputNode.addChild(Element.ELEMENT, labelNode);
 		
-		addRepeatControlNode(name, inputNode, bodyNode, problemList, problemListItems, repeatControls, NODE_VALUE,
-		    modelNode, bindingNode);
+		addRepeatControlNode(name, inputNode, bodyNode, problemList, problemListItems, repeatControls, NODE_VALUE, modelNode,
+		    bindingNode);
 		
 		return labelNode;
 	}
 	
 	private static void addRepeatControlNode(String name, Element controlNode, Element bodyNode,
-	                                         Hashtable<String, String> problemList,
-	                                         Hashtable<String, String> problemListItems,
-	                                         Hashtable<String, Element> repeatControls, String valueNodeName,
-	                                         Element modelNode, Element bindingNode) {
+	        Hashtable<String, String> problemList, Hashtable<String, String> problemListItems,
+	        Hashtable<String, Element> repeatControls, String valueNodeName, Element modelNode, Element bindingNode) {
 		if (problemList.containsKey(name))
 			controlNode.setAttribute(null, ATTRIBUTE_REF, valueNodeName);
 		else if (problemListItems.containsKey(name))
@@ -2059,9 +2049,8 @@ public final class XformBuilder implements GlobalPropertyListener {
 	 * @return the created label node.
 	 */
 	private static Element parseSequenceValueNode(String name, Element node, Element labelNode, Element bodyNode,
-	                                              Element bindingNode, Hashtable<String, String> problemList,
-	                                              Hashtable<String, String> problemListItems,
-	                                              Hashtable<String, Element> repeatControls, Element modelNode) {
+	        Element bindingNode, Hashtable<String, String> problemList, Hashtable<String, String> problemListItems,
+	        Hashtable<String, Element> repeatControls, Element modelNode) {
 		String type = node.getAttributeValue(null, ATTRIBUTE_TYPE);
 		
 		if (type != null)
@@ -2112,8 +2101,8 @@ public final class XformBuilder implements GlobalPropertyListener {
 	}
 	
 	/**
-	 * Parses a simple type node in an openmrs schema document to build select1 and select XForms
-	 * items from xs:enumeration s.
+	 * Parses a simple type node in an openmrs schema document to build select1 and select XForms items
+	 * from xs:enumeration s.
 	 * 
 	 * @param name
 	 * @param simpleTypeNode
@@ -2122,9 +2111,8 @@ public final class XformBuilder implements GlobalPropertyListener {
 	 * @return the xforms label node.
 	 */
 	private static Element parseSimpleType(String name, Element simpleTypeNode, Element bodyNode, Element bindingNode,
-	                                       Hashtable<String, String> problemList,
-	                                       Hashtable<String, String> problemListItems,
-	                                       Hashtable<String, Element> repeatControls, Element modelNode) {
+	        Hashtable<String, String> problemList, Hashtable<String, String> problemListItems,
+	        Hashtable<String, Element> repeatControls, Element modelNode) {
 		for (int i = 0; i < simpleTypeNode.getChildCount(); i++) {
 			if (simpleTypeNode.isText(i))
 				continue; //ignore text.
@@ -2139,9 +2127,9 @@ public final class XformBuilder implements GlobalPropertyListener {
 	}
 	
 	/**
-	 * Gets the node having the concept name and id combination for a multiple select item node.
-	 * Such a node would look like: xs:attribute name="openmrs_concept" type="xs:string"
-	 * use="required" fixed="215^JAUNDICE^99DCT"
+	 * Gets the node having the concept name and id combination for a multiple select item node. Such a
+	 * node would look like: xs:attribute name="openmrs_concept" type="xs:string" use="required"
+	 * fixed="215^JAUNDICE^99DCT"
 	 * 
 	 * @param node - the multiple select item node.
 	 * @return the concept node.
@@ -2165,9 +2153,9 @@ public final class XformBuilder implements GlobalPropertyListener {
 	}
 	
 	/**
-	 * Parses a multi select node and builds its corresponding items. An example of such a node
-	 * would be: xs:element name="jaundice" default="false" nillable="true" for a complex type whose
-	 * name is eye_exam_findings_type
+	 * Parses a multi select node and builds its corresponding items. An example of such a node would
+	 * be: xs:element name="jaundice" default="false" nillable="true" for a complex type whose name is
+	 * eye_exam_findings_type
 	 * 
 	 * @param name - the name of the complex type node we are dealing with.
 	 * @param itemName - the name attribute of the node we are dealing with.
@@ -2179,10 +2167,8 @@ public final class XformBuilder implements GlobalPropertyListener {
 	 * @return the label node we have created.
 	 */
 	private static Element parseMultiSelectNode(String name, String itemName, Element selectItemNode, Element controlNode,
-	                                            Element bodyNode, Element labelNode, Element bindingNode,
-	                                            Hashtable<String, String> problemList,
-	                                            Hashtable<String, String> problemListItems,
-	                                            Hashtable<String, Element> repeatControls, Element modelNode) {
+	        Element bodyNode, Element labelNode, Element bindingNode, Hashtable<String, String> problemList,
+	        Hashtable<String, String> problemListItems, Hashtable<String, Element> repeatControls, Element modelNode) {
 		//If this is the first time we are looping through, create the input control.
 		//Otherwise just add the items one by one as we get called for each.
 		if (controlNode.getChildCount() == 0) {
@@ -2216,8 +2202,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 	/**
 	 * Builds a multiple select item node.
 	 * 
-	 * @param itemName - the name attribute of the multiple select item whose item node we are
-	 *            building.
+	 * @param itemName - the name attribute of the multiple select item whose item node we are building.
 	 * @param selectItemNode - the xml schema select item node.
 	 * @param controlNode - the xforms control whose item we are building.
 	 */
@@ -2254,9 +2239,8 @@ public final class XformBuilder implements GlobalPropertyListener {
 	}
 	
 	/**
-	 * Parses a restriction which has the enumeration nodes. Such a node would look like:
-	 * xs:restriction base="xs:string" It also sets the data type which is normally the base
-	 * attribute.
+	 * Parses a restriction which has the enumeration nodes. Such a node would look like: xs:restriction
+	 * base="xs:string" It also sets the data type which is normally the base attribute.
 	 * 
 	 * @param name - the name of the complex type question node whose restriction we are parsing.
 	 * @param valueNode - the node who name attribute is equal to value.
@@ -2266,9 +2250,8 @@ public final class XformBuilder implements GlobalPropertyListener {
 	 * @return the label node of the created control.
 	 */
 	private static Element parseRestriction(String name, Element valueNode, Element restrictionNode, Element bodyNode,
-	                                        Element bindingNode, Hashtable<String, String> problemList,
-	                                        Hashtable<String, String> problemListItems,
-	                                        Hashtable<String, Element> repeatControls, Element modelNode) {
+	        Element bindingNode, Hashtable<String, String> problemList, Hashtable<String, String> problemListItems,
+	        Hashtable<String, Element> repeatControls, Element modelNode) {
 		
 		//the base attribute of a restriction has the data type for this question.
 		String type = restrictionNode.getAttributeValue(null, ATTRIBUTE_BASE);
@@ -2290,9 +2273,8 @@ public final class XformBuilder implements GlobalPropertyListener {
 			valueNodeName = NODE_XFORMS_VALUE;
 		
 		if (!controlName.equalsIgnoreCase(CONTROL_INPUT))
-			controlNode.setAttribute(null, ATTRIBUTE_APPEARANCE,
-			    Context.getAdministrationService()
-			            .getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_SINGLE_SELECT_APPEARANCE));
+			controlNode.setAttribute(null, ATTRIBUTE_APPEARANCE, Context.getAdministrationService()
+			        .getGlobalProperty(XformConstants.GLOBAL_PROP_KEY_SINGLE_SELECT_APPEARANCE));
 		
 		addRepeatControlNode(name, controlNode, bodyNode, problemList, problemListItems, repeatControls, valueNodeName,
 		    modelNode, bindingNode);
@@ -2323,13 +2305,14 @@ public final class XformBuilder implements GlobalPropertyListener {
 	}
 	
 	/**
-	 * Adds validation constraints to the xfrom as specified from the openmrs schema. For now these
-	 * are for openmrs numeric concepts (int and float)
+	 * Adds validation constraints to the xfrom as specified from the openmrs schema. For now these are
+	 * for openmrs numeric concepts (int and float)
 	 * 
 	 * @param bindingNode the xforms node to contain the constraint
 	 * @param restrictionNode the openmrs schema node having the allowed range values
 	 */
-	private static void addValidationRuleRanges(String name, Hashtable bindings, Element bindingNode, Element restrictionNode) {
+	private static void addValidationRuleRanges(String name, Hashtable bindings, Element bindingNode,
+	        Element restrictionNode) {
 		
 		String lower = null, upper = null;
 		
@@ -2418,8 +2401,8 @@ public final class XformBuilder implements GlobalPropertyListener {
 	}
 	
 	/**
-	 * Adds enumerations items for a restriction node to an xform control. Such a node is a select
-	 * or select1 kind, and the enumerations become the xform items.
+	 * Adds enumerations items for a restriction node to an xform control. Such a node is a select or
+	 * select1 kind, and the enumerations become the xform items.
 	 * 
 	 * @param restrictionNode - the restriction node.
 	 * @param controlNode - the control node to add the enumerations to.
@@ -2543,7 +2526,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 		/*KXmlSerializer serializer = new KXmlSerializer();
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		DataOutputStream dos = new DataOutputStream(bos);
-
+		
 		try{
 			serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
 			serializer.setOutput(dos,null);
@@ -2554,12 +2537,12 @@ public final class XformBuilder implements GlobalPropertyListener {
 			e.printStackTrace();
 			return null;
 		}
-
+		
 		byte[] byteArr = bos.toByteArray();
 		char[]charArray = new char[byteArr.length];
 		for(int i=0; i<byteArr.length; i++)
 			charArray[i] = (char)byteArr[i];
-
+		
 		return String.valueOf(charArray);*/
 	}
 	
@@ -2588,8 +2571,8 @@ public final class XformBuilder implements GlobalPropertyListener {
 	
 	/**
 	 * Sets the values of patient table fields in an xform. These are the ones with the attributes:
-	 * openmrs_table and openmrs_attribute e.g. <patient_unique_number
-	 * openmrs_table="PATIENT_IDENTIFIER" openmrs_attribute="IDENTIFIER" />
+	 * openmrs_table and openmrs_attribute e.g.
+	 * <patient_unique_number openmrs_table="PATIENT_IDENTIFIER" openmrs_attribute="IDENTIFIER" />
 	 * 
 	 * @param formId - the id of the form.
 	 * @param parentNode - the root node of the xform.
@@ -2597,8 +2580,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 	 * @param xformsService - the xforms service.
 	 */
 	public static void setPatientTableFieldValues(Integer formId, Element parentNode, XformsService xformsService,
-	                                              VelocityEngine velocityEngine, VelocityContext velocityContext)
-	    throws Exception {
+	        VelocityEngine velocityEngine, VelocityContext velocityContext) throws Exception {
 		int numOfEntries = parentNode.getChildCount();
 		for (int i = 0; i < numOfEntries; i++) {
 			if (parentNode.getType(i) != Element.ELEMENT)
@@ -2613,7 +2595,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 				if(value != null)
 					setNodeValue(child, value.toString());
 			}*/
-
+			
 			if (tableName != null && columnName != null) {
 				String name = child.getName().toUpperCase();
 				String value = xformsService.getFieldDefaultValue(formId, name);
@@ -2651,7 +2633,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 	 * @return - the value
 	 */
 	private static Object getPatientValue(XformsService xformsService, Integer patientId, String tableName,
-	                                      String columnName, String filterValue) {
+	        String columnName, String filterValue) {
 		
 		Object value = null;
 		
@@ -2679,8 +2661,8 @@ public final class XformBuilder implements GlobalPropertyListener {
 	}
 	
 	/**
-	 * Checks if a schema node is a user defined one. User defines nodes are the ones whose names
-	 * are not the standard openmrs names like form,_header_section,obs_section, etc.
+	 * Checks if a schema node is a user defined one. User defines nodes are the ones whose names are
+	 * not the standard openmrs names like form,_header_section,obs_section, etc.
 	 * 
 	 * @param node - the node to check.
 	 * @return - true if it is a user defined one, else false.
@@ -2768,8 +2750,8 @@ public final class XformBuilder implements GlobalPropertyListener {
 		    "Is the patient birth date estimated?", false, false, CONTROL_INPUT, null, null, true);
 		addPatientNode(formNode, modelNode, groupNode, NODE_IDENTIFIER, DATA_TYPE_TEXT, "Identifier",
 		    "The patient identifier", true, false, CONTROL_INPUT, null, null, true);
-		addPatientNode(formNode, modelNode, groupNode, NODE_PATIENT_ID, DATA_TYPE_INT, "Patient ID", "The patient ID",
-		    false, true, CONTROL_INPUT, null, null, false);
+		addPatientNode(formNode, modelNode, groupNode, NODE_PATIENT_ID, DATA_TYPE_INT, "Patient ID", "The patient ID", false,
+		    true, CONTROL_INPUT, null, null, false);
 		
 		addPatientNode(formNode, modelNode, groupNode, NODE_GENDER, DATA_TYPE_TEXT, "Gender", "The patient's sex", false,
 		    false, CONTROL_SELECT1, new String[] { "Male", "Female" }, new String[] { "M", "F" }, true);
@@ -2826,8 +2808,8 @@ public final class XformBuilder implements GlobalPropertyListener {
 	}
 	
 	private static void addPatientNode(Element formNode, Element modelNode, Element bodyNode, String name, String type,
-	                                   String label, String hint, boolean required, boolean readonly, String controlType,
-	                                   String[] items, String[] itemValues, boolean visible) {
+	        String label, String hint, boolean required, boolean readonly, String controlType, String[] items,
+	        String[] itemValues, boolean visible) {
 		
 		addPatientNode(formNode, modelNode, bodyNode, name, type, label, hint, required, readonly, controlType, items,
 		    itemValues, visible, "/" + NODE_PATIENT + "/" + name);
@@ -2850,8 +2832,8 @@ public final class XformBuilder implements GlobalPropertyListener {
 	 * @param itemValues
 	 */
 	public static void addPatientNode(Element formNode, Element modelNode, Element bodyNode, String name, String type,
-	                                  String label, String hint, boolean required, boolean readonly, String controlType,
-	                                  String[] items, String[] itemValues, boolean visible, String nodeset) {
+	        String label, String hint, boolean required, boolean readonly, String controlType, String[] items,
+	        String[] itemValues, boolean visible, String nodeset) {
 		//add the model node
 		Element element = formNode.createElement(null, null);
 		element.setName(name);
@@ -2937,7 +2919,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 		/*Element dataNode = formNode.createElement(null, null);
 		dataNode.setName(NODE_NAME_PERSON_ADDRESSES);
 		formNode.addChild(Element.ELEMENT, dataNode);*/
-
+		
 		Element dataNode = formNode;
 		
 		//addPersonAddress(NODE_NAME_PREFERRED, "Preferred", dataNode, modelNode, groupNode);
@@ -2995,13 +2977,13 @@ public final class XformBuilder implements GlobalPropertyListener {
 	}
 	
 	private static void addPatientAttributeNode(PersonAttributeType attribute, Element formNode, Element modelNode,
-	                                            Element bodyNode) {
+	        Element bodyNode) {
 		
 		String controlName = getPersonAttributeControlType(attribute);
 		
 		if (controlName == null) {
-			System.out.println("For attribute=" + attribute.getName() + " No concept found with id="
-			        + attribute.getForeignKey());
+			System.out.println(
+			    "For attribute=" + attribute.getName() + " No concept found with id=" + attribute.getForeignKey());
 			return;
 		}
 		
@@ -3088,7 +3070,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 	}
 	
 	private static void pupulateConceptOptions(Element controlNode, Integer conceptId, Element formNode, Element modelNode,
-	                                           Element bodyNode) {
+	        Element bodyNode) {
 		if (conceptId == null)
 			return;
 		
@@ -3100,7 +3082,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 	}
 	
 	private static void pupulateConceptOptions(Element controlNode, Concept concept, Element formNode, Element modelNode,
-	                                           Element bodyNode) {
+	        Element bodyNode) {
 		if (concept == null)
 			return;
 		
@@ -3136,7 +3118,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 	}
 	
 	private static void populateConceptSet(Element controlNode, Concept concept, Element formNode, Element modelNode,
-	                                       Element bodyNode) {
+	        Element bodyNode) {
 		
 		List<Concept> conceptSet = Context.getConceptService().getConceptsByConceptSet(concept);
 		for (Concept c : conceptSet) {
@@ -3155,9 +3137,9 @@ public final class XformBuilder implements GlobalPropertyListener {
 			element.setAttribute(null, ATTRIBUTE_ID, name);
 			element.setAttribute(null, ATTRIBUTE_NODESET, "/"+NODE_PATIENT+"/"+name);
 			element.setAttribute(null, ATTRIBUTE_TYPE, type);
-
+			
 			modelNode.addChild(Element.ELEMENT, element);*/
-
+			
 			//add the control
 			element = bodyNode.createElement(NAMESPACE_XFORMS, null);
 			element.setName(getConceptControlType(c));
@@ -3243,7 +3225,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 	}
 	
 	public static Document setPatientFieldValues(Patient patient, Form form, Document doc, XformsService xformsService)
-	    throws Exception {
+	        throws Exception {
 		//EasyFactoryConfiguration config = new EasyFactoryConfiguration();
 		
 		VelocityEngine velocityEngine = new VelocityEngine();
@@ -3258,31 +3240,19 @@ public final class XformBuilder implements GlobalPropertyListener {
 		velocityContext.put("obs", new ObsHistory(patient));
 		velocityContext.put("concept", new ConceptUtil());
 		velocityContext.put("location", new LocationUtil());
-		velocityContext.put(
-		    "timestamp",
-		    new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(
-		        XformConstants.GLOBAL_PROP_KEY_DATE_TIME_SUBMIT_FORMAT, XformConstants.DEFAULT_DATE_TIME_SUBMIT_FORMAT)));
-		velocityContext.put(
-		    "date",
-		    new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(
-		        XformConstants.GLOBAL_PROP_KEY_DATE_SUBMIT_FORMAT, XformConstants.DEFAULT_DATE_SUBMIT_FORMAT)));
-		velocityContext.put(
-		    "time",
-		    new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(
-		        XformConstants.GLOBAL_PROP_KEY_TIME_SUBMIT_FORMAT, XformConstants.DEFAULT_TIME_SUBMIT_FORMAT)));
+		velocityContext.put("timestamp", new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(
+		    XformConstants.GLOBAL_PROP_KEY_DATE_TIME_SUBMIT_FORMAT, XformConstants.DEFAULT_DATE_TIME_SUBMIT_FORMAT)));
+		velocityContext.put("date", new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(
+		    XformConstants.GLOBAL_PROP_KEY_DATE_SUBMIT_FORMAT, XformConstants.DEFAULT_DATE_SUBMIT_FORMAT)));
+		velocityContext.put("time", new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(
+		    XformConstants.GLOBAL_PROP_KEY_TIME_SUBMIT_FORMAT, XformConstants.DEFAULT_TIME_SUBMIT_FORMAT)));
 		
-		velocityContext.put(
-		    "displayTimestamp",
-		    new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(
-		        XformConstants.GLOBAL_PROP_KEY_DATE_TIME_DISPLAY_FORMAT, XformConstants.DEFAULT_DATE_TIME_DISPLAY_FORMAT)));
-		velocityContext.put(
-		    "displayDate",
-		    new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(
-		        XformConstants.GLOBAL_PROP_KEY_DATE_DISPLAY_FORMAT, XformConstants.DEFAULT_DATE_DISPLAY_FORMAT)));
-		velocityContext.put(
-		    "displayTime",
-		    new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(
-		        XformConstants.GLOBAL_PROP_KEY_TIME_DISPLAY_FORMAT, XformConstants.DEFAULT_TIME_DISPLAY_FORMAT)));
+		velocityContext.put("displayTimestamp", new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(
+		    XformConstants.GLOBAL_PROP_KEY_DATE_TIME_DISPLAY_FORMAT, XformConstants.DEFAULT_DATE_TIME_DISPLAY_FORMAT)));
+		velocityContext.put("displayDate", new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(
+		    XformConstants.GLOBAL_PROP_KEY_DATE_DISPLAY_FORMAT, XformConstants.DEFAULT_DATE_DISPLAY_FORMAT)));
+		velocityContext.put("displayTime", new SimpleDateFormat(Context.getAdministrationService().getGlobalProperty(
+		    XformConstants.GLOBAL_PROP_KEY_TIME_DISPLAY_FORMAT, XformConstants.DEFAULT_TIME_DISPLAY_FORMAT)));
 		
 		List<Encounter> encounters = Context.getEncounterService().getEncountersByPatientId(patient.getPatientId());
 		velocityContext.put("patientEncounters", encounters);
@@ -3295,8 +3265,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 				otherPerson = rel.getPersonB();
 				if (otherPerson.isPatient())
 					rel.setPersonB(Context.getPatientService().getPatient(otherPerson.getPersonId()));
-			}
-			else {
+			} else {
 				otherPerson = rel.getPersonA();
 				if (otherPerson.isPatient())
 					rel.setPersonA(Context.getPatientService().getPatient(otherPerson.getPersonId()));
@@ -3327,7 +3296,7 @@ public final class XformBuilder implements GlobalPropertyListener {
 		}*/
 		
 		setPatientTableFieldValues(form.getFormId(), doc.getRootElement(), xformsService, velocityEngine, velocityContext);
-	
+		
 		return doc;
 	}
 	
@@ -3368,8 +3337,8 @@ public final class XformBuilder implements GlobalPropertyListener {
 	}
 	
 	/**
-	 * Adds and encounter section to the patient registration form for entering obs during new
-	 * patient registration.
+	 * Adds and encounter section to the patient registration form for entering obs during new patient
+	 * registration.
 	 * 
 	 * @param doc
 	 * @param formNode
@@ -3516,8 +3485,8 @@ public final class XformBuilder implements GlobalPropertyListener {
 		repeatGroupNode.addChild(Element.ELEMENT, repeatNode);
 		
 		addPatientNode(dataNode, modelNode, repeatNode, NODE_NAME_OTHER_IDENTIFIER, DATA_TYPE_TEXT, "Identifier",
-		    "The patient's other identifier value", false, false, CONTROL_INPUT, null, null, true, "/" + NODE_PATIENT + "/"
-		            + name + "/other_identifier");
+		    "The patient's other identifier value", false, false, CONTROL_INPUT, null, null, true,
+		    "/" + NODE_PATIENT + "/" + name + "/other_identifier");
 		
 		String[] items, itemValues;
 		List<PatientIdentifierType> identifierTypes = Context.getPatientService().getAllPatientIdentifierTypes();
@@ -3590,14 +3559,14 @@ public final class XformBuilder implements GlobalPropertyListener {
 	private static boolean useAutoCompleteForNode(String nodeName) {
 		if (nodeName.equalsIgnoreCase(NODE_ENCOUNTER_LOCATION_ID) && XformsUtil.usesJquery()) {
 			if (useAutoCompleteForLocations == null) {
-				useAutoCompleteForLocations = Boolean.valueOf(Context.getAdministrationService().getGlobalProperty(
-				    XformConstants.XFORM_GP_USE_AUTOCOMPLETE_FOR_LOCATIONS));
+				useAutoCompleteForLocations = Boolean.valueOf(Context.getAdministrationService()
+				        .getGlobalProperty(XformConstants.XFORM_GP_USE_AUTOCOMPLETE_FOR_LOCATIONS));
 			}
 			return useAutoCompleteForLocations;
 		} else if (nodeName.equalsIgnoreCase(NODE_ENCOUNTER_PROVIDER_ID) && XformsUtil.isOnePointNineAndAbove()) {
 			if (useAutoCompleteForProviders == null) {
-				useAutoCompleteForProviders = Boolean.valueOf(Context.getAdministrationService().getGlobalProperty(
-				    XformConstants.XFORM_GP_USE_AUTOCOMPLETE_FOR_PROVIDERS));
+				useAutoCompleteForProviders = Boolean.valueOf(Context.getAdministrationService()
+				        .getGlobalProperty(XformConstants.XFORM_GP_USE_AUTOCOMPLETE_FOR_PROVIDERS));
 			}
 			return useAutoCompleteForProviders;
 		}
