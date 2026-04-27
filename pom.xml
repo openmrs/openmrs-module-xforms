@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -26,6 +27,13 @@
         </developer>
     </developers>
 
+    <scm>
+        <connection>scm:git:git@github.com:openmrs/openmrs-module-xforms.git</connection>
+        <developerConnection>scm:git:git@github.com:openmrs/openmrs-module-xforms.git</developerConnection>
+        <url>https://github.com/openmrs/openmrs-module-xforms.git</url>
+        <tag>HEAD</tag>
+    </scm>
+
     <modules>
         <module>api</module>
         <module>omod</module>
@@ -33,10 +41,8 @@
 
     <properties>
         <openmrsPlatformVersion>1.9.9</openmrsPlatformVersion>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <MODULE_ID>xforms</MODULE_ID>
-        <MODULE_PACKAGE>org.openmrs.module.xforms</MODULE_PACKAGE>
-        <MODULE_VERSION>${project.parent.version}</MODULE_VERSION>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
         <appframeworkVersion>2.1</appframeworkVersion>
         <uiframeworkVersion>3.2</uiframeworkVersion>
         <appuiVersion>1.1</appuiVersion>
@@ -106,36 +112,4 @@
             <scope>compile</scope>
         </dependency>
     </dependencies>
-
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <configuration>
-                        <target>1.8</target>
-                        <source>1.8</source>
-                    </configuration>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>1.7</version>
-                    <executions>
-                        <execution>
-                            <phase>validate</phase>
-                            <goals>
-                                <goal>parse-version</goal>
-                            </goals>
-                            <configuration>
-                                <versionString>${openmrsPlatformVersion}</versionString>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
 </project>
