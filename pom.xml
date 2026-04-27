@@ -10,7 +10,7 @@
 
     <groupId>org.openmrs.module</groupId>
     <artifactId>xforms</artifactId>
-    <version>5.0.0</version>
+    <version>5.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>XForms Module</name>
     <description>A browser based forms module which adds XForms support and related services to XForms clients, like
@@ -29,7 +29,7 @@
         <connection>scm:git:git@github.com:openmrs/openmrs-module-xforms.git</connection>
         <developerConnection>scm:git:git@github.com:openmrs/openmrs-module-xforms.git</developerConnection>
         <url>https://github.com/openmrs/openmrs-module-xforms.git</url>
-        <tag>5.0.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
