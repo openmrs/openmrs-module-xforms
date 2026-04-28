@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   build:
-    uses: wikumChamith/openmrs-contrib-gha-workflows/.github/workflows/build-backend-module.yml@infer-version-fallback
+    uses: openmrs/openmrs-contrib-gha-workflows/.github/workflows/build-backend-module.yml@main
     permissions:
       contents: read
       id-token: write
