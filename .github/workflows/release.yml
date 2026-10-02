@@ -22,6 +22,7 @@ jobs:
     name: Release
     uses: openmrs/openmrs-contrib-gha-workflows/.github/workflows/release-backend-module.yml@main
     with:
+      java_versions: "8"
       release_version: ${{ inputs.release_version }}
       development_version: ${{ inputs.development_version }}
       branch: ${{ inputs.branch }}
