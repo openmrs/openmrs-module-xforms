@@ -31,5 +31,5 @@ To ensure that only authorized users will access these applications, the module 
 
 **Additional Information**
 =====================
-Wiki Page - [XForms](https://wiki.openmrs.org/display/docs/XForms+Module)        
+Wiki Page - [XForms](https://openmrs.atlassian.net/wiki/x/QoSEAQ)        
 JIRA Page - [XForms](https://issues.openmrs.org/browse/XFRM/?selectedTab=com.atlassian.jira.jira-projects-plugin:summary-panel)
