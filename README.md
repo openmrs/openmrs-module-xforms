@@ -16,7 +16,7 @@ To ensure that only authorized users will access these applications, the module 
 
 **Installation**
 =====================
-1. Download the [latest version](https://dev.openmrs.org/modules/view.jsp?module=xforms) from the OpenMRS module repository and add it to your OpenMRS application using the Administration->Manage Modules page.
+1. Download the [latest version](https://addons.openmrs.org/show/org.openmrs.module.xforms) from the OpenMRS module repository and add it to your OpenMRS application using the Administration->Manage Modules page.
 
 **Entering Data**
 =====================
